@@ -24,6 +24,10 @@ const DATA = process.env.BIOBUZZ_DATA ||
   (process.env.PORTABLE_EXECUTABLE_DIR ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, "BIOBUZZ-data") : path.join(app.getPath("userData"), "data"));
 const SIM = process.env.BIOBUZZ_SIM || path.join(__dirname, "sim", "index.html");
 let store = null, win = null, sync = null, bridge = null;
+/* שני חשבונות: הקבוצה (כל הנהגים) והאישי (רק מה שסימנת כאישי) */
+const SY = {};
+const kindOf = k => k === "personal" ? "personal" : "team";
+function acctStatusAll() { return { team: SY.team.status(), personal: SY.personal.status() }; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
 if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); }
@@ -44,11 +48,37 @@ function saveBounds() {
   try { writeAtomic(boundsFile(), JSON.stringify(Object.assign(b, { max: win.isMaximized(), full: win.isFullScreen() }))); } catch (e) {}
 }
 
+/* מסך פתיחה בזמן שהזירה נטענת */
+let splash = null, splashAt = 0;
+function createSplash() {
+  if (process.env.BIOBUZZ_TEST) return;
+  const logo = '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#12161c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  const html = '<!doctype html><html dir="rtl"><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#0B0E12;color:#E9EFF5;font-family:"Segoe UI",system-ui,sans-serif;overflow:hidden;-webkit-user-select:none;-webkit-app-region:drag}' +
+    '.w{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(420px 260px at 50% 0%,rgba(255,176,32,.16),transparent 70%)}' +
+    '.m{width:92px;height:92px;border-radius:26px;background:#FFB020;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(255,176,32,.25)}' +
+    'b{font-size:26px;letter-spacing:.06em} i{font-style:normal;color:#95A5B4;font-size:13px}.bar{width:180px;height:4px;border-radius:4px;background:#1C242D;overflow:hidden;margin-top:6px}' +
+    '.bar s{display:block;height:100%;width:40%;background:#FFB020;border-radius:4px;animation:g 1.1s ease-in-out infinite}@keyframes g{0%{transform:translateX(160%)}100%{transform:translateX(-260%)}}' +
+    'small{color:#7D8C9A;font-size:11px;position:absolute;bottom:12px;left:14px}</style></head><body><div class="w"><div class="m">' + logo + '</div><b>BIOBUZZ</b><i>אפולו 9662 · טוען את הזירה…</i><div class="bar"><s></s></div></div><small>' + app.getVersion() + '</small></body></html>';
+  splash = new BrowserWindow({ width: 440, height: 300, frame: false, resizable: false, movable: true, alwaysOnTop: true, skipTaskbar: true,
+    backgroundColor: "#0B0E12", show: true, center: true, icon: path.join(__dirname, "build", "icon.png"), webPreferences: { sandbox: true } });
+  splash.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(html)); splashAt = Date.now();
+}
+let shown = false;
+function showMain() {
+  if (shown || !win || win.isDestroyed()) return;
+  const wait = Math.max(0, 900 - (Date.now() - splashAt));
+  if (splash && wait > 0) { setTimeout(showMain, wait); return; }
+  shown = true; win.show();
+  if (splash && !splash.isDestroyed()) { const s = splash; splash = null; setTimeout(() => { try { s.close(); } catch (e) {} }, 150); }
+}
+
 function createWindow() {
   const b = loadBounds();
   win = new BrowserWindow({
     x: b.x, y: b.y, width: b.width, height: b.height, minWidth: 900, minHeight: 600,
     backgroundColor: "#0B0E12", title: "BIOBUZZ — אפולו 9662", show: false, autoHideMenuBar: true,
+    /* שורת כותרת משלנו: הכותרת של הסימולטור היא ״ידית״ החלון, וכפתורי Windows מצוירים עליה */
+    titleBarStyle: "hidden", titleBarOverlay: { color: "#141A21", symbolColor: "#B9C6D2", height: 67 },
     icon: path.join(__dirname, "build", "icon.png"),
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, nodeIntegration: false,
       sandbox: true, backgroundThrottling: false, spellcheck: false }
@@ -56,7 +86,8 @@ function createWindow() {
   win.setMenu(null);
   if (b.max) win.maximize();
   if (b.full) win.setFullScreen(true);
-  win.once("ready-to-show", () => win.show());
+  win.once("ready-to-show", () => setTimeout(showMain, 400));
+  win.webContents.on("did-finish-load", () => { try { win.webContents.setVisualZoomLevelLimits(1, 1); } catch (e) {} });
   win.on("close", saveBounds);
   win.on("resize", () => { clearTimeout(win._bt); win._bt = setTimeout(saveBounds, 500); });
   /* קישורים חיצוניים נפתחים בדפדפן, לא בתוך האפליקציה */
@@ -96,6 +127,7 @@ function reg() {
   ipcMain.on("bb:kvRemove", (e, k) => store.kvSet(k, null));
   ipcMain.on("bb:kvClear", () => store.kvClear());
   ipcMain.on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
+  ipcMain.on("bb:ready", () => showMain());
   ipcMain.handle("bb:profiles", () => store.profiles());
   ipcMain.handle("bb:profileAdd", (e, name, emoji, color) => { const p = store.addProfile(name, { emoji, color }); soonSync(); return p; });
   ipcMain.handle("bb:profileUpdate", (e, id, patch) => { const p = store.updateProfile(id, patch || {}); soonSync(); return p; });
@@ -133,11 +165,17 @@ function reg() {
   /* ── יומן אודומטריה מהרובוט (adb) ── */
   ipcMain.handle("bb:adbPull", (e, ip) => adbPull(String(ip || "").trim()));
   ipcMain.handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
-  ipcMain.handle("bb:acctStatus", () => sync.status());
-  ipcMain.handle("bb:acctSignIn", async (e, em, pw) => { const r = await sync.signIn(em, pw); if (r.ok) runSync("login"); return r; });
-  ipcMain.handle("bb:acctSignUp", async (e, em, pw) => { const r = await sync.signUp(em, pw); if (r.ok && !r.confirm) runSync("login"); return r; });
-  ipcMain.handle("bb:acctRecover", (e, em) => sync.recover(em));
-  ipcMain.handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: sync.status() }); return r; });
+  ipcMain.handle("bb:acctStatus", () => acctStatusAll());
+  const sameAsOther = (k, em) => { const o = SY[k === "team" ? "personal" : "team"].status(); return o.loggedIn && o.email.toLowerCase() === String(em).trim().toLowerCase(); };
+  ipcMain.handle("bb:acctSignIn", async (e, k, em, pw) => { k = kindOf(k);
+    if (sameAsOther(k, em)) return { ok: false, why: "המייל הזה כבר מחובר כ" + (k === "team" ? "חשבון אישי" : "חשבון קבוצה") + " — צריך מייל אחר" };
+    const r = await SY[k].signIn(em, pw); if (r.ok) runSync("login"); return r; });
+  ipcMain.handle("bb:acctSignUp", async (e, k, em, pw) => { k = kindOf(k);
+    if (sameAsOther(k, em)) return { ok: false, why: "המייל הזה כבר מחובר כחשבון אחר — צריך מייל אחר" };
+    const r = await SY[k].signUp(em, pw); if (r.ok && !r.confirm) runSync("login"); return r; });
+  ipcMain.handle("bb:acctRecover", (e, k, em) => SY[kindOf(k)].recover(em));
+  ipcMain.handle("bb:acctSignOut", async (e, k) => { const r = await SY[kindOf(k)].signOut(); send("bb:sync", { status: acctStatusAll() }); return r; });
+  ipcMain.handle("bb:profileAcct", (e, id, k) => { const p = store.setAcct(id, kindOf(k)); soonSync(800); return p; });
   ipcMain.handle("bb:syncNow", () => runSync("manual"));
   /* ── עדכונים ── */
   ipcMain.handle("bb:updCheck", () => updCheck(true));
@@ -183,13 +221,28 @@ async function adbPull(ip) {
 
 /* ── סנכרון: בהתחברות, כל שתי דקות, זמן קצר אחרי שינוי, ולפני יציאה ── */
 let syncT = null;
-function soonSync(ms) { if (!sync || !sync.status().loggedIn) return; clearTimeout(syncT); syncT = setTimeout(() => runSync("soon"), ms || 4000); }
-async function runSync(why) {
-  if (!sync || !sync.status().loggedIn) return { ok: false, why: "לא מחוברים" };
-  send("bb:sync", { status: Object.assign(sync.status(), { busy: true }) });
-  const r = await sync.syncNow();
-  send("bb:sync", { status: sync.status(), result: r, why });
-  return r;
+const anyIn = () => SY.team && (SY.team.status().loggedIn || SY.personal.status().loggedIn);
+function soonSync(ms) { if (!anyIn()) return; clearTimeout(syncT); syncT = setTimeout(() => runSync("soon"), ms || 4000); }
+let syncRun = null;
+function runSync(why) {
+  if (!anyIn()) return Promise.resolve({ ok: false, why: "לא מחוברים" });
+  if (syncRun) return syncRun;
+  syncRun = (async () => {
+    const st = acctStatusAll(); for (const k in st) if (st[k].loggedIn) st[k].busy = true;
+    send("bb:sync", { status: st });
+    /* אחד אחרי השני — שניהם כותבים לאותם קבצים */
+    const out = { ok: true, changedActive: false, profilesChanged: false, pulledMatches: 0, pulledProfiles: 0, pushedMatches: 0, pushedProfiles: 0, errors: [] };
+    for (const k of ["team", "personal"]) {
+      if (!SY[k].status().loggedIn) continue;
+      const r = await SY[k].syncNow();
+      if (!r.ok) { out.ok = false; out.errors.push(k + ": " + r.why); continue; }
+      for (const f of ["changedActive", "profilesChanged"]) out[f] = out[f] || !!r[f];
+      for (const f of ["pulledMatches", "pulledProfiles", "pushedMatches", "pushedProfiles"]) out[f] += r[f] || 0;
+    }
+    send("bb:sync", { status: acctStatusAll(), result: out, why });
+    return out;
+  })().finally(() => { syncRun = null; });
+  return syncRun;
 }
 /* ── עדכונים מגיטהאב ── */
 const PORTABLE = !!process.env.PORTABLE_EXECUTABLE_DIR;
@@ -231,17 +284,21 @@ app.whenReady().then(() => {
   try { store.dailyBackup(14); } catch (e) { console.error(e); }
   const enc = s => (safeStorage && safeStorage.isEncryptionAvailable()) ? "e:" + safeStorage.encryptString(s).toString("base64") : "p:" + Buffer.from(s, "utf8").toString("base64");
   const dec = s => s.startsWith("e:") ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : Buffer.from(s.replace(/^p:/, ""), "base64").toString("utf8");
-  sync = new Sync(store, DATA, { enc, dec });
+  SY.team = new Sync(store, DATA, { enc, dec, kind: "team" });
+  SY.personal = new Sync(store, DATA, { enc, dec, kind: "personal" });
+  sync = SY.team;
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
     bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html") });
     bridge.start().then(ok => { if (ok && !process.env.BIOBUZZ_NOADB) bridge.adbWatch(); });
   }
   reg();
+  createSplash();
   createWindow();
+  setTimeout(showMain, 25000);
   updInit();
   win.webContents.once("did-finish-load", () => {
-    if (sync.status().loggedIn) setTimeout(() => runSync("start"), 1500);
+    if (anyIn()) setTimeout(() => runSync("start"), 1500);
     if (AU) setTimeout(() => updCheck(false), 8000);
   });
   setInterval(() => runSync("timer"), 120000);
@@ -250,9 +307,9 @@ let quitting = false;
 app.on("before-quit", e => {
   try { store && store.flushKv(); } catch (err) {}
   /* לפני יציאה — עוד סנכרון אחד (עד 6 שניות), כדי שהמחשב הבא יקבל הכול */
-  if (!quitting && sync && sync.status().loggedIn && !process.env.BIOBUZZ_TEST) {
+  if (!quitting && anyIn() && !process.env.BIOBUZZ_TEST) {
     e.preventDefault(); quitting = true;
-    Promise.race([sync.syncNow(), new Promise(r => setTimeout(r, 6000))]).finally(() => app.quit());
+    Promise.race([runSync("quit"), new Promise(r => setTimeout(r, 6000))]).finally(() => app.quit());
   }
 });
 app.on("will-quit", () => { try { bridge && bridge.stop(); } catch (e) {} });

@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld("bbApp", {
   kvRemove: k => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvRemove", String(k)); },
   kvClear: () => ipcRenderer.send("bb:kvClear"),
   flush: () => ipcRenderer.sendSync("bb:flush"),
+  ready: () => ipcRenderer.send("bb:ready"),
   profiles: () => ipcRenderer.invoke("bb:profiles"),
   profileAdd: (name, emoji, color) => ipcRenderer.invoke("bb:profileAdd", String(name || ""), emoji, color),
   profileUpdate: (id, patch) => ipcRenderer.invoke("bb:profileUpdate", id, patch),
@@ -41,10 +42,11 @@ contextBridge.exposeInMainWorld("bbApp", {
   adbPull: ip => ipcRenderer.invoke("bb:adbPull", String(ip || "")),
   /* חשבון וסנכרון */
   acctStatus: () => ipcRenderer.invoke("bb:acctStatus"),
-  acctSignIn: (email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(email || ""), String(pw || "")),
-  acctSignUp: (email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || "")),
-  acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
-  acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
+  acctSignIn: (kind, email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(kind || "team"), String(email || ""), String(pw || "")),
+  acctSignUp: (kind, email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(kind || "team"), String(email || ""), String(pw || "")),
+  acctRecover: (kind, email) => ipcRenderer.invoke("bb:acctRecover", String(kind || "team"), String(email || "")),
+  acctSignOut: kind => ipcRenderer.invoke("bb:acctSignOut", String(kind || "team")),
+  profileAcct: (id, kind) => ipcRenderer.invoke("bb:profileAcct", String(id || ""), String(kind || "team")),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
   onSync: cb => { ipcRenderer.on("bb:sync", (e, d) => { try { cb(d); } catch (err) {} }); },
   /* עדכונים */

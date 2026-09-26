@@ -20,8 +20,8 @@ let {app,win,errs}=await launch();
 ok(await win.evaluate(()=>!!window.bbApp&&document.documentElement.classList.contains('app')),'האפליקציה עלתה, bbApp קיים');
 ok(await win.evaluate(()=>!document.getElementById('welcome').hidden),'פתיחה ראשונה: ״ברוכים הבאים״');
 await win.fill('#wcName','יערי');
-await win.click('#wcEmo [data-wce="🚀"]');
-await win.click('#wcGo');
+await win.evaluate(()=>document.querySelector('#wcEmo [data-wce="🚀"]').click());
+await win.evaluate(()=>document.querySelector('#wcGo').click());
 await win.waitForTimeout(600);
 ok(await win.evaluate(()=>document.getElementById('welcome').hidden&&/יערי/.test(document.getElementById('profChip').textContent)&&/🚀/.test(document.getElementById('profChip').textContent)),'השם והסמל בכותרת: 🚀 יערי');
 ok(J('profiles.json').list[0].name==='יערי','profiles.json: יערי');
@@ -37,14 +37,14 @@ await app.close();
 ok(await win.evaluate(()=>document.getElementById('welcome').hidden),'פתיחה שנייה: בלי ״ברוכים הבאים״');
 ok(await win.evaluate(()=>__sim.bk._diff().some(d=>d[0]==='wheelD'&&d[2]===120)),'אחרי סגירה ופתיחה: קוטר הגלגל 120 נשאר');
 // נהג חדש והחלפה
-await win.click('#profChip');
+await win.evaluate(()=>document.querySelector('#profChip').click());
 await win.waitForTimeout(400);
-await win.fill('#pfName','שחר'); await win.click('#pfAddB');
+await win.fill('#pfName','שחר'); await win.evaluate(()=>document.querySelector('#pfAddB').click());
 await win.waitForTimeout(600);
 
 ok(await win.evaluate(()=>document.querySelectorAll('#pfList .pfRow').length)===2,'נוסף נהג: שחר');
 const other=await win.evaluate(()=>[...document.querySelectorAll('#pfList [data-pfgo]')].find(b=>!b.disabled).dataset.pfgo);
-let rl=waitReload(win); await win.click('[data-pfgo="'+other+'"]'); await rl;
+let rl=waitReload(win); await win.evaluate(id=>document.querySelector('#pfList [data-pfgo="'+id+'"]').click(),other); await rl;
 ok(await win.evaluate(()=>/שחר/.test(document.getElementById('profChip').textContent)),'החלפה: שחר נוהג');
 ok(await win.evaluate(()=>__sim.bk.changed())===0,'לשחר רובוט מקורי משלו');
 ok(await win.evaluate(()=>localStorage.getItem('bb_paths_v1'))===null,'המסלולים של יערי לא אצל שחר');
@@ -68,7 +68,7 @@ await win.waitForTimeout(1000);
 let r=await win.evaluate(()=>__sim.statCalc());
 ok(r&&r.n===220,'סטטיסטיקות מכל 220 המשחקים (בדפדפן: עד 150) — '+(r&&r.n));
 // מחיקת נהג (לא הפעיל) — לסל. (לחיצות ב-DOM: בתוכנה בלי כרטיס מסך Playwright מחכה לציור יציב יותר מ-3 שניות)
-await win.click('#profChip'); await win.waitForTimeout(300);
+await win.evaluate(()=>document.querySelector('#profChip').click()); await win.waitForTimeout(300);
 await win.evaluate(id=>document.querySelector('[data-pfdel="'+id+'"]').click(),other);
 ok(await win.evaluate(id=>/בטוח/.test(document.querySelector('[data-pfdel="'+id+'"]').textContent),other),'מחיקה: לחיצה ראשונה מבקשת אישור');
 await win.evaluate(id=>document.querySelector('[data-pfdel="'+id+'"]').click(),other); await win.waitForTimeout(800);

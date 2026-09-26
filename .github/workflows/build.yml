@@ -45,6 +45,7 @@ jobs:
           timeout 600 xvfb-run -a node app_test.mjs
           timeout 600 xvfb-run -a node app_cloud_test.mjs
           timeout 600 xvfb-run -a node app_p2_test.mjs
+          timeout 600 xvfb-run -a node app_shell_test.mjs
 
   windows:
     needs: test

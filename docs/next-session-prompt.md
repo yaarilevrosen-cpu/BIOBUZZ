@@ -1,7 +1,7 @@
 # פרומפט להמשך — מעבדת זירת BIOBUZZ, אפולו 9662
 
 **העתק את כל הקובץ הזה כהודעה ראשונה בצ׳אט חדש, וצרף את `BIOBUZZ-v54.zip`.**
-הגרסה הנוכחית: **v54** (26.9.2026).
+הגרסה הנוכחית: **v55** (26.9.2026).
 
 ---
 
@@ -175,6 +175,11 @@ node smoke.mjs && node regress_test.mjs
 - **רובוט אמיתי:** `LIVE` — ws ל-FTC Dashboard (192.168.43.1:8000), מפתחות x/y/heading או ציור RoadRunner (עיגול ר׳ 9 + קו). ״הקלט ריצה״ → `odoLoad`. `bb:adbPull` — `adb connect ip:5555` ← `/sdcard/FIRST/odolog.csv`.
 - בדיקות: `sync_test` 20, `app_cloud_test` 12, `bridge_test` 16, `p2_test` 15, `p3_test` 10, `app_p2_test` 11.
 
+## 5כא. v55 — אפליקציה 1.2.0: חשבון אישי, ממשק של אפליקציה
+- **שני חשבונות:** `SY.team`, `SY.personal` ב-main (`Sync` עם `kind`, קובץ `account-<kind>.json`; `account.json` הישן = קבוצה). נהג: `acct` = team/personal (`store.setAcct` — מצבה לחשבון הקודם). `runSync` מריץ את שניהם ברצף. אותו מייל לא יכול להיות בשניהם. `NOSYNC` כולל גם `bbShellLast`, `bbLive1`, `bbRecAuto1` — אחרת נהג ״ריק״ של התקנה חדשה לא נחשב ריק.
+- **המעטפת:** `SHELL`, `shellGo(k)` (home/play/lab/stats/drivers/settings), `#appNav` (fixed מימין, 80px), `#appPage` (דפים מעל הזירה), `shellRender`, `appDrvClick` (משותף לתפריט ולדף ״נהגים״). `main.js`: `titleBarStyle:"hidden"` + `titleBarOverlay` (גובה 67), מסך פתיחה (`createSplash`, `showMain` ב-`bb:ready`), `setVisualZoomLevelLimits(1,1)`.
+- בדיקות: `app_shell_test` 20, `sync_test` 29. בבדיקות אפליקציה — לחיצות ב-DOM (Playwright מחכה ל״ציור יציב״ שלא מגיע בלי כרטיס מסך).
+
 ## 6. בדיקות — ב-v35 הכול ירוק, **תמיד ברצף**
 `smoke` 2 · `kb_test` 18 · `g304_test` 15 · `pathlib_test` 16 · `auto_test` 28 · `teach_test` 15 · `autosel_test` 19 · `v42_test` 35 · `v42_async` 6 · `hud_test` 12 · `ui_test` 15 · `review_test` 16 · `play_test` 9 · `brain_test` 20 · `mp2_test` 17 · `regress_test` 11 · `dist_test` 12. `auto_ui.mjs` לצילומי מסך של העורך.
 - `bench.mjs <זרעים> <רמה> <שם>` עם `BRAIN=0|1` ו-`SIM=קובץ` — מאצ׳ים של בוטים בלבד. להעתיק את `sim.html` לשם אחר לפני שמריצים ברקע (כל זרע טוען את הקובץ מחדש). המאצ׳ לא דטרמיניסטי לגמרי (כאוס קטן בפיזיקה) — לממוצע על 8–10 זרעים.
@@ -185,7 +190,7 @@ node smoke.mjs && node regress_test.mjs
 ## 7. איך עובדים — בכל שינוי
 1. שחזור ← `smoke` + `regress_test` ירוקים.
 2. קוד ← בדיקה ייעודית ← צילום מסך ← רגרסיה ברצף.
-3. להעלות את `verBadge` (v54…).
+3. להעלות את `verBadge` (v55…).
 4. `python3 build.py` ← `dist_test` ← זיפ ל-`/mnt/user-data/outputs/`.
 5. פרסום לארטיפקט: `biobuzz-sim.html` עצמו (עם `url`; קבצי ה-CAD נשארים).
 6. שמירה לפרויקט: `claude/source/*`, `claude/<נושא>-vNN.md`, `claude/simulator-overview.md`, והפרומפט הזה. **גם באמצע עבודה ארוכה.**

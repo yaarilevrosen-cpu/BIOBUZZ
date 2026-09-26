@@ -50,7 +50,33 @@ ok(A.s.matches(pA).length===6&&B.s.matches(pA).length===6,'איחוד מאצ׳י
 A.s.removeProfile(shachar.id); r=await A.y.syncNow(); r=await B.y.syncNow();
 ok(!B.s.meta.list.some(p=>p.id===shachar.id)&&fs.existsSync(path.join(B.d,'trash')),'מחיקת שחר ב-א׳ הגיעה ל-ב׳ (לסל)');
 // בידוד בין חשבונות
-if(E2){ const C=mk(); const q=await C.y.signIn(E2,PW); const {data}=await C.y.rest('GET','bb_profiles?select=id'); ok(q.ok&&data.length===0,'חשבון אחר לא רואה את הנתונים'); }
+if(E2){ const C=mk(); const q=await C.y.signIn(E2,PW); const {data}=await C.y.rest('GET','bb_profiles?select=id'); const mineIds=new Set(A.s.meta.list.map(p=>p.id).concat([shachar.id])); ok(q.ok&&!data.some(r=>mineIds.has(r.id)),'חשבון אחר לא רואה את הנתונים'); }
+// ── חשבון אישי: נהג שעובר מהקבוצה לחשבון האישי ──
+if(E2){
+  { const {y}=mk(); await y.signIn(E2,PW); await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
+  const { Sync:S2 }=require(path.resolve(HERE,'../app/sync.js'));
+  const Ap=new S2(A.s,A.d,{kind:'personal'}); let q=await Ap.signIn(E2,PW); ok(q.ok,'א׳: חשבון אישי בנוסף לחשבון הקבוצה');
+  const me=A.s.addProfile('יערי הפרטי',{emoji:'🦅'}); A.s.addMatch({at:77000,my:99,opp:1,win:1},me.id);
+  await A.y.syncNow(); await Ap.syncNow();
+  { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&!t[0].deleted,'נהג חדש שייך לקבוצה כברירת מחדל'); }
+  A.s.setAcct(me.id,'personal'); q=await A.y.syncNow(); const q2=await Ap.syncNow();
+  { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&t[0].deleted,'העברה לאישי: נמחק מחשבון הקבוצה'); }
+  { const {data:t}=await Ap.rest('GET','bb_profiles?select=id,name&id=eq.'+me.id); const {data:m}=await Ap.rest('GET','bb_matches?select=at&profile_id=eq.'+me.id);
+    ok(t.length===1&&t[0].name==='יערי הפרטי'&&m.length===1,'…ונמצא בחשבון האישי, עם המאצ׳ים'); }
+  ok(A.s.meta.list.some(p=>p.id===me.id),'במחשב א׳ הנהג נשאר (רק עבר חשבון)');
+  // מחשב בבית: רק החשבון האישי
+  const H=mk(); const Hp=new S2(H.s,H.d,{kind:'personal'}); await Hp.signIn(E2,PW); q=await Hp.syncNow();
+  ok(q.ok&&H.s.meta.list.length===1&&H.s.meta.list[0].name==='יערי הפרטי'&&H.s.acctOf(me.id)==='personal','מחשב בבית עם החשבון האישי בלבד: רק ״יערי הפרטי״');
+  // מחשב קבוצה חדש: לא מקבל את האישי
+  const T=mk(); await T.y.signIn(E,PW); await T.y.syncNow();
+  ok(!T.s.meta.list.some(p=>p.id===me.id)&&T.s.meta.list.some(p=>p.name==='יערי'),'מחשב קבוצה חדש: יש את נהגי הקבוצה, בלי הנהג האישי');
+  // שינוי בבית → חוזר למחשב א׳
+  H.s.kvSet('biobuzz_params_v1',JSON.stringify({wheelD:111})); H.s.flushKv(); await Hp.syncNow(); await Ap.syncNow();
+  ok(JSON.parse(A.s.kvOf(me.id).biobuzz_params_v1||'{}').wheelD===111,'שינוי בבית הגיע למחשב א׳ דרך החשבון האישי');
+  // א׳ עדיין בסדר מול הקבוצה
+  q=await A.y.syncNow(); ok(q.ok&&A.s.meta.list.some(p=>p.id===me.id),'סנכרון הקבוצה לא מוחק את הנהג האישי');
+  await Ap.signOut(); for(const x of [H,T]) fs.rmSync(x.d,{recursive:true,force:true});
+}
 // אסימון נשמר ומחזיק אחרי ״הפעלה מחדש״
 const A2=new (require(path.resolve(HERE,'../app/sync.js')).Sync)(A.s,A.d);
 ok(A2.status().loggedIn&&A2.status().email===E,'אחרי הפעלה מחדש: עדיין מחוברים');

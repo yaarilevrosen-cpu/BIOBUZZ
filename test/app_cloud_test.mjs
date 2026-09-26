@@ -33,7 +33,7 @@ if(!E){ console.log('app_cloud_test: אין חשבון בדיקה — מדלג �
 { const { Store }=require(path.resolve(APPDIR,'store.js')); const { Sync }=require(path.resolve(APPDIR,'sync.js'));
   const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbcx-')); const y=new Sync(new Store(d),d); await y.signIn(E,PW);
   await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
-ok(await win.evaluate(()=>/כבוי/.test(document.getElementById('pfAcct').textContent)),'לפני התחברות: ״סנכרון בין מחשבים — כבוי״');
+ok(await win.evaluate(()=>/חשבון הקבוצה — לא מחובר/.test(document.getElementById('pfAcct').textContent)&&/חשבון אישי — לא מחובר/.test(document.getElementById('pfAcct').textContent)),'לפני התחברות: שני החשבונות ״לא מחובר״');
 // נתונים במחשב 1
 await win.evaluate(async()=>{ await bbApp.profileUpdate(bbApp.profile.id,{name:'יערי',emoji:'🚀'}); __sim.bk._set('wheelD',133); });
 await win.waitForTimeout(900);
@@ -45,7 +45,7 @@ ok(await win.evaluate(()=>/לא נכונים/.test(document.getElementById('acMs
 await win.fill('#acPass',PW); await win.evaluate(()=>document.getElementById('acIn').click());
 await win.waitForFunction(()=>/סונכרן/.test(document.getElementById('pfAcct').textContent),null,{timeout:30000});
 r=await win.evaluate(()=>document.getElementById('pfAcct').textContent);
-ok(r.includes(E)&&/סונכרן/.test(r),'מחובר ומסונכרן: '+r.replace(/\s+/g,' ').slice(0,80));
+ok(r.includes(E)&&/סונכרן/.test(r)&&/חשבון אישי — לא מחובר/.test(r),'מחובר ומסונכרן: '+r.replace(/\s+/g,' ').slice(0,80));
 await app.close();
 // מחשב 2 — התקנה חדשה, מתחברים מחלון ״ברוכים הבאים״
 ({app,win,errs}=await launch(D2));

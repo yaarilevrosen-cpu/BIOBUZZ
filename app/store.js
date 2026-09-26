@@ -9,7 +9,7 @@ const path = require("path");
 
 const KEYRE = /^(bb|biobuzz)/i;
 /* מפתחות של המחשב הזה בלבד — לא מסונכרנים (מצב מסך, לשונית, תצוגה, גיבויים מקומיים) */
-const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1"]);
+const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1"]);
 const EMOJI = ["🐝", "🚀", "🤖", "⚡", "🔥", "🦅", "🐺", "🦊", "🐉", "🎯", "🌟", "🏆"];
 const COLORS = ["#FFB020", "#35D6A4", "#4C9AF5", "#F2545B", "#B07CFF", "#FF7AC6", "#7FD1FF", "#C6E26B"];
 
@@ -83,7 +83,7 @@ class Store {
     fs.mkdirSync(path.dirname(dst), { recursive: true });
     try { fs.renameSync(src, dst); writeAtomic(path.join(dst, "profile.json"), JSON.stringify(p)); } catch (e) {}
     this.meta.list.splice(i, 1);
-    if (!(arguments[1] && arguments[1].noTomb)) this.meta.tombs.push({ id, at: Date.now() });
+    if (!(arguments[1] && arguments[1].noTomb)) this.meta.tombs.push({ id, at: Date.now(), acct: p.acct || "team" });
     this.saveMeta(); return true;
   }
   switchTo(id) {
@@ -134,11 +134,22 @@ class Store {
     writeAtomic(path.join(this.dir(id), "store.json"), JSON.stringify(out));
     p.kvAt = at; this.saveMeta(); return true;
   }
-  applyRemoteMeta(row) {
+  applyRemoteMeta(row, kind) {
     let p = this.meta.list.find(x => x.id === row.id);
-    if (!p) { p = { id: row.id, created: row.created || Date.now(), kvAt: 0 }; this.meta.list.push(p); fs.mkdirSync(this.dir(p.id), { recursive: true }); }
+    if (!p) { p = { id: row.id, created: row.created || Date.now(), kvAt: 0, acct: kind || "team" }; this.meta.list.push(p); fs.mkdirSync(this.dir(p.id), { recursive: true }); }
     p.name = cleanName(row.name) || p.name || "נהג"; if (row.emoji) p.emoji = row.emoji; if (row.color) p.color = row.color;
     p.metaAt = row.meta_at || 0; this.saveMeta(); return p;
+  }
+  /* לאיזה חשבון הנהג שייך: ״team״ (ברירת מחדל) או ״personal״. בהעברה — נמחק מהחשבון הקודם ונשלח לחדש */
+  acctOf(id) { const p = this.meta.list.find(x => x.id === id); return p ? (p.acct || "team") : null; }
+  setAcct(id, kind) {
+    const p = this.meta.list.find(x => x.id === id); if (!p) return null;
+    kind = kind === "personal" ? "personal" : "team";
+    const old = p.acct || "team"; if (old === kind) return p;
+    const now = Date.now();
+    this.meta.tombs.push({ id, at: now, acct: old });
+    p.acct = kind; p.metaAt = now; p.kvAt = Math.max(p.kvAt || 0, now);
+    this.saveMeta(); return p;
   }
   /* נהג שנמחק במחשב אחר */
   removeFromRemote(id) {

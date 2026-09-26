@@ -636,6 +636,91 @@
   #wcGo{font-size:15px; padding:11px; margin-top:6px}
   .wcLink{background:transparent; border:0; color:var(--accent); font-size:12.5px; text-decoration:underline}
   .wcSmall{font-size:11px!important; color:var(--dim)!important}
+  /* ══ v55 — ממשק אפליקציה (רק באפליקציה) ══ */
+  #appNav,#appPage{display:none}
+  html.app body{user-select:none; -webkit-user-select:none}
+  html.app input, html.app textarea, html.app [contenteditable], html.app .appPath, html.app code{user-select:text; -webkit-user-select:text}
+  html.app ::-webkit-scrollbar{width:10px; height:10px} html.app ::-webkit-scrollbar-thumb{background:#2c3743; border-radius:8px; border:2px solid var(--bg)}
+  html.app ::-webkit-scrollbar-track{background:transparent}
+  /* שורת הכותרת היא גם ״ידית״ החלון; כפתורי החלון של Windows מצוירים מימין */
+  html.app header{-webkit-app-region:drag; padding-inline-start:calc(18px + 100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw))}
+  html.app header button, html.app header input, html.app header select, html.app header a, html.app header .chip, html.app header #clockWrap{-webkit-app-region:no-drag}
+  html.app #uiMode{display:none}
+  html.app #appNav{display:flex; position:fixed; top:68px; right:0; bottom:0; width:80px; z-index:31; flex-direction:column; gap:3px;
+    padding:10px 8px 12px; background:var(--panel); border-inline-end:1px solid var(--line)}
+  html.app #toolbar, html.app main{margin-right:80px}
+  #appNav button{position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:9px 2px 8px; border-radius:12px;
+    background:transparent; border:1px solid transparent; color:var(--muted); font-size:11px; font-weight:500; line-height:1.1}
+  #appNav button:hover{background:var(--panel2); color:var(--ink)}
+  #appNav button.on{background:rgba(255,176,32,.12); color:var(--accent); border-color:rgba(255,176,32,.35)}
+  #appNav button.on::before{content:""; position:absolute; right:-9px; top:10px; bottom:10px; width:3px; border-radius:3px; background:var(--accent)}
+  #appNav .navGap{flex:1}
+  #appNav .navMe{padding-top:8px; border-top:1px solid var(--line); border-radius:0 0 12px 12px}
+  #appNav .navMe i{font-style:normal; font-size:22px; line-height:1}
+  #appNav .navMe span{max-width:66px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink2)}
+  #appNav .navMe b{position:absolute; top:6px; left:12px; width:9px; height:9px; border-radius:50%; background:var(--faint); border:2px solid var(--panel)}
+  #appNav .navMe b.ok{background:var(--good)} #appNav .navMe b.err{background:var(--red)}
+  html.app #appPage:not([hidden]){display:block; position:fixed; top:68px; right:80px; left:0; bottom:0; z-index:26; overflow:auto;
+    background:radial-gradient(1200px 500px at 70% -10%,rgba(255,176,32,.07),transparent 60%),var(--bg); padding:28px 34px 40px; animation:apIn .18s ease-out}
+  @keyframes apIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  #apInner{max-width:1120px; margin:0 auto}
+  .apHead h1{font-family:var(--display); font-weight:400; font-size:30px; margin:0 0 4px} .apHead p{margin:0 0 18px; color:var(--muted); font-size:13.5px; line-height:1.6}
+  .apCard{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:16px}
+  .apCard h2{font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--accent); margin:0 0 10px}
+  .apCard .row{margin-top:8px} .apNote{font-size:12px; color:var(--muted); line-height:1.6; margin:8px 0 0} .apNote a{color:var(--accent)}
+  #appPage .out{background:var(--bg)}
+  /* דף הבית */
+  .hmHero{display:flex; align-items:center; gap:18px; margin:4px 0 22px}
+  .hmHero i{font-style:normal; font-size:44px; width:78px; height:78px; border-radius:22px; display:flex; align-items:center; justify-content:center;
+    background:var(--panel); border:2px solid var(--pc); box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .hmHero h1{font-family:var(--display); font-weight:400; font-size:32px; margin:0} .hmHero p{margin:4px 0 0; color:var(--muted); font-size:14px}
+  .hmGo{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px}
+  .hmGo button{display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:18px 16px; min-height:118px; border-radius:16px; text-align:start;
+    background:var(--panel); border:1px solid var(--line); transition:transform .12s, border-color .12s}
+  .hmGo button:hover{transform:translateY(-2px); border-color:var(--accent)}
+  .hmGo button i{font-style:normal; font-size:28px; margin-bottom:6px} .hmGo button b{font-size:16px; font-weight:500; color:var(--ink)} .hmGo button span{font-size:12px; color:var(--muted)}
+  .hmGo button.main{background:linear-gradient(135deg,rgba(255,176,32,.22),rgba(255,176,32,.06)); border-color:var(--accent)} .hmGo button.main b{color:var(--accent)}
+  .hmTiles{display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:16px}
+  .hmT{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px 14px}
+  .hmT span{display:block; font-size:11px; color:var(--muted)} .hmT b{display:block; font-family:var(--mono); font-size:24px; font-weight:600; margin-top:3px; direction:ltr; text-align:start}
+  .hmT small{display:block; font-size:10.5px; color:var(--dim); margin-top:2px}
+  .hmCols{display:grid; grid-template-columns:1.35fr 1fr; gap:16px}
+  .hmCols .apCard{margin-bottom:16px}
+  table.hmLast, #appPage table.stTeam{width:100%; border-collapse:collapse; font-size:12.5px}
+  table.hmLast td{padding:7px 4px; border-top:1px solid var(--line)} table.hmLast td.n{font-family:var(--mono); text-align:end}
+  #appPage table.stTeam th{font-size:11px; color:var(--muted); font-weight:500; text-align:start; padding:4px}
+  #appPage table.stTeam td{padding:6px 4px; border-top:1px solid var(--line); font-family:var(--mono)} #appPage table.stTeam td:nth-child(2){font-family:var(--ui)}
+  #appPage table.stTeam tr.me td{color:var(--accent)}
+  #apStats{padding:18px 20px} #apStats .stTiles{grid-template-columns:repeat(6,1fr)} #apStats .stT.hero{grid-column:span 6}
+  /* נהגים */
+  .drvGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-bottom:18px}
+  .drv{background:var(--panel); border:1px solid var(--line); border-top:4px solid var(--pc,var(--line2)); border-radius:16px; padding:14px 16px; display:flex; flex-direction:column; gap:12px}
+  .drv.on{border-color:rgba(255,176,32,.5); border-top-color:var(--pc); box-shadow:0 0 0 1px rgba(255,176,32,.25)}
+  .drv.add{border-style:dashed; border-top-width:1px; --pc:var(--line2)}
+  .drvTop{display:flex; align-items:center; gap:12px} .drvTop i{font-style:normal; font-size:34px; width:52px; text-align:center}
+  .drvTop b{display:block; font-size:16px; font-weight:500} .drvTop em{margin-inline-start:auto; font-style:normal; font-size:11px; color:var(--accent); align-self:flex-start}
+  .drvAcct{display:inline-block; margin-top:4px; font-size:11px; padding:2px 8px; border-radius:999px; background:var(--panel2); color:var(--muted)}
+  .drvAcct.personal{background:rgba(76,154,245,.15); color:var(--blue)}
+  .drvStats{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center}
+  .drvStats b{display:block; font-family:var(--mono); font-size:17px} .drvStats span{font-size:10.5px; color:var(--muted)}
+  .drvAct{display:flex; flex-wrap:wrap; gap:6px; border:0; background:none; border-inline-start:0!important}
+  .drvAct button{padding:6px 10px; font-size:12px; flex:0 0 auto} .drvAct .pfPick{flex:1 1 100%; justify-content:center; padding:8px}
+  .drvAct .pfPick b{font-size:13px}
+  .drv .pfAdd{margin-top:auto}
+  .spHud{display:grid; grid-template-columns:repeat(2,1fr); gap:4px 16px}
+  /* חשבונות: שתי שורות */
+  .acctBox{flex-direction:column; align-items:stretch}
+  .acctRow{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .acctRow+.acctRow{border-top:1px solid var(--line); padding-top:8px; margin-top:2px}
+  .acctRow .acI{font-size:16px; font-style:normal} .acctRow .acT{flex:1; min-width:150px; display:flex; flex-direction:column; gap:1px}
+  .acctRow .acT b{font-weight:500; font-size:12.5px; word-break:break-all} .acctRow .acT span{color:var(--muted); font-size:11px}
+  .acctRow .acT span.err{color:var(--red)} .acctRow .acT span.ok{color:var(--good)}
+  .acctRow button{padding:5px 10px; font-size:12px}
+  .acKind{margin-bottom:4px} .acKind button{flex:1}
+  .acctRow button{flex:0 0 auto; width:auto!important}
+  .hmCols .stH{display:none}
+  #apStats #stChart{max-width:760px; margin:0 auto} #apStats .stLeg{justify-content:center}
+  .verBox button{width:auto!important; flex:0 0 auto}
   html:not(.app) .appOnly{display:none!important}
   #recTag{position:absolute; top:12px; left:14px; z-index:12; background:rgba(160,20,30,.88); color:#fff; font-size:12.5px; font-weight:600;
     padding:4px 11px; border-radius:999px; font-family:var(--mono); pointer-events:none; animation:clkPulse .9s ease-in-out infinite alternate}
@@ -643,7 +728,7 @@
   #ppRec.on, #bRec.on{border-color:var(--red); color:var(--red)} #ppCast.on, #bCast.on{border-color:var(--accent); color:var(--accent)}
   .ppAuto{font-size:12px; color:var(--muted)} html.app .webOnly{display:none!important}
   /* v54 — חשבון, סנכרון ועדכונים */
-  .acctBox{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; padding:8px 10px; border-radius:11px; background:var(--bg); border:1px solid var(--line); font-size:12px}
+  .acctBox{display:flex; flex-direction:column; align-items:stretch; gap:6px 8px; padding:8px 10px; border-radius:11px; background:var(--bg); border:1px solid var(--line); font-size:12px}
   .acctBox .acI{font-size:16px} .acctBox .acT{flex:1; min-width:150px; display:flex; flex-direction:column; gap:1px}
   .acctBox .acT b{font-weight:500; font-size:12.5px; word-break:break-all} .acctBox .acT span{color:var(--muted); font-size:11px}
   .acctBox .acT span.err{color:var(--red)} .acctBox .acT span.ok{color:var(--good)}
@@ -1135,9 +1220,10 @@
   <div id="pfVer" class="verBox"></div>
 </div>
 <div id="acctModal" hidden role="dialog" aria-modal="true" aria-labelledby="acT"><div class="wcCard acCard">
-  <div class="wcLogo">☁️</div>
+  <div class="seg acKind" id="acKind"><button data-kind="team" class="on">👥 חשבון הקבוצה</button><button data-kind="personal">👤 חשבון אישי</button></div>
+  <div class="wcLogo" id="acLogo">👥</div>
   <h2 id="acT">חשבון הקבוצה</h2>
-  <p>מתחברים לאותו חשבון בכל מחשב — וכל הנהגים, ההגדרות והמשחקים מסתנכרנים. אפשר גם בלי אינטרנט: הסנכרון משלים כשהחיבור חוזר.</p>
+  <p id="acDesc">חשבון אחד לכל הקבוצה: מתחברים אליו בכל מחשב של הקבוצה — וכל הנהגים, ההגדרות והמשחקים מסתנכרנים.</p>
   <input id="acEmail" type="email" placeholder="מייל" autocomplete="username" dir="ltr">
   <input id="acPass" type="password" placeholder="סיסמה (6 תווים לפחות)" autocomplete="current-password" dir="ltr">
   <div class="acRow"><button id="acIn" class="go">התחבר</button><button id="acUp">צור חשבון חדש</button></div>
@@ -1152,7 +1238,8 @@
   <input id="wcName" maxlength="24" placeholder="למשל: יערי">
   <div class="wcEmo" id="wcEmo"></div>
   <button id="wcGo" class="go">יאללה, לנהוג</button>
-  <button id="wcAcct" class="wcLink">☁️ יש לנו כבר חשבון קבוצה — להתחבר</button>
+  <button id="wcAcct" class="wcLink">👥 יש לנו כבר חשבון קבוצה — להתחבר</button>
+  <button id="wcAcctMe" class="wcLink">👤 יש לי חשבון אישי — להתחבר</button>
   <button id="wcImp" class="wcLink">יש לי גיבוי מהדפדפן — לייבא אותו</button>
   <p class="wcSmall">בדפדפן: ״בדיקות״ ← ״מתקדם״ ← ״גיבוי ואיפוס״ ← ״ייצא לקובץ״.</p>
 </div></div>
@@ -1176,6 +1263,8 @@
   <p class="note">הטלפון והמחשב באותה רשת אלחוטית. במחשב רץ הגשר (start.bat) — בלי להתקין כלום בטלפון: הדפדפן נהיה שלט עם שני סטיקים, ירי ורטט.</p>
   <div class="row"><button id="qrRetry">חפש שוב</button><button id="qrX">סגור</button></div>
 </div></div>
+<nav id="appNav" aria-label="ניווט"></nav>
+<section id="appPage" hidden><div id="apInner"></div></section>
 <div id="app">
   <header>
     <div class="brand">
@@ -1184,7 +1273,7 @@
       </span>
       <span class="btxt">
         <b>מעבדת זירת <em>BIOBUZZ</em></b>
-        <i id="verBadge" title="גרסת הבנייה">v54 · אפולו 9662</i>
+        <i id="verBadge" title="גרסת הבנייה">v55 · אפולו 9662</i>
       </span>
     </div>
     <button id="profChip" hidden title="מי נוהג — החלפה והוספה של נהגים"></button>
@@ -12399,7 +12488,7 @@ async function appMenuFill(){
     const info=s.n?s.n+" משחקים · "+Math.round(100*s.W/s.n)+"% ניצחונות · שיא "+s.best:"עוד לא שיחק";
     return '<div class="pfRow'+(p.active?" on":"")+'" data-pid="'+p.id+'" style="--pc:'+appEsc(p.color)+'">'+
       '<button class="pfPick" data-pfgo="'+p.id+'"'+(p.active||live?" disabled":"")+'><i>'+appEsc(p.emoji)+'</i><span><b>'+appEsc(p.name)+(p.active?' <em>✓ נוהג עכשיו</em>':'')+'</b><small>'+info+'</small></span></button>'+
-      '<div class="pfTools"><button data-pfren="'+p.id+'" title="שינוי שם">✎</button><button data-pfemo="'+p.id+'" title="החלף סמל">'+appEsc(p.emoji)+'</button>'+
+      '<div class="pfTools"><button data-pfacct="'+p.id+'" data-to="'+((p.acct||"team")==="team"?"personal":"team")+'" title="'+((p.acct||"team")==="team"?"שייך לחשבון הקבוצה — לחיצה מעבירה לחשבון האישי":"שייך לחשבון האישי — לחיצה מחזירה לקבוצה")+'">'+((p.acct||"team")==="team"?"👥":"👤")+'</button><button data-pfren="'+p.id+'" title="שינוי שם">✎</button><button data-pfemo="'+p.id+'" title="החלף סמל">'+appEsc(p.emoji)+'</button>'+
       (p.active?'':'<button data-pfdel="'+p.id+'" title="מחיקה (לסל)">🗑</button>')+'</div></div>'; }).join("")+
     (live?'<p class="pfNote">⏸ באמצע משחק אי אפשר להחליף נהג — עצרו קודם.</p>':'');
 }
@@ -12415,21 +12504,28 @@ function appWire(){
     await bbApp.profileAdd(v); if(n) n.value=""; await appMenuFill(); };
   on($("pfAddB"),add);
   { const n=$("pfName"); if(n) n.addEventListener("keydown",e=>{ if(e.key==="Enter") add(); e.stopPropagation(); }); }
-  $("pfList").addEventListener("click",async e=>{
-    const go=e.target.closest("[data-pfgo]"), ren=e.target.closest("[data-pfren]"), emo=e.target.closest("[data-pfemo]"), del=e.target.closest("[data-pfdel]");
+  $("pfList").addEventListener("click",appDrvClick);
+}
+/* פעולות על נהג — משותף לתפריט הנהגים ולדף ״נהגים״ */
+async function appDrvClick(e){
+    const go=e.target.closest("[data-pfgo]"), ren=e.target.closest("[data-pfren]"), emo=e.target.closest("[data-pfemo]"), del=e.target.closest("[data-pfdel]"), ac=e.target.closest("[data-pfacct]");
+    const refresh=async()=>{ await appMenuFill(); appChipRefresh(); if(typeof shellRefresh==="function") shellRefresh(); };
+    if(ac){ await bbApp.profileAcct(ac.dataset.pfacct,ac.dataset.to);
+      refToast(ac.dataset.to==="personal"?"👤 הנהג עבר לחשבון האישי":"👥 הנהג חזר לחשבון הקבוצה"); await refresh(); return; }
     if(go&&!go.disabled){ if(MATCH.on||MATCH.cd>0) return; try{ bbApp.flush(); }catch(err){} await bbApp.profileSwitch(go.dataset.pfgo); return; }
     if(ren){ const row=ren.closest(".pfRow"), b=row.querySelector(".pfPick b");
       const inp=document.createElement("input"); inp.maxLength=24; inp.className="pfRen"; inp.value=b.firstChild.textContent.trim();
       b.replaceWith(inp); inp.focus(); inp.select();
-      const done=async ok=>{ if(ok&&inp.value.trim()) { const p=await bbApp.profileUpdate(ren.dataset.pfren,{name:inp.value}); if(p&&APP.profile&&p.id===APP.profile.id){ APP.profile.name=p.name; } } await appMenuFill(); appChipRefresh(); };
+      let fin=false; const done=async ok=>{ if(fin) return; fin=true; if(ok&&inp.value.trim()) { const p=await bbApp.profileUpdate(ren.dataset.pfren,{name:inp.value}); if(p&&APP.profile&&p.id===APP.profile.id){ APP.profile.name=p.name; } } await refresh(); };
       inp.addEventListener("keydown",ev=>{ ev.stopPropagation(); if(ev.key==="Enter") done(true); if(ev.key==="Escape") done(false); });
       inp.addEventListener("blur",()=>done(true)); return; }
     if(emo){ const ps=await bbApp.profiles(); const p=ps.find(x=>x.id===emo.dataset.pfemo); if(!p) return;
-      const i=(APPEMO.indexOf(p.emoji)+1)%APPEMO.length; await bbApp.profileUpdate(p.id,{emoji:APPEMO[i]}); await appMenuFill(); appChipRefresh(); return; }
+      const i=(APPEMO.indexOf(p.emoji)+1)%APPEMO.length; await bbApp.profileUpdate(p.id,{emoji:APPEMO[i]}); await refresh(); return; }
     if(del){ const id=del.dataset.pfdel;
       if(!(APP.pfArm[id]&&Date.now()-APP.pfArm[id]<3000)){ APP.pfArm[id]=Date.now(); del.textContent="בטוח?"; del.classList.add("arm"); return; }
-      await bbApp.profileRemove(id); await appMenuFill(); appLoadTeam().then(()=>{ try{ statUI(); }catch(err){} }); }
-  });
+      await bbApp.profileRemove(id); await refresh(); appLoadTeam().then(()=>{ try{ statUI(); }catch(err){} }); }
+}
+function appWire2(){
   /* פתיחה ראשונה */
   if(bbApp.firstRun) appWelcome();
   /* לוח ״האפליקציה״ בגיבוי ואיפוס */
@@ -12440,8 +12536,8 @@ function appWire(){
   on($("bAppImp"),async()=>{ const r=await bbApp.importBackup(); if(r.canceled) return; if(!r.ok) appNote("⚠ "+r.why); });
   on($("bAppBk"),async()=>{ const r=await bbApp.backupNow(); appNote("✓ גיבוי של היום: "+r.tag+" · "+r.list.length+" ימים שמורים"); });
   appInfo();
-  appLoadMatches().then(()=>{ try{ statUI(); }catch(e){} });
-  appLoadTeam().then(()=>{ try{ statUI(); }catch(e){} });
+  appLoadMatches().then(()=>{ try{ statUI(); }catch(e){} if(typeof shellRefresh==="function") shellRefresh(); });
+  appLoadTeam().then(()=>{ try{ statUI(); }catch(e){} if(typeof shellRefresh==="function") shellRefresh(); });
 }
 function appChipRefresh(){ bbApp.profiles().then(ps=>{ const a=ps.find(p=>p.active); if(a){ APP.profile.name=a.name; APP.profile.emoji=a.emoji; } appChip(); }); }
 function appNote(t){ const n=$("appNote"); if(n) n.textContent=t||""; }
@@ -12472,17 +12568,19 @@ function appTeamHTML(){
     rows.map((t,i)=>{ const s=t.sum; return '<tr'+(t.active?' class="me"':'')+'><td>'+(s.n?(i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1):"")+'</td><td>'+appEsc(t.emoji)+' '+appEsc(t.name)+'</td><td>'+(s.n||0)+'</td><td>'+(s.n?Math.round(100*s.W/s.n)+"%":"—")+'</td><td>'+(s.n?s.avg.toFixed(1):"—")+'</td><td>'+(s.n?s.best:"—")+'</td><td>'+(s.acc!=null?Math.round(100*s.acc)+"%":"—")+'</td></tr>'; }).join("")+'</table>';
 }
 
-/* ══════ v54 — חשבון, סנכרון בין מחשבים ועדכונים (רק באפליקציה) ══════ */
-const ACC={st:null, upd:null, reloadT:null};
+/* ══════ v55 — חשבונות (קבוצה + אישי), סנכרון ועדכונים (רק באפליקציה) ══════ */
+const ACC={st:{team:{},personal:{}}, upd:null, reloadT:null, kind:"team", boot:true};
+const ACCN={team:{t:"חשבון הקבוצה",i:"👥",d:"כל נהגי הקבוצה, בכל מחשב של הקבוצה"},personal:{t:"חשבון אישי",i:"👤",d:"רק הנהגים שסימנת כאישיים — גם במחשב בבית"}};
 function accAgo(t){ if(!t) return "עוד לא סונכרן"; const s=(Date.now()-t)/1000;
   if(s<50) return "סונכרן עכשיו"; if(s<3600) return "סונכרן לפני "+Math.max(1,Math.round(s/60))+" דק׳"; if(s<86400) return "סונכרן לפני "+Math.round(s/3600)+" שע׳";
   return "סונכרן לפני "+Math.round(s/86400)+" ימים"; }
-function accBox(el){ if(!el) return; const s=ACC.st||{};
-  el.classList.toggle("on",!!s.loggedIn);
-  el.innerHTML=!s.loggedIn
-    ?'<i class="acI">☁️</i><div class="acT"><b>סנכרון בין מחשבים — כבוי</b><span>מתחברים לחשבון, וכל הנהגים, ההגדרות והמשחקים נמצאים בכל מחשב</span></div><button data-acc="open">התחבר</button>'
-    :'<i class="acI">☁️</i><div class="acT"><b>'+appEsc(s.email)+'</b><span class="'+(s.busy?"":s.lastError?"err":"ok")+'">'+(s.busy?"מסנכרן…":s.lastError?"⚠ "+appEsc(s.lastError):"✓ "+accAgo(s.lastSync))+'</span></div><button data-acc="sync">סנכרן</button><button data-acc="out">התנתק</button>'; }
-function accRender(){ accBox($("pfAcct")); accBox($("appCloud")); }
+function accRow(k){ const s=ACC.st[k]||{}, n=ACCN[k];
+  return !s.loggedIn
+    ?'<div class="acctRow" data-k="'+k+'"><i class="acI">'+n.i+'</i><div class="acT"><b>'+n.t+' — לא מחובר</b><span>'+n.d+'</span></div><button data-acc="open" data-k="'+k+'">התחבר</button></div>'
+    :'<div class="acctRow on" data-k="'+k+'"><i class="acI">'+n.i+'</i><div class="acT"><b>'+n.t+' · '+appEsc(s.email)+'</b><span class="'+(s.busy?"":s.lastError?"err":"ok")+'">'+(s.busy?"מסנכרן…":s.lastError?"⚠ "+appEsc(s.lastError):"✓ "+accAgo(s.lastSync))+'</span></div><button data-acc="sync">סנכרן</button><button data-acc="out" data-k="'+k+'">התנתק</button></div>'; }
+function accBox(el){ if(!el) return; const anyOn=ACC.st.team.loggedIn||ACC.st.personal.loggedIn;
+  el.classList.toggle("on",!!anyOn); el.innerHTML=accRow("team")+accRow("personal"); }
+function accRender(){ for(const id of ["pfAcct","appCloud","spAcct","hmAcct"]) accBox($(id)); if(typeof shellNavSync==="function") shellNavSync(); }
 function updText(u){ u=u||{};
   const v=appEsc(u.version||"");
   switch(u.state){
@@ -12495,16 +12593,22 @@ function updText(u){ u=u||{};
     default: return ""; } }
 function updRender(){
   const u=ACC.upd||{}, h='<span>BIOBUZZ <b>'+appEsc(bbApp.version)+'</b></span><button data-upd="check">🔄 בדוק עדכונים</button>'+updText(u);
-  for(const id of ["pfVer","appVer"]){ const el=$(id); if(el) el.innerHTML=h; }
+  for(const id of ["pfVer","appVer","spVer"]){ const el=$(id); if(el) el.innerHTML=h; }
   const b=$("updBadge"); if(!b) return;
   const show=u.state==="available"||u.state==="downloading"||u.state==="ready";
   b.hidden=!show; b.className=u.state==="ready"?"ready":u.state==="downloading"?"dl":"";
   b.textContent=u.state==="ready"?"⬆ עדכון "+(u.version||"")+" — התקן":u.state==="downloading"?"⬇ מוריד עדכון · "+(u.percent|0)+"%":"⬆ גרסה "+(u.version||"")+" זמינה";
+  if(u.state==="ready"&&!ACC.notified){ ACC.notified=true; appNotify("⬆ עדכון מוכן","גרסה "+(u.version||"")+" הורדה. לוחצים כדי להתקין",()=>updAct("install")); }
 }
 async function updAct(a){
   if(a==="check") await bbApp.updCheck();
   else if(a==="install"){ if(MATCH.on||MATCH.cd>0){ refToast("קודם עצרו את המשחק — ההתקנה סוגרת את האפליקציה","block"); return; } try{ bbApp.flush(); }catch(e){} await bbApp.updInstall(); }
   else if(a==="get") bbApp.openUrl((ACC.upd||{}).url||"");
+}
+/* התראה של Windows — רק כשהחלון לא בפוקוס */
+function appNotify(title,body,onClick){
+  try{ if(document.hasFocus()||!window.Notification) return; const n=new Notification("BIOBUZZ — "+title,{body,silent:false});
+    if(onClick) n.onclick=()=>{ try{ window.focus(); }catch(e){} onClick(); }; }catch(e){}
 }
 /* נתונים שהגיעו ממחשב אחר לנהג הפעיל — טוענים מחדש (לא באמצע משחק) */
 function accReloadSoon(){
@@ -12513,25 +12617,33 @@ function accReloadSoon(){
   refToast("☁️ עודכן ממחשב אחר — טוען מחדש");
   ACC.reloadT=setTimeout(()=>location.reload(),900);
 }
-function accModal(open){ const m=$("acctModal"); if(!m) return; m.hidden=!open;
-  if(open){ const e=$("acEmail"); $("acMsg").textContent=""; $("acMsg").className="acMsg"; setTimeout(()=>e&&e.focus(),60); } }
+function accKind(k){ ACC.kind=k==="personal"?"personal":"team";
+  document.querySelectorAll("#acKind [data-kind]").forEach(b=>b.classList.toggle("on",b.dataset.kind===ACC.kind));
+  const n=ACCN[ACC.kind]; const t=$("acT"); if(t) t.textContent=n.t; const d=$("acDesc");
+  if(d) d.textContent=ACC.kind==="team"
+    ?"חשבון אחד לכל הקבוצה: מתחברים אליו בכל מחשב של הקבוצה — וכל הנהגים, ההגדרות והמשחקים מסתנכרנים."
+    :"החשבון שלך בלבד: הנהגים שסימנת 👤 אישיים עוברים איתך לכל מחשב — גם בבית, בלי שאר הקבוצה.";
+  const lo=$("acLogo"); if(lo) lo.textContent=n.i; }
+function accModal(open,k){ const m=$("acctModal"); if(!m) return; m.hidden=!open;
+  if(open){ accKind(k||ACC.kind); const e=$("acEmail"); $("acMsg").textContent=""; $("acMsg").className="acMsg"; setTimeout(()=>e&&e.focus(),60); } }
 function accMsg(t,cls){ const m=$("acMsg"); if(m){ m.textContent=t||""; m.className="acMsg"+(cls?" "+cls:""); } }
+async function accClick(e){ const b=e.target.closest("[data-acc]"), u=e.target.closest("[data-upd]");
+  if(u){ e.preventDefault(); updAct(u.dataset.upd); return; }
+  if(!b) return; e.preventDefault(); const a=b.dataset.acc, k=b.dataset.k||"team";
+  if(a==="open") accModal(true,k);
+  else if(a==="sync") bbApp.syncNow();
+  else if(a==="out"){ if(b.dataset.arm!=="1"){ b.dataset.arm="1"; b.textContent="בטוח?"; setTimeout(()=>{ b.dataset.arm=""; b.textContent="התנתק"; },3000); return; }
+    await bbApp.acctSignOut(k); ACC.st=await bbApp.acctStatus(); accRender(); } }
 function accWire(){
   if(!APP.on) return;
-  const click=async e=>{ const b=e.target.closest("[data-acc]"), u=e.target.closest("[data-upd]");
-    if(u){ e.preventDefault(); updAct(u.dataset.upd); return; }
-    if(!b) return; e.preventDefault(); const a=b.dataset.acc;
-    if(a==="open") accModal(true);
-    else if(a==="sync") bbApp.syncNow();
-    else if(a==="out"){ if(b.dataset.arm!=="1"){ b.dataset.arm="1"; b.textContent="בטוח?"; setTimeout(()=>{ b.dataset.arm=""; b.textContent="התנתק"; },3000); return; }
-      await bbApp.acctSignOut(); ACC.st=await bbApp.acctStatus(); accRender(); } };
-  for(const id of ["pfAcct","appCloud","pfVer","appVer"]){ const el=$(id); if(el) el.addEventListener("click",click); }
+  for(const id of ["pfAcct","appCloud","pfVer","appVer"]){ const el=$(id); if(el) el.addEventListener("click",accClick); }
   on($("updBadge"),()=>{ const u=ACC.upd||{}; updAct(u.state==="ready"?"install":u.state==="available"?"get":"check"); });
+  document.querySelectorAll("#acKind [data-kind]").forEach(b=>on(b,()=>accKind(b.dataset.kind)));
   const go=async up=>{ const em=$("acEmail").value.trim(), pw=$("acPass").value;
     if(!/.+@.+\..+/.test(em)){ accMsg("צריך מייל תקין","err"); return; }
     if(pw.length<6){ accMsg("הסיסמה צריכה להיות לפחות 6 תווים","err"); return; }
     accMsg(up?"יוצר חשבון…":"מתחבר…");
-    const r=up?await bbApp.acctSignUp(em,pw):await bbApp.acctSignIn(em,pw);
+    const r=up?await bbApp.acctSignUp(ACC.kind,em,pw):await bbApp.acctSignIn(ACC.kind,em,pw);
     if(!r.ok){ accMsg(r.why||"לא הצליח","err"); return; }
     if(r.confirm){ accMsg("✉️ נשלח מייל אישור ל-"+em+". לוחצים על הקישור במייל (גם אם הדף שנפתח ריק), ואז ״התחבר״ כאן.","ok"); return; }
     accMsg("✓ מחובר! מסנכרן…","ok"); $("acPass").value="";
@@ -12539,20 +12651,172 @@ function accWire(){
     setTimeout(()=>accModal(false),900); };
   on($("acIn"),()=>go(false)); on($("acUp"),()=>go(true));
   on($("acForgot"),async()=>{ const em=$("acEmail").value.trim(); if(!/.+@.+\..+/.test(em)){ accMsg("כתבו את המייל למעלה ואז ״שכחתי סיסמה״","err"); return; }
-    const r=await bbApp.acctRecover(em); accMsg(r.ok?"✉️ נשלח מייל לאיפוס הסיסמה":r.why,r.ok?"ok":"err"); });
+    const r=await bbApp.acctRecover(ACC.kind,em); accMsg(r.ok?"✉️ נשלח מייל לאיפוס הסיסמה":r.why,r.ok?"ok":"err"); });
   on($("acClose"),()=>accModal(false));
   ["acEmail","acPass"].forEach(id=>{ const el=$(id); if(el) el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter") go(false); if(e.key==="Escape") accModal(false); }); });
-  on($("wcAcct"),()=>accModal(true));
-  bbApp.onSync(d=>{ ACC.st=d.status; accRender();
+  on($("wcAcct"),()=>accModal(true,"team"));
+  on($("wcAcctMe"),()=>accModal(true,"personal"));
+  bbApp.onSync(d=>{ if(d.status) ACC.st=d.status; accRender();
     const r=d.result; if(!r||!r.ok) return;
+    const boot=ACC.boot; ACC.boot=false;
     if(r.changedActive){ accReloadSoon(); return; }
-    if(r.profilesChanged||r.pulledMatches||r.pulledProfiles){ appChipRefresh(); Promise.all([appLoadMatches(),appLoadTeam()]).then(()=>{ try{ statUI(); }catch(e){} });
-      const m=$("profMenu"); if(m&&!m.hidden) appMenuFill(); } });
-  bbApp.onUpd(u=>{ ACC.upd=u; updRender(); });
+    if(r.profilesChanged||r.pulledMatches||r.pulledProfiles){ appChipRefresh(); Promise.all([appLoadMatches(),appLoadTeam()]).then(()=>{ try{ statUI(); }catch(e){} if(typeof shellRefresh==="function") shellRefresh(); });
+      const m=$("profMenu"); if(m&&!m.hidden) appMenuFill();
+      if(!boot) appNotify("☁️ עודכן ממחשב אחר",(r.pulledMatches?r.pulledMatches+" משחקים חדשים":"נהגים והגדרות"),null); } });
+  bbApp.onUpd(u=>{ ACC.upd=u; updRender(); if(typeof shellRefresh==="function"&&SHELL.page==="settings") shellRefresh(); });
   bbApp.acctStatus().then(s=>{ ACC.st=s; accRender(); });
   bbApp.updState().then(u=>{ ACC.upd=u; updRender(); });
-  setInterval(()=>{ if(ACC.st&&ACC.st.loggedIn) accRender(); },30000);
+  setInterval(()=>{ if(ACC.st.team.loggedIn||ACC.st.personal.loggedIn) accRender(); },30000);
   accRender(); updRender();
+}
+
+/* ══════ v55 — ממשק של אפליקציה: סרגל ניווט, דף בית, דפים מלאים ══════
+   בדפדפן — שום שינוי. באפליקציה: שורת כותרת עם כפתורי החלון, סרגל ניווט מימין,
+   ודפים: בית · משחק · מעבדה · סטטיסטיקות · נהגים · הגדרות. */
+const SHELL={page:null, statsHome:null, statsBody:null};
+const SHICON={
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  play:'<rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/>',
+  lab:'<path d="M9 3h6M10 3v6l-5.5 9.5A1.8 1.8 0 0 0 6 21h12a1.8 1.8 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/>',
+  stats:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  drivers:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14.6c2.6.1 4.5 1.8 5 5.4"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
+};
+function shIcon(k){ return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+SHICON[k]+'</svg>'; }
+function shellBuild(){
+  const nav=$("appNav"); if(!nav) return;
+  const it=(k,t,key)=>'<button data-nav="'+k+'" title="'+t+' (Ctrl+'+key+')">'+shIcon(k)+'<span>'+t+'</span></button>';
+  nav.innerHTML=it("home","בית",1)+it("play","משחק",2)+it("lab","מעבדה",3)+it("stats","סטטיסטיקות",4)+it("drivers","נהגים",5)+
+    '<div class="navGap"></div>'+it("settings","הגדרות",6)+
+    '<button class="navMe" data-nav="drivers" title="הנהג שלך"><i id="navMeEmo"></i><span id="navMeName"></span><b id="navSync" title="סנכרון"></b></button>';
+  nav.addEventListener("click",e=>{ const b=e.target.closest("[data-nav]"); if(b) shellGo(b.dataset.nav); });
+}
+function shellNavSync(){
+  const me=APP.profile||{}; const e=$("navMeEmo"), n=$("navMeName"), s=$("navSync");
+  if(e) e.textContent=me.emoji||"🐝"; if(n) n.textContent=me.name||"";
+  if(s){ const on=ACC.st.team.loggedIn||ACC.st.personal.loggedIn, err=ACC.st.team.lastError||ACC.st.personal.lastError;
+    s.className=on?(err?"err":"ok"):""; s.title=on?(err?"⚠ "+err:"מסונכרן לענן"):"לא מחובר לחשבון"; }
+}
+function shellMark(){
+  const cur=SHELL.page||(UI.mode==="lab"?"lab":"play");
+  document.querySelectorAll("#appNav [data-nav]:not(.navMe)").forEach(b=>b.classList.toggle("on",b.dataset.nav===cur));
+  document.documentElement.classList.toggle("paged",!!SHELL.page);
+}
+/* מעבר בין דפים. משחק/מעבדה — הזירה עצמה; השאר — דף מלא מעל הזירה */
+function shellGo(k){
+  if(k==="play"||k==="lab"){ shellClose(); if(UI.mode!==k) uiSetMode(k); shellMark(); return; }
+  shellClose(true);
+  SHELL.page=k; const pg=$("appPage"); if(!pg) return; pg.hidden=false;
+  pg.className="ap-"+k; pg.scrollTop=0;
+  shellRender(); shellMark();
+  try{ localStorage.setItem("bbShellLast",k); }catch(e){}
+}
+function shellClose(keep){
+  if(SHELL.statsBody&&SHELL.statsHome){ SHELL.statsHome.appendChild(SHELL.statsBody); SHELL.statsBody=null; }
+  if(!keep){ SHELL.page=null; const pg=$("appPage"); if(pg) pg.hidden=true; }
+  shellMark();
+}
+function shellRefresh(){ if(SHELL.page&&SHELL.page!=="stats") shellRender(); else if(SHELL.page==="stats"){ try{ statUI(); }catch(e){} } shellNavSync(); }
+function shGreet(){ const h=new Date().getHours(); return h<5?"לילה טוב":h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב"; }
+async function shellRender(){
+  const box=$("apInner"); if(!box) return; const k=SHELL.page; const me=APP.profile||{};
+  if(k==="stats"){
+    box.innerHTML='<div class="apHead"><h1>סטטיסטיקות</h1><p>כל המשחקים של '+appEsc(me.name||"הנהג")+', והקבוצה.</p></div><div class="apCard" id="apStats"></div>';
+    const det=$("statsBox"), body=det&&det.querySelector(":scope>.body");
+    if(body){ SHELL.statsHome=det; SHELL.statsBody=body; $("apStats").appendChild(body); }
+    try{ statUI(); }catch(e){} return; }
+  if(k==="home"){
+    const st=(()=>{ try{ return statCalc((APP.all&&APP.all.length)?APP.all:seasonAll()); }catch(e){ return null; } })();
+    const tile=(l,v,sub)=>'<div class="hmT"><span>'+l+'</span><b>'+v+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div>';
+    const pct=v=>Math.round(100*v)+"%";
+    let h='<div class="hmHero" style="--pc:'+appEsc(me.color||"var(--accent)")+'"><i>'+appEsc(me.emoji||"🐝")+'</i><div><h1>'+shGreet()+', '+appEsc(me.name||"נהג")+'</h1><p>'+
+      (st?st.n+" משחקים · "+pct(st.W/st.n)+" ניצחונות · שיא "+st.best.my:"עוד לא שיחקת — בוא נתחיל!")+'</p></div></div>';
+    h+='<div class="hmGo">'+
+      '<button data-hm="quick" class="main"><i>⚡</i><b>מאץ׳ מהיר</b><span>מתחיל מיד</span></button>'+
+      '<button data-hm="match"><i>🏆</i><b>מאץ׳ מול בוטים</b><span>2 מול 2, עם שופט</span></button>'+
+      '<button data-hm="free"><i>🚗</i><b>נסיעה חופשית</b><span>לתרגל בלי שעון</span></button>'+
+      '<button data-hm="lab"><i>🔧</i><b>מעבדה</b><span>רובוט, אוטונומי, ניתוח</span></button></div>';
+    if(st) h+='<div class="hmTiles">'+tile("משחקים",st.n)+tile("ניצחונות",pct(st.W/st.n),st.W+"-"+st.L+"-"+st.T)+tile("ממוצע",st.avg.toFixed(1),st.prev!=null?(st.last>=st.prev?"▲ ":"▼ ")+Math.abs(st.last-st.prev).toFixed(1):"")+
+      tile("שיא",st.best.my)+tile("דיוק",st.acc==null?"—":pct(st.acc))+tile("רצף",st.cur,"הכי ארוך "+st.bestRun)+'</div>';
+    h+='<div class="hmCols"><div class="apCard"><h2>הקבוצה</h2>'+(appTeamHTML()||'<p class="apNote">עוד אין משחקים בקבוצה.</p>')+'</div>'+
+      '<div class="apCard"><h2>חשבונות וסנכרון</h2><div id="hmAcct" class="acctBox"></div><h2 style="margin-top:14px">גרסה</h2><div id="hmVer" class="verBox"></div></div></div>';
+    if(st){ const L=((APP.all&&APP.all.length)?APP.all:seasonAll()).slice(-5).reverse();
+      h+='<div class="apCard"><h2>המשחקים האחרונים</h2><table class="hmLast">'+L.map(m=>'<tr><td>'+(m.win>0?"✅ ניצחון":m.win<0?"❌ הפסד":"➖ תיקו")+'</td><td>'+(STKIND[m.kind]||"מאץ׳")+'</td><td class="n">'+m.my+':'+m.opp+'</td><td class="n">'+statDate(m.at)+'</td></tr>').join("")+'</table></div>'; }
+    box.innerHTML=h; accBox($("hmAcct"));
+    const hv=$("hmVer"); if(hv) hv.innerHTML='<span>BIOBUZZ <b>'+appEsc(bbApp.version)+'</b></span><button data-upd="check">🔄 בדוק עדכונים</button>'+updText(ACC.upd);
+    return; }
+  if(k==="drivers"){
+    let ps=[]; try{ ps=await bbApp.profiles(); }catch(e){}
+    const live=MATCH.on||MATCH.cd>0;
+    let h='<div class="apHead"><h1>נהגים</h1><p>לכל נהג מקשים, מסלולים, הגדרות וסטטיסטיקות משלו. 👥 נהג של הקבוצה מסתנכרן לחשבון הקבוצה, 👤 נהג אישי — לחשבון האישי שלך.</p></div><div class="drvGrid" id="drvGrid">';
+    for(const p of ps){ const s=p.sum||{n:0}, pa=p.acct||"team";
+      h+='<div class="drv'+(p.active?" on":"")+'" style="--pc:'+appEsc(p.color)+'"><div class="drvTop"><i>'+appEsc(p.emoji)+'</i><div><b>'+appEsc(p.name)+'</b><span class="drvAcct '+pa+'">'+(pa==="team"?"👥 קבוצה":"👤 אישי")+'</span></div>'+(p.active?'<em>✓ נוהג עכשיו</em>':'')+'</div>'+
+        '<div class="drvStats"><div><b>'+(s.n||0)+'</b><span>משחקים</span></div><div><b>'+(s.n?Math.round(100*s.W/s.n)+"%":"—")+'</b><span>ניצחונות</span></div><div><b>'+(s.n?s.best:"—")+'</b><span>שיא</span></div><div><b>'+(s.acc!=null?Math.round(100*s.acc)+"%":"—")+'</b><span>דיוק</span></div></div>'+
+        '<div class="drvAct pfRow" data-pid="'+p.id+'">'+(p.active?'':'<button class="go pfPick" data-pfgo="'+p.id+'"'+(live?" disabled":"")+'><b>החלף לנהג הזה</b></button>')+
+        '<button data-pfacct="'+p.id+'" data-to="'+(pa==="team"?"personal":"team")+'">'+(pa==="team"?"👤 העבר לאישי":"👥 החזר לקבוצה")+'</button>'+
+        '<button data-pfren="'+p.id+'">✎ שם</button><button data-pfemo="'+p.id+'">'+appEsc(p.emoji)+' סמל</button>'+(p.active?'':'<button data-pfdel="'+p.id+'">🗑</button>')+'</div></div>'; }
+    h+='<div class="drv add"><div class="drvTop"><i>＋</i><div><b>נהג חדש</b><span>לכל חבר בקבוצה</span></div></div><div class="pfAdd"><input id="drvName" maxlength="24" placeholder="שם"><button id="drvAdd">הוסף</button></div></div></div>';
+    h+='<div class="apCard"><h2>חשבונות</h2><div id="spAcct" class="acctBox"></div><p class="apNote">אפשר להיות מחובר לשניהם יחד: חשבון הקבוצה במחשבי הקבוצה, והחשבון האישי גם בבית. נהג 👤 אישי לא מופיע אצל שאר הקבוצה.</p></div>';
+    box.innerHTML=h; accBox($("spAcct"));
+    $("drvGrid").addEventListener("click",e=>{ if(e.target.closest("#drvAdd")) return; appDrvClick(e); });
+    const add=async()=>{ const n=$("drvName"), v=(n.value||"").trim(); if(!v){ n.focus(); return; } await bbApp.profileAdd(v); shellRender(); appMenuFill(); };
+    on($("drvAdd"),add); $("drvName").addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter") add(); });
+    return; }
+  if(k==="settings"){
+    const H=typeof HUD!=="undefined"?HUD:{off:{}};
+    const hudL={telem:"טלמטריה",keys:"רשימת מקשים",verdict:"פתרון ירי",banner:"הודעות גדולות",toast:"הודעות שופט",chips:"מונים בכותרת",mag:"מחסנית גדולה"};
+    let br=null; try{ br=await bbApp.bridgeStatus(); }catch(e){}
+    let h='<div class="apHead"><h1>הגדרות</h1><p>האפליקציה, החשבונות והנתונים. הגדרות הרובוט והזירה — במעבדה.</p></div>';
+    h+='<div class="apCard"><h2>חשבונות</h2><div id="spAcct" class="acctBox"></div></div>';
+    h+='<div class="apCard"><h2>עדכונים</h2><div id="spVer" class="verBox"></div><p class="apNote">האפליקציה בודקת בכל פתיחה, מורידה ברקע ומציעה להתקין. <a href="#" data-url="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases">כל הגרסאות בגיטהאב</a></p></div>';
+    h+='<div class="apCard"><h2>טלפון ומשחק ברשת</h2><div class="out">'+(br?row("גשר מובנה",br.on?"פועל · פורט "+br.port+(br.code?" · קוד חדר "+appEsc(br.code):"")+(br.pad?" · 📱 טלפון מחובר":""):"⚠ "+appEsc(br.error||"כבוי"),br.on?"ok":"bad"):"")+'</div><div class="row"><button data-set="phone">📱 חבר טלפון בברקוד</button></div></div>';
+    h+='<div class="apCard"><h2>וידאו ושידור</h2><label class="check"><input type="checkbox" id="spRecAuto"'+(VREC.auto?" checked":"")+'>להקליט כל מאץ׳ לבד</label><div class="row"><button data-set="videos">📂 תיקיית הסרטונים</button><button data-set="cast">🖥 מסך שני</button></div></div>';
+    h+='<div class="apCard"><h2>מה מוצג על המסך</h2><div class="spHud">'+Object.keys(hudL).map(x=>'<label class="check"><input type="checkbox" data-sphud="'+x+'"'+(H.off[x]?"":" checked")+'>'+hudL[x]+'</label>').join("")+'</div></div>';
+    h+='<div class="apCard"><h2>נתונים וגיבוי</h2><div class="out" id="spInfo"></div><div class="row"><button data-set="data">📂 תיקיית הנתונים</button><button data-set="backup">גבה עכשיו</button></div><div class="row"><button data-set="texp">ייצא את כל הקבוצה</button><button data-set="timp">ייבא קבוצה</button><button data-set="bimp">ייבא גיבוי מהדפדפן</button></div><div class="apNote" id="spNote"></div></div>';
+    h+='<div class="apCard"><h2>אודות</h2><p class="apNote">BIOBUZZ '+appEsc(bbApp.version)+' · הסימולטור של אפולו 9662 · FTC.<br>F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.</p></div>';
+    box.innerHTML=h; accBox($("spAcct"));
+    const sv=$("spVer"); if(sv) sv.innerHTML='<span>BIOBUZZ <b>'+appEsc(bbApp.version)+'</b></span><button data-upd="check">🔄 בדוק עדכונים</button>'+updText(ACC.upd);
+    const inf=$("spInfo"); if(inf){ const b=bbApp.backupsAtBoot||[]; inf.innerHTML=row("גיבוי יומי",b.length?b.length+" ימים · האחרון "+appEsc(b[0]):"עוד אין")+'<div class="appPath">'+appEsc(bbApp.dataDir)+'</div>'; }
+    return; }
+}
+async function shellSetClick(e){
+  const s=e.target.closest("[data-set]"), hud=e.target.closest("[data-sphud]"), url=e.target.closest("[data-url]"), hm=e.target.closest("[data-hm]");
+  if(url){ e.preventDefault(); bbApp.openUrl(url.dataset.url); return; }
+  if(hm){ const a=hm.dataset.hm;
+    if(a==="lab"){ shellGo("lab"); return; }
+    shellGo("play");
+    if(a==="quick") $("ppQuick")&&$("ppQuick").click(); else if(a==="match") $("ppMatch")&&$("ppMatch").click(); else if(a==="free") $("ppFree")&&$("ppFree").click();
+    return; }
+  if(!s) return; const a=s.dataset.set, note=t=>{ const n=$("spNote"); if(n) n.textContent=t||""; };
+  if(a==="phone"){ shellGo("play"); phoneOpen(); }
+  else if(a==="videos") bbApp.openVideos();
+  else if(a==="cast") castToggle();
+  else if(a==="data") bbApp.openData();
+  else if(a==="backup"){ const r=await bbApp.backupNow(); note("✓ גיבוי של היום: "+r.tag+" · "+r.list.length+" ימים שמורים"); }
+  else if(a==="texp"){ const r=await bbApp.teamExport(); note(r.ok?"✓ הקבוצה נשמרה לקובץ":r.canceled?"":"⚠ לא נשמר"); }
+  else if(a==="timp"){ const r=await bbApp.teamImport(); if(r.canceled) return; note(r.ok?"✓ נוספו: "+r.added.join(", "):"⚠ "+r.why); await appLoadTeam(); }
+  else if(a==="bimp"){ const r=await bbApp.importBackup(); if(r.canceled) return; if(!r.ok) note("⚠ "+r.why); }
+}
+function shellWire(){
+  if(!APP.on) return;
+  shellBuild();
+  const pg=$("appPage");
+  if(pg){ pg.addEventListener("click",accClick); pg.addEventListener("click",shellSetClick);
+    pg.addEventListener("change",e=>{ const h=e.target.closest("[data-sphud]"); if(h){ hudSet(h.dataset.sphud,h.checked); }
+      if(e.target.id==="spRecAuto"){ VREC.auto=e.target.checked; try{ localStorage.setItem("bbRecAuto1",VREC.auto?"1":"0"); }catch(err){} vrecUI(); } }); }
+  /* כפתור ״הסטטיסטיקות שלי״ בלוח המשחק — באפליקציה פותח את הדף */
+  const ps=$("ppStats"); if(ps) ps.addEventListener("click",e=>{ e.stopImmediatePropagation(); playModalClose(); shellGo("stats"); },true);
+  addEventListener("keydown",e=>{
+    if(e.ctrlKey&&!e.altKey&&!e.shiftKey&&/^Digit[1-6]$/.test(e.code)){ e.preventDefault(); shellGo(["home","play","lab","stats","drivers","settings"][+e.code.slice(5)-1]); return; }
+    if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden])")){ e.preventDefault(); shellGo(UI.mode==="lab"?"lab":"play"); } },true);
+  /* בלי תחושת ״אתר״: בלי תפריט לחיצה ימנית (חוץ משדות טקסט) ובלי גרירת קישורים */
+  document.addEventListener("contextmenu",e=>{ if(!e.target.closest("input,textarea,[contenteditable]")) e.preventDefault(); });
+  document.addEventListener("dragstart",e=>{ if(e.target&&(e.target.tagName==="A"||e.target.tagName==="IMG")) e.preventDefault(); });
+  const mo=new MutationObserver(()=>shellMark()); mo.observe(document.body,{attributes:true,attributeFilter:["class"]});
+  shellNavSync();
+  /* פותחים בדף הבית, כמו אפליקציה */
+  shellGo("home");
+  if(bbApp.ready) setTimeout(()=>bbApp.ready(),50);
 }
 
 /* ══════ v54 — שידור למסך שני (מקרן / טלוויזיה) ══════
@@ -12855,7 +13119,9 @@ try{ ppWire(); }catch(e){ console.error(e); }
 try{ bkWire(); }catch(e){ console.error(e); }
 try{ statWire(); }catch(e){ console.error(e); }
 try{ appWire(); }catch(e){ console.error(e); }
+try{ if(APP.on) appWire2(); }catch(e){ console.error(e); }
 try{ accWire(); }catch(e){ console.error(e); }
+try{ shellWire(); }catch(e){ console.error(e); }
 try{ castRecWire(); }catch(e){ console.error(e); }
 try{ liveWire(); }catch(e){ console.error(e); }
 try{ refreshClock(); magHud(); }catch(e){ console.error(e); }

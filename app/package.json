@@ -1,7 +1,7 @@
 {
   "name": "biobuzz",
   "productName": "BIOBUZZ",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "BIOBUZZ — סימולטור הזירה של אפולו 9662",
   "author": "Apollo 9662",
   "main": "main.js",

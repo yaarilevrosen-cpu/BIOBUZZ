@@ -34,10 +34,14 @@ class Sync {
   constructor(store, dir, opt) {
     opt = opt || {};
     this.store = store; this.dir = dir;
+    /* שני סוגי חשבון יכולים לעבוד במקביל: ״team״ — כל נהגי הקבוצה; ״personal״ — רק הנהגים שסימנת כאישיים */
+    this.kind = opt.kind === "personal" ? "personal" : "team";
     this.cloud = Object.assign({}, DEFAULT_CLOUD, readJSON(path.join(dir, "cloud.json"), {}) || {}, opt.cloud || {});
     this.enc = opt.enc || (s => Buffer.from(s, "utf8").toString("base64"));
     this.dec = opt.dec || (s => Buffer.from(s, "base64").toString("utf8"));
-    this.file = path.join(dir, "account.json");
+    this.file = path.join(dir, "account-" + this.kind + ".json");
+    /* גרסה 1.1.0 שמרה חשבון אחד ב-account.json — הוא חשבון הקבוצה */
+    if (this.kind === "team" && !fs.existsSync(this.file) && fs.existsSync(path.join(dir, "account.json"))) { try { fs.renameSync(path.join(dir, "account.json"), this.file); } catch (e) {} }
     this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null;
     try { const o = readJSON(this.file, null); if (o && o.blob) this.sess = JSON.parse(this.dec(o.blob)); if (o) this.lastSync = o.lastSync || 0; } catch (e) { this.sess = null; }
   }
@@ -47,7 +51,7 @@ class Sync {
     writeAtomic(this.file, JSON.stringify(o));
   }
   status() {
-    return { loggedIn: !!this.sess, email: this.sess && this.sess.user && this.sess.user.email || "",
+    return { kind: this.kind, loggedIn: !!this.sess, email: this.sess && this.sess.user && this.sess.user.email || "",
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url };
   }
   /* ── רשת ── */
@@ -124,8 +128,9 @@ class Sync {
     }
     return out;
   }
+  mine(p) { return (p.acct || "team") === this.kind; }
   async _sync() {
-    const S = this.store; S.flushKv();
+    const S = this.store; S.flushKv(); const K = this.kind;
     const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0 };
     const activeBefore = S.meta.active;
     const rows = await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted");
@@ -134,29 +139,29 @@ class Sync {
     const live = rows.filter(r => !r.deleted);
     if (live.length && S.meta.list.length === 1 && !R.has(S.meta.list[0].id) && S.isBlank(S.meta.list[0].id)) {
       const blank = S.meta.list[0].id;
-      S.applyRemoteMeta(live[0]); S.meta.active = live[0].id; S.saveMeta();
+      S.applyRemoteMeta(live[0], K); S.meta.active = live[0].id; S.saveMeta();
       S.removeProfile(blank, { noTomb: true }); S.loadKv(); res.profilesChanged = true;
     }
     /* מחיקות מקומיות → לענן */
-    for (const t of S.meta.tombs.slice()) {
+    for (const t of S.meta.tombs.filter(t => (t.acct || "team") === K)) {
       const r = R.get(t.id);
       if (!r || !r.deleted) await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
         { Prefer: "resolution=merge-duplicates,return=minimal" });
-      S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
+      S.meta.tombs = S.meta.tombs.filter(x => !(x.id === t.id && (x.acct || "team") === K));
     }
     S.saveMeta();
     const tombIds = new Set();
     /* מחיקות מהענן → כאן */
-    for (const r of rows) if (r.deleted) { tombIds.add(r.id); if (S.meta.list.some(p => p.id === r.id)) { if (S.removeFromRemote(r.id)) res.profilesChanged = true; } }
+    for (const r of rows) if (r.deleted) { tombIds.add(r.id); if (S.meta.list.some(p => p.id === r.id && this.mine(p))) { if (S.removeFromRemote(r.id)) res.profilesChanged = true; } }
     /* נהגים שיש רק בענן → כאן */
-    for (const r of live) if (!S.meta.list.some(p => p.id === r.id)) { S.applyRemoteMeta(r); res.profilesChanged = true; res.pulledProfiles++; }
+    for (const r of live) if (!S.meta.list.some(p => p.id === r.id)) { S.applyRemoteMeta(r, K); res.profilesChanged = true; res.pulledProfiles++; }
     /* השוואה אחד מול אחד */
     const push = [];
-    for (const p of S.meta.list) {
+    for (const p of S.meta.list.filter(q => this.mine(q))) {
       const r = R.get(p.id);
       if (r && r.deleted) continue;
       const pm = p.metaAt || 0, pk = p.kvAt || 0, rm = r ? r.meta_at || 0 : -1, rk = r ? r.kv_at || 0 : -1;
-      if (r && rm > pm) { S.applyRemoteMeta(r); res.profilesChanged = true; }
+      if (r && rm > pm) { S.applyRemoteMeta(r, K); res.profilesChanged = true; }
       if (r && rk > pk) {
         const { data } = await this.rest("GET", "bb_profiles?select=kv,kv_at&id=eq." + encodeURIComponent(p.id));
         if (data && data[0]) { S.applyRemoteKv(p.id, data[0].kv || {}, data[0].kv_at || rk); if (p.id === S.meta.active) res.changedActive = true; res.pulledProfiles++; }
@@ -179,7 +184,7 @@ class Sync {
     const remoteM = await this.remoteAll("bb_matches", "profile_id,at");
     const rset = new Map();
     for (const m of remoteM) { if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
-    for (const p of S.meta.list) {
+    for (const p of S.meta.list.filter(q => this.mine(q))) {
       const local = S.matches(p.id); const lset = new Set(local.map(m => +m.at));
       const rs = rset.get(p.id) || new Set();
       const up = local.filter(m => isFinite(m.at) && !rs.has(+m.at));
