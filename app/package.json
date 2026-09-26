@@ -1,0 +1,64 @@
+{
+  "name": "biobuzz",
+  "productName": "BIOBUZZ",
+  "version": "1.0.0",
+  "description": "BIOBUZZ — סימולטור הזירה של אפולו 9662",
+  "author": "Apollo 9662",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis portable --x64"
+  },
+  "devDependencies": {
+    "electron": "38.2.0",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "org.apollo9662.biobuzz",
+    "productName": "BIOBUZZ",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "store.js",
+      "sim/**",
+      "build/icon.png"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "signAndEditExecutable": true,
+      "legalTrademarks": "Apollo 9662"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BIOBUZZ",
+      "artifactName": "BIOBUZZ-Setup-${version}.${ext}",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "he_IL"
+      ],
+      "language": "1037",
+      "runAfterFinish": true
+    },
+    "portable": {
+      "artifactName": "BIOBUZZ-${version}-portable.${ext}"
+    },
+    "publish": null,
+    "copyright": "Apollo FTC 9662"
+  }
+}

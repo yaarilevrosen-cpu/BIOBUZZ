@@ -1,0 +1,10 @@
+node_modules/
+dist/
+app/release/
+app/sim/index.html
+test/sim.html
+test/review.html
+test/*.png
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,65 @@
+# בנייה אוטומטית: בכל דחיפה — בדיקות; בכל תגית v* — קובצי EXE ב-Releases
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: בנייה
+        run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
+      - name: התקנת כלים
+        run: |
+          cd test && npm install && npx playwright install --with-deps chromium
+          cd ../app && npm ci
+      - name: בדיקות — הסימולטור בדפדפן
+        run: |
+          cd test && ./mk.sh
+          (python3 -m http.server 8899 >/dev/null 2>&1 &)
+          sleep 1
+          for t in smoke ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test kb_test pathlib_test; do node $t.mjs; done
+      - name: בדיקות — האפליקציה
+        run: cd test && xvfb-run -a node app_test.mjs
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: בנייה
+        shell: bash
+        run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
+      - name: EXE
+        shell: bash
+        run: cd app && npm ci && npx electron-builder --win nsis portable --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIOBUZZ-windows
+          path: |
+            app/release/*.exe
+      - name: שחרור (רק בתגית)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/release/*.exe
+          generate_release_notes: true

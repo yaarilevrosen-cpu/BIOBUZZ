@@ -1,0 +1,44 @@
+// v44: שני מצבים — ״משחק״ פשוט ו״בדיקות״ עם הכול. שום פיצ׳ר לא נעלם.
+import {open,ok,done,realErrs} from './h.mjs';
+const {browser,page,errs}=await open({noraf:true, play:true});
+const E=(f,a)=>page.evaluate(f,a);
+const shown=sel=>E(sel=>{ const e=document.querySelector(sel); return !!e&&getComputedStyle(e).display!=='none'&&e.getClientRects().length>0; },sel);
+await E(()=>{ window.S=__sim; });
+let r=await E(()=>({mode:S.UI.mode, play:document.body.classList.contains('play')}));
+ok(r.mode==='play'&&r.play,'בפעם הראשונה נפתח מצב ״משחק״');
+ok(await shown('#playPanel')&&!(await shown('#toolbar'))&&!(await shown('#wsrail'))&&!(await shown('#telem')),'במשחק: לוח אחד פשוט, בלי סרגל כלים, בלי לוחות ובלי טלמטריה');
+r=await E(()=>document.querySelectorAll('#rail>details').length);
+ok(r>30,'כל הלוחות עדיין קיימים ('+r+')');
+// מאץ׳ מול בוטים → חלון המשחק
+await E(()=>document.getElementById('ppMatch').click());
+r=await E(()=>({open:document.body.classList.contains('setup'), adv:getComputedStyle(document.querySelector('#setup section.sAdv')).display, my:!!document.getElementById('sMyAuto')}));
+ok(r.open&&r.adv==='none'&&r.my,'״מאץ׳ מול בוטים״ פותח את חלון המשחק — ההגדרות המתקדמות מקופלות');
+await E(()=>document.getElementById('setupMore').click());
+r=await E(()=>getComputedStyle(document.querySelector('#setup section.sAdv')).display);
+ok(r!=='none','״עוד הגדרות״ פותח את כל השאר');
+await E(()=>{ S.MT.cd=0; document.getElementById('setupGo').click(); });
+await E(()=>S.advance(4.5,1/60)); await E(()=>S.ppRefresh());
+r=await E(()=>({t:document.getElementById('ppStatus').innerText, on:S.MATCH.on}));
+ok(r.on&&/אוטונומי/.test(r.t),'המאץ׳ רץ, והלוח מראה את המצב');
+await E(()=>{ const b=document.getElementById('ppStop'); b.click(); b.click(); });
+ok(!(await E(()=>S.MATCH.on)),'״עצור משחק״ (שתי לחיצות)');
+await E(()=>document.getElementById('ppFree').click());
+r=await E(()=>({full:S.GAME.full, on:S.MATCH.on}));
+ok(!r.full&&!r.on,'״נסיעה חופשית״ — בלי יריבים ובלי שעון');
+await E(()=>document.querySelector('#ppCam [data-ppcam="top"]').click());
+ok(await E(()=>document.querySelector('#toolbar [data-cam="top"]').classList.contains('on')),'המצלמה מהלוח היא אותה מצלמה של ״בדיקות״');
+await E(()=>{ document.getElementById('ppFriendsBtn').click(); document.getElementById('ppSplit').click(); });
+r=await E(()=>{ const on=S.SPLIT.on; document.getElementById('ppSplit').click(); return {on, off:!S.SPLIT.on}; });
+ok(r.on&&r.off,'״עם חברים״ → מסך מפוצל נכנס ויוצא');
+// מעבר לבדיקות
+await E(()=>document.querySelector('#uiMode [data-ui="lab"]').click());
+ok(await shown('#toolbar')&&await shown('#wsrail')&&!(await shown('#playPanel')),'״בדיקות״: כל הכלים חוזרים');
+r=await E(()=>{ const n=document.querySelector('#rail details[data-ws="'+document.body.dataset.ws+'"] .note:not([id])'); const hid=n?getComputedStyle(n).display==='none':true;
+  document.getElementById('wsHelp').click(); const vis=n?getComputedStyle(n).display!=='none':true; document.getElementById('wsHelp').click(); return {hid,vis}; });
+ok(r.hid&&r.vis,'ההסברים הארוכים מוסתרים, ו-״?״ מציג אותם');
+await E(()=>S.uiSetMode('play')); await E(()=>S.setWS('robot'));
+ok(await E(()=>S.UI.mode==='lab'&&document.body.dataset.ws==='robot'),'פתיחת לוח של בדיקות מתוך משחק עוברת לבדיקות');
+await page.reload(); await page.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:60000});
+ok(await E(()=>__sim.UI.mode==='lab'),'המצב נשמר אחרי רענון');
+ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
+await browser.close(); done('ui_test');
