@@ -12660,6 +12660,7 @@ function vrecStop(){ clearTimeout(VREC.stopT); if(!VREC.on) return; VREC.on=fals
 function vrecToggle(){ if(VREC.on) vrecStop(); else vrecStart(); }
 function vrecDraw(){
   if(!VREC.on) return;
+  VREC.frames=(VREC.frames||0)+1;
   const g=VREC.g, W=VREC.cv.width, H=VREC.cv.height, s=H/1080;
   g.drawImage(renderer.domElement,0,0,W,H);
   const live=MATCH.on||MATCH.cd>0||MATCH.phase==="סיום";

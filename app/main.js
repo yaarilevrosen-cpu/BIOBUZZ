@@ -13,6 +13,11 @@ const REPO = { owner: "yaarilevrosen-cpu", repo: "BIOBUZZ" };
 /* במחשב נייד עם שני כרטיסי מסך — תמיד החזק */
 app.commandLine.appendSwitch("force_high_performance_gpu");
 app.commandLine.appendSwitch("ignore-gpu-blocklist");
+/* הסימולטור ממשיך לרוץ גם כשחלון אחר (למשל המסך השני) מכסה אותו */
+app.commandLine.appendSwitch("disable-renderer-backgrounding");
+app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 
 /* הנתונים: באפליקציה המותקנת — %APPDATA%\BIOBUZZ\data. בגרסה הניידת — ליד קובץ ה-EXE (טוב לדיסק און קי) */
 const DATA = process.env.BIOBUZZ_DATA ||
@@ -230,7 +235,7 @@ app.whenReady().then(() => {
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
     bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html") });
-    bridge.start().then(ok => { if (ok) bridge.adbWatch(); });
+    bridge.start().then(ok => { if (ok && !process.env.BIOBUZZ_NOADB) bridge.adbWatch(); });
   }
   reg();
   createWindow();

@@ -40,11 +40,11 @@ jobs:
           BB_TEST_PASS: ${{ secrets.BB_TEST_PASS }}
         run: |
           cd test
-          node bridge_test.mjs
-          node sync_test.mjs
-          xvfb-run -a node app_test.mjs
-          xvfb-run -a node app_cloud_test.mjs
-          xvfb-run -a node app_p2_test.mjs
+          timeout 120 node bridge_test.mjs
+          timeout 300 node sync_test.mjs
+          timeout 600 xvfb-run -a node app_test.mjs
+          timeout 600 xvfb-run -a node app_cloud_test.mjs
+          timeout 600 xvfb-run -a node app_p2_test.mjs
 
   windows:
     needs: test

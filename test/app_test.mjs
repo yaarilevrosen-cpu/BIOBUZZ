@@ -8,7 +8,7 @@ const DATA=fs.mkdtempSync(path.join(os.tmpdir(),'bbapp-'));
 const launch=async()=>{
   const app=await electron.launch({executablePath:APPDIR+'/node_modules/electron/dist/electron',
     args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader',APPDIR],
-    env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1'}, timeout:90000});
+    env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_NOADB:'1'}, timeout:90000});
   const win=await app.firstWindow();
   const errs=[]; win.on('pageerror',e=>errs.push(String(e)));
   await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
@@ -91,3 +91,4 @@ ok(errs.length===0,'אין שגיאות '+errs.slice(0,2).join(' | '));
 await app.close();
 fs.rmSync(DATA,{recursive:true,force:true});
 done('app_test');
+process.exit(0);

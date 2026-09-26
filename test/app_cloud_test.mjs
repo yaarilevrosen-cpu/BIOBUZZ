@@ -11,7 +11,7 @@ const srv=http.createServer((q,r)=>{ r.writeHead(200,{'Content-Type':'applicatio
 const launch=async(DATA)=>{
   const app=await electron.launch({executablePath:path.resolve(APPDIR,'node_modules/electron/dist/electron'),
     args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader',APPDIR],
-    env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_UPD_URL:'http://127.0.0.1:8977/latest',BIOBUZZ_SIM:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html')}, timeout:90000});
+    env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_NOADB:'1',BIOBUZZ_UPD_URL:'http://127.0.0.1:8977/latest',BIOBUZZ_SIM:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html')}, timeout:90000});
   const win=await app.firstWindow(); const errs=[]; win.on('pageerror',e=>errs.push(String(e)));
   await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
   return {app,win,errs};
@@ -63,3 +63,4 @@ ok(errs.length===0,'אין שגיאות '+errs.slice(0,2).join(' | '));
 await app.close(); srv.close();
 for(const d of [D1,D2]) fs.rmSync(d,{recursive:true,force:true});
 done('app_cloud_test');
+process.exit(0);

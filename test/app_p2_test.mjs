@@ -16,7 +16,7 @@ case "$*" in
 esac`); fs.chmodSync(ADB,0o755);
 const app=await electron.launch({executablePath:path.resolve(APPDIR,'node_modules/electron/dist/electron'),
   args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader',APPDIR],
-  env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_BRIDGE:'9681',BIOBUZZ_VIDEOS:VID,BIOBUZZ_ADB:ADB,BIOBUZZ_SIM:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html')}, timeout:90000});
+  env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_NOADB:'1',BIOBUZZ_BRIDGE:'9681',BIOBUZZ_VIDEOS:VID,BIOBUZZ_ADB:ADB,BIOBUZZ_SIM:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html')}, timeout:90000});
 const win=await app.firstWindow(); const errs=[]; win.on('pageerror',e=>errs.push(String(e)));
 await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
 await win.evaluate(()=>{ document.getElementById('welcome').hidden=true; });
@@ -36,10 +36,11 @@ await win.evaluate(()=>document.getElementById('ppCast').click()); await win.wai
 ok(app.windows().length===1,'סגירת המסך השני');
 // וידאו
 await win.evaluate(()=>document.getElementById('ppRec').click());
-await win.waitForTimeout(3500);
+/* בלי כרטיס מסך הזירה מצויירת לאט — מוסיפים פריימים ידנית כדי שיהיה מה להקליט */
+for(let i=0;i<30;i++){ await win.evaluate(()=>__sim.vrecDraw()); await win.waitForTimeout(100); }
 await win.evaluate(()=>document.getElementById('ppRec').click());
-await win.waitForTimeout(3000);
-const vids=fs.existsSync(VID)?fs.readdirSync(VID):[];
+let vids=[]; for(let i=0;i<40&&!vids.length;i++){ await win.waitForTimeout(500); vids=fs.existsSync(VID)?fs.readdirSync(VID):[]; }
+await win.waitForTimeout(500);
 ok(vids.length===1&&/^BIOBUZZ-\d{8}-\d{6}\.(mp4|webm)$/.test(vids[0])&&fs.statSync(path.join(VID,vids[0])).size>2000,'סרטון נשמר בתיקיית הסרטונים: '+vids.join(','));
 // adb
 await win.evaluate(()=>{ document.getElementById('liveIp').value='10.1.2.3'; document.getElementById('bOdoAdb').click(); });
@@ -52,3 +53,4 @@ ok(/הרובוט לא נמצא/.test(await win.evaluate(()=>document.getElementB
 ok(errs.length===0,'אין שגיאות '+errs.slice(0,2).join(' | '));
 await app.close(); fs.rmSync(DATA,{recursive:true,force:true});
 done('app_p2_test');
+process.exit(0);
