@@ -1,7 +1,7 @@
 {
   "name": "biobuzz",
   "productName": "BIOBUZZ",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "BIOBUZZ — סימולטור הזירה של אפולו 9662",
   "author": "Apollo 9662",
   "main": "main.js",
@@ -25,7 +25,10 @@
       "main.js",
       "preload.js",
       "store.js",
+      "sync.js",
+      "bridge.js",
       "sim/**",
+      "pad/**",
       "build/icon.png"
     ],
     "asar": true,
@@ -58,7 +61,22 @@
     "portable": {
       "artifactName": "BIOBUZZ-${version}-portable.${ext}"
     },
-    "publish": null,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "yaarilevrosen-cpu",
+        "repo": "BIOBUZZ",
+        "releaseType": "release"
+      }
+    ],
     "copyright": "Apollo FTC 9662"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "ws": "^8.22.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yaarilevrosen-cpu/BIOBUZZ.git"
   }
 }

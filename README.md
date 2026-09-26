@@ -14,7 +14,8 @@
 | `biobuzz-sim.html` | **כל הסימולטור** — קובץ המקור היחיד |
 | `build.py`, `build_standalone.py`, `build/` | בנייה לקובץ בודד בלי רשת (ספריות, גופנים ו-CAD מוטמעים) |
 | `cad/` | המודל הרשמי של הזירה |
-| `app/` | האפליקציה (Electron): `main.js` חלון ונתונים, `store.js` נהגים וארכיון, `preload.js` הגשר |
+| `app/` | האפליקציה (Electron): `main.js` חלון ונתונים, `store.js` נהגים וארכיון, `sync.js` סנכרון בענן, `bridge.js` גשר מובנה (טלפון ורשת), `preload.js` הגשר לדף |
+| `supabase/` | מבנה מסד הנתונים לסנכרון (Supabase) |
 | `pad/` | גשר השלט והטלפון (`start.bat`) |
 | `test/` | בדיקות אוטומטיות (Playwright) |
 | `docs/` | תכנון, החלטות והיסטוריה |
@@ -34,6 +35,12 @@ python3 -m http.server 8899 &          # מתוך test/
 node smoke.mjs && node v52_test.mjs    # וכל *_test.mjs
 xvfb-run -a node app_test.mjs          # האפליקציה עצמה (בלינוקס)
 ```
+
+## גרסה חדשה
+```bash
+git tag v1.2.0 && git push origin v1.2.0
+```
+גיטהאב בונה, מפרסם ב-Releases — והאפליקציות המותקנות מורידות ומציעות ״התקן והפעל מחדש״ לבד.
 
 ## בנייה אוטומטית (GitHub Actions)
 - כל דחיפה ל-`main` — מריצה את הבדיקות ובונה EXE (להורדה מ-Actions ← Artifacts).

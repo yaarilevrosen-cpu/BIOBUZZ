@@ -2,6 +2,8 @@
    לפני שהסימולטור עולה: הנתונים של הנהג הפעיל נכתבים לאחסון של הדף. */
 "use strict";
 const { contextBridge, ipcRenderer } = require("electron");
+/* חלון השידור (מסך שני) הוא דף ריק שהסימולטור מצייר אליו — בלי גשר ובלי נתונים */
+if (!/^file:/.test(String(window.location.href))) return;
 const KEYRE = /^(bb|biobuzz)/i;
 const boot = ipcRenderer.sendSync("bb:boot");
 try {
@@ -31,5 +33,24 @@ contextBridge.exposeInMainWorld("bbApp", {
   backupNow: () => ipcRenderer.invoke("bb:backupNow"),
   teamExport: () => ipcRenderer.invoke("bb:teamExport"),
   teamImport: txt => ipcRenderer.invoke("bb:teamImport", txt),
-  importBackup: txt => ipcRenderer.invoke("bb:importBackup", txt)
+  importBackup: txt => ipcRenderer.invoke("bb:importBackup", txt),
+  bridgeStatus: () => ipcRenderer.invoke("bb:bridgeStatus"),
+  saveVideo: (buf, name) => ipcRenderer.invoke("bb:saveVideo", buf, String(name || "")),
+  showFile: f => ipcRenderer.invoke("bb:showFile", String(f || "")),
+  openVideos: () => ipcRenderer.invoke("bb:openVideos"),
+  adbPull: ip => ipcRenderer.invoke("bb:adbPull", String(ip || "")),
+  /* חשבון וסנכרון */
+  acctStatus: () => ipcRenderer.invoke("bb:acctStatus"),
+  acctSignIn: (email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(email || ""), String(pw || "")),
+  acctSignUp: (email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || "")),
+  acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
+  acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
+  syncNow: () => ipcRenderer.invoke("bb:syncNow"),
+  onSync: cb => { ipcRenderer.on("bb:sync", (e, d) => { try { cb(d); } catch (err) {} }); },
+  /* עדכונים */
+  updCheck: () => ipcRenderer.invoke("bb:updCheck"),
+  updInstall: () => ipcRenderer.invoke("bb:updInstall"),
+  updState: () => ipcRenderer.invoke("bb:updState"),
+  onUpd: cb => { ipcRenderer.on("bb:upd", (e, d) => { try { cb(d); } catch (err) {} }); },
+  openUrl: url => ipcRenderer.invoke("bb:openUrl", String(url || ""))
 });

@@ -8,6 +8,8 @@ const fs = require("fs");
 const path = require("path");
 
 const KEYRE = /^(bb|biobuzz)/i;
+/* מפתחות של המחשב הזה בלבד — לא מסונכרנים (מצב מסך, לשונית, תצוגה, גיבויים מקומיים) */
+const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1"]);
 const EMOJI = ["🐝", "🚀", "🤖", "⚡", "🔥", "🦅", "🐺", "🦊", "🐉", "🎯", "🌟", "🏆"];
 const COLORS = ["#FFB020", "#35D6A4", "#4C9AF5", "#F2545B", "#B07CFF", "#FF7AC6", "#7FD1FF", "#C6E26B"];
 
@@ -36,6 +38,7 @@ class Store {
       this.meta.active = p.id; this.saveMeta();
     }
     if (!this.meta.list.find(p => p.id === this.meta.active)) { this.meta.active = this.meta.list[0].id; this.saveMeta(); }
+    if (!Array.isArray(this.meta.tombs)) this.meta.tombs = [];
     this.kv = {};                 // מטמון של הפרופיל הפעיל
     this.kvDirty = false; this.kvTimer = null;
     this.loadKv();
@@ -56,7 +59,8 @@ class Store {
     opt = opt || {};
     const i = this.meta.list.length;
     const p = { id: newId(), name: this.uniqueName(name), emoji: opt.emoji || EMOJI[i % EMOJI.length],
-      color: opt.color || COLORS[i % COLORS.length], created: Date.now() };
+      color: opt.color || COLORS[i % COLORS.length], created: Date.now(), metaAt: opt.quiet ? 0 : Date.now(), kvAt: 0 };
+    if (opt.id) p.id = opt.id;
     this.meta.list.push(p);
     fs.mkdirSync(this.dir(p.id), { recursive: true });
     if (!opt.quiet) this.saveMeta();
@@ -67,6 +71,7 @@ class Store {
     if (patch.name != null) p.name = this.uniqueName(patch.name, id);
     if (patch.emoji) p.emoji = String(patch.emoji).slice(0, 4);
     if (patch.color && /^#[0-9a-f]{6}$/i.test(patch.color)) p.color = patch.color;
+    p.metaAt = Date.now();
     this.saveMeta(); return p;
   }
   /* מחיקה = העברה לסל (trash/). אי אפשר למחוק את הפעיל או את האחרון. */
@@ -77,7 +82,9 @@ class Store {
     const src = this.dir(id), dst = path.join(this.root, "trash", id + "-" + Date.now());
     fs.mkdirSync(path.dirname(dst), { recursive: true });
     try { fs.renameSync(src, dst); writeAtomic(path.join(dst, "profile.json"), JSON.stringify(p)); } catch (e) {}
-    this.meta.list.splice(i, 1); this.saveMeta(); return true;
+    this.meta.list.splice(i, 1);
+    if (!(arguments[1] && arguments[1].noTomb)) this.meta.tombs.push({ id, at: Date.now() });
+    this.saveMeta(); return true;
   }
   switchTo(id) {
     if (!this.meta.list.find(x => x.id === id)) return false;
@@ -94,16 +101,65 @@ class Store {
   kvAll() { return Object.assign({}, this.kv); }
   kvSet(k, v) {
     if (!KEYRE.test(k)) return;
-    if (v === null || v === undefined) delete this.kv[k]; else this.kv[k] = String(v);
+    const nv = (v === null || v === undefined) ? undefined : String(v);
+    if (this.kv[k] === nv) return;
+    if (nv === undefined) delete this.kv[k]; else this.kv[k] = nv;
+    if (!NOSYNC.has(k)) { const a = this.active(); if (a) { a.kvAt = Date.now(); this.metaDirty = true; } }
     this.kvDirty = true;
     if (!this.kvTimer) this.kvTimer = setTimeout(() => this.flushKv(), 250);
   }
-  kvClear() { this.kv = {}; this.kvDirty = true; this.flushKv(); }
+  kvClear() { this.kv = {}; const a = this.active(); if (a) { a.kvAt = Date.now(); this.metaDirty = true; } this.kvDirty = true; this.flushKv(); }
   flushKv() {
     if (this.kvTimer) { clearTimeout(this.kvTimer); this.kvTimer = null; }
+    if (this.metaDirty) { this.metaDirty = false; this.saveMeta(); }
     if (!this.kvDirty) return;
     writeAtomic(path.join(this.dir(this.meta.active), "store.json"), JSON.stringify(this.kv));
     this.kvDirty = false;
+  }
+  /* ── לסנכרון ── */
+  kvOf(id) {
+    if (id === this.meta.active) return Object.assign({}, this.kv);
+    const o = readJSON(path.join(this.dir(id), "store.json"), {}) || {};
+    for (const k of Object.keys(o)) if (!KEYRE.test(k) || typeof o[k] !== "string") delete o[k];
+    return o;
+  }
+  kvSynced(id) { const o = this.kvOf(id); for (const k of Object.keys(o)) if (NOSYNC.has(k)) delete o[k]; return o; }
+  /* הגדרות שהגיעו ממחשב אחר: מחליפות את המסונכרנות, ושומרות את המקומיות */
+  applyRemoteKv(id, kv, at) {
+    const p = this.meta.list.find(x => x.id === id); if (!p) return false;
+    const cur = this.kvOf(id), out = {};
+    for (const k in cur) if (NOSYNC.has(k)) out[k] = cur[k];
+    for (const k in (kv || {})) if (KEYRE.test(k) && !NOSYNC.has(k) && typeof kv[k] === "string") out[k] = kv[k];
+    if (id === this.meta.active) { if (this.kvTimer) { clearTimeout(this.kvTimer); this.kvTimer = null; } this.kv = out; this.kvDirty = false; }
+    writeAtomic(path.join(this.dir(id), "store.json"), JSON.stringify(out));
+    p.kvAt = at; this.saveMeta(); return true;
+  }
+  applyRemoteMeta(row) {
+    let p = this.meta.list.find(x => x.id === row.id);
+    if (!p) { p = { id: row.id, created: row.created || Date.now(), kvAt: 0 }; this.meta.list.push(p); fs.mkdirSync(this.dir(p.id), { recursive: true }); }
+    p.name = cleanName(row.name) || p.name || "נהג"; if (row.emoji) p.emoji = row.emoji; if (row.color) p.color = row.color;
+    p.metaAt = row.meta_at || 0; this.saveMeta(); return p;
+  }
+  /* נהג שנמחק במחשב אחר */
+  removeFromRemote(id) {
+    const i = this.meta.list.findIndex(x => x.id === id); if (i < 0) return false;
+    if (this.meta.list.length <= 1) return false;
+    let switched = false;
+    if (id === this.meta.active) { this.flushKv(); this.meta.active = this.meta.list.find(x => x.id !== id).id; switched = true; }
+    this.removeProfile(id, { noTomb: true });
+    if (switched) this.loadKv();
+    return true;
+  }
+  /* נהג ״ריק״ של התקנה חדשה — לא שווה כלום מול חשבון עם נהגים */
+  isBlank(id) {
+    const p = this.meta.list.find(x => x.id === id); if (!p) return false;
+    return !p.kvAt && this.matches(id, { lite: true }).length === 0;
+  }
+  appendMatches(id, list) {
+    if (!list.length) return 0;
+    fs.mkdirSync(this.dir(id), { recursive: true });
+    fs.appendFileSync(this.mfile(id), list.map(m => JSON.stringify(m)).join("\n") + "\n");
+    return list.length;
   }
   /* ── ארכיון מאצ׳ים ── */
   mfile(id) { return path.join(this.dir(id), "matches.jsonl"); }
@@ -179,7 +235,7 @@ class Store {
       if (!q || typeof q !== "object") continue;
       const p = this.addProfile(q.name || "נהג", { emoji: q.emoji, color: q.color });
       const st = {}; for (const k in (q.store || {})) if (KEYRE.test(k) && typeof q.store[k] === "string") st[k] = q.store[k];
-      writeAtomic(path.join(this.dir(p.id), "store.json"), JSON.stringify(st));
+      writeAtomic(path.join(this.dir(p.id), "store.json"), JSON.stringify(st)); p.kvAt = Date.now(); this.saveMeta();
       const ms = (Array.isArray(q.matches) ? q.matches : []).filter(m => m && isFinite(m.at));
       writeAtomic(this.mfile(p.id), ms.map(m => JSON.stringify(m)).join("\n") + (ms.length ? "\n" : ""));
       added.push(p.name);
@@ -191,7 +247,7 @@ class Store {
     let o; try { o = JSON.parse(txt); } catch (e) { return { ok: false, why: "הקובץ שבור" }; }
     if (!o || o.bb !== "backup" || !o.data || typeof o.data !== "object") return { ok: false, why: "זה לא קובץ גיבוי של הסימולטור" };
     const st = {}; for (const k in o.data) if (KEYRE.test(k) && typeof o.data[k] === "string") st[k] = o.data[k];
-    this.kv = st; this.kvDirty = true; this.flushKv();
+    this.kv = st; this.kvDirty = true; { const a = this.active(); if (a) a.kvAt = Date.now(); } this.saveMeta(); this.flushKv();
     /* המאצ׳ים מהעונה מצטרפים לארכיון (בלי כפילויות) */
     let season = []; try { season = JSON.parse(st.bbSeason1 || "[]"); } catch (e) {}
     const have = new Set(this.matches(null, { lite: true }).map(m => m.at));
@@ -199,4 +255,4 @@ class Store {
     return { ok: true, keys: Object.keys(st).length, matches: n };
   }
 }
-module.exports = { Store, KEYRE, EMOJI, COLORS, writeAtomic };
+module.exports = { Store, KEYRE, NOSYNC, EMOJI, COLORS, writeAtomic, readJSON };

@@ -86,7 +86,7 @@ ok(r.ok&&r.matches===1,'ייבוא גיבוי מהדפדפן: '+JSON.stringify(r
 ok(await win.evaluate(()=>__sim.bk._diff().some(d=>d[0]==='wheelD'&&d[2]===140)),'הגיבוי נטען — קוטר 140');
 // גיבוי יומי
 ok(fs.readdirSync(path.join(DATA,'backups')).some(n=>/^\d{4}-\d\d-\d\d$/.test(n)),'גיבוי יומי נוצר');
-ok(await win.evaluate(()=>/BIOBUZZ 1\.0\.0/.test(document.getElementById('appInfo').textContent)),'לוח ״האפליקציה״ מציג גרסה ותיקייה');
+ok(await win.evaluate(()=>/BIOBUZZ \d+\.\d+\.\d+/.test(document.getElementById('appInfo').textContent)),'לוח ״האפליקציה״ מציג גרסה ותיקייה');
 ok(errs.length===0,'אין שגיאות '+errs.slice(0,2).join(' | '));
 await app.close();
 fs.rmSync(DATA,{recursive:true,force:true});

@@ -637,6 +637,30 @@
   .wcLink{background:transparent; border:0; color:var(--accent); font-size:12.5px; text-decoration:underline}
   .wcSmall{font-size:11px!important; color:var(--dim)!important}
   html:not(.app) .appOnly{display:none!important}
+  #recTag{position:absolute; top:12px; left:14px; z-index:12; background:rgba(160,20,30,.88); color:#fff; font-size:12.5px; font-weight:600;
+    padding:4px 11px; border-radius:999px; font-family:var(--mono); pointer-events:none; animation:clkPulse .9s ease-in-out infinite alternate}
+  #recTag[hidden]{display:none} body.bcast #recTag{display:none!important}
+  #ppRec.on, #bRec.on{border-color:var(--red); color:var(--red)} #ppCast.on, #bCast.on{border-color:var(--accent); color:var(--accent)}
+  .ppAuto{font-size:12px; color:var(--muted)} html.app .webOnly{display:none!important}
+  /* v54 — חשבון, סנכרון ועדכונים */
+  .acctBox{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; padding:8px 10px; border-radius:11px; background:var(--bg); border:1px solid var(--line); font-size:12px}
+  .acctBox .acI{font-size:16px} .acctBox .acT{flex:1; min-width:150px; display:flex; flex-direction:column; gap:1px}
+  .acctBox .acT b{font-weight:500; font-size:12.5px; word-break:break-all} .acctBox .acT span{color:var(--muted); font-size:11px}
+  .acctBox .acT span.err{color:var(--red)} .acctBox .acT span.ok{color:var(--good)}
+  .acctBox button{padding:5px 10px; font-size:12px}
+  .acctBox.on{border-color:rgba(53,214,164,.5)}
+  .verBox{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--muted); flex-wrap:wrap}
+  .verBox b{font-family:var(--mono); font-weight:500; color:var(--ink2)} .verBox button{padding:4px 9px; font-size:11.5px}
+  .verBox span.ok{color:var(--good)} .verBox span.err{color:var(--red)} .verBox span.hl{color:var(--accent)}
+  #acctModal{position:fixed; inset:0; z-index:62; background:rgba(8,11,14,.8); display:flex; align-items:center; justify-content:center; padding:16px}
+  #acctModal[hidden]{display:none}
+  .acCard input{font-size:15px; padding:10px 12px; border-radius:10px; text-align:left}
+  .acRow{display:flex; gap:8px; justify-content:center} .acRow button{flex:1; padding:10px}
+  .acRow .wcLink{flex:0 0 auto}
+  .acMsg{min-height:18px; font-size:12.5px; color:var(--ink2); line-height:1.5} .acMsg.err{color:var(--red)} .acMsg.ok{color:var(--good)}
+  #updBadge{flex:0 0 auto; padding:5px 11px; border-radius:999px; font-size:12px; border:1px solid var(--good); color:var(--good); background:rgba(53,214,164,.1)}
+  #updBadge[hidden]{display:none} #updBadge.dl{border-color:var(--line2); color:var(--muted); background:var(--panel2)}
+  #updBadge.ready{background:var(--good); color:#062; font-weight:600; animation:clkPulse .9s ease-in-out infinite alternate}
   .appPath{font-family:var(--mono); font-size:10.5px; color:var(--dim); direction:ltr; text-align:left; word-break:break-all; margin-top:4px}
   #stOut table.stTeam th{font-size:10.5px; color:var(--muted); font-weight:500; text-align:start; padding:3px 2px}
   #stOut table.stTeam td:last-child{text-align:start}
@@ -1101,13 +1125,25 @@
 </div></div>
 <div id="profMenu" hidden role="dialog" aria-label="נהגים">
   <div class="pfHead"><b>מי נוהג?</b><button id="pfX" aria-label="סגור">✕</button></div>
+  <div id="pfAcct" class="acctBox"></div>
   <div id="pfList"></div>
   <div class="pfAdd">
     <input id="pfName" maxlength="24" placeholder="שם של נהג חדש">
     <button id="pfAddB">＋ הוסף</button>
   </div>
   <p class="pfNote">לכל נהג: מקשים, מסלולים, הגדרות וסטטיסטיקות משלו. ההחלפה טוענת את הסימולטור מחדש.</p>
+  <div id="pfVer" class="verBox"></div>
 </div>
+<div id="acctModal" hidden role="dialog" aria-modal="true" aria-labelledby="acT"><div class="wcCard acCard">
+  <div class="wcLogo">☁️</div>
+  <h2 id="acT">חשבון הקבוצה</h2>
+  <p>מתחברים לאותו חשבון בכל מחשב — וכל הנהגים, ההגדרות והמשחקים מסתנכרנים. אפשר גם בלי אינטרנט: הסנכרון משלים כשהחיבור חוזר.</p>
+  <input id="acEmail" type="email" placeholder="מייל" autocomplete="username" dir="ltr">
+  <input id="acPass" type="password" placeholder="סיסמה (6 תווים לפחות)" autocomplete="current-password" dir="ltr">
+  <div class="acRow"><button id="acIn" class="go">התחבר</button><button id="acUp">צור חשבון חדש</button></div>
+  <div id="acMsg" class="acMsg"></div>
+  <div class="acRow"><button id="acForgot" class="wcLink">שכחתי סיסמה</button><button id="acClose" class="wcLink">סגור</button></div>
+</div></div>
 <div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wcT"><div class="wcCard">
   <div class="wcLogo">🐝</div>
   <h2 id="wcT">ברוכים הבאים ל-BIOBUZZ</h2>
@@ -1116,6 +1152,7 @@
   <input id="wcName" maxlength="24" placeholder="למשל: יערי">
   <div class="wcEmo" id="wcEmo"></div>
   <button id="wcGo" class="go">יאללה, לנהוג</button>
+  <button id="wcAcct" class="wcLink">☁️ יש לנו כבר חשבון קבוצה — להתחבר</button>
   <button id="wcImp" class="wcLink">יש לי גיבוי מהדפדפן — לייבא אותו</button>
   <p class="wcSmall">בדפדפן: ״בדיקות״ ← ״מתקדם״ ← ״גיבוי ואיפוס״ ← ״ייצא לקובץ״.</p>
 </div></div>
@@ -1147,10 +1184,11 @@
       </span>
       <span class="btxt">
         <b>מעבדת זירת <em>BIOBUZZ</em></b>
-        <i id="verBadge" title="גרסת הבנייה">v53 · אפולו 9662</i>
+        <i id="verBadge" title="גרסת הבנייה">v54 · אפולו 9662</i>
       </span>
     </div>
     <button id="profChip" hidden title="מי נוהג — החלפה והוספה של נהגים"></button>
+    <button id="updBadge" hidden></button>
     <div id="uiMode" role="group" aria-label="מצב">
       <button data-ui="play" title="פשוט: לשחק, בלי פרמטרים">🎮 משחק</button>
       <button data-ui="lab" title="כל הכלים: רובוט, אוטונומי, ניתוח וכיול">🔧 בדיקות</button>
@@ -1236,6 +1274,7 @@
       <div id="faultTag" hidden></div>
       <div id="scorePops" aria-live="polite"></div>
       <div id="scrMark" hidden><span></span></div>
+      <div id="recTag" hidden>● מקליט 0:00</div>
       <div id="magHud2" class="magCard" hidden><div class="mhTop"><span>מחסנית · שחקן 2</span><b class="mhN">0 / 4</b></div><div class="mhSlots"></div><div class="mhMsg"></div></div>
       <div id="magHud" class="magCard" aria-live="polite"><button class="hudX" data-hudx="mag" title="הסתר את המחסנית">✕</button>
         <div class="mhTop"><span>מחסנית</span><b id="mhN">0 / 4</b></div>
@@ -1394,6 +1433,8 @@
         <div id="ppStatus"></div>
         <div id="ppAutoMsg" hidden>🤖 הרובוט נוסע לבד עכשיו — עוד רגע תורכם לנהוג</div>
         <div class="ppRow"><button id="ppStop">עצור משחק</button><button id="ppReplay">▶ שידור חוזר</button><button id="ppBcast">מצב שידור</button></div>
+        <div class="ppRow"><button id="ppRec">⏺ הקלט וידאו</button><button id="ppCast">🖥 מסך שני</button></div>
+        <label class="check ppAuto" for="ppRecAuto"><input type="checkbox" id="ppRecAuto">להקליט כל מאץ׳ לבד</label>
         <button id="ppStats" class="ppStatsBtn">📊 הסטטיסטיקות שלי</button>
         <div class="ppH">מצלמה</div>
         <div class="ppRow" id="ppCam"><button data-ppcam="free">חופשית</button><button data-ppcam="chase">עוקבת</button><button data-ppcam="top">מלמעלה</button><button data-ppcam="driver">נהג</button></div>
@@ -1476,8 +1517,9 @@
         <label class="check" for="kVpad"><input type="checkbox" id="kVpad" checked>לחפש את הגשר במחשב אוטומטית</label>
         <div class="row"><label class="lbl" for="nVpadPort">פורט</label><input type="number" id="nVpadPort" value="9662" min="1" max="65535" step="1"><button id="bVpadNow">חבר עכשיו</button></div>
         <p class="note"><b>איך זה עובד:</b> טלפון אנדרואיד לא יכול להציג את עצמו כשלט USB — זה דורש רוט. לכן במקום להעמיד פנים, <b>adb reverse</b> ממפה פורט אחד דרך הכבל, גשר קטן על המחשב מעביר הודעות, והטלפון נכנס לכאן כשלט לכל דבר. אותם צירים, אותם כפתורים, אותו רטט.</p>
-        <p class="note"><b>הפעלה:</b> להריץ את <code>padbridge.py</code> על המחשב, לחבר את הטלפון בכבל עם ניפוי באגים דרך USB פתוח, ולפתוח בטלפון <code>http://localhost:9662</code>. הגשר מריץ את <code>adb reverse</code> לבד בכל פעם שמתגלה טלפון.</p>
-        <p class="note"><b>חשוב:</b> דף שנטען מ-https לא תמיד מרשה חיבור לא מוצפן ל-localhost. אם הגשר לא נמצא, לפתוח את הסימולטור <b>מהגשר עצמו</b> — <code>http://localhost:9662/sim</code> — ואז הכל באותו מקור ועובד.</p>
+        <p class="note appOnly"><b>באפליקציה הגשר כבר מובנה</b> — לא צריך את <code>start.bat</code>. בפעם הראשונה Windows ישאל אם לאפשר גישה לרשת: לאשר ״רשתות פרטיות״.</p>
+        <p class="note webOnly"><b>הפעלה:</b> להריץ את <code>padbridge.py</code> על המחשב, לחבר את הטלפון בכבל עם ניפוי באגים דרך USB פתוח, ולפתוח בטלפון <code>http://localhost:9662</code>. הגשר מריץ את <code>adb reverse</code> לבד בכל פעם שמתגלה טלפון.</p>
+        <p class="note webOnly"><b>חשוב:</b> דף שנטען מ-https לא תמיד מרשה חיבור לא מוצפן ל-localhost. אם הגשר לא נמצא, לפתוח את הסימולטור <b>מהגשר עצמו</b> — <code>http://localhost:9662/sim</code> — ואז הכל באותו מקור ועובד.</p>
         <p class="note"><b>שקט פירושו עצירה:</b> אם המסך נכבה או הכבל יצא, הרובוט נעצר תוך שנייה וחצי ולא נשאר עם הסטיק התקוע מהרגע האחרון.</p>
       </div></details>
 
@@ -1485,6 +1527,9 @@
         <div class="out" id="oMatch"></div>
         <div class="row"><button id="bMatchStart">התחל מאץ׳</button><button id="bMatchStop">עצור</button></div>
         <div class="row"><button id="bReplay">▶ שידור חוזר</button><button id="bHighlight">★ מהלך המאץ׳</button><button id="bBcast">מצב שידור</button></div>
+        <div class="row"><button id="bRec">⏺ הקלט וידאו</button><button id="bCast">🖥 מסך שני</button><button id="bRecShow" hidden>📂 הסרטון האחרון</button><button id="bRecDir" class="appOnly">📂 תיקיית הסרטונים</button></div>
+        <label class="check" for="kRecAuto"><input type="checkbox" id="kRecAuto">להקליט כל מאץ׳ לבד (עד 5 שניות אחרי הסוף)</label>
+        <p class="note"><b>מסך שני:</b> חלון עם מצלמת טלוויזיה ולוח ניקוד — למקרן או לטלוויזיה, בזמן שנוהגים כאן. באפליקציה הוא נפתח לבד על המסך השני במסך מלא. <b>הקלטה:</b> הזירה ופס הניקוד, לקובץ MP4.</p>
         <label class="check" for="kFaults"><input type="checkbox" id="kFaults">תקלות אקראיות לרובוט שלי — אחיזה, סוללה, מקלט, משגר, חרטום</label>
         <div class="grp">רמת האוטונומי</div>
         <label class="check" for="kRandAuto"><input type="checkbox" id="kRandAuto" checked>רמה אקראית לבוטים בכל מאץ׳</label>
@@ -1719,6 +1764,14 @@
         <p class="note">בונה 12 וריאציות מאבני הבניין — ירי, פרח קרוב, פרח שני, חניה — ומריץ כל אחת כאוטונומי אמיתי, מעמדת הפתיחה. <b>טען</b> מעביר לעורך, <b>שמור</b> מוסיף לרשימה (וגם לחלון המשחק).</p>
       </div></details>
 
+      <details data-ws="auto" id="liveBox"><summary>הרובוט האמיתי — חי, דרך FTC Dashboard</summary><div class="body">
+        <div class="out" id="oLive"></div>
+        <div class="row"><label class="lbl" for="liveIp">כתובת</label><input id="liveIp" value="192.168.43.1" dir="ltr" style="flex:1"><label class="lbl" for="livePort">פורט</label><input id="livePort" type="number" value="8000" min="1" max="65535" style="width:80px"></div>
+        <div class="row"><button id="bLiveConn">התחבר לרובוט</button><button id="bLiveRec" disabled>⏺ הקלט ריצה</button><button id="bLiveClr">נקה שובל</button></div>
+        <label class="check" for="kLiveTrail"><input type="checkbox" id="kLiveTrail" checked>להראות את השובל של הרובוט האמיתי</label>
+        <p class="note"><b>איך:</b> מחברים את המחשב לרשת האלחוטית של ה-Control Hub, מריצים אופמוד, ולוחצים ״התחבר״. הרובוט האמיתי (בתכלת) זז על הזירה ליד הסימולציה. המיקום נלקח מהטלמטריה — מפתחות <code>x</code>, <code>y</code>, <code>heading</code> (כמו ב-LocalizationTest של RoadRunner) — או מציור הרובוט של RoadRunner בדשבורד. ״הקלט ריצה״ ← ״עצור והשווה״ מעביר את הריצה ליומן למטה, מול המסלול שבעורך.</p>
+      </div></details>
+
       <details data-ws="auto"><summary>יומן מהרובוט האמיתי — מה באמת קרה</summary><div class="body">
         <div class="out" id="oOdo"></div>
         <textarea id="odoText" rows="4" dir="ltr" placeholder="t,x,y,heading&#10;0.00,0,0,0&#10;0.05,0.8,0.0,0.00" style="width:100%;font-family:var(--mono);font-size:11.5px"></textarea>
@@ -1727,7 +1780,8 @@
         <div class="row"><label class="lbl" for="odoAng">כיוון</label><select id="odoAng" class="sel" style="flex:1"><option value="auto">לזהות לבד</option><option value="rad">רדיאנים</option><option value="deg">מעלות</option></select></div>
         <label class="check" for="kOdoAlign"><input type="checkbox" id="kOdoAlign" checked>היומן מתחיל ב-(0, 0) — יישר לעמדת הפתיחה</label>
         <div class="row"><button id="bOdoLoad">טען והשווה</button><button id="bOdoPlay">נגן על הזירה</button><button id="bOdoClr">נקה</button></div>
-        <div class="row"><button id="bOdoJava">קוד רישום לרובוט</button><button id="bOdoDemo">יומן לדוגמה</button></div>
+        <div class="row"><button id="bOdoJava">קוד רישום לרובוט</button><button id="bOdoDemo">יומן לדוגמה</button><button id="bOdoAdb" class="appOnly">📥 משוך מהרובוט</button></div>
+        <p class="note appOnly"><b>📥 משוך מהרובוט:</b> האפליקציה מתחברת ב-adb ל-Control Hub (בכתובת שבלוח ״הרובוט האמיתי״, או בכבל) ומושכת את <code>/sdcard/FIRST/odolog.csv</code>. צריך adb במחשב (מגיע עם Android Studio).</p>
         <textarea id="odoJava" rows="8" dir="ltr" hidden readonly style="width:100%;font-family:var(--mono);font-size:11px"></textarea>
         <p class="note">שורה לכל רגע: <b>זמן, x, y, כיוון</b> בצירי RoadRunner (גם מעלות, גם מילישניות, גם <code>Pose2d.toString</code>). הקו צבוע לפי הסטייה מהמסלול שבעורך: ירוק עד 2″, צהוב עד 5″, אדום מעבר. הטבעת מסמנת את הסטייה הגדולה.</p>
       </div></details>
@@ -1756,6 +1810,9 @@
           <div class="row"><button id="bAppData">📂 פתח את תיקיית הנתונים</button><button id="bAppBk">גבה עכשיו</button></div>
           <div class="row"><button id="bAppTeamExp">ייצא את כל הקבוצה</button><button id="bAppTeamImp">ייבא קבוצה</button></div>
           <div class="row"><button id="bAppImp">ייבא גיבוי מהדפדפן לנהג הזה</button></div>
+          <div class="grp">סנכרון ועדכונים</div>
+          <div id="appCloud" class="acctBox"></div>
+          <div id="appVer" class="verBox"></div>
           <div id="appNote" class="note"></div>
         </div>
         <div id="bkState" class="note"></div>
@@ -7021,6 +7078,7 @@ function placeAllAtStart(){
 }
 function matchStart(){
   if(typeof GEN!=="undefined"&&GEN.running&&!GEN.inEval){ refToast("המחולל רץ — חכה שיסיים או עצור אותו","block"); return; }
+  if(typeof vrecMatchStart==="function"&&!(typeof GEN!=="undefined"&&GEN.running)&&!fastMode) try{ vrecMatchStart(); }catch(e){}
   /* ספירה לאחור לפני שהשעון רץ — כמו על המגרש */
   MATCH.on=false; MATCH.cd=MT.cd>0?MT.cd+0.999:0; MATCH.phase=MT.cd>0?"ספירה":"AUTO";
   MATCH.t=0; MATCH.tipsAuto=0; MATCH.tipsTele=0; MATCH.leave=false; MATCH.autoDone=false; MATCH.final=null;
@@ -7040,7 +7098,7 @@ function matchStart(){
   ghostArm(); debriefReset(); teachReset(); cueReset(); sndCtx();
   refreshGamePanel(); updateMatch(0); showBanner();
 }
-function matchStop(){ if(MATCH.on&&!GEN.running) replayCommit(); if(typeof myAutoReset==="function") myAutoReset(); MATCH.final=null; MATCH.on=false; MATCH.cd=0; MATCH.locked=false; faultReset(); SEASON.cur=null;
+function matchStop(){ if(typeof vrecMatchEnd==="function") try{ vrecMatchEnd(); }catch(e){} if(MATCH.on&&!GEN.running) replayCommit(); if(typeof myAutoReset==="function") myAutoReset(); MATCH.final=null; MATCH.on=false; MATCH.cd=0; MATCH.locked=false; faultReset(); SEASON.cur=null;
   MATCH.phase="idle"; ghostDisarm(); showBanner(); updateMatch(0); }
 /* ══════════════════════════════════════════════════════════════════
    שופט — פרק 11 במדריך, כמה שאפשר למדוד בסימולטור
@@ -10912,6 +10970,8 @@ function frame(now){
     renderer.setViewport(0,0,w,h);
     if(now-camLast>140){ camLast=now; tagScan(); drawCamOverlay(); }
   }
+  if(VREC.on) vrecDraw();
+  if(CAST.win) castRender(dt);
 }
 /* התקדמות דטרמיניסטית בצעד קבוע — לבדיקות ולניתוח */
 function advance(sec,step){
@@ -11156,9 +11216,12 @@ function bcTick(dt){
   if(MATCH.on||MATCH.cd>0) BC.ended=false;
 }
 function bcLower(txt,k){
-  if(!BC.on||k==="hit") return;
+  if(k==="hit") return;
+  const html='<i style="background:'+((RPK[k]||RPK.phase)[1])+'"></i>'+pathEsc(txt);
+  if(typeof castLower==="function") castLower(html);
+  if(!BC.on) return;
   const lo=$("bcLower"); if(!lo) return;
-  lo.innerHTML='<i style="background:'+((RPK[k]||RPK.phase)[1])+'"></i>'+pathEsc(txt);
+  lo.innerHTML=html;
   lo.classList.add("show"); BC.lowT=4;
 }
 function bcFinal(show){
@@ -11223,6 +11286,7 @@ function seasonEnd(){
   const a=seasonAll(); a.push(m); while(a.length>150) a.shift();
   while(!seasonPut(a)&&a.length>10) a.splice(0,10);
   memLearn(m);
+  try{ vrecMatchEnd(); }catch(e){}
   if(APP.on){ try{ bbApp.matchAdd(m).then(()=>Promise.all([appLoadMatches(),appLoadTeam()])).then(()=>{ try{ statUI(); }catch(e){} }); }catch(e){} }
   seasonUI(); try{ statUI(); }catch(e){} return m;
 }
@@ -11795,7 +11859,8 @@ async function phoneFindUrl(){
     const j=await r.json();
     if(j&&j.lan&&j.lan.length) PHN.url="http://"+j.lan[0]+":"+(j.port||VPAD.port)+"/";
     else PHN.err="הגשר פועל, אבל לא מצא רשת אלחוטית. חבר את המחשב לאותה רשת של הטלפון.";
-  }catch(e){ PHN.err=location.protocol==="https:"
+  }catch(e){ PHN.err=window.bbApp?"הגשר המובנה לא עלה (אולי start.bat כבר רץ ותופס את הפורט). סגרו אותו והפעילו את האפליקציה מחדש."
+      :location.protocol==="https:"
       ?"מהדף הזה אין גישה לגשר במחשב. הפעל את start.bat ופתח את הסימולטור מהגשר: http://localhost:9662/sim"
       :"הגשר לא פועל במחשב הזה. הפעל פעם אחת את start.bat (בזיפ), והברקוד יופיע."; }
   PHN.busy=false; phoneUI(); return PHN.url;
@@ -12005,6 +12070,8 @@ window.__sim={
   ODO, odoLoad, odoParse, odoClear, GEN, GEN_SEQ, genPts, genEvalSync, genRun, genLoad, RED, redApply, redMeasure, redMeasureQuick, RED_PARTS,
   UI, uiSetMode, ppRefresh, PHN, phoneSetSeat, qrSvg, HUD, hudSet, hudClean, showBanner, bcFinal, phoneUI,
   kickFrame(){ requestAnimationFrame(frame); },
+  get LIVE(){ return LIVE; }, get ODO(){ return ODO; }, liveConnect:()=>liveConnect(), liveClose:()=>liveClose(),
+  get CAST(){ return CAST; }, get VREC(){ return VREC; }, castRender:dt=>castRender(dt), castOpen:()=>castOpen(), castClose:()=>castClose(), vrecStart:()=>vrecStart(), vrecStop:()=>vrecStop(), vrecDraw:()=>vrecDraw(),
   get CAM2(){ return CAM2; }, get SPLITS(){ return SPLIT; }, get camView(){ return camView; }, get fieldCentric(){ return fieldCentric; }, cam2Pos(){ const c=splitCam(); return [c.position.x,c.position.y,c.position.z]; }, statUI:()=>statUI(), statCalc:()=>statCalc(statList()), seasonAll:()=>seasonAll(),
   setClip(a){ bot.clip.length=0; for(const k of a) bot.clip.push(k); bot.mag=bot.clip.length; syncClip(); updateHUD(); },
   setIntake(v){ intake=!!v; magHud(); },
@@ -12381,7 +12448,9 @@ function appNote(t){ const n=$("appNote"); if(n) n.textContent=t||""; }
 function appInfo(){ const o=$("appInfo"); if(!o) return;
   const b=bbApp.backupsAtBoot||[];
   o.innerHTML=row("גרסה","BIOBUZZ "+appEsc(bbApp.version))+row("הנהג",appEsc((APP.profile||{}).emoji)+" "+appEsc((APP.profile||{}).name))+
-    row("גיבוי יומי",b.length?b.length+" ימים · האחרון "+appEsc(b[0]):"עוד אין")+'<div class="appPath" title="תיקיית הנתונים">'+appEsc(bbApp.dataDir)+'</div>'; }
+    row("גיבוי יומי",b.length?b.length+" ימים · האחרון "+appEsc(b[0]):"עוד אין")+'<div id="appBridge"></div><div class="appPath" title="תיקיית הנתונים">'+appEsc(bbApp.dataDir)+'</div>';
+  if(bbApp.bridgeStatus) bbApp.bridgeStatus().then(g=>{ const el=$("appBridge"); if(!el) return;
+    el.innerHTML=row("גשר מובנה",g.on?"פועל · פורט "+g.port+(g.code?" · קוד חדר "+appEsc(g.code):"")+(g.pad?" · 📱 טלפון מחובר":""):"⚠ "+appEsc(g.error||"כבוי"),g.on?"ok":"bad"); }); }
 function appWelcome(){
   const w=$("welcome"); if(!w) return; w.hidden=false;
   let emo="🐝"; const box=$("wcEmo");
@@ -12403,6 +12472,369 @@ function appTeamHTML(){
     rows.map((t,i)=>{ const s=t.sum; return '<tr'+(t.active?' class="me"':'')+'><td>'+(s.n?(i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1):"")+'</td><td>'+appEsc(t.emoji)+' '+appEsc(t.name)+'</td><td>'+(s.n||0)+'</td><td>'+(s.n?Math.round(100*s.W/s.n)+"%":"—")+'</td><td>'+(s.n?s.avg.toFixed(1):"—")+'</td><td>'+(s.n?s.best:"—")+'</td><td>'+(s.acc!=null?Math.round(100*s.acc)+"%":"—")+'</td></tr>'; }).join("")+'</table>';
 }
 
+/* ══════ v54 — חשבון, סנכרון בין מחשבים ועדכונים (רק באפליקציה) ══════ */
+const ACC={st:null, upd:null, reloadT:null};
+function accAgo(t){ if(!t) return "עוד לא סונכרן"; const s=(Date.now()-t)/1000;
+  if(s<50) return "סונכרן עכשיו"; if(s<3600) return "סונכרן לפני "+Math.max(1,Math.round(s/60))+" דק׳"; if(s<86400) return "סונכרן לפני "+Math.round(s/3600)+" שע׳";
+  return "סונכרן לפני "+Math.round(s/86400)+" ימים"; }
+function accBox(el){ if(!el) return; const s=ACC.st||{};
+  el.classList.toggle("on",!!s.loggedIn);
+  el.innerHTML=!s.loggedIn
+    ?'<i class="acI">☁️</i><div class="acT"><b>סנכרון בין מחשבים — כבוי</b><span>מתחברים לחשבון, וכל הנהגים, ההגדרות והמשחקים נמצאים בכל מחשב</span></div><button data-acc="open">התחבר</button>'
+    :'<i class="acI">☁️</i><div class="acT"><b>'+appEsc(s.email)+'</b><span class="'+(s.busy?"":s.lastError?"err":"ok")+'">'+(s.busy?"מסנכרן…":s.lastError?"⚠ "+appEsc(s.lastError):"✓ "+accAgo(s.lastSync))+'</span></div><button data-acc="sync">סנכרן</button><button data-acc="out">התנתק</button>'; }
+function accRender(){ accBox($("pfAcct")); accBox($("appCloud")); }
+function updText(u){ u=u||{};
+  const v=appEsc(u.version||"");
+  switch(u.state){
+    case "checking": return '<span>בודק…</span>';
+    case "none": return '<span class="ok">✓ זו הגרסה הכי חדשה</span>';
+    case "available": return '<span class="hl">גרסה '+v+' זמינה</span> <button data-upd="get">הורד מהאתר</button>';
+    case "downloading": return '<span class="hl">מוריד את '+v+' · '+(u.percent|0)+'%</span>';
+    case "ready": return '<span class="ok">גרסה '+v+' מוכנה</span> <button data-upd="install">התקן והפעל מחדש</button>';
+    case "error": return '<span class="err">⚠ '+appEsc(u.error||"שגיאה")+'</span>';
+    default: return ""; } }
+function updRender(){
+  const u=ACC.upd||{}, h='<span>BIOBUZZ <b>'+appEsc(bbApp.version)+'</b></span><button data-upd="check">🔄 בדוק עדכונים</button>'+updText(u);
+  for(const id of ["pfVer","appVer"]){ const el=$(id); if(el) el.innerHTML=h; }
+  const b=$("updBadge"); if(!b) return;
+  const show=u.state==="available"||u.state==="downloading"||u.state==="ready";
+  b.hidden=!show; b.className=u.state==="ready"?"ready":u.state==="downloading"?"dl":"";
+  b.textContent=u.state==="ready"?"⬆ עדכון "+(u.version||"")+" — התקן":u.state==="downloading"?"⬇ מוריד עדכון · "+(u.percent|0)+"%":"⬆ גרסה "+(u.version||"")+" זמינה";
+}
+async function updAct(a){
+  if(a==="check") await bbApp.updCheck();
+  else if(a==="install"){ if(MATCH.on||MATCH.cd>0){ refToast("קודם עצרו את המשחק — ההתקנה סוגרת את האפליקציה","block"); return; } try{ bbApp.flush(); }catch(e){} await bbApp.updInstall(); }
+  else if(a==="get") bbApp.openUrl((ACC.upd||{}).url||"");
+}
+/* נתונים שהגיעו ממחשב אחר לנהג הפעיל — טוענים מחדש (לא באמצע משחק) */
+function accReloadSoon(){
+  clearTimeout(ACC.reloadT);
+  if(MATCH.on||MATCH.cd>0||REPLAY.on){ ACC.reloadT=setTimeout(accReloadSoon,2000); return; }
+  refToast("☁️ עודכן ממחשב אחר — טוען מחדש");
+  ACC.reloadT=setTimeout(()=>location.reload(),900);
+}
+function accModal(open){ const m=$("acctModal"); if(!m) return; m.hidden=!open;
+  if(open){ const e=$("acEmail"); $("acMsg").textContent=""; $("acMsg").className="acMsg"; setTimeout(()=>e&&e.focus(),60); } }
+function accMsg(t,cls){ const m=$("acMsg"); if(m){ m.textContent=t||""; m.className="acMsg"+(cls?" "+cls:""); } }
+function accWire(){
+  if(!APP.on) return;
+  const click=async e=>{ const b=e.target.closest("[data-acc]"), u=e.target.closest("[data-upd]");
+    if(u){ e.preventDefault(); updAct(u.dataset.upd); return; }
+    if(!b) return; e.preventDefault(); const a=b.dataset.acc;
+    if(a==="open") accModal(true);
+    else if(a==="sync") bbApp.syncNow();
+    else if(a==="out"){ if(b.dataset.arm!=="1"){ b.dataset.arm="1"; b.textContent="בטוח?"; setTimeout(()=>{ b.dataset.arm=""; b.textContent="התנתק"; },3000); return; }
+      await bbApp.acctSignOut(); ACC.st=await bbApp.acctStatus(); accRender(); } };
+  for(const id of ["pfAcct","appCloud","pfVer","appVer"]){ const el=$(id); if(el) el.addEventListener("click",click); }
+  on($("updBadge"),()=>{ const u=ACC.upd||{}; updAct(u.state==="ready"?"install":u.state==="available"?"get":"check"); });
+  const go=async up=>{ const em=$("acEmail").value.trim(), pw=$("acPass").value;
+    if(!/.+@.+\..+/.test(em)){ accMsg("צריך מייל תקין","err"); return; }
+    if(pw.length<6){ accMsg("הסיסמה צריכה להיות לפחות 6 תווים","err"); return; }
+    accMsg(up?"יוצר חשבון…":"מתחבר…");
+    const r=up?await bbApp.acctSignUp(em,pw):await bbApp.acctSignIn(em,pw);
+    if(!r.ok){ accMsg(r.why||"לא הצליח","err"); return; }
+    if(r.confirm){ accMsg("✉️ נשלח מייל אישור ל-"+em+". לוחצים על הקישור במייל (גם אם הדף שנפתח ריק), ואז ״התחבר״ כאן.","ok"); return; }
+    accMsg("✓ מחובר! מסנכרן…","ok"); $("acPass").value="";
+    if(bbApp.firstRun){ try{ await bbApp.firstRunDone(); }catch(e){} const w=$("welcome"); if(w) w.hidden=true; }
+    setTimeout(()=>accModal(false),900); };
+  on($("acIn"),()=>go(false)); on($("acUp"),()=>go(true));
+  on($("acForgot"),async()=>{ const em=$("acEmail").value.trim(); if(!/.+@.+\..+/.test(em)){ accMsg("כתבו את המייל למעלה ואז ״שכחתי סיסמה״","err"); return; }
+    const r=await bbApp.acctRecover(em); accMsg(r.ok?"✉️ נשלח מייל לאיפוס הסיסמה":r.why,r.ok?"ok":"err"); });
+  on($("acClose"),()=>accModal(false));
+  ["acEmail","acPass"].forEach(id=>{ const el=$(id); if(el) el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter") go(false); if(e.key==="Escape") accModal(false); }); });
+  on($("wcAcct"),()=>accModal(true));
+  bbApp.onSync(d=>{ ACC.st=d.status; accRender();
+    const r=d.result; if(!r||!r.ok) return;
+    if(r.changedActive){ accReloadSoon(); return; }
+    if(r.profilesChanged||r.pulledMatches||r.pulledProfiles){ appChipRefresh(); Promise.all([appLoadMatches(),appLoadTeam()]).then(()=>{ try{ statUI(); }catch(e){} });
+      const m=$("profMenu"); if(m&&!m.hidden) appMenuFill(); } });
+  bbApp.onUpd(u=>{ ACC.upd=u; updRender(); });
+  bbApp.acctStatus().then(s=>{ ACC.st=s; accRender(); });
+  bbApp.updState().then(u=>{ ACC.upd=u; updRender(); });
+  setInterval(()=>{ if(ACC.st&&ACC.st.loggedIn) accRender(); },30000);
+  accRender(); updRender();
+}
+
+/* ══════ v54 — שידור למסך שני (מקרן / טלוויזיה) ══════
+   חלון נוסף עם מצלמת ״טלוויזיה״ משלו ולוח ניקוד, בזמן שהנהג ממשיך במסך הראשי.
+   אותה זירה בדיוק (אותו scene) — מצויירת פעמיים, בשני חלונות. באפליקציה החלון נפתח לבד על המסך השני. */
+const CAST={win:null, ren:null, cam:null, tgt:null, t:0, n:0, finShown:false};
+function castOn(){ return !!(CAST.win&&!CAST.win.closed&&CAST.ren); }
+function castClose(){ try{ if(CAST.win&&!CAST.win.closed) CAST.win.close(); }catch(e){} castCleanup(); }
+function castCleanup(){ try{ if(CAST.ren) CAST.ren.dispose(); }catch(e){} CAST.ren=null; CAST.win=null; castUI(); }
+function castOpen(){
+  if(castOn()){ try{ CAST.win.focus(); }catch(e){} return true; }
+  const w=window.open("","bbcast","width=1280,height=720");
+  if(!w){ refToast("החלון החדש נחסם — אשרו חלונות קופצים לדף הזה","block"); return false; }
+  const styles=[...document.querySelectorAll("style")].map(s=>s.outerHTML).join("");
+  const d=w.document; d.open();
+  d.write('<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>BIOBUZZ — שידור</title>'+styles+
+    '<style>html,body{margin:0;height:100%;overflow:hidden;background:#05070a}#castCv{position:fixed;inset:0;width:100%;height:100%;display:block}'+
+    'body.bcast #bcBoard{display:flex;position:fixed}body.bcast #bcLower{position:fixed}#bcFinal{position:fixed}'+
+    '.castHint{position:fixed;bottom:12px;right:14px;color:#ffffff70;font:12px system-ui;z-index:20;transition:opacity 1s}</style></head>'+
+    '<body class="bcast castwin"><canvas id="castCv"></canvas>'+
+    '<div id="bcBoard"><div class="bcT red"><i id="bcRedN"></i><b id="bcRed">0</b></div><div class="bcMid"><b id="bcClock">2:38</b><span id="bcPhase">אימון</span></div><div class="bcT blue"><b id="bcBlue">0</b><i id="bcBlueN"></i></div></div>'+
+    '<div id="bcLower"></div><div id="bcFinal" hidden></div><div class="castHint" id="castHint">לחיצה כפולה — מסך מלא</div></body></html>');
+  d.close();
+  const cv=d.getElementById("castCv");
+  try{
+    /* three.js בודק WebGL2 עם instanceof — ובחלון אחר המחלקה שונה. מחליפים לרגע, כדי שיזהה WebGL2 */
+    const W2=window.WebGL2RenderingContext; let r;
+    try{ if(w.WebGL2RenderingContext) window.WebGL2RenderingContext=w.WebGL2RenderingContext; r=new THREE.WebGLRenderer({canvas:cv, antialias:true}); }
+    finally{ window.WebGL2RenderingContext=W2; }
+    r.setPixelRatio(Math.min(w.devicePixelRatio||1,2)); r.setClearColor(0x0e1216,1);
+    r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap; r.outputEncoding=THREE.sRGBEncoding;
+    r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.0;
+    CAST.ren=r;
+  }catch(e){ console.error(e); try{ w.close(); }catch(err){} refToast("לא הצלחתי לצייר בחלון השני","block"); return false; }
+  CAST.win=w; CAST.cam=new THREE.PerspectiveCamera(40,16/9,0.05,120); CAST.tgt=new THREE.Vector3(0,M(8),0); CAST.t=0; CAST.finShown=false;
+  cv.addEventListener("dblclick",()=>{ try{ if(d.fullscreenElement) d.exitFullscreen(); else d.documentElement.requestFullscreen(); }catch(e){} });
+  setTimeout(()=>{ try{ d.getElementById("castHint").style.opacity="0"; }catch(e){} },5000);
+  w.addEventListener("beforeunload",()=>setTimeout(castCleanup,0));
+  castUI(); return true;
+}
+function castToggle(){ if(castOn()) castClose(); else castOpen(); }
+/* מצלמת טלוויזיה: מהצד של הקהל, עוקבת בעדינות אחרי מרכז הרובוטים, ומתנדנדת לאט */
+function castRender(dt){
+  if(!CAST.win) return;
+  if(CAST.win.closed||!CAST.ren){ castCleanup(); return; }
+  CAST.t+=dt; if((CAST.n++)&1) return;              // 30 פריימים בשנייה מספיקים לשידור
+  const d=CAST.win.document, cv=d.getElementById("castCv"); if(!cv) return;
+  const W=cv.clientWidth|0, H=cv.clientHeight|0;
+  if(W<10||H<10) return;
+  const pr=CAST.ren.getPixelRatio();
+  if(cv.width!==Math.round(W*pr)||cv.height!==Math.round(H*pr)) CAST.ren.setSize(W,H,false);
+  let cx=0, cz=0, n=0; const add=g=>{ if(g){ cx+=g.position.x; cz+=g.position.z; n++; } };
+  add(bot.group); for(const b of BOTS) if(b.on) add(b.group);
+  if(n){ cx/=n; cz/=n; } const lim=M(34);
+  CAST.tgt.lerp(new THREE.Vector3(Math.max(-lim,Math.min(lim,cx*0.7)),M(9),Math.max(-lim,Math.min(lim,cz*0.7))),Math.min(1,dt*2*1.2));
+  const th=Math.PI/2+0.22*Math.sin(CAST.t*0.06), ph=0.93, dist=M(190);
+  const c=CAST.cam; c.aspect=W/H; c.updateProjectionMatrix();
+  c.position.set(CAST.tgt.x+dist*Math.sin(ph)*Math.cos(th),CAST.tgt.y+dist*Math.cos(ph),CAST.tgt.z+dist*Math.sin(ph)*Math.sin(th));
+  c.lookAt(CAST.tgt);
+  CAST.ren.render(scene,c);
+  castBoard(d);
+}
+function bcValues(){
+  const nm=bcNames(); let t, red, blue, ph;
+  if(REPLAY.on&&REPLAY.cur){ t=REPLAY.cur.t; red=REPLAY.cur.red; blue=REPLAY.cur.blue; ph=REPLAY.cur.ph; }
+  else { t=MATCH.t; red=allianceScore("red"); blue=allianceScore("blue"); ph=netPhaseCode(); }
+  const phn=REPLAY.on?"שידור חוזר":ph===5?"ספירה":ph===1?"אוטונומי":ph===2?"מעבר":ph===3?"טלאופ":ph===4?"סיום":"אימון";
+  const clock=MATCH.cd>0&&!REPLAY.on?String(Math.ceil(MATCH.cd-1)):fmtClock(Math.max(0,tEnd()-(t||0)));
+  return {redN:nm.red, blueN:nm.blue, red:red|0, blue:blue|0, phase:phn, clock};
+}
+function castBoard(d){
+  const v=bcValues(), set=(id,x)=>{ const e=d.getElementById(id); if(e&&e.textContent!==String(x)) e.textContent=x; };
+  set("bcRedN",v.redN); set("bcBlueN",v.blueN); set("bcRed",v.red); set("bcBlue",v.blue); set("bcPhase",v.phase); set("bcClock",v.clock);
+  const f=d.getElementById("bcFinal"), end=!REPLAY.on&&MATCH.phase==="סיום";
+  if(end&&!CAST.finShown){ const m=$("bcFinal"); const was=m?m.hidden:true; const html=m?m.innerHTML:"";
+    bcFinal(true); if(f&&m){ f.innerHTML=m.innerHTML; f.hidden=false; } if(m&&!BC.on){ m.innerHTML=html; m.hidden=was; } CAST.finShown=true; }
+  if(!end&&CAST.finShown){ if(f) f.hidden=true; CAST.finShown=false; }
+  const lo=d.getElementById("bcLower"); if(lo&&CAST.lowT!=null){ CAST.lowT-=1/30; if(CAST.lowT<=0){ lo.classList.remove("show"); CAST.lowT=null; } }
+}
+function castLower(html){ if(!castOn()) return; const lo=CAST.win.document.getElementById("bcLower"); if(!lo) return; lo.innerHTML=html; lo.classList.add("show"); CAST.lowT=4; }
+function castUI(){ const on=castOn();
+  for(const id of ["ppCast","bCast"]){ const b=$(id); if(b){ b.classList.toggle("on",on); b.textContent=on?"🖥 סגור מסך שני":"🖥 מסך שני"; } } }
+
+/* ══════ v54 — הקלטת וידאו ══════
+   מקליטים את הזירה + פס ניקוד, לקובץ MP4 (או WebM אם אין). באפליקציה נשמר לתיקיית ״סרטונים״. */
+const VREC={on:false, mr:null, chunks:[], cv:null, g:null, t0:0, mime:"", auto:false, stopT:null};
+try{ VREC.auto=localStorage.getItem("bbRecAuto1")==="1"; }catch(e){}
+function vrecMime(){ if(!window.MediaRecorder) return "";
+  for(const m of ["video/mp4;codecs=avc1.640028","video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"]) if(MediaRecorder.isTypeSupported(m)) return m;
+  return ""; }
+function vrecStart(){
+  if(VREC.on) return true;
+  const m=vrecMime(); if(!m){ refToast("אי אפשר להקליט וידאו כאן","block"); return false; }
+  const src=renderer.domElement; let W=src.width, H=src.height; const k=Math.min(1,1920/Math.max(1,W));
+  W=Math.max(2,Math.round(W*k/2)*2); H=Math.max(2,Math.round(H*k/2)*2);
+  VREC.cv=document.createElement("canvas"); VREC.cv.width=W; VREC.cv.height=H; VREC.g=VREC.cv.getContext("2d");
+  VREC.g.fillStyle="#0e1216"; VREC.g.fillRect(0,0,W,H);
+  try{ VREC.mr=new MediaRecorder(VREC.cv.captureStream(30),{mimeType:m, videoBitsPerSecond:10e6}); }catch(e){ refToast("ההקלטה לא התחילה","block"); return false; }
+  VREC.chunks=[]; VREC.mime=m;
+  VREC.mr.ondataavailable=e=>{ if(e.data&&e.data.size) VREC.chunks.push(e.data); };
+  VREC.mr.onstop=vrecSave; VREC.mr.start(1000);
+  VREC.on=true; VREC.t0=performance.now(); vrecUI(); return true;
+}
+function vrecStop(){ clearTimeout(VREC.stopT); if(!VREC.on) return; VREC.on=false; try{ VREC.mr.stop(); }catch(e){} vrecUI(); }
+function vrecToggle(){ if(VREC.on) vrecStop(); else vrecStart(); }
+function vrecDraw(){
+  if(!VREC.on) return;
+  const g=VREC.g, W=VREC.cv.width, H=VREC.cv.height, s=H/1080;
+  g.drawImage(renderer.domElement,0,0,W,H);
+  const live=MATCH.on||MATCH.cd>0||MATCH.phase==="סיום";
+  if(live){ const v=bcValues(), bw=Math.round(620*s), bh=Math.round(64*s), x=(W-bw)/2, y=Math.round(18*s), mid=Math.round(150*s), side=(bw-mid)/2;
+    g.save(); g.direction="rtl"; g.textBaseline="middle";
+    g.fillStyle="#c9434a"; g.fillRect(x,y,side,bh); g.fillStyle="#0b0e12"; g.fillRect(x+side,y,mid,bh); g.fillStyle="#3a7fd0"; g.fillRect(x+side+mid,y,side,bh);
+    g.fillStyle="#fff"; g.font="600 "+Math.round(40*s)+"px Rubik, system-ui"; g.textAlign="center";
+    g.fillText(String(v.red),x+side-Math.round(40*s),y+bh/2); g.fillText(String(v.blue),x+side+mid+Math.round(40*s),y+bh/2);
+    g.font="500 "+Math.round(19*s)+"px Rubik, system-ui"; g.textAlign="left"; g.fillText(v.redN.slice(0,16),x+Math.round(14*s),y+bh/2);
+    g.textAlign="right"; g.fillText(v.blueN.slice(0,16),x+bw-Math.round(14*s),y+bh/2);
+    g.textAlign="center"; g.font="600 "+Math.round(28*s)+"px 'IBM Plex Mono', monospace"; g.fillText(v.clock,x+side+mid/2,y+bh*0.42);
+    g.fillStyle="#FFB020"; g.font="600 "+Math.round(12*s)+"px Rubik, system-ui"; g.fillText(v.phase,x+side+mid/2,y+bh*0.82);
+    g.restore(); }
+  g.save(); g.globalAlpha=0.75; g.fillStyle="#fff"; g.font="500 "+Math.round(16*s)+"px Rubik, system-ui"; g.textAlign="left"; g.textBaseline="bottom";
+  g.fillText("BIOBUZZ · אפולו 9662",Math.round(16*s),H-Math.round(12*s)); g.restore();
+  const tg=$("recTag"); if(tg){ const t=Math.floor((performance.now()-VREC.t0)/1000); tg.textContent="● מקליט "+Math.floor(t/60)+":"+String(t%60).padStart(2,"0"); }
+}
+async function vrecSave(){
+  const ext=/mp4/.test(VREC.mime)?"mp4":"webm";
+  const blob=new Blob(VREC.chunks,{type:VREC.mime.split(";")[0]}); VREC.chunks=[];
+  if(blob.size<1000){ refToast("ההקלטה קצרה מדי — לא נשמרה","block"); return; }
+  const d=new Date(), p=x=>String(x).padStart(2,"0");
+  const name="BIOBUZZ-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds())+"."+ext;
+  if(window.bbApp&&bbApp.saveVideo){
+    try{ const r=await bbApp.saveVideo(await blob.arrayBuffer(),name); VREC.last=r&&r.path;
+      refToast("🎬 הסרטון נשמר: "+(r&&r.path||name)); vrecUI(); return; }catch(e){ console.error(e); } }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },2000);
+}
+function vrecUI(){
+  const tg=$("recTag"); if(tg) tg.hidden=!VREC.on;
+  for(const id of ["ppRec","bRec"]){ const b=$(id); if(b){ b.classList.toggle("on",VREC.on); b.textContent=VREC.on?"⏹ עצור הקלטה":"⏺ הקלט וידאו"; } }
+  for(const id of ["kRecAuto","ppRecAuto"]){ const k=$(id); if(k) k.checked=VREC.auto; }
+  const sh=$("bRecShow"); if(sh) sh.hidden=!(window.bbApp&&VREC.last);
+}
+/* מאץ׳ מתחיל/נגמר — הקלטה אוטומטית אם ביקשו */
+function vrecMatchStart(){ if(VREC.auto&&!VREC.on) vrecStart(); clearTimeout(VREC.stopT); }
+function vrecMatchEnd(){ if(VREC.auto&&VREC.on){ clearTimeout(VREC.stopT); VREC.stopT=setTimeout(vrecStop,5000); } }
+function castRecWire(){
+  on($("ppCast"),castToggle); on($("bCast"),castToggle);
+  on($("ppRec"),vrecToggle); on($("bRec"),vrecToggle);
+  const setAuto=v=>{ VREC.auto=!!v; try{ localStorage.setItem("bbRecAuto1",VREC.auto?"1":"0"); }catch(e){} vrecUI(); };
+  for(const id of ["kRecAuto","ppRecAuto"]){ const k=$(id); if(k) k.addEventListener("change",()=>setAuto(k.checked)); }
+  on($("bRecShow"),()=>{ if(VREC.last&&bbApp.showFile) bbApp.showFile(VREC.last); });
+  on($("bRecDir"),()=>{ if(window.bbApp&&bbApp.openVideos) bbApp.openVideos(); });
+  addEventListener("beforeunload",()=>{ castClose(); });
+  castUI(); vrecUI();
+}
+
+/* ══════ v54 — הרובוט האמיתי, חי (FTC Dashboard) ══════
+   מתחברים ל-FTC Dashboard של ה-Control Hub (ws://192.168.43.1:8000), קוראים את המיקום מהטלמטריה
+   (x, y, heading) או מציור הרובוט של RoadRunner, ומציירים את הרובוט האמיתי על הזירה, ליד הסימולציה.
+   אפשר להקליט ריצה ולהעביר אותה ל״יומן מהרובוט האמיתי״ להשוואה מול המסלול. */
+const LIVE={ws:null, st:"off", err:"", pose:null, rr:null, op:"", opSt:"", n:0, hz:0, hzT:0, hzN:0, trail:[], rec:null, recT0:0,
+  grp:null, ghost:null, trailMesh:null, showTrail:true, keep:null, openT:null, src:""};
+function liveNum(v){ const n=parseFloat(String(v).replace(/[^\d.eE+-]/g,"")); return isFinite(n)?n:null; }
+/* מיקום בצירי RoadRunner (אינץ׳, רדיאנים) מתוך חבילת טלמטריה אחת */
+function liveParse(pkt){
+  const d=pkt&&pkt.data||{}; let x=null, y=null, h=null, hdeg=false;
+  for(const k in d){ const kk=k.trim().toLowerCase();
+    if(x==null&&/^(pose[ _.]?)?x( ?\(in(ch(es)?)?\))?$/.test(kk)) x=liveNum(d[k]);
+    else if(y==null&&/^(pose[ _.]?)?y( ?\(in(ch(es)?)?\))?$/.test(kk)) y=liveNum(d[k]);
+    else if(h==null&&/^(pose[ _.]?)?(heading|h|theta|yaw)( ?\((deg|degrees|rad|radians)\))?$/.test(kk)){ h=liveNum(d[k]); hdeg=/deg/.test(kk); } }
+  if(x!=null&&y!=null){
+    if(h==null) h=0; else if(hdeg||Math.abs(h)>6.4) h=h*Math.PI/180;
+    return {x,y,h,src:"טלמטריה"}; }
+  /* אין מפתחות — מחפשים את ציור הרובוט של RoadRunner: עיגול ברדיוס 9 וקו כיוון אחריו */
+  const ops=pkt&&pkt.fieldOverlay&&pkt.fieldOverlay.ops||[];
+  for(let i=ops.length-1;i>=0;i--){ const o=ops[i];
+    if(o&&o.type==="circle"&&o.radius>=7&&o.radius<=12){
+      let hh=0; const l=ops[i+1];
+      if(l&&(l.type==="polyline"||l.type==="line")){ const xs=l.xPoints||[l.x1,l.x2], ys=l.yPoints||[l.y1,l.y2];
+        if(xs&&xs.length>=2) hh=Math.atan2(ys[ys.length-1]-ys[0],xs[xs.length-1]-xs[0]); }
+      return {x:o.x,y:o.y,h:hh,src:"ציור RoadRunner"}; } }
+  return null;
+}
+function liveEnsure(){
+  if(LIVE.grp) return;
+  const g=new THREE.Group(); g.renderOrder=1004;
+  const body=new THREE.Mesh(new THREE.BoxGeometry(M(P.botW||16),M(7),M(P.botL||16)),
+    new THREE.MeshBasicMaterial({color:0x35d6ff,transparent:true,opacity:0.38,depthTest:false}));
+  body.position.y=M(3.5); body.renderOrder=1004; g.add(body);
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(M(3),M(6),3),new THREE.MeshBasicMaterial({color:0x35d6ff,depthTest:false}));
+  nose.rotation.x=Math.PI/2; nose.position.set(0,M(8),M((P.botL||16)/2)); nose.renderOrder=1005; g.add(nose);
+  const lb=pathLabel("הרובוט האמיתי","#7fe3ff"); lb.position.set(0,M(16),0); g.add(lb);
+  g.visible=false; scene.add(g); LIVE.grp=g; LIVE.ghost=g;
+}
+function liveTrailDraw(){
+  if(LIVE.trailMesh){ scene.remove(LIVE.trailMesh); LIVE.trailMesh.geometry.dispose(); LIVE.trailMesh.material.dispose(); LIVE.trailMesh=null; }
+  const T=LIVE.trail; if(!LIVE.showTrail||T.length<2) return;
+  const pos=[]; const W=0.6, y=M(1.3);
+  for(let i=1;i<T.length;i++){ const a=T[i-1], b=T[i], dx=b.x-a.x, dz=b.z-a.z, L=Math.hypot(dx,dz); if(L<1e-3) continue;
+    const nx=-dz/L*W, nz=dx/L*W;
+    pos.push(M(a.x+nx),y,M(a.z+nz), M(a.x-nx),y,M(a.z-nz), M(b.x+nx),y,M(b.z+nz), M(b.x+nx),y,M(b.z+nz), M(a.x-nx),y,M(a.z-nz), M(b.x-nx),y,M(b.z-nz)); }
+  const geo=new THREE.BufferGeometry(); geo.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));
+  LIVE.trailMesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0x35d6ff,transparent:true,opacity:0.8,depthTest:false,side:THREE.DoubleSide}));
+  LIVE.trailMesh.renderOrder=1003; scene.add(LIVE.trailMesh);
+}
+function liveApply(rr){
+  /* צירי RoadRunner → הסימולטור: sim.x = −RR.y , sim.z = RR.x , yaw = −θ (כמו ביומן האודומטריה) */
+  const p={x:-rr.y, z:rr.x, yaw:-rr.h};
+  LIVE.rr=rr; LIVE.pose=p; LIVE.src=rr.src; LIVE.n++; LIVE.hzN++;
+  liveEnsure(); LIVE.ghost.visible=true;
+  LIVE.ghost.position.set(M(p.x),0,M(p.z)); LIVE.ghost.rotation.y=p.yaw;
+  const l=LIVE.trail[LIVE.trail.length-1];
+  if(!l||Math.hypot(l.x-p.x,l.z-p.z)>0.5){ LIVE.trail.push({x:p.x,z:p.z}); if(LIVE.trail.length>4000) LIVE.trail.shift(); if(LIVE.trail.length%4===0) liveTrailDraw(); }
+  if(LIVE.rec) LIVE.rec.push({t:(performance.now()-LIVE.recT0)/1000, x:rr.x, y:rr.y, h:rr.h});
+}
+function liveMsg(ev){
+  let m; try{ m=JSON.parse(ev.data); }catch(e){ return; }
+  if(m.type==="RECEIVE_TELEMETRY"&&Array.isArray(m.telemetry)){ for(const pkt of m.telemetry){ const rr=liveParse(pkt); if(rr) liveApply(rr); } }
+  else if(m.type==="RECEIVE_ROBOT_STATUS"&&m.status){ LIVE.op=m.status.activeOpMode||""; LIVE.opSt=m.status.activeOpModeStatus||""; }
+}
+function liveConnect(){
+  liveClose(true);
+  const ip=(($("liveIp")||{}).value||"192.168.43.1").trim(), port=+(($("livePort")||{}).value||8000)||8000;
+  try{ localStorage.setItem("bbLive1",JSON.stringify({ip,port})); }catch(e){}
+  if(location.protocol==="https:"){ LIVE.st="err"; LIVE.err="מהאתר (https) הדפדפן לא מרשה להתחבר לרובוט — פתחו את האפליקציה או את הקובץ מהמחשב"; liveUI(); return; }
+  LIVE.st="connecting"; LIVE.err=""; liveUI();
+  let ws; try{ ws=new WebSocket("ws://"+ip+":"+port); }catch(e){ LIVE.st="err"; LIVE.err="כתובת לא תקינה"; liveUI(); return; }
+  LIVE.ws=ws;
+  LIVE.openT=setTimeout(()=>{ if(LIVE.ws===ws&&LIVE.st==="connecting"){ try{ ws.close(); }catch(e){} LIVE.st="err";
+    LIVE.err="לא מצאתי את הרובוט ב-"+ip+" — המחשב מחובר לרשת האלחוטית של ה-Control Hub?"; liveUI(); } },6000);
+  ws.onopen=()=>{ clearTimeout(LIVE.openT); LIVE.st="on"; liveUI();
+    const ping=()=>{ try{ if(ws.readyState===1) ws.send(JSON.stringify({type:"GET_ROBOT_STATUS"})); }catch(e){} };
+    ping(); LIVE.keep=setInterval(()=>{ ping(); liveUI(); },1000); };
+  ws.onmessage=liveMsg;
+  ws.onerror=()=>{};
+  ws.onclose=()=>{ if(LIVE.ws!==ws) return; clearInterval(LIVE.keep); clearTimeout(LIVE.openT);
+    if(LIVE.st==="on"){ LIVE.st="err"; LIVE.err="החיבור לרובוט נותק"; } else if(LIVE.st==="connecting"){ LIVE.st="err"; LIVE.err="לא מצאתי את הרובוט ב-"+ip; }
+    LIVE.ws=null; liveUI(); };
+}
+function liveClose(quiet){ clearInterval(LIVE.keep); clearTimeout(LIVE.openT); const w=LIVE.ws; LIVE.ws=null; try{ if(w) w.close(); }catch(e){}
+  if(!quiet){ LIVE.st="off"; LIVE.err=""; if(LIVE.ghost) LIVE.ghost.visible=false; } liveUI(); }
+function liveRecToggle(){
+  if(LIVE.rec){ const r=LIVE.rec; LIVE.rec=null;
+    if(r.length<3){ refToast("ההקלטה קצרה מדי","block"); liveUI(); return; }
+    const csv="t,x,y,heading_rad\n"+r.map(p=>p.t.toFixed(3)+","+p.x.toFixed(2)+","+p.y.toFixed(2)+","+p.h.toFixed(4)).join("\n");
+    const ta=$("odoText"); if(ta) ta.value=csv;
+    odoLoad(csv,{unit:"in"}); refToast("✓ הריצה עברה ל״יומן מהרובוט האמיתי״ — "+r.length+" נקודות"); liveUI(); return; }
+  LIVE.rec=[]; LIVE.recT0=performance.now(); liveUI();
+}
+function liveUI(){
+  const o=$("oLive"); if(!o) return;
+  const now=performance.now(); if(now-LIVE.hzT>1000){ LIVE.hz=LIVE.hzN*1000/Math.max(1,now-LIVE.hzT); LIVE.hzN=0; LIVE.hzT=now; }
+  const st={off:"לא מחובר",connecting:"מתחבר…",on:"✓ מחובר",err:"⚠ "+LIVE.err}[LIVE.st]||"";
+  let h=row("מצב",st,LIVE.st==="on"?"ok":LIVE.st==="err"?"bad":"");
+  if(LIVE.st==="on"){ h+=row("אופמוד",LIVE.op?pathEsc(LIVE.op)+(LIVE.opSt?" · "+pathEsc(LIVE.opSt):""):"אין אופמוד פעיל");
+    h+=LIVE.rr?row("מיקום (RoadRunner)","x "+LIVE.rr.x.toFixed(1)+"″ · y "+LIVE.rr.y.toFixed(1)+"″ · "+(LIVE.rr.h*180/Math.PI).toFixed(0)+"° · "+Math.round(LIVE.hz)+" לשנייה","hl")+row("מקור",LIVE.src)
+      :row("מיקום","עוד לא הגיע — מריצים אופמוד ששולח x, y, heading לדשבורד"); }
+  o.innerHTML=h;
+  const c=$("bLiveConn"); if(c) c.textContent=(LIVE.st==="on"||LIVE.st==="connecting")?"נתק":"התחבר לרובוט";
+  const r=$("bLiveRec"); if(r){ r.disabled=LIVE.st!=="on"; r.textContent=LIVE.rec?"⏹ עצור והשווה ("+LIVE.rec.length+")":"⏺ הקלט ריצה"; r.classList.toggle("on",!!LIVE.rec); }
+}
+/* באפליקציה: משיכת odolog.csv מה-Control Hub דרך adb (ברשת או בכבל) */
+async function odoAdbPull(){
+  if(!window.bbApp||!bbApp.adbPull) return;
+  const ip=(($("liveIp")||{}).value||"192.168.43.1").trim();
+  const b=$("bOdoAdb"); if(b){ b.disabled=true; b.textContent="מושך…"; }
+  const r=await bbApp.adbPull(ip);
+  if(b){ b.disabled=false; b.textContent="📥 משוך מהרובוט"; }
+  if(!r.ok){ ODO.stats={err:r.why}; odoUI(); return; }
+  const ta=$("odoText"); if(ta) ta.value=String(r.text).slice(0,200000);
+  const st=odoLoad(r.text); if(st&&!st.err) refToast("✓ נמשך מהרובוט: "+r.file+" · "+st.n+" שורות");
+}
+function liveWire(){
+  try{ const o=JSON.parse(localStorage.getItem("bbLive1")||"null"); if(o){ if($("liveIp")) $("liveIp").value=o.ip||"192.168.43.1"; if($("livePort")) $("livePort").value=o.port||8000; } }catch(e){}
+  on($("bLiveConn"),()=>{ if(LIVE.st==="on"||LIVE.st==="connecting") liveClose(); else liveConnect(); });
+  on($("bLiveRec"),liveRecToggle);
+  on($("bLiveClr"),()=>{ LIVE.trail=[]; liveTrailDraw(); });
+  const k=$("kLiveTrail"); if(k){ k.checked=LIVE.showTrail; k.addEventListener("change",()=>{ LIVE.showTrail=k.checked; liveTrailDraw(); }); }
+  on($("bOdoAdb"),odoAdbPull);
+  liveUI();
+}
+
 /* ══════ הפעלה ══════ */
 resize();
 const restored=loadParams();
@@ -12422,6 +12854,9 @@ try{ ppWire(); }catch(e){ console.error(e); }
 try{ bkWire(); }catch(e){ console.error(e); }
 try{ statWire(); }catch(e){ console.error(e); }
 try{ appWire(); }catch(e){ console.error(e); }
+try{ accWire(); }catch(e){ console.error(e); }
+try{ castRecWire(); }catch(e){ console.error(e); }
+try{ liveWire(); }catch(e){ console.error(e); }
 try{ refreshClock(); magHud(); }catch(e){ console.error(e); }
 padPicBuild(); padBindsBuild(); padPicSync();
 document.querySelectorAll("#qualSeg button").forEach(bn=>

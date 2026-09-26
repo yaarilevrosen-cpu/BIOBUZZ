@@ -1,7 +1,7 @@
 # פרומפט להמשך — מעבדת זירת BIOBUZZ, אפולו 9662
 
-**העתק את כל הקובץ הזה כהודעה ראשונה בצ׳אט חדש, וצרף את `BIOBUZZ-v53.zip`.**
-הגרסה הנוכחית: **v53** (26.9.2026).
+**העתק את כל הקובץ הזה כהודעה ראשונה בצ׳אט חדש, וצרף את `BIOBUZZ-v54.zip`.**
+הגרסה הנוכחית: **v54** (26.9.2026).
 
 ---
 
@@ -13,8 +13,8 @@
 
 ## 1. הדבר הראשון: לשחזר את סביבת העבודה
 סביבת העבודה מתאפסת בין שיחות. שני מקורות:
-- **הזיפ** (`BIOBUZZ-v53/`: `BIOBUZZ-lab.html` קובץ בודד 22.5 מגה, `padbridge.py`, `pad.html`, `start.bat`, `README.md`).
-- **הפרויקט**, תחת `claude/source/`: `biobuzz-sim.html`, `restore.py`, `tests-v53.md` (כל הבדיקות + `build_standalone.py`), `padbridge_src.py`, `pad.html`.
+- **הזיפ** (`BIOBUZZ-v54/`: `BIOBUZZ-lab.html` קובץ בודד 22.5 מגה, `padbridge.py`, `pad.html`, `start.bat`, `README.md`).
+- **הפרויקט**, תחת `claude/source/`: `biobuzz-sim.html`, `restore.py`, `tests-v54.md` (כל הבדיקות + `build_standalone.py`), `padbridge_src.py`, `pad.html`.
 
 ### שלבים
 ```bash
@@ -22,10 +22,10 @@
 #    (הזיפ נמצא תחת תיקיית ההעלאות — לחפש *.zip). הוא מחלץ: קובץ מקור זהה בית לבית, CAD, ספריות,
 #    ואת build/prefix.html + build/fonts-block.html שצריך לבנייה מחדש.
 python3 /home/claude/restore.py <נתיב הזיפ>
-# 2) project_read ל-claude/source/tests-v53.md → /home/claude/tests-v53.md, ואז לחלץ:
+# 2) project_read ל-claude/source/tests-v54.md → /home/claude/tests-v54.md, ואז לחלץ:
 cd /home/claude && python3 - <<'X'
 import re,os
-s=open('tests-v53.md',encoding='utf8').read()
+s=open('tests-v54.md',encoding='utf8').read()
 for p,b in re.findall(r'^## (\S+)\n```\n(.*?)\n```$',s,re.S|re.M):
     os.makedirs(os.path.dirname(p) or '.',exist_ok=True); open(p,'w',encoding='utf8').write(b+'\n')
 X
@@ -165,6 +165,16 @@ node smoke.mjs && node regress_test.mjs
 - **הריפו:** `/home/claude/repo` (נמסר כ-`biobuzz-repo.zip`, קומיט אחד על `main`), כולל `.github/workflows/build.yml`: בדיקות באובונטו, EXE ב-windows-latest, ו-Release בתגית `v*`.
 - בדיקה: `app_test` 24 (Playwright `_electron`, נתונים בתיקייה זמנית דרך `BIOBUZZ_DATA`). הערה: בלי כרטיס מסך, לחיצות אמיתיות של Playwright באפליקציה איטיות (מחכות לציור יציב) — ללחיצה כפולה עם זמן קצוב משתמשים ב-`click()` של ה-DOM.
 
+## 5כ. v54 — גיטהאב, עדכונים, סנכרון בענן, שלב 2 ו-3 (אפליקציה 1.1.0)
+- **הריפו:** `github.com/yaarilevrosen-cpu/BIOBUZZ` (ציבורי). העותק המקומי אצל יערי: `C:\Users\admin\Yaari_Workspace\Development\BIOBUZZ`. בענן: `/home/claude/repo`. דחיפה: בנדל (`git bundle`) ← `device_commit_files` ל-`_bb_incoming/inc.bundle` ← `$HOME/bbsync.sh` במכונה של יערי (מפתח גישה ב-`$HOME/.bbtok` שם — **לא בריפו**, לא בפרויקט). אם המפתח פג — לבקש חדש (Contents/Actions/Workflows, רק BIOBUZZ).
+- **עדכונים:** `main.js` — `updInit` (electron-updater, רק באפליקציה מותקנת), `updCheck` (אחרת: API של Releases). `package.json` → `build.publish` = github. CI: תגית `v*` → `npm version` מהתגית → `electron-builder --publish always`.
+- **סנכרון:** `app/sync.js` (Auth + PostgREST בלי ספריות). URL ומפתח anon מוטמעים (ציבוריים). `store.js`: `metaAt`, `kvAt`, `tombs`, `NOSYNC`, `applyRemoteKv/Meta`, `isBlank`. סנכרון: בהתחברות, בפתיחה, כל 2 דק׳, 4 שנ׳ אחרי שינוי, לפני יציאה. `changedActive` → הדף נטען מחדש (לא באמצע משחק). חשבונות בדיקה: `bbtest-a@biobuzz-ci.dev`, `bbtest-b@…` (נוצרו ב-SQL, סיסמה בבדיקות דרך משתני סביבה). סיסמת מסד הנתונים — אצל יערי, לא בריפו.
+- **גשר מובנה:** `app/bridge.js` — תרגום של padbridge.py (אותו פרוטוקול, אותו קוד חדר). `BIOBUZZ_BRIDGE` לבדיקות.
+- **מסך שני:** `CAST` — `window.open("","bbcast")` + `WebGLRenderer` שני על אותו scene (טריק: `window.WebGL2RenderingContext` של החלון השני בזמן היצירה). באפליקציה `setWindowOpenHandler` שם אותו על המסך החיצוני במסך מלא; `preload` לא רץ בו.
+- **וידאו:** `VREC` (שים לב: `REC` תפוס ע״י הקלטת הטלמטריה) — קנבס דו־ממדי: הזירה + פס ניקוד, `MediaRecorder` MP4. באפליקציה: `%USERPROFILE%\Videos\BIOBUZZ`.
+- **רובוט אמיתי:** `LIVE` — ws ל-FTC Dashboard (192.168.43.1:8000), מפתחות x/y/heading או ציור RoadRunner (עיגול ר׳ 9 + קו). ״הקלט ריצה״ → `odoLoad`. `bb:adbPull` — `adb connect ip:5555` ← `/sdcard/FIRST/odolog.csv`.
+- בדיקות: `sync_test` 20, `app_cloud_test` 12, `bridge_test` 16, `p2_test` 15, `p3_test` 10, `app_p2_test` 11.
+
 ## 6. בדיקות — ב-v35 הכול ירוק, **תמיד ברצף**
 `smoke` 2 · `kb_test` 18 · `g304_test` 15 · `pathlib_test` 16 · `auto_test` 28 · `teach_test` 15 · `autosel_test` 19 · `v42_test` 35 · `v42_async` 6 · `hud_test` 12 · `ui_test` 15 · `review_test` 16 · `play_test` 9 · `brain_test` 20 · `mp2_test` 17 · `regress_test` 11 · `dist_test` 12. `auto_ui.mjs` לצילומי מסך של העורך.
 - `bench.mjs <זרעים> <רמה> <שם>` עם `BRAIN=0|1` ו-`SIM=קובץ` — מאצ׳ים של בוטים בלבד. להעתיק את `sim.html` לשם אחר לפני שמריצים ברקע (כל זרע טוען את הקובץ מחדש). המאצ׳ לא דטרמיניסטי לגמרי (כאוס קטן בפיזיקה) — לממוצע על 8–10 זרעים.
@@ -175,7 +185,7 @@ node smoke.mjs && node regress_test.mjs
 ## 7. איך עובדים — בכל שינוי
 1. שחזור ← `smoke` + `regress_test` ירוקים.
 2. קוד ← בדיקה ייעודית ← צילום מסך ← רגרסיה ברצף.
-3. להעלות את `verBadge` (v53…).
+3. להעלות את `verBadge` (v54…).
 4. `python3 build.py` ← `dist_test` ← זיפ ל-`/mnt/user-data/outputs/`.
 5. פרסום לארטיפקט: `biobuzz-sim.html` עצמו (עם `url`; קבצי ה-CAD נשארים).
 6. שמירה לפרויקט: `claude/source/*`, `claude/<נושא>-vNN.md`, `claude/simulator-overview.md`, והפרומפט הזה. **גם באמצע עבודה ארוכה.**

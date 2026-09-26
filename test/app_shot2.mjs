@@ -1,0 +1,21 @@
+import { _electron as electron } from 'playwright';
+import fs from 'fs'; import os from 'os'; import path from 'path'; import { fileURLToPath } from 'url';
+const HERE=path.dirname(fileURLToPath(import.meta.url)); const APPDIR=path.resolve(HERE,'../app');
+const DATA=fs.mkdtempSync(path.join(os.tmpdir(),'bbshot3-'));
+const app=await electron.launch({executablePath:path.resolve(APPDIR,'node_modules/electron/dist/electron'),args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader',APPDIR],
+  env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_SIM:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html'),BIOBUZZ_UPD_URL:'http://127.0.0.1:1/none'}});
+const cap=async(i,file)=>{ const b64=await app.evaluate(async({BrowserWindow},i)=>{ const all=BrowserWindow.getAllWindows(); const w=i===1?all.find(x=>/שידור/.test(x.getTitle())):all.find(x=>!/שידור/.test(x.getTitle())); const img=await w.webContents.capturePage(); return img.toPNG().toString('base64'); },i); fs.writeFileSync(file,Buffer.from(b64,'base64')); };
+const win=await app.firstWindow();
+await app.evaluate(({BrowserWindow})=>{ const w=BrowserWindow.getAllWindows()[0]; w.unmaximize(); w.setContentSize(1400,860); });
+await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
+await win.evaluate(async()=>{ document.getElementById('welcome').hidden=true; await bbApp.profileUpdate(bbApp.profile.id,{name:'יערי',emoji:'🚀'}); await bbApp.firstRunDone(); });
+await win.reload(); await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
+await win.waitForTimeout(3000);
+await win.evaluate(()=>document.getElementById('profChip').click()); await win.waitForTimeout(6000);
+await cap(0,path.resolve(HERE,'../v54_menu.png'));
+await win.evaluate(()=>{ document.getElementById('profMenu').hidden=true; document.querySelector('#pfAcct [data-acc="open"]')?.click(); document.getElementById('acctModal').hidden=false; }); await win.waitForTimeout(5000);
+await cap(0,path.resolve(HERE,'../v54_acct.png'));
+await win.evaluate(()=>{ document.getElementById('acctModal').hidden=true; const S=__sim; S.MT.cd=0; S.MT.auto=0; S.MT.trans=0; S.MT.tele=120; S.matchStart(); document.getElementById('ppCast').click(); });
+await win.waitForTimeout(9000);
+await cap(1,path.resolve(HERE,'../v54_cast.png'));
+await app.close();
