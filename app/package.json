@@ -52,9 +52,9 @@
       "uninstallerIcon": "build/icon.ico",
       "deleteAppDataOnUninstall": false,
       "installerLanguages": [
-        "he_IL"
+        "en_US"
       ],
-      "language": "1037",
+      "language": "1033",
       "runAfterFinish": true
     },
     "portable": {

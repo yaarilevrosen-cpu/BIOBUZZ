@@ -14,6 +14,8 @@ const DEFAULT_CLOUD = {
   url: "https://somhwsjbhanyxzrxkyer.supabase.co",
   key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvbWh3c2piaGFueXh6cnhreWVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzAyNjUsImV4cCI6MjEwNjAwNjI2NX0.xwEQUo_RXVyMJ9_UJ7FJzKq5CHMIN5EuLM25UEaFIiE"
 };
+/* דף האישור באינטרנט — לשם מגיעים מהמייל (אישור חשבון, סיסמה חדשה) */
+const SITE = "https://yaarilevrosen-cpu.github.io/BIOBUZZ/";
 const HEB = {
   "Invalid login credentials": "המייל או הסיסמה לא נכונים",
   "Email not confirmed": "צריך לאשר את המייל קודם — חפשו מייל מ-Supabase (גם בספאם)",
@@ -103,13 +105,13 @@ class Sync {
   }
   async signUp(email, password) {
     try {
-      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/signup", { email: String(email).trim(), password: String(password) });
+      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/signup?redirect_to=" + encodeURIComponent(SITE), { email: String(email).trim(), password: String(password) });
       if (data && data.access_token) { this.setSession(data); return { ok: true, email: this.sess.user.email }; }
       return { ok: true, confirm: true };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   async recover(email) {
-    try { await this.http("POST", this.cloud.url + "/auth/v1/recover", { email: String(email).trim() }); return { ok: true }; }
+    try { await this.http("POST", this.cloud.url + "/auth/v1/recover?redirect_to=" + encodeURIComponent(SITE), { email: String(email).trim() }); return { ok: true }; }
     catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   async signOut() {
