@@ -3,12 +3,12 @@ import {open,ok,done,realErrs} from './h.mjs';
 let {browser,page,errs}=await open({noraf:true,play:true});
 const E=f=>page.evaluate(f);
 let r=await E(()=>({b:document.getElementById('verBadge').textContent, w:document.body.innerText}));
-ok(r.b==='v56','תג הגרסה: v56 בלי שם קבוצה ('+r.b+')');
+ok(/^v\d+$/.test(r.b),'תג הגרסה בלי שם קבוצה ('+r.b+')');
 r=await E(()=>document.documentElement.outerHTML.replace(/<script type="application\/json"[\s\S]*?<\/script>/,''));
 ok(!/\u05D9\u05E2\u05E8\u05D9|\u05D0\u05E4\u05D5\u05DC\u05D5|APOLLO|Apollo/.test(r),'אין בדף שם של משתמש או קבוצה קבועים');
 await E(()=>__sim.teamSet('Robo Lions','12345'));
 r=await E(()=>({b:document.getElementById('verBadge').textContent, l:__sim.teamLabel(), st:localStorage.getItem('bbTeam1')}));
-ok(r.b==='v56 · Robo Lions 12345','תג הגרסה מציג את הקבוצה ('+r.b+')');
+ok(/^v\d+ · Robo Lions 12345$/.test(r.b),'תג הגרסה מציג את הקבוצה ('+r.b+')');
 ok(/12345/.test(r.st),'הקבוצה נשמרת');
 // הסיור
 await E(()=>__sim.tourStart(true));
@@ -36,7 +36,7 @@ await page.waitForTimeout(300);
 r=await E(()=>({log:window.__fetchLog, msg:document.getElementById('bugMsg').textContent}));
 const b=r.log[0]&&r.log[0].b;
 ok(r.log.length===1&&/bb_bugs/.test(r.log[0].u),'נשלח לטבלת bb_bugs');
-ok(b&&b.what&&b.sys&&b.sys.build==='v56'&&b.errors.some(x=>x.m==='שגיאת בדיקה')&&b.shot,'הדיווח כולל תיאור, פרטי מערכת, שגיאות וצילום');
+ok(b&&b.what&&b.sys&&/^v\d+$/.test(b.sys.build)&&b.errors.some(x=>x.m==='שגיאת בדיקה')&&b.shot,'הדיווח כולל תיאור, פרטי מערכת, שגיאות וצילום');
 ok(/תודה/.test(r.msg),'הודעת תודה ('+r.msg+')');
 // קישור גיטהאב
 await E(()=>{ window.__open=[]; window.open=(u)=>{ window.__open.push(u); }; document.getElementById('bugWhat').value='x y z'; document.getElementById('bugGh').click(); });

@@ -36,15 +36,25 @@ class Sync {
   constructor(store, dir, opt) {
     opt = opt || {};
     this.store = store; this.dir = dir;
-    /* שני סוגי חשבון יכולים לעבוד במקביל: ״team״ — כל נהגי הקבוצה; ״personal״ — רק הנהגים שסימנת כאישיים */
-    this.kind = opt.kind === "personal" ? "personal" : "team";
+    /* v57: חשבון אחד לכל אדם. הקבוצה = קבוצה שמצטרפים אליה בקוד (bb_teams) */
+    this.kind = "main";
     this.cloud = Object.assign({}, DEFAULT_CLOUD, readJSON(path.join(dir, "cloud.json"), {}) || {}, opt.cloud || {});
     this.enc = opt.enc || (s => Buffer.from(s, "utf8").toString("base64"));
     this.dec = opt.dec || (s => Buffer.from(s, "base64").toString("utf8"));
-    this.file = path.join(dir, "account-" + this.kind + ".json");
-    /* גרסה 1.1.0 שמרה חשבון אחד ב-account.json — הוא חשבון הקבוצה */
-    if (this.kind === "team" && !fs.existsSync(this.file) && fs.existsSync(path.join(dir, "account.json"))) { try { fs.renameSync(path.join(dir, "account.json"), this.file); } catch (e) {} }
+    this.file = path.join(dir, "account.json");
+    this.migrated = "";
+    /* 1.2–1.3 שמרו שני חשבונות (קבוצה/אישי). נשאר אחד: הקבוצה אם יש, אחרת האישי */
+    if (!fs.existsSync(this.file)) {
+      const t = path.join(dir, "account-team.json"), pr = path.join(dir, "account-personal.json");
+      const has = f => { try { const o = readJSON(f, null); return !!(o && o.blob); } catch (e) { return false; } };
+      try {
+        if (has(t)) { fs.renameSync(t, this.file); if (has(pr)) { fs.renameSync(pr, pr.replace(/\.json$/, ".old.json")); this.migrated = "personal-dropped"; } }
+        else if (has(pr)) fs.renameSync(pr, this.file);
+      } catch (e) {}
+    }
     this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null;
+    this.teamFile = path.join(dir, "team-cache.json");
+    this.team = readJSON(this.teamFile, null) || null;
     try { const o = readJSON(this.file, null); if (o && o.blob) this.sess = JSON.parse(this.dec(o.blob)); if (o) this.lastSync = o.lastSync || 0; } catch (e) { this.sess = null; }
   }
   saveSess() {
@@ -52,8 +62,10 @@ class Sync {
     if (this.sess) o.blob = this.enc(JSON.stringify(this.sess));
     writeAtomic(this.file, JSON.stringify(o));
   }
+  uid() { return this.sess && this.sess.user && this.sess.user.id || ""; }
   status() {
-    return { kind: this.kind, loggedIn: !!this.sess, email: this.sess && this.sess.user && this.sess.user.email || "",
+    const t = this.team && this.team.team;
+    return { kind: this.kind, loggedIn: !!this.sess, team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url };
   }
   /* ── רשת ── */
@@ -115,6 +127,7 @@ class Sync {
     catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   async signOut() {
+    this.team = null; this.saveTeam();
     try { if (this.sess) await this.http("POST", this.cloud.url + "/auth/v1/logout", {}, { Authorization: "Bearer " + this.sess.access_token }, 8000); } catch (e) {}
     this.sess = null; this.lastSync = 0; this.saveSess(); return { ok: true };
   }
@@ -137,12 +150,13 @@ class Sync {
     }
     return out;
   }
-  mine(p) { return (p.acct || "team") === this.kind; }
+  mine() { return true; }   /* חשבון אחד — כל הנהגים במחשב הם שלי */
+  own() { return "owner=eq." + encodeURIComponent(this.uid()); }
   async _sync() {
     const S = this.store; S.flushKv(); const K = this.kind;
     const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0 };
     const activeBefore = S.meta.active;
-    const rows = await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted");
+    const rows = await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own());
     const R = new Map(rows.map(r => [r.id, r]));
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */
     const live = rows.filter(r => !r.deleted);
@@ -152,11 +166,11 @@ class Sync {
       S.removeProfile(blank, { noTomb: true }); S.loadKv(); res.profilesChanged = true;
     }
     /* מחיקות מקומיות → לענן */
-    for (const t of S.meta.tombs.filter(t => (t.acct || "team") === K)) {
+    for (const t of S.meta.tombs.slice()) {
       const r = R.get(t.id);
       if (!r || !r.deleted) await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
         { Prefer: "resolution=merge-duplicates,return=minimal" });
-      S.meta.tombs = S.meta.tombs.filter(x => !(x.id === t.id && (x.acct || "team") === K));
+      S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
     }
     S.saveMeta();
     const tombIds = new Set();
@@ -172,7 +186,7 @@ class Sync {
       const pm = p.metaAt || 0, pk = p.kvAt || 0, rm = r ? r.meta_at || 0 : -1, rk = r ? r.kv_at || 0 : -1;
       if (r && rm > pm) { S.applyRemoteMeta(r, K); res.profilesChanged = true; }
       if (r && rk > pk) {
-        const { data } = await this.rest("GET", "bb_profiles?select=kv,kv_at&id=eq." + encodeURIComponent(p.id));
+        const { data } = await this.rest("GET", "bb_profiles?select=kv,kv_at&" + this.own() + "&id=eq." + encodeURIComponent(p.id));
         if (data && data[0]) { S.applyRemoteKv(p.id, data[0].kv || {}, data[0].kv_at || rk); if (p.id === S.meta.active) res.changedActive = true; res.pulledProfiles++; }
       }
       const pushMeta = !r || pm > rm, pushKv = !r || pk > rk;
@@ -190,7 +204,7 @@ class Sync {
       res.pushedProfiles++;
     }
     /* מאצ׳ים — איחוד */
-    const remoteM = await this.remoteAll("bb_matches", "profile_id,at");
+    const remoteM = await this.remoteAll("bb_matches", "profile_id,at", this.own());
     const rset = new Map();
     for (const m of remoteM) { if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
     for (const p of S.meta.list.filter(q => this.mine(q))) {
@@ -205,13 +219,62 @@ class Sync {
       const down = [...rs].filter(a => !lset.has(a));
       for (let i = 0; i < down.length; i += 100) {
         const ats = down.slice(i, i + 100);
-        const { data } = await this.rest("GET", "bb_matches?select=at,data&profile_id=eq." + encodeURIComponent(p.id) + "&at=in.(" + ats.join(",") + ")");
+        const { data } = await this.rest("GET", "bb_matches?select=at,data&" + this.own() + "&profile_id=eq." + encodeURIComponent(p.id) + "&at=in.(" + ats.join(",") + ")");
         const got = (data || []).map(x => x.data).filter(m => m && isFinite(m.at)).sort((a, b) => a.at - b.at);
         res.pulledMatches += S.appendMatches(p.id, got);
       }
     }
     if (S.meta.active !== activeBefore) res.changedActive = true;
+    try { res.team = await this.teamPull(); } catch (e) { res.teamError = heb(e.message); }
     return res;
+  }
+  /* ── קבוצה: קוד הצטרפות, חברים, ומה שהחברים שיחקו (קריאה בלבד) ── */
+  async rpc(fn, args) { const { data } = await this.rest("POST", "rpc/" + fn, args || {}); return data; }
+  saveTeam() { if (this.team) writeAtomic(this.teamFile, JSON.stringify(this.team)); else { try { fs.unlinkSync(this.teamFile); } catch (e) {} } }
+  label() { const a = this.store.meta.list.find(p => p.id === this.store.meta.active); return (a && a.name) || (this.sess && this.sess.user && this.sess.user.email || "").split("@")[0]; }
+  async teamCall(what, a, b) {
+    if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
+    try {
+      if (what === "create") await this.rpc("bb_team_create", { p_name: a || "", p_num: b || "", p_label: this.label() });
+      else if (what === "join") await this.rpc("bb_team_join", { p_code: String(a || "").trim().toUpperCase(), p_label: this.label() });
+      else if (what === "leave") await this.rpc("bb_team_leave");
+      else if (what === "update") await this.rpc("bb_team_update", { p_name: a || "", p_num: b || "" });
+      this.team = null; this.saveTeam();
+      await this.teamPull();
+      return { ok: true, team: this.status().team };
+    } catch (e) {
+      const m = String(e.message || "");
+      return { ok: false, why: /code not found/.test(m) ? "אין קבוצה עם הקוד הזה — בדקו שוב" : heb(m) };
+    }
+  }
+  async teamPull() {
+    if (!this.sess) return null;
+    const me = this.uid();
+    const { data: mem } = await this.rest("GET", "bb_team_members?select=team_id,uid,label");
+    if (!mem || !mem.length) { if (this.team) { this.team = null; this.saveTeam(); } return null; }
+    const tid = mem[0].team_id;
+    const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner&id=eq." + tid);
+    if (!this.team || this.team.id !== tid) this.team = { id: tid, profiles: {}, matches: {}, since: "" };
+    const T = this.team; T.team = tt && tt[0] || null; T.members = mem.map(m => ({ uid: m.uid, label: m.label, me: m.uid === me }));
+    const others = mem.filter(m => m.uid !== me).map(m => m.uid);
+    const alive = new Set(others);
+    for (const k of Object.keys(T.profiles)) if (!alive.has(T.profiles[k].owner)) { delete T.profiles[k]; delete T.matches[k]; }
+    if (others.length) {
+      const inq = "owner=in.(" + others.join(",") + ")";
+      const profs = await this.remoteAll("bb_profiles", "owner,id,name,emoji,color,deleted", inq);
+      for (const r of profs) T.profiles[r.owner + "/" + r.id] = r;
+      const ms = await this.remoteAll("bb_matches", "owner,profile_id,at,data,created_at", inq + (T.since ? "&created_at=gte." + encodeURIComponent(T.since) : ""));
+      let pulled = 0;
+      for (const m of ms) {
+        const k = m.owner + "/" + m.profile_id; const l = T.matches[k] || (T.matches[k] = []);
+        if (m.data && !l.some(x => +x.at === +m.at)) { l.push(m.data); pulled++; }
+        if (!T.since || m.created_at > T.since) T.since = m.created_at;
+      }
+      for (const k in T.matches) if (T.matches[k].length > 3000) T.matches[k] = T.matches[k].slice(-3000);
+      T.pulled = pulled;
+    }
+    this.saveTeam();
+    return { members: T.members.length, pulled: T.pulled || 0 };
   }
 }
 module.exports = { Sync, DEFAULT_CLOUD, heb };

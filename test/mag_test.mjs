@@ -16,7 +16,7 @@ for(const mode of ['play','lab']){
   await page.evaluate(()=>{ __sim.setClip([]); __sim.setIntake(true); });
   s=await st(); ok(s.empty&&s.n==='0 / 4'&&/ריק/.test(s.msg)&&/פתוח/.test(s.msg),mode+': ריקה — אדום, ״סעו לפרח״ ('+s.msg+')');
   await page.evaluate(()=>__sim.setIntake(false));
-  s=await st(); ok(/פתחו חרטום \(F\)/.test(s.msg),mode+': ריקה וחרטום סגור — ״פתחו חרטום (F)״');
+  s=await st(); ok(/פתחו (חרטום|איסוף) \(F\)/.test(s.msg),mode+': ריקה וחרטום סגור — ״פתחו חרטום (F)״');
   await page.evaluate(()=>__sim.setIntake(true));
   // ירייה אמיתית מורידה כדור
   await page.evaluate(()=>{ __sim.setClip(['pollen','pollen','pollen']); __sim.fire(); __sim.advance(0.6,1/60); });

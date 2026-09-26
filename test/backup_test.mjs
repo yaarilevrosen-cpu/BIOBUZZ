@@ -6,7 +6,7 @@ const ls=k=>page.evaluate(k=>localStorage.getItem(k),k);
 
 ok(await page.evaluate(()=>__sim.bk.changed())===0,'בפתיחה נקייה: אפס פרמטרים שונים');
 ok(await page.evaluate(()=>__sim.bk.all().length)===0,'בפתיחה נקייה אין גיבוי אוטומטי (אין מה לגבות)');
-ok(await page.evaluate(()=>!!document.getElementById('tbBk')&&!!document.getElementById('dBk')),'כפתור ״גיבוי ואיפוס״ בסרגל ולוח בבדיקות');
+ok(await page.evaluate(()=>!!document.getElementById('bSet')&&!!document.getElementById('dBk')),'״גיבוי ואיפוס״ נמצא בהגדרות (⚙ בכותרת)');
 
 // שינויים: פרמטר, מסלול, מקש, עונה
 await page.evaluate(()=>{ __sim.bk._set('wheelD',120); __sim.bk._set('angle',60);
@@ -20,12 +20,13 @@ ok(/מותאם — 2 שינויים/.test(await page.evaluate(()=>document.getEl
 await page.evaluate(()=>document.querySelector('#uiMode [data-ui=lab]').click());
 
 // הפתיחה מהסרגל
-await page.evaluate(()=>document.getElementById('tbBk').click());
-ok(await page.evaluate(()=>document.body.dataset.ws==='adv'&&document.getElementById('dBk').open&&getComputedStyle(document.getElementById('dBk')).display!=='none'),'הכפתור פותח את לוח הגיבוי');
+await page.evaluate(()=>document.getElementById('bSet').click());
+ok(await page.evaluate(()=>!document.getElementById('playModal').hidden&&!!document.querySelector('#pmBody #dBk')&&getComputedStyle(document.getElementById('dBk')).display!=='none'),'⚙ פותח את ההגדרות — עם הגיבוי');
+await page.evaluate(()=>document.getElementById('pmX').click());
 
 // איפוס הכול דרך הכפתור — לחיצה אחת לא מאפסת
 await page.evaluate(()=>document.getElementById('bBkAll').click());
-ok(await page.evaluate(()=>document.getElementById('bBkAll').textContent)==='בטוח? לחץ שוב','לחיצה ראשונה רק מבקשת אישור');
+ok(await page.evaluate(()=>document.getElementById('bBkAll').textContent)==='בטוח? לחצו שוב','לחיצה ראשונה רק מבקשת אישור');
 ok(await ls('bb_paths_v1')!==null,'…ולא מחקה כלום');
 const rl=reloaded();
 await page.evaluate(()=>document.getElementById('bBkAll').click());

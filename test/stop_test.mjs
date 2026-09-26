@@ -8,7 +8,7 @@ for(const mode of ['lab','play']){
   ok(await vis(),mode+': במשחק רץ — הכפתור מופיע ליד השעון');
   await page.evaluate(()=>document.getElementById('clkStop').click());
   let st=await page.evaluate(()=>({txt:document.getElementById('clkStop').textContent, arm:document.getElementById('clkStop').classList.contains('arm')}));
-  ok(st.arm&&/לחץ שוב/.test(st.txt),mode+': לחיצה ראשונה — ״לחץ שוב לעצירה״ ('+st.txt+')');
+  ok(st.arm&&/לחצו? שוב/.test(st.txt),mode+': לחיצה ראשונה — ״לחץ שוב לעצירה״ ('+st.txt+')');
   ok(await vis(),mode+': …והמשחק עדיין רץ');
   await page.evaluate(()=>document.getElementById('clkStop').click());
   ok(!(await vis()),mode+': לחיצה שנייה — המשחק נעצר והכפתור נעלם');

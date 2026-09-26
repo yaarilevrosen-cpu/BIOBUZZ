@@ -20,32 +20,32 @@ const D1=fs.mkdtempSync(path.join(os.tmpdir(),'bbc1-')), D2=fs.mkdtempSync(path.
 let {app,win,errs}=await launch(D1);
 // עדכונים
 await win.evaluate(()=>document.getElementById('welcome').hidden=true);
-await win.evaluate(()=>document.getElementById('profChip').click()); await win.waitForTimeout(500);
-ok(await win.evaluate(()=>/BIOBUZZ/.test(document.getElementById('pfVer').textContent)&&/בדוק עדכונים/.test(document.getElementById('pfVer').textContent)),'בתפריט הנהגים: גרסה + ״בדוק עדכונים״');
-await win.evaluate(()=>document.querySelector('#pfVer [data-upd="check"]').click()); await win.waitForTimeout(1200);
-let r=await win.evaluate(()=>({v:document.getElementById('pfVer').textContent, b:document.getElementById('updBadge').hidden, bt:document.getElementById('updBadge').textContent}));
+await win.evaluate(()=>document.querySelector('#appNav [data-nav="settings"]').click()); await win.waitForTimeout(700);
+ok(await win.evaluate(()=>/BIOBUZZ/.test(document.getElementById('spVer').textContent)&&/בדוק עדכונים/.test(document.getElementById('spVer').textContent)),'בהגדרות: גרסה + ״בדוק עדכונים״');
+await win.evaluate(()=>document.querySelector('#spVer [data-upd="check"]').click()); await win.waitForTimeout(1200);
+let r=await win.evaluate(()=>({v:document.getElementById('spVer').textContent, b:document.getElementById('updBadge').hidden, bt:document.getElementById('updBadge').textContent}));
 ok(/9\.9\.9 זמינה/.test(r.v)&&!r.b&&/9\.9\.9/.test(r.bt),'יש גרסה חדשה: 9.9.9 — וכפתור בכותרת ('+r.bt+')');
-tag='v1.0.0'; await win.evaluate(()=>document.querySelector('#pfVer [data-upd="check"]').click()); await win.waitForTimeout(1200);
-r=await win.evaluate(()=>({v:document.getElementById('pfVer').textContent, b:document.getElementById('updBadge').hidden}));
+tag='v1.0.0'; await win.evaluate(()=>document.querySelector('#spVer [data-upd="check"]').click()); await win.waitForTimeout(1200);
+r=await win.evaluate(()=>({v:document.getElementById('spVer').textContent, b:document.getElementById('updBadge').hidden}));
 ok(/הכי חדשה/.test(r.v)&&r.b,'אין גרסה חדשה: ״זו הגרסה הכי חדשה״');
 if(!E){ console.log('app_cloud_test: אין חשבון בדיקה — מדלג על הסנכרון'); await app.close(); srv.close(); done('app_cloud_test'); process.exit(0); }
 // ניקוי החשבון
 { const { Store }=require(path.resolve(APPDIR,'store.js')); const { Sync }=require(path.resolve(APPDIR,'sync.js'));
-  const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbcx-')); const y=new Sync(new Store(d),d); await y.signIn(E,PW);
+  const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbcx-')); const y=new Sync(new Store(d),d); await y.signIn(E,PW); await y.rpc('bb_team_leave');
   await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
-ok(await win.evaluate(()=>/חשבון הקבוצה — לא מחובר/.test(document.getElementById('pfAcct').textContent)&&/חשבון אישי — לא מחובר/.test(document.getElementById('pfAcct').textContent)),'לפני התחברות: שני החשבונות ״לא מחובר״');
+ok(await win.evaluate(()=>/לא מחובר/.test(document.getElementById('spAcct').textContent)),'לפני התחברות: ״לא מחובר״');
 // נתונים במחשב 1
 await win.evaluate(async()=>{ await bbApp.profileUpdate(bbApp.profile.id,{name:'מאיה',emoji:'🚀'}); __sim.bk._set('wheelD',133); });
 await win.waitForTimeout(900);
-await win.evaluate(()=>document.querySelector('#pfAcct [data-acc="open"]').click());
-ok(await win.evaluate(()=>!document.getElementById('acctModal').hidden),'חלון ״חשבון הקבוצה״ נפתח');
+await win.evaluate(()=>document.querySelector('#spAcct [data-acc="open"]').click());
+ok(await win.evaluate(()=>!document.getElementById('acctModal').hidden),'חלון ״החשבון שלך״ נפתח');
 await win.fill('#acEmail',E); await win.fill('#acPass','wrong-pw');
 await win.evaluate(()=>document.getElementById('acIn').click()); await win.waitForTimeout(2500);
 ok(await win.evaluate(()=>/לא נכונים/.test(document.getElementById('acMsg').textContent)),'סיסמה שגויה — הודעה בעברית');
 await win.fill('#acPass',PW); await win.evaluate(()=>document.getElementById('acIn').click());
-await win.waitForFunction(()=>/סונכרן/.test(document.getElementById('pfAcct').textContent),null,{timeout:30000});
-r=await win.evaluate(()=>document.getElementById('pfAcct').textContent);
-ok(r.includes(E)&&/סונכרן/.test(r)&&/חשבון אישי — לא מחובר/.test(r),'מחובר ומסונכרן: '+r.replace(/\s+/g,' ').slice(0,80));
+await win.waitForFunction(()=>/סונכרן/.test(document.getElementById('spAcct').textContent),null,{timeout:30000});
+r=await win.evaluate(()=>document.getElementById('spAcct').textContent);
+ok(r.includes(E)&&/סונכרן/.test(r)&&/הקבוצה/.test(r),'מחובר ומסונכרן: '+r.replace(/\s+/g,' ').slice(0,80));
 await app.close();
 // מחשב 2 — התקנה חדשה, מתחברים מחלון ״ברוכים הבאים״
 ({app,win,errs}=await launch(D2));

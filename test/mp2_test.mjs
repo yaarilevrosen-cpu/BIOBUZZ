@@ -36,7 +36,7 @@ ok(!r.hidden&&r.rows===2,'חלון הסיכום נפתח עם שורה לכל ר
 ok(r.last&&r.last.some(x=>/^שלט \d+:שלט$/.test(x)),'הנהג בשלט מופיע בשמו ('+(r.last||[]).join(' ')+')');
 await page.evaluate(()=>{ window.requestAnimationFrame=cb=>setTimeout(()=>cb(performance.now()),16); });
 await page.waitForTimeout(300);
-await page.screenshot({path:'mp-sum.png'});
+try{ await page.screenshot({path:'mp-sum.png',timeout:60000}); }catch(e){ console.log('  (צילום מסך דולג)'); }
 r=await E(()=>{ S.matchStart(); return document.getElementById('mpSum').hidden; });
 ok(r,'מאץ׳ חדש סוגר את הסיכום');
 r=await E(()=>{ S.matchStop(); for(const b of S.BOTS) S.humFree(b); S.gameStart(false); S.MATCH.phase='idle'; return S.mpActive(); });
@@ -73,7 +73,7 @@ try{
   await G.page.waitForFunction(()=>!document.getElementById('mpSum').hidden,null,{timeout:20000}).catch(()=>{});
   const gs=await G.page.evaluate(()=>({hid:document.getElementById('mpSum').hidden, t:document.getElementById('mpSum').textContent}));
   ok(!gs.hid&&/דני/.test(gs.t),'הסיכום מגיע לאורח עם השם שלו');
-  await G.page.screenshot({path:'mp-guest.png'});
+  try{ await G.page.screenshot({path:'mp-guest.png',timeout:60000}); }catch(e){}
   ok(realErrs(H.errs).length===0&&realErrs(G.errs).length===0,'אין שגיאות במארח ובאורח: '+realErrs(H.errs).concat(realErrs(G.errs)).slice(0,2).join(' | '));
   await H.browser.close(); await G.browser.close();
 } finally { br.kill(); }

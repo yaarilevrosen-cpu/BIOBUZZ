@@ -28,7 +28,7 @@ ok(r2===!r,'F מחליף חרטום');
 // 2. להחליף ״קדימה״ ל-I דרך הממשק
 await page.click('#kbBinds .kbm:nth-child(1) .kbk');
 r=await E(()=>document.querySelector('#kbBinds .kbm:nth-child(1) .kbk').textContent);
-ok(/לחץ מקש/.test(r),'לחיצה על הכפתור מחכה למקש');
+ok(/לחצו? מקש/.test(r),'לחיצה על הכפתור מחכה למקש');
 await page.keyboard.press('i');
 r=await E(()=>({f:__sim.KB.move.fwd, t:document.querySelector('#kbBinds .kbm:nth-child(1) .kbk').textContent, hint:document.getElementById('keysMap').textContent}));
 ok(r.f==='KeyI'&&r.t==='I','קדימה עכשיו I');

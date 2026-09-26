@@ -22,22 +22,18 @@ await nav('stats'); ok(await E(()=>!!document.querySelector('#apStats #stOut'))&
 await nav('drivers'); ok(await E(()=>document.querySelectorAll('#drvGrid .drv').length===2),'״נהגים״ — כרטיס לנהג + כרטיס ״נהג חדש״');
 await E(()=>{ document.getElementById('drvName').value='נועה'; document.getElementById('drvAdd').click(); }); await win.waitForTimeout(700);
 ok(await E(()=>document.querySelectorAll('#drvGrid .drv').length===3),'הוספת נהג מהדף');
-// העברת נועה לחשבון האישי
-await E(()=>{ const b=[...document.querySelectorAll('#drvGrid [data-pfacct]')].find(x=>x.closest('.drv').textContent.includes('נועה')); b.click(); }); await win.waitForTimeout(800);
-ok(await E(()=>[...document.querySelectorAll('#drvGrid .drv')].find(x=>x.textContent.includes('נועה')).querySelector('.drvAcct').textContent.includes('אישי')),'״העבר לאישי״ — נועה מסומנת 👤 אישי');
-const pj=JSON.parse(fs.readFileSync(path.join(DATA,'profiles.json'),'utf8'));
-ok(pj.list.find(p=>p.name==='נועה').acct==='personal'&&pj.tombs.some(t=>t.acct==='team'),'נשמר: acct=personal ומצבה לחשבון הקבוצה');
-await nav('settings'); ok(await E(()=>/חשבון הקבוצה/.test(document.getElementById('spAcct').textContent)&&/חשבון אישי/.test(document.getElementById('spAcct').textContent)&&!!document.querySelector('#spVer [data-upd="check"]')),'״הגדרות״ — שני חשבונות, עדכונים, נתונים');
+ok(await E(()=>!document.querySelector('#drvGrid [data-pfacct]')&&!document.querySelector('.drvAcct')),'בדף הנהגים אין יותר ״קבוצה/אישי״ — חשבון אחד');
+await nav('settings'); ok(await E(()=>/לא מחובר/.test(document.getElementById('spAcct').textContent)&&!!document.querySelector('#spVer [data-upd="check"]')&&!!document.querySelector('#apSet #dBk')&&!!document.querySelector('#apSet #tmName')),'״הגדרות״ — חשבון, עדכונים, קבוצה, גיבוי ואיפוס');
 // ההגדרה ״מה מוצג על המסך״ עובדת
 await E(()=>{ const c=document.querySelector('[data-sphud="mag"]'); c.checked=false; c.dispatchEvent(new Event('change',{bubbles:true})); });
 ok(await E(()=>document.body.classList.contains('hud-mag')),'הסתרת המחסנית מדף ההגדרות');
 await E(()=>{ const c=document.querySelector('[data-sphud="mag"]'); c.checked=true; c.dispatchEvent(new Event('change',{bubbles:true})); });
-// חלון חשבון — בחירת סוג
-await E(()=>document.querySelector('#spAcct [data-acc="open"][data-k="personal"]').click());
-ok(await E(()=>!document.getElementById('acctModal').hidden&&document.getElementById('acT').textContent==='חשבון אישי'&&document.querySelector('#acKind [data-kind="personal"]').classList.contains('on')),'״התחבר״ ליד החשבון האישי — החלון נפתח על ״חשבון אישי״');
-await E(()=>document.querySelector('#acKind [data-kind="team"]').click());
-ok(await E(()=>document.getElementById('acT').textContent==='חשבון הקבוצה'),'מעבר ל״חשבון הקבוצה״ בחלון');
+// חלון החשבון — אחד
+await E(()=>document.querySelector('#spAcct [data-acc="open"]').click());
+ok(await E(()=>!document.getElementById('acctModal').hidden&&document.getElementById('acT').textContent==='החשבון שלך'&&!document.getElementById('acKind')),'״התחבר״ — חלון ״החשבון שלך״, בלי בחירת סוג');
 await E(()=>document.getElementById('acClose').click());
+// עזיבת ההגדרות מחזירה את החלקים המשותפים למקומם
+await nav('home'); ok(await E(()=>document.getElementById('setBody').parentNode.id==='setBox'),'יציאה מההגדרות — החלקים חוזרים למקום');
 // קיצורי מקשים
 await win.keyboard.press('Control+Digit1'); ok(await on()==='home','Ctrl+1 — בית');
 await win.keyboard.press('Control+Digit4'); ok(await on()==='stats','Ctrl+4 — סטטיסטיקות');

@@ -1,4 +1,4 @@
-// v54 — סנכרון בין מחשבים מול Supabase האמיתי (חשבונות בדיקה). דורש BB_TEST_EMAIL / BB_TEST_PASS (+ BB_TEST_EMAIL2)
+// v54/v57 — סנכרון בין מחשבים מול Supabase האמיתי (חשבונות בדיקה). דורש BB_TEST_EMAIL / BB_TEST_PASS (+ BB_TEST_EMAIL2)
 import fs from 'fs'; import os from 'os'; import path from 'path'; import { createRequire } from 'module'; import { fileURLToPath } from 'url';
 import {ok,done} from './h.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
@@ -9,7 +9,8 @@ const E=process.env.BB_TEST_EMAIL, PW=process.env.BB_TEST_PASS, E2=process.env.B
 if(!E||!PW){ console.log('sync_test: אין חשבון בדיקה (BB_TEST_EMAIL) — מדלג'); process.exit(0); }
 const mk=()=>{ const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbsync-')); const s=new Store(d); return {d,s,y:new Sync(s,d)}; };
 // ניקוי החשבון בענן
-{ const {y}=mk(); const r=await y.signIn(E,PW); ok(r.ok,'התחברות לחשבון הבדיקה '+(r.why||''));
+{ const {y}=mk(); const r=await y.signIn(E,PW); ok(r.ok,'התחברות לחשבון הבדיקה '+(r.why||'')); await y.rpc('bb_team_leave');
+  if(E2){ const z=mk().y; await z.signIn(E2,PW); await z.rpc('bb_team_leave'); }
   await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'});
   await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'});
   const {data}=await y.rest('GET','bb_profiles?select=id'); ok(data.length===0,'החשבון נוקה'); }
@@ -51,32 +52,38 @@ A.s.removeProfile(shachar.id); r=await A.y.syncNow(); r=await B.y.syncNow();
 ok(!B.s.meta.list.some(p=>p.id===shachar.id)&&fs.existsSync(path.join(B.d,'trash')),'מחיקת שחר ב-א׳ הגיעה ל-ב׳ (לסל)');
 // בידוד בין חשבונות
 if(E2){ const C=mk(); const q=await C.y.signIn(E2,PW); const {data}=await C.y.rest('GET','bb_profiles?select=id'); const mineIds=new Set(A.s.meta.list.map(p=>p.id).concat([shachar.id])); ok(q.ok&&!data.some(r=>mineIds.has(r.id)),'חשבון אחר לא רואה את הנתונים'); }
-// ── חשבון אישי: נהג שעובר מהקבוצה לחשבון האישי ──
+// ── v57: קבוצה בקוד הצטרפות — כל אחד עם החשבון שלו, והקבוצה רואה את כולם ──
 if(E2){
   { const {y}=mk(); await y.signIn(E2,PW); await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
-  const { Sync:S2 }=require(path.resolve(HERE,'../app/sync.js'));
-  const Ap=new S2(A.s,A.d,{kind:'personal'}); let q=await Ap.signIn(E2,PW); ok(q.ok,'א׳: חשבון אישי בנוסף לחשבון הקבוצה');
-  const me=A.s.addProfile('מאיה הפרטי',{emoji:'🦅'}); A.s.addMatch({at:77000,my:99,opp:1,win:1},me.id);
-  await A.y.syncNow(); await Ap.syncNow();
-  { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&!t[0].deleted,'נהג חדש שייך לקבוצה כברירת מחדל'); }
-  A.s.setAcct(me.id,'personal'); q=await A.y.syncNow(); const q2=await Ap.syncNow();
-  { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&t[0].deleted,'העברה לאישי: נמחק מחשבון הקבוצה'); }
-  { const {data:t}=await Ap.rest('GET','bb_profiles?select=id,name&id=eq.'+me.id); const {data:m}=await Ap.rest('GET','bb_matches?select=at&profile_id=eq.'+me.id);
-    ok(t.length===1&&t[0].name==='מאיה הפרטי'&&m.length===1,'…ונמצא בחשבון האישי, עם המאצ׳ים'); }
-  ok(A.s.meta.list.some(p=>p.id===me.id),'במחשב א׳ הנהג נשאר (רק עבר חשבון)');
-  // מחשב בבית: רק החשבון האישי
-  const H=mk(); const Hp=new S2(H.s,H.d,{kind:'personal'}); await Hp.signIn(E2,PW); q=await Hp.syncNow();
-  ok(q.ok&&H.s.meta.list.length===1&&H.s.meta.list[0].name==='מאיה הפרטי'&&H.s.acctOf(me.id)==='personal','מחשב בבית עם החשבון האישי בלבד: רק ״מאיה הפרטי״');
-  // מחשב קבוצה חדש: לא מקבל את האישי
-  const T=mk(); await T.y.signIn(E,PW); await T.y.syncNow();
-  ok(!T.s.meta.list.some(p=>p.id===me.id)&&T.s.meta.list.some(p=>p.name==='מאיה'),'מחשב קבוצה חדש: יש את נהגי הקבוצה, בלי הנהג האישי');
-  // שינוי בבית → חוזר למחשב א׳
-  H.s.kvSet('biobuzz_params_v1',JSON.stringify({wheelD:111})); H.s.flushKv(); await Hp.syncNow(); await Ap.syncNow();
-  ok(JSON.parse(A.s.kvOf(me.id).biobuzz_params_v1||'{}').wheelD===111,'שינוי בבית הגיע למחשב א׳ דרך החשבון האישי');
-  // א׳ עדיין בסדר מול הקבוצה
-  q=await A.y.syncNow(); ok(q.ok&&A.s.meta.list.some(p=>p.id===me.id),'סנכרון הקבוצה לא מוחק את הנהג האישי');
-  await Ap.signOut(); for(const x of [H,T]) fs.rmSync(x.d,{recursive:true,force:true});
+  let q=await A.y.teamCall('create','Test Lions','12345');
+  const code=q.team&&q.team.code;
+  ok(q.ok&&/^[A-Z0-9]{6}$/.test(code||'')&&q.team.owner&&q.team.members===1,'א׳ יצר קבוצה — קוד '+code);
+  const C=mk(); C.s.updateProfile(C.s.meta.active,{name:'נועה',emoji:'🦅'}); C.s.addMatch({at:31000,my:50,opp:10,win:1,shots:4,hits:4}); C.s.addMatch({at:32000,my:20,opp:30,win:-1});
+  await C.y.signIn(E2,PW);
+  q=await C.y.teamCall('join','nope42'); ok(!q.ok&&/אין קבוצה/.test(q.why),'קוד שגוי: '+q.why);
+  q=await C.y.teamCall('join',code.toLowerCase()); ok(q.ok&&q.team.members===2&&!q.team.owner,'ג׳ הצטרף עם הקוד (גם באותיות קטנות)');
+  q=await C.y.syncNow(); ok(q.ok&&q.pushedProfiles===1&&q.pushedMatches===2,'ג׳ העלה את הנהג שלו');
+  ok(C.s.meta.list.length===1&&C.s.meta.list[0].name==='נועה','הנהגים של א׳ לא נכנסו לחשבון של ג׳ (רק לקריאה בטבלה)');
+  q=await A.y.syncNow(); ok(q.ok&&q.team&&q.team.members===2,'א׳ רואה 2 חברים');
+  const tm=A.s.team(A.y.team); const noa=tm.find(t=>t.remote&&t.name==='נועה');
+  ok(noa&&noa.sum.n===2&&noa.sum.W===1&&noa.who,'בטבלת הקבוצה של א׳: נועה עם 2 משחקים ('+(noa&&noa.who)+')');
+  ok(!A.s.meta.list.some(p=>p.name==='נועה'),'נועה לא נכנסה לרשימת הנהגים של א׳');
+  C.s.addMatch({at:33000,my:70,opp:10,win:1}); await C.y.syncNow(); q=await A.y.syncNow();
+  ok(A.s.team(A.y.team).find(t=>t.remote&&t.name==='נועה').sum.n===3,'משחק חדש של נועה הגיע לטבלה של א׳ (משיכה מצטברת)');
+  { const {data}=await A.y.rest('GET','bb_profiles?select=id&'+A.y.own()); ok(!data.some(r=>r.id===C.s.meta.active),'השאילתות של א׳ על הנהגים שלו לא כוללות את של ג׳'); }
+  q=await C.y.teamCall('leave'); ok(q.ok&&!q.team,'ג׳ עזב את הקבוצה');
+  q=await A.y.syncNow(); ok(!A.s.team(A.y.team).some(t=>t.remote),'אחרי שעזב — נעלם מהטבלה של א׳');
+  q=await A.y.teamCall('leave'); ok(q.ok&&!A.y.status().team,'א׳ עזב — אין קבוצה');
+  fs.rmSync(C.d,{recursive:true,force:true});
 }
+// מעבר מגרסה 1.3: שני חשבונות → אחד (הקבוצה נשאר)
+{ const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbmig-')); const b=x=>JSON.stringify({blob:Buffer.from(JSON.stringify({access_token:x,refresh_token:'r',expires_at:Date.now()+1e6,user:{id:'u',email:x+'@x.dev'}})).toString('base64')});
+  fs.writeFileSync(path.join(d,'account-team.json'),b('team')); fs.writeFileSync(path.join(d,'account-personal.json'),b('me'));
+  const y=new Sync(new Store(d),d);
+  ok(y.status().email==='team@x.dev'&&fs.existsSync(path.join(d,'account.json'))&&fs.existsSync(path.join(d,'account-personal.old.json'))&&y.migrated==='personal-dropped','מעבר: חשבון הקבוצה נשאר, האישי נשמר בצד');
+  const d2=fs.mkdtempSync(path.join(os.tmpdir(),'bbmig-')); fs.writeFileSync(path.join(d2,'account-personal.json'),b('me'));
+  ok(new Sync(new Store(d2),d2).status().email==='me@x.dev','מעבר: רק אישי → הוא החשבון');
+  fs.rmSync(d,{recursive:true,force:true}); fs.rmSync(d2,{recursive:true,force:true}); }
 // אסימון נשמר ומחזיק אחרי ״הפעלה מחדש״
 const A2=new (require(path.resolve(HERE,'../app/sync.js')).Sync)(A.s,A.d);
 ok(A2.status().loggedIn&&A2.status().email===E,'אחרי הפעלה מחדש: עדיין מחוברים');

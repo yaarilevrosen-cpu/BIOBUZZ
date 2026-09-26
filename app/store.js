@@ -9,7 +9,7 @@ const path = require("path");
 
 const KEYRE = /^(bb|biobuzz)/i;
 /* מפתחות של המחשב הזה בלבד — לא מסונכרנים (מצב מסך, לשונית, תצוגה, גיבויים מקומיים) */
-const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1", "bbLang1", "bbTour1"]);
+const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1", "bbLang1", "bbTour1", "bbNew57"]);
 const EMOJI = ["🐝", "🚀", "🤖", "⚡", "🔥", "🦅", "🐺", "🦊", "🐉", "🎯", "🌟", "🏆"];
 const COLORS = ["#FFB020", "#35D6A4", "#4C9AF5", "#F2545B", "#B07CFF", "#FF7AC6", "#7FD1FF", "#C6E26B"];
 
@@ -25,6 +25,13 @@ function readJSON(file, def) {
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function cleanName(n) { return String(n == null ? "" : n).replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 24); }
 
+function summarize(l) {
+  const n = l.length; if (!n) return { n: 0 };
+  let W = 0, L = 0, pts = 0, best = 0, shots = 0, hits = 0, last = 0;
+  for (const m of l) { if (m.win > 0) W++; else if (m.win < 0) L++; pts += +m.my || 0; best = Math.max(best, +m.my || 0);
+    shots += +m.shots || 0; hits += +m.hits || 0; last = Math.max(last, +m.at || 0); }
+  return { n, W, L, T: n - W - L, avg: pts / n, best, acc: shots ? hits / shots : null, shots, last };
+}
 class Store {
   constructor(root) {
     this.root = root;
@@ -200,15 +207,19 @@ class Store {
     const lines = season.filter(m => m && isFinite(m.at)).map(m => JSON.stringify(m)).join("\n");
     writeAtomic(this.mfile(id), lines ? lines + "\n" : "");
   }
-  summary(id) {
-    const l = this.matches(id, { lite: true }); const n = l.length;
-    if (!n) return { n: 0 };
-    let W = 0, L = 0, pts = 0, best = 0, shots = 0, hits = 0, last = 0;
-    for (const m of l) { if (m.win > 0) W++; else if (m.win < 0) L++; pts += +m.my || 0; best = Math.max(best, +m.my || 0);
-      shots += +m.shots || 0; hits += +m.hits || 0; last = Math.max(last, +m.at || 0); }
-    return { n, W, L, T: n - W - L, avg: pts / n, best, acc: shots ? hits / shots : null, shots, last };
+  summary(id) { return summarize(this.matches(id, { lite: true })); }
+  /* טבלת הקבוצה: הנהגים במחשב הזה + (אם יש) הנהגים של חברי הקבוצה מהענן, לקריאה בלבד */
+  team(remote) {
+    const mine = this.meta.list.map(p => ({ id: p.id, name: p.name, emoji: p.emoji, color: p.color, active: p.id === this.meta.active, sum: this.summary(p.id) }));
+    if (!remote || !remote.profiles) return mine;
+    const out = mine.slice();
+    for (const k in remote.profiles) {
+      const r = remote.profiles[k]; if (!r || r.deleted) continue;
+      const mem = (remote.members || []).find(m => m.uid === r.owner);
+      out.push({ id: k, name: r.name || "נהג", emoji: r.emoji, color: r.color, remote: true, who: mem ? mem.label : "", sum: summarize((remote.matches || {})[k] || []) });
+    }
+    return out;
   }
-  team() { return this.meta.list.map(p => ({ id: p.id, name: p.name, emoji: p.emoji, color: p.color, active: p.id === this.meta.active, sum: this.summary(p.id) })); }
   /* ── גיבויים ── */
   dailyBackup(keep) {
     keep = keep || 14;

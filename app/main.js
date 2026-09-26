@@ -24,10 +24,8 @@ const DATA = process.env.BIOBUZZ_DATA ||
   (process.env.PORTABLE_EXECUTABLE_DIR ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, "BIOBUZZ-data") : path.join(app.getPath("userData"), "data"));
 const SIM = process.env.BIOBUZZ_SIM || path.join(__dirname, "sim", "index.html");
 let store = null, win = null, sync = null, bridge = null;
-/* שני חשבונות: הקבוצה (כל הנהגים) והאישי (רק מה שסימנת כאישי) */
-const SY = {};
-const kindOf = k => k === "personal" ? "personal" : "team";
-function acctStatusAll() { return { team: SY.team.status(), personal: SY.personal.status() }; }
+/* v57: חשבון אחד לכל אדם; הקבוצה — קוד הצטרפות */
+function acctStatus() { return sync ? sync.status() : { loggedIn: false }; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
 if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); }
@@ -137,7 +135,7 @@ function reg() {
   ipcMain.handle("bb:firstRunDone", () => { store.firstRun = false; return true; });
   ipcMain.handle("bb:matchAdd", (e, m) => { const r = store.addMatch(m); soonSync(); return r; });
   ipcMain.handle("bb:matches", (e, id) => store.matches(id, { lite: true }));
-  ipcMain.handle("bb:team", () => store.team());
+  ipcMain.handle("bb:team", () => store.team(sync && sync.status().loggedIn ? sync.team : null));
   ipcMain.handle("bb:openData", () => shell.openPath(DATA));
   ipcMain.handle("bb:backupNow", () => { const t = store.dailyBackup(); return { tag: t, list: store.backupsList() }; });
   ipcMain.handle("bb:teamExport", async () => {
@@ -166,20 +164,15 @@ function reg() {
   /* ── יומן אודומטריה מהרובוט (adb) ── */
   ipcMain.handle("bb:adbPull", (e, ip) => adbPull(String(ip || "").trim()));
   ipcMain.handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
-  ipcMain.handle("bb:acctStatus", () => acctStatusAll());
-  const sameAsOther = (k, em) => { const o = SY[k === "team" ? "personal" : "team"].status(); return o.loggedIn && o.email.toLowerCase() === String(em).trim().toLowerCase(); };
-  ipcMain.handle("bb:acctSignIn", async (e, k, em, pw) => { k = kindOf(k);
-    if (sameAsOther(k, em)) return { ok: false, why: "המייל הזה כבר מחובר כ" + (k === "team" ? "חשבון אישי" : "חשבון קבוצה") + " — צריך מייל אחר" };
-    const r = await SY[k].signIn(em, pw); if (r.ok) runSync("login"); return r; });
-  ipcMain.handle("bb:acctSignUp", async (e, k, em, pw) => { k = kindOf(k);
-    if (sameAsOther(k, em)) return { ok: false, why: "המייל הזה כבר מחובר כחשבון אחר — צריך מייל אחר" };
-    const r = await SY[k].signUp(em, pw); if (r.ok && !r.confirm) runSync("login"); return r; });
-  ipcMain.handle("bb:acctRecover", (e, k, em) => SY[kindOf(k)].recover(em));
-  ipcMain.handle("bb:acctSignOut", async (e, k) => { const r = await SY[kindOf(k)].signOut(); send("bb:sync", { status: acctStatusAll() }); return r; });
-  ipcMain.handle("bb:profileAcct", (e, id, k) => { const p = store.setAcct(id, kindOf(k)); soonSync(800); return p; });
+  ipcMain.handle("bb:acctStatus", () => acctStatus());
+  ipcMain.handle("bb:acctSignIn", async (e, em, pw) => { const r = await sync.signIn(em, pw); if (r.ok) runSync("login"); return r; });
+  ipcMain.handle("bb:acctSignUp", async (e, em, pw) => { const r = await sync.signUp(em, pw); if (r.ok && !r.confirm) runSync("login"); return r; });
+  ipcMain.handle("bb:acctRecover", (e, em) => sync.recover(em));
+  ipcMain.handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
+  ipcMain.handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   ipcMain.handle("bb:syncNow", () => runSync("manual"));
   /* ── עדכונים ── */
-  ipcMain.handle("bb:bugSend", (e, row) => (SY.team.sess ? SY.team : SY.personal.sess ? SY.personal : SY.team).bugSend(row || {}));
+  ipcMain.handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
   ipcMain.handle("bb:shot", async () => { try { let img = await win.webContents.capturePage(); const sz = img.getSize();
     if (sz.width > 1280) img = img.resize({ width: 1280 }); return "data:image/jpeg;base64," + img.toJPEG(72).toString("base64"); } catch (e) { return ""; } });
   ipcMain.handle("bb:updCheck", () => updCheck(true));
@@ -225,25 +218,16 @@ async function adbPull(ip) {
 
 /* ── סנכרון: בהתחברות, כל שתי דקות, זמן קצר אחרי שינוי, ולפני יציאה ── */
 let syncT = null;
-const anyIn = () => SY.team && (SY.team.status().loggedIn || SY.personal.status().loggedIn);
+const anyIn = () => !!(sync && sync.status().loggedIn);
 function soonSync(ms) { if (!anyIn()) return; clearTimeout(syncT); syncT = setTimeout(() => runSync("soon"), ms || 4000); }
 let syncRun = null;
 function runSync(why) {
   if (!anyIn()) return Promise.resolve({ ok: false, why: "לא מחוברים" });
   if (syncRun) return syncRun;
   syncRun = (async () => {
-    const st = acctStatusAll(); for (const k in st) if (st[k].loggedIn) st[k].busy = true;
-    send("bb:sync", { status: st });
-    /* אחד אחרי השני — שניהם כותבים לאותם קבצים */
-    const out = { ok: true, changedActive: false, profilesChanged: false, pulledMatches: 0, pulledProfiles: 0, pushedMatches: 0, pushedProfiles: 0, errors: [] };
-    for (const k of ["team", "personal"]) {
-      if (!SY[k].status().loggedIn) continue;
-      const r = await SY[k].syncNow();
-      if (!r.ok) { out.ok = false; out.errors.push(k + ": " + r.why); continue; }
-      for (const f of ["changedActive", "profilesChanged"]) out[f] = out[f] || !!r[f];
-      for (const f of ["pulledMatches", "pulledProfiles", "pushedMatches", "pushedProfiles"]) out[f] += r[f] || 0;
-    }
-    send("bb:sync", { status: acctStatusAll(), result: out, why });
+    const st = acctStatus(); st.busy = true; send("bb:sync", { status: st });
+    const out = await sync.syncNow();
+    send("bb:sync", { status: acctStatus(), result: out, why });
     return out;
   })().finally(() => { syncRun = null; });
   return syncRun;
@@ -288,9 +272,7 @@ app.whenReady().then(() => {
   try { store.dailyBackup(14); } catch (e) { console.error(e); }
   const enc = s => (safeStorage && safeStorage.isEncryptionAvailable()) ? "e:" + safeStorage.encryptString(s).toString("base64") : "p:" + Buffer.from(s, "utf8").toString("base64");
   const dec = s => s.startsWith("e:") ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : Buffer.from(s.replace(/^p:/, ""), "base64").toString("utf8");
-  SY.team = new Sync(store, DATA, { enc, dec, kind: "team" });
-  SY.personal = new Sync(store, DATA, { enc, dec, kind: "personal" });
-  sync = SY.team;
+  sync = new Sync(store, DATA, { enc, dec });
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
     bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html") });

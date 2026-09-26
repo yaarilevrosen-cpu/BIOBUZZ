@@ -13,10 +13,10 @@ ok(await E(()=>!document.getElementById('welcome').hidden&&!!document.getElement
 ok(!/\u05D9\u05E2\u05E8\u05D9|\u05D0\u05E4\u05D5\u05DC\u05D5/.test(await E(()=>document.getElementById('welcome').innerText)),'מסך הפתיחה בלי שם של משתמש או קבוצה קבועים');
 await E(()=>{ document.getElementById('wcName').value='נועה'; document.getElementById('wcTeamN').value='Robo Lions'; document.getElementById('wcTeamNum').value='12345'; document.getElementById('wcGo').click(); });
 await win.waitForTimeout(600);
-ok(await E(()=>document.getElementById('verBadge').textContent==='v56 · Robo Lions 12345'),'הקבוצה מהפתיחה — בתג הגרסה');
+ok(await E(()=>/^v\d+ · Robo Lions 12345$/.test(document.getElementById('verBadge').textContent)),'הקבוצה מהפתיחה — בתג הגרסה');
 await E(()=>document.querySelector('#appNav [data-nav="settings"]').click()); await win.waitForTimeout(400);
-let r=await E(()=>({n:document.getElementById('spTeamN').value, u:document.getElementById('spTeamNum').value, lang:!!document.querySelector('#appPage .langBtn'), about:document.getElementById('appPage').innerText}));
-ok(r.n==='Robo Lions'&&r.u==='12345'&&r.lang,'בהגדרות: שם, מספר ומתג שפה');
+let r=await E(()=>({n:document.querySelector('#apSet #tmName').value, u:document.querySelector('#apSet #tmNum').value, lang:!!document.querySelector('#appPage .langBtn'), about:document.getElementById('appPage').innerText}));
+ok(r.n==='Robo Lions'&&r.u==='12345'&&r.lang,'בהגדרות: שם, מספר ומתג שפה '+JSON.stringify({n:r.n,u:r.u,l:r.lang}));
 ok(!/\u05D9\u05E2\u05E8\u05D9|\u05D0\u05E4\u05D5\u05DC\u05D5/.test(r.about),'דף ההגדרות בלי שם קבוצה קבוע');
 // צילום מסך דרך האפליקציה
 const shot=await E(()=>window.bbApp.shot());
@@ -37,15 +37,15 @@ r=await E(()=>{ const n=document.getElementById('appNav').getBoundingClientRect(
 ok(r.lang==='en'&&r.sync==='en','השפה נשמרה אחרי הפעלה מחדש');
 ok(r.navL<5,'באנגלית סרגל הניווט עובר לשמאל (x='+r.navL+')');
 ok(r.heb.length<=2,'אין עברית בדף הבית ('+r.heb.join(' ')+')');
-await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-home.png'});
+try{ await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-home.png',timeout:60000}); }catch(e){ console.log('  (צילום מסך דולג — המחשב עמוס)'); }
 await E(()=>document.querySelector('#appNav [data-nav="settings"]').click()); await win.waitForTimeout(500);
-await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-settings.png'});
+try{ await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-settings.png',timeout:60000}); }catch(e){ console.log('  (צילום מסך דולג — המחשב עמוס)'); }
 await E(()=>document.querySelector('#appNav [data-nav="play"]').click()); await win.waitForTimeout(300);
 await E(()=>window.__sim.tourStart(true)); await win.waitForTimeout(100);
 await E(()=>document.getElementById('tourNext').click()); await E(()=>document.getElementById('tourNext').click()); await win.waitForTimeout(500);
 r=await E(()=>({t:document.getElementById('tourT').textContent, n:window.__sim.TOUR.steps.length}));
 ok(r.n>=7,'בסיור באפליקציה יש גם סטטיסטיקות והגדרות ('+r.n+')');
-await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-tour.png'});
+try{ await win.screenshot({path:(process.env.BB_SHOTS||os.tmpdir())+'/app-en-tour.png',timeout:60000}); }catch(e){ console.log('  (צילום מסך דולג — המחשב עמוס)'); }
 ok(errs.length===0,'אין שגיאות: '+errs.join(' | '));
 const st=JSON.parse(fs.readFileSync(path.join(DATA,'profiles.json'),'utf8'));
 await app.close();

@@ -44,11 +44,11 @@ contextBridge.exposeInMainWorld("bbApp", {
   adbPull: ip => ipcRenderer.invoke("bb:adbPull", String(ip || "")),
   /* חשבון וסנכרון */
   acctStatus: () => ipcRenderer.invoke("bb:acctStatus"),
-  acctSignIn: (kind, email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(kind || "team"), String(email || ""), String(pw || "")),
-  acctSignUp: (kind, email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(kind || "team"), String(email || ""), String(pw || "")),
-  acctRecover: (kind, email) => ipcRenderer.invoke("bb:acctRecover", String(kind || "team"), String(email || "")),
-  acctSignOut: kind => ipcRenderer.invoke("bb:acctSignOut", String(kind || "team")),
-  profileAcct: (id, kind) => ipcRenderer.invoke("bb:profileAcct", String(id || ""), String(kind || "team")),
+  acctSignIn: (email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(email || ""), String(pw || "")),
+  acctSignUp: (email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || "")),
+  acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
+  acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
+  teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
   onSync: cb => { ipcRenderer.on("bb:sync", (e, d) => { try { cb(d); } catch (err) {} }); },
   /* עדכונים */
