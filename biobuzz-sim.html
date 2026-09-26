@@ -2192,7 +2192,9 @@ function i18nNode(n){
   if(n.nodeType===3){ const p=n.parentNode; if(p&&(p.nodeName==="SCRIPT"||p.nodeName==="STYLE"||p.nodeName==="TEXTAREA")) return;
     let v=i18nText(n.data);
     /* טקסט שפותח אלמנט — אות גדולה בהתחלה (״home״ ← ״Home״) */
-    if(v!==n.data&&!n.previousSibling) v=v.replace(/^(\s*[^A-Za-z\s]{0,3}\s*)([a-z])/,(m,a,b)=>a+b.toUpperCase());
+    if(v!==n.data&&!n.previousSibling&&!/^(B|STRONG|EM|I|CODE|A|SMALL)$/.test(p&&p.nodeName)) v=v.replace(/^(\s*[^A-Za-z0-9\s]{0,2}\s*)([a-z])/,(m,a,b)=>a+b.toUpperCase());
+    /* מילה עברית שדבוקה לאלמנט אחריה — באנגלית צריך רווח */
+    if(v!==n.data&&n.nextSibling&&n.nextSibling.nodeType===1&&/[\u0590-\u05FF]$/.test(n.data)&&/[A-Za-z]$/.test(v)) v+=" ";
     if(v!==n.data) n.data=v; return; }
   if(n.nodeType!==1) return;
   if(n.nodeName==="SCRIPT"||n.nodeName==="STYLE") return;
