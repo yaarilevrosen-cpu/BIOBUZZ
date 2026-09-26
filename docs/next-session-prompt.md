@@ -1,7 +1,7 @@
 # פרומפט להמשך — מעבדת זירת BIOBUZZ, אפולו 9662
 
-**העתק את כל הקובץ הזה כהודעה ראשונה בצ׳אט חדש, וצרף את `BIOBUZZ-v52.zip`.**
-הגרסה הנוכחית: **v52** (26.9.2026).
+**העתק את כל הקובץ הזה כהודעה ראשונה בצ׳אט חדש, וצרף את `BIOBUZZ-v53.zip`.**
+הגרסה הנוכחית: **v53** (26.9.2026).
 
 ---
 
@@ -13,8 +13,8 @@
 
 ## 1. הדבר הראשון: לשחזר את סביבת העבודה
 סביבת העבודה מתאפסת בין שיחות. שני מקורות:
-- **הזיפ** (`BIOBUZZ-v52/`: `BIOBUZZ-lab.html` קובץ בודד 22.5 מגה, `padbridge.py`, `pad.html`, `start.bat`, `README.md`).
-- **הפרויקט**, תחת `claude/source/`: `biobuzz-sim.html`, `restore.py`, `tests-v52.md` (כל הבדיקות + `build_standalone.py`), `padbridge_src.py`, `pad.html`.
+- **הזיפ** (`BIOBUZZ-v53/`: `BIOBUZZ-lab.html` קובץ בודד 22.5 מגה, `padbridge.py`, `pad.html`, `start.bat`, `README.md`).
+- **הפרויקט**, תחת `claude/source/`: `biobuzz-sim.html`, `restore.py`, `tests-v53.md` (כל הבדיקות + `build_standalone.py`), `padbridge_src.py`, `pad.html`.
 
 ### שלבים
 ```bash
@@ -22,10 +22,10 @@
 #    (הזיפ נמצא תחת תיקיית ההעלאות — לחפש *.zip). הוא מחלץ: קובץ מקור זהה בית לבית, CAD, ספריות,
 #    ואת build/prefix.html + build/fonts-block.html שצריך לבנייה מחדש.
 python3 /home/claude/restore.py <נתיב הזיפ>
-# 2) project_read ל-claude/source/tests-v52.md → /home/claude/tests-v52.md, ואז לחלץ:
+# 2) project_read ל-claude/source/tests-v53.md → /home/claude/tests-v53.md, ואז לחלץ:
 cd /home/claude && python3 - <<'X'
 import re,os
-s=open('tests-v52.md',encoding='utf8').read()
+s=open('tests-v53.md',encoding='utf8').read()
 for p,b in re.findall(r'^## (\S+)\n```\n(.*?)\n```$',s,re.S|re.M):
     os.makedirs(os.path.dirname(p) or '.',exist_ok=True); open(p,'w',encoding='utf8').write(b+'\n')
 X
@@ -157,6 +157,14 @@ node smoke.mjs && node regress_test.mjs
 - **סטטיסטיקות:** לוח ״סטטיסטיקות — כל המשחקים״ (`#statsBox`, בבדיקות ← משחק) וכפתור ״📊 הסטטיסטיקות שלי״ בלוח המשחק (חלון צף). מהרשומות של העונה: אחוז ניצחונות, ממוצע ומגמה מול 10 הקודמים, שיא, דיוק, רצף, אוטונומי, עבירות; גרף עמודות של 30 האחרונים (ירוק/אדום/אפור + קו היריב, ריחוף מציג פרטים); לפי סוג משחק / רמת בוטים / ברית; שיאים; 8 אחרונים. סינון הכול / 20 / היום. רשומה חדשה שומרת `kind` (match/quick/split/net) ו-`skill`.
 - בדיקה: `v52_test` 30.
 
+## 5יט. v53 — אפליקציה ל-Windows (שלב 1 מתוך `claude/app-plan.md`)
+- **החלטה של יערי:** דרך 2 — Electron. מתחילים מנתונים ופרופילים של הקבוצה; הפיצ׳רים ה״מגניבים״ (מסך שני, וידאו, רובוט אמיתי) רק אחרי שבודקים את שלב 1. וגם: **הכול בריפו ב-GitHub**.
+- `app/` (בפרויקט: `claude/source/app-main.js`, `app-preload.js`, `app-store.js`, `app-package.json`): `main.js` חלון (זוכר גודל, F11, מופע אחד, `force_high_performance_gpu`), `store.js` נתונים בדיסק — `profiles.json`, `profiles/<id>/store.json` (כל מפתחות bb…/biobuzz…), `profiles/<id>/matches.jsonl` (ארכיון בלי תקרה), `backups/<תאריך>` (14 יום), `trash/`. `preload.js` טוען את מפתחות הנהג ל-localStorage לפני שהסימולטור עולה וחושף `window.bbApp`.
+- בסימולטור: בראש הסקריפט הראשי, אם `bbApp` קיים — `Storage.prototype.setItem/removeItem/clear` שולחים גם לדיסק. `APP` (שים לב: `APP.profile` הוא עותק מקומי; הפונקציות הן `bbApp.profileX`). כפתור נהג בכותרת (`#profChip`) ← `#profMenu` (החלפה = טעינה מחדש, הוספה, שינוי שם, סמל, מחיקה לסל בשתי לחיצות; חסום באמצע משחק). פתיחה ראשונה: `#welcome` (שם + סמל + ייבוא גיבוי מהדפדפן). סטטיסטיקות מהארכיון (`APP.all`) + ״הקבוצה — כל הנהגים״ (`appTeamHTML`). ב״גיבוי ואיפוס״: לוח ״האפליקציה״ (`.appOnly`). בדפדפן — שום שינוי (`html.app`).
+- EXE: `electron-builder --win nsis portable` (בלינוקס עם wine64 + wine32:i386). מתקין עברי + גרסה ניידת (נתונים ליד ה-EXE, `PORTABLE_EXECUTABLE_DIR`). כ-100 מגה כל אחד.
+- **הריפו:** `/home/claude/repo` (נמסר כ-`biobuzz-repo.zip`, קומיט אחד על `main`), כולל `.github/workflows/build.yml`: בדיקות באובונטו, EXE ב-windows-latest, ו-Release בתגית `v*`.
+- בדיקה: `app_test` 24 (Playwright `_electron`, נתונים בתיקייה זמנית דרך `BIOBUZZ_DATA`). הערה: בלי כרטיס מסך, לחיצות אמיתיות של Playwright באפליקציה איטיות (מחכות לציור יציב) — ללחיצה כפולה עם זמן קצוב משתמשים ב-`click()` של ה-DOM.
+
 ## 6. בדיקות — ב-v35 הכול ירוק, **תמיד ברצף**
 `smoke` 2 · `kb_test` 18 · `g304_test` 15 · `pathlib_test` 16 · `auto_test` 28 · `teach_test` 15 · `autosel_test` 19 · `v42_test` 35 · `v42_async` 6 · `hud_test` 12 · `ui_test` 15 · `review_test` 16 · `play_test` 9 · `brain_test` 20 · `mp2_test` 17 · `regress_test` 11 · `dist_test` 12. `auto_ui.mjs` לצילומי מסך של העורך.
 - `bench.mjs <זרעים> <רמה> <שם>` עם `BRAIN=0|1` ו-`SIM=קובץ` — מאצ׳ים של בוטים בלבד. להעתיק את `sim.html` לשם אחר לפני שמריצים ברקע (כל זרע טוען את הקובץ מחדש). המאצ׳ לא דטרמיניסטי לגמרי (כאוס קטן בפיזיקה) — לממוצע על 8–10 זרעים.
@@ -167,7 +175,7 @@ node smoke.mjs && node regress_test.mjs
 ## 7. איך עובדים — בכל שינוי
 1. שחזור ← `smoke` + `regress_test` ירוקים.
 2. קוד ← בדיקה ייעודית ← צילום מסך ← רגרסיה ברצף.
-3. להעלות את `verBadge` (v52…).
+3. להעלות את `verBadge` (v53…).
 4. `python3 build.py` ← `dist_test` ← זיפ ל-`/mnt/user-data/outputs/`.
 5. פרסום לארטיפקט: `biobuzz-sim.html` עצמו (עם `url`; קבצי ה-CAD נשארים).
 6. שמירה לפרויקט: `claude/source/*`, `claude/<נושא>-vNN.md`, `claude/simulator-overview.md`, והפרומפט הזה. **גם באמצע עבודה ארוכה.**

@@ -1,7 +1,7 @@
 # מעבדת זירת BIOBUZZ — הדוח הכללי
 
 **קבוצת FTC אפולו #9662 · עונת BIOBUZZ 2026–2027**
-**נכון לגרסה v52 (25.9.2026).** הדוח מתאר את הרעיון, העקרונות, המבנה וההחלטות. מספרים שמשתנים מגרסה לגרסה מסומנים ״נכון ל-v34״.
+**נכון לגרסה v53 (25.9.2026).** הדוח מתאר את הרעיון, העקרונות, המבנה וההחלטות. מספרים שמשתנים מגרסה לגרסה מסומנים ״נכון ל-v34״.
 
 ---
 
@@ -243,6 +243,6 @@
 - **v37:** `claude/start-positions-architecture-v37.md`
 - **v35:** `claude/autonomy-v35.md`
 - **v34:** `claude/brain-multiplayer-v34.md`
-- **קוד:** `claude/source/biobuzz-sim.html` · `restore.py` · `tests-v52.md` · `padbridge_src.py` · `pad.html`
+- **קוד:** `claude/source/biobuzz-sim.html` · `restore.py` · `tests-v53.md` · `padbridge_src.py` · `pad.html`
 - **המשך:** `claude/next-session-prompt.md` · הדוח הזה: `claude/simulator-overview.md`
 - מסמכים ישנים (`multiplayer-v33.md`, `path-planning-v31.md` ועוד) לא נמצאים בפרויקט הזה.
