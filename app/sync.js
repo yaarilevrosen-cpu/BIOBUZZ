@@ -87,6 +87,13 @@ class Sync {
     const tok = await this.token();
     return this.http(method, this.cloud.url + "/rest/v1/" + pathq, body, Object.assign({ Authorization: "Bearer " + tok }, extraHeaders || {}), 30000);
   }
+  /* דיווח על באג — מותר רק להוסיף; מחובר = נרשם עם המשתמש, אחרת אנונימי */
+  async bugSend(row) {
+    const clean = {}; for (const k of ["what", "steps", "contact", "ver", "lang", "platform", "sys", "errors", "shot"]) if (row && row[k] != null) clean[k] = row[k];
+    let auth = "Bearer " + this.cloud.key; try { if (this.sess) auth = "Bearer " + await this.token(); } catch (e) {}
+    try { await this.http("POST", this.cloud.url + "/rest/v1/bb_bugs", clean, { Authorization: auth, Prefer: "return=minimal" }, 30000); return { ok: true }; }
+    catch (e) { return { ok: false, why: e.message === "timeout" ? "אין תשובה מהשרת" : /fetch failed|ENOTFOUND|ECONN/.test(e.message) ? "אין חיבור לאינטרנט" : heb(e.message) }; }
+  }
   /* ── חשבון ── */
   async signIn(email, password) {
     try {

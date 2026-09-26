@@ -19,12 +19,12 @@ const J=f=>JSON.parse(fs.readFileSync(path.join(DATA,f),'utf8'));
 let {app,win,errs}=await launch();
 ok(await win.evaluate(()=>!!window.bbApp&&document.documentElement.classList.contains('app')),'האפליקציה עלתה, bbApp קיים');
 ok(await win.evaluate(()=>!document.getElementById('welcome').hidden),'פתיחה ראשונה: ״ברוכים הבאים״');
-await win.fill('#wcName','יערי');
+await win.fill('#wcName','מאיה');
 await win.evaluate(()=>document.querySelector('#wcEmo [data-wce="🚀"]').click());
 await win.evaluate(()=>document.querySelector('#wcGo').click());
 await win.waitForTimeout(600);
-ok(await win.evaluate(()=>document.getElementById('welcome').hidden&&/יערי/.test(document.getElementById('profChip').textContent)&&/🚀/.test(document.getElementById('profChip').textContent)),'השם והסמל בכותרת: 🚀 יערי');
-ok(J('profiles.json').list[0].name==='יערי','profiles.json: יערי');
+ok(await win.evaluate(()=>document.getElementById('welcome').hidden&&/מאיה/.test(document.getElementById('profChip').textContent)&&/🚀/.test(document.getElementById('profChip').textContent)),'השם והסמל בכותרת: 🚀 מאיה');
+ok(J('profiles.json').list[0].name==='מאיה','profiles.json: מאיה');
 // שינויים נשמרים לדיסק
 await win.evaluate(()=>{ __sim.bk._set('wheelD',120); localStorage.setItem('bb_paths_v1',JSON.stringify([{name:'שלי',pts:[]}])); });
 await win.waitForTimeout(1500);
@@ -47,7 +47,7 @@ const other=await win.evaluate(()=>[...document.querySelectorAll('#pfList [data-
 let rl=waitReload(win); await win.evaluate(id=>document.querySelector('#pfList [data-pfgo="'+id+'"]').click(),other); await rl;
 ok(await win.evaluate(()=>/שחר/.test(document.getElementById('profChip').textContent)),'החלפה: שחר נוהג');
 ok(await win.evaluate(()=>__sim.bk.changed())===0,'לשחר רובוט מקורי משלו');
-ok(await win.evaluate(()=>localStorage.getItem('bb_paths_v1'))===null,'המסלולים של יערי לא אצל שחר');
+ok(await win.evaluate(()=>localStorage.getItem('bb_paths_v1'))===null,'המסלולים של מאיה לא אצל שחר');
 // מאץ׳ אמיתי נכנס לארכיון
 await win.evaluate(()=>{ const S=__sim; S.MT.cd=0; S.MT.auto=0; S.MT.trans=0; S.MT.tele=4; S.matchStart(); for(let i=0;i<3;i++) S.advance(2.5,1/60); });
 await win.waitForTimeout(800);
@@ -55,10 +55,10 @@ const lines=fs.readFileSync(path.join(DATA,'profiles',other,'matches.jsonl'),'ut
 ok(lines.length===1,'המאץ׳ של שחר נשמר בארכיון ('+lines.length+')');
 await win.evaluate(()=>{ __sim.statUI(); });
 let txt=await win.evaluate(()=>document.getElementById('stOut').textContent);
-ok(/הקבוצה — כל הנהגים/.test(txt)&&/יערי/.test(txt)&&/שחר/.test(txt),'טבלת הקבוצה בסטטיסטיקות: יערי ושחר');
-// חזרה ליערי
+ok(/הקבוצה — כל הנהגים/.test(txt)&&/מאיה/.test(txt)&&/שחר/.test(txt),'טבלת הקבוצה בסטטיסטיקות: מאיה ושחר');
+// חזרה למאיה
 rl=waitReload(win); await win.evaluate(id=>window.bbApp.profileSwitch(id),pid); await rl;
-ok(await win.evaluate(()=>__sim.bk._diff().some(d=>d[0]==='wheelD'&&d[2]===120)),'חזרה ליערי: הרובוט שלו חזר');
+ok(await win.evaluate(()=>__sim.bk._diff().some(d=>d[0]==='wheelD'&&d[2]===120)),'חזרה למאיה: הרובוט שלו חזר');
 // ארכיון בלי תקרה: 220 משחקים
 await app.close();
 { const a=[]; const t0=Date.now()-300*3600e3; for(let i=0;i<220;i++) a.push(JSON.stringify({at:t0+i*3600e3,ally:'red',my:20+i%40,opp:25,win:(20+i%40)>25?1:-1,shots:10,hits:6,autoPts:10,fouls:0,faults:0,kind:'match',skill:1}));

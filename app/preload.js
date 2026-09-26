@@ -14,12 +14,14 @@ try {
 } catch (e) { console.error("bbApp preload", e); }
 
 contextBridge.exposeInMainWorld("bbApp", {
-  version: boot.version, dataDir: boot.dataDir, firstRun: boot.firstRun,
+  version: boot.version, dataDir: boot.dataDir, firstRun: boot.firstRun, test: !!boot.test,
   profile: boot.profile, profilesAtBoot: boot.profiles, backupsAtBoot: boot.backups,
   kvSet: (k, v) => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvSet", String(k), String(v)); },
   kvRemove: k => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvRemove", String(k)); },
   kvClear: () => ipcRenderer.send("bb:kvClear"),
   flush: () => ipcRenderer.sendSync("bb:flush"),
+  bugSend: row => ipcRenderer.invoke("bb:bugSend", row),
+  shot: () => ipcRenderer.invoke("bb:shot"),
   ready: () => ipcRenderer.send("bb:ready"),
   profiles: () => ipcRenderer.invoke("bb:profiles"),
   profileAdd: (name, emoji, color) => ipcRenderer.invoke("bb:profileAdd", String(name || ""), emoji, color),

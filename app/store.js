@@ -9,7 +9,7 @@ const path = require("path");
 
 const KEYRE = /^(bb|biobuzz)/i;
 /* מפתחות של המחשב הזה בלבד — לא מסונכרנים (מצב מסך, לשונית, תצוגה, גיבויים מקומיים) */
-const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1"]);
+const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1", "bbLang1", "bbTour1"]);
 const EMOJI = ["🐝", "🚀", "🤖", "⚡", "🔥", "🦅", "🐺", "🦊", "🐉", "🎯", "🌟", "🏆"];
 const COLORS = ["#FFB020", "#35D6A4", "#4C9AF5", "#F2545B", "#B07CFF", "#FF7AC6", "#7FD1FF", "#C6E26B"];
 

@@ -53,12 +53,13 @@ let splash = null, splashAt = 0;
 function createSplash() {
   if (process.env.BIOBUZZ_TEST) return;
   const logo = '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#12161c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
-  const html = '<!doctype html><html dir="rtl"><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#0B0E12;color:#E9EFF5;font-family:"Segoe UI",system-ui,sans-serif;overflow:hidden;-webkit-user-select:none;-webkit-app-region:drag}' +
+  const en = !!(store && store.kv && store.kv.bbLang1 === "en");
+  const html = '<!doctype html><html dir="' + (en ? "ltr" : "rtl") + '"><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#0B0E12;color:#E9EFF5;font-family:"Segoe UI",system-ui,sans-serif;overflow:hidden;-webkit-user-select:none;-webkit-app-region:drag}' +
     '.w{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(420px 260px at 50% 0%,rgba(255,176,32,.16),transparent 70%)}' +
     '.m{width:92px;height:92px;border-radius:26px;background:#FFB020;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(255,176,32,.25)}' +
     'b{font-size:26px;letter-spacing:.06em} i{font-style:normal;color:#95A5B4;font-size:13px}.bar{width:180px;height:4px;border-radius:4px;background:#1C242D;overflow:hidden;margin-top:6px}' +
     '.bar s{display:block;height:100%;width:40%;background:#FFB020;border-radius:4px;animation:g 1.1s ease-in-out infinite}@keyframes g{0%{transform:translateX(160%)}100%{transform:translateX(-260%)}}' +
-    'small{color:#7D8C9A;font-size:11px;position:absolute;bottom:12px;left:14px}</style></head><body><div class="w"><div class="m">' + logo + '</div><b>BIOBUZZ</b><i>אפולו 9662 · טוען את הזירה…</i><div class="bar"><s></s></div></div><small>' + app.getVersion() + '</small></body></html>';
+    'small{color:#7D8C9A;font-size:11px;position:absolute;bottom:12px;left:14px}</style></head><body><div class="w"><div class="m">' + logo + '</div><b>BIOBUZZ</b><i>' + (en ? "FTC field simulator · loading the field…" : "סימולטור שדה ל-FTC · טוען את הזירה…") + '</i><div class="bar"><s></s></div></div><small>' + app.getVersion() + '</small></body></html>';
   splash = new BrowserWindow({ width: 440, height: 300, frame: false, resizable: false, movable: true, alwaysOnTop: true, skipTaskbar: true,
     backgroundColor: "#0B0E12", show: true, center: true, icon: path.join(__dirname, "build", "icon.png"), webPreferences: { sandbox: true } });
   splash.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(html)); splashAt = Date.now();
@@ -76,7 +77,7 @@ function createWindow() {
   const b = loadBounds();
   win = new BrowserWindow({
     x: b.x, y: b.y, width: b.width, height: b.height, minWidth: 900, minHeight: 600,
-    backgroundColor: "#0B0E12", title: "BIOBUZZ — אפולו 9662", show: false, autoHideMenuBar: true,
+    backgroundColor: "#0B0E12", title: "BIOBUZZ", show: false, autoHideMenuBar: true,
     /* שורת כותרת משלנו: הכותרת של הסימולטור היא ״ידית״ החלון, וכפתורי Windows מצוירים עליה */
     titleBarStyle: "hidden", titleBarOverlay: { color: "#141A21", symbolColor: "#B9C6D2", height: 67 },
     icon: path.join(__dirname, "build", "icon.png"),
@@ -121,7 +122,7 @@ function reg() {
   /* סינכרוני — לפני שהסימולטור עולה, הוא צריך את הנתונים של הנהג */
   ipcMain.on("bb:boot", e => {
     e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun,
-      version: app.getVersion(), dataDir: DATA, backups: store.backupsList() };
+      version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST };
   });
   ipcMain.on("bb:kvSet", (e, k, v) => store.kvSet(k, v));
   ipcMain.on("bb:kvRemove", (e, k) => store.kvSet(k, null));
@@ -178,6 +179,9 @@ function reg() {
   ipcMain.handle("bb:profileAcct", (e, id, k) => { const p = store.setAcct(id, kindOf(k)); soonSync(800); return p; });
   ipcMain.handle("bb:syncNow", () => runSync("manual"));
   /* ── עדכונים ── */
+  ipcMain.handle("bb:bugSend", (e, row) => (SY.team.sess ? SY.team : SY.personal.sess ? SY.personal : SY.team).bugSend(row || {}));
+  ipcMain.handle("bb:shot", async () => { try { let img = await win.webContents.capturePage(); const sz = img.getSize();
+    if (sz.width > 1280) img = img.resize({ width: 1280 }); return "data:image/jpeg;base64," + img.toJPEG(72).toString("base64"); } catch (e) { return ""; } });
   ipcMain.handle("bb:updCheck", () => updCheck(true));
   ipcMain.handle("bb:updInstall", () => { if (AU && UPD.state === "ready") { setImmediate(() => AU.quitAndInstall(false, true)); return true; } return false; });
   ipcMain.handle("bb:updState", () => UPD);

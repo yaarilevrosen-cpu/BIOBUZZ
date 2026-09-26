@@ -15,7 +15,7 @@ const mk=()=>{ const d=fs.mkdtempSync(path.join(os.tmpdir(),'bbsync-')); const s
   const {data}=await y.rest('GET','bb_profiles?select=id'); ok(data.length===0,'החשבון נוקה'); }
 // מחשב א׳
 const A=mk();
-A.s.updateProfile(A.s.meta.active,{name:'יערי',emoji:'🚀'});
+A.s.updateProfile(A.s.meta.active,{name:'מאיה',emoji:'🚀'});
 A.s.kvSet('biobuzz_params_v1',JSON.stringify({wheelD:120})); A.s.kvSet('bbUiMode1','lab'); A.s.flushKv();
 const pA=A.s.meta.active;
 for(let i=0;i<3;i++) A.s.addMatch({at:1000+i,my:30+i,opp:20,win:1,shots:5,hits:3});
@@ -28,8 +28,8 @@ const B=mk();
 ok(B.s.meta.list.length===1&&B.s.isBlank(B.s.meta.active),'ב׳: התקנה חדשה עם נהג ריק');
 await B.y.signIn(E,PW); r=await B.y.syncNow();
 ok(r.ok&&r.changedActive,'ב׳ סונכרן והנהג הפעיל התחלף '+JSON.stringify(r));
-ok(B.s.meta.list.length===2&&B.s.meta.list.some(p=>p.name==='יערי'&&p.emoji==='🚀')&&B.s.meta.list.some(p=>p.name==='שחר'),'ב׳: יערי ושחר הגיעו, הנהג הריק נעלם');
-ok(JSON.parse(B.s.kvOf(pA).biobuzz_params_v1||'{}').wheelD===120,'ב׳: ההגדרות של יערי (קוטר 120) הגיעו');
+ok(B.s.meta.list.length===2&&B.s.meta.list.some(p=>p.name==='מאיה'&&p.emoji==='🚀')&&B.s.meta.list.some(p=>p.name==='שחר'),'ב׳: מאיה ושחר הגיעו, הנהג הריק נעלם');
+ok(JSON.parse(B.s.kvOf(pA).biobuzz_params_v1||'{}').wheelD===120,'ב׳: ההגדרות של מאיה (קוטר 120) הגיעו');
 ok(B.s.kvOf(pA).bbUiMode1===undefined,'מפתח מקומי (מצב מסך) לא עבר');
 ok(B.s.matches(pA).length===3&&B.s.matches(shachar.id).length===1,'ב׳: כל המאצ׳ים הגיעו');
 // שינוי ב-ב׳ → א׳
@@ -56,20 +56,20 @@ if(E2){
   { const {y}=mk(); await y.signIn(E2,PW); await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
   const { Sync:S2 }=require(path.resolve(HERE,'../app/sync.js'));
   const Ap=new S2(A.s,A.d,{kind:'personal'}); let q=await Ap.signIn(E2,PW); ok(q.ok,'א׳: חשבון אישי בנוסף לחשבון הקבוצה');
-  const me=A.s.addProfile('יערי הפרטי',{emoji:'🦅'}); A.s.addMatch({at:77000,my:99,opp:1,win:1},me.id);
+  const me=A.s.addProfile('מאיה הפרטי',{emoji:'🦅'}); A.s.addMatch({at:77000,my:99,opp:1,win:1},me.id);
   await A.y.syncNow(); await Ap.syncNow();
   { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&!t[0].deleted,'נהג חדש שייך לקבוצה כברירת מחדל'); }
   A.s.setAcct(me.id,'personal'); q=await A.y.syncNow(); const q2=await Ap.syncNow();
   { const {data:t}=await A.y.rest('GET','bb_profiles?select=id,deleted&id=eq.'+me.id); ok(t.length===1&&t[0].deleted,'העברה לאישי: נמחק מחשבון הקבוצה'); }
   { const {data:t}=await Ap.rest('GET','bb_profiles?select=id,name&id=eq.'+me.id); const {data:m}=await Ap.rest('GET','bb_matches?select=at&profile_id=eq.'+me.id);
-    ok(t.length===1&&t[0].name==='יערי הפרטי'&&m.length===1,'…ונמצא בחשבון האישי, עם המאצ׳ים'); }
+    ok(t.length===1&&t[0].name==='מאיה הפרטי'&&m.length===1,'…ונמצא בחשבון האישי, עם המאצ׳ים'); }
   ok(A.s.meta.list.some(p=>p.id===me.id),'במחשב א׳ הנהג נשאר (רק עבר חשבון)');
   // מחשב בבית: רק החשבון האישי
   const H=mk(); const Hp=new S2(H.s,H.d,{kind:'personal'}); await Hp.signIn(E2,PW); q=await Hp.syncNow();
-  ok(q.ok&&H.s.meta.list.length===1&&H.s.meta.list[0].name==='יערי הפרטי'&&H.s.acctOf(me.id)==='personal','מחשב בבית עם החשבון האישי בלבד: רק ״יערי הפרטי״');
+  ok(q.ok&&H.s.meta.list.length===1&&H.s.meta.list[0].name==='מאיה הפרטי'&&H.s.acctOf(me.id)==='personal','מחשב בבית עם החשבון האישי בלבד: רק ״מאיה הפרטי״');
   // מחשב קבוצה חדש: לא מקבל את האישי
   const T=mk(); await T.y.signIn(E,PW); await T.y.syncNow();
-  ok(!T.s.meta.list.some(p=>p.id===me.id)&&T.s.meta.list.some(p=>p.name==='יערי'),'מחשב קבוצה חדש: יש את נהגי הקבוצה, בלי הנהג האישי');
+  ok(!T.s.meta.list.some(p=>p.id===me.id)&&T.s.meta.list.some(p=>p.name==='מאיה'),'מחשב קבוצה חדש: יש את נהגי הקבוצה, בלי הנהג האישי');
   // שינוי בבית → חוזר למחשב א׳
   H.s.kvSet('biobuzz_params_v1',JSON.stringify({wheelD:111})); H.s.flushKv(); await Hp.syncNow(); await Ap.syncNow();
   ok(JSON.parse(A.s.kvOf(me.id).biobuzz_params_v1||'{}').wheelD===111,'שינוי בבית הגיע למחשב א׳ דרך החשבון האישי');

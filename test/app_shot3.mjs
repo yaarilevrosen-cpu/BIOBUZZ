@@ -4,7 +4,7 @@ const HERE=path.dirname(fileURLToPath(import.meta.url)); const APPDIR=path.resol
 const DATA=fs.mkdtempSync(path.join(os.tmpdir(),'bbshot4-'));
 const L=(id)=>path.join(DATA,'profiles',id);
 const mk=(n,base,wr)=>{ const a=[]; const t0=Date.now()-n*3600e3; for(let i=0;i<n;i++){ const my=base+Math.round(10*Math.sin(i/3))+Math.round(i/3), opp=my+(((i*7)%10)<wr?-8:6); a.push(JSON.stringify({at:t0+i*3600e3,ally:i%2?'blue':'red',my,opp,win:my>opp?1:-1,shots:10,hits:5+(i%4),autoPts:10+(i%5),fouls:0,faults:0,leave:true,park:i%2==0,kind:['match','quick','split'][i%3],skill:i%3})); } return a.join('\n')+'\n'; };
-const P=[['p1','יערי','🚀','#FFB020',60,40,7,'team'],['p2','שחר','🦊','#35D6A4',42,36,5,'team'],['p3','נועה','🐝','#4C9AF5',25,44,6,'team'],['p4','יערי בבית','🦅','#B07CFF',12,38,6,'personal']];
+const P=[['p1','מאיה','🚀','#FFB020',60,40,7,'team'],['p2','שחר','🦊','#35D6A4',42,36,5,'team'],['p3','נועה','🐝','#4C9AF5',25,44,6,'team'],['p4','מאיה בבית','🦅','#B07CFF',12,38,6,'personal']];
 fs.mkdirSync(DATA,{recursive:true});
 fs.writeFileSync(path.join(DATA,'profiles.json'),JSON.stringify({v:1,active:'p1',tombs:[],list:P.map(p=>({id:p[0],name:p[1],emoji:p[2],color:p[3],created:1,metaAt:1,kvAt:1,acct:p[7]}))}));
 for(const p of P){ fs.mkdirSync(L(p[0]),{recursive:true}); fs.writeFileSync(path.join(L(p[0]),'matches.jsonl'),mk(p[4],p[5],p[6])); fs.writeFileSync(path.join(L(p[0]),'store.json'),JSON.stringify({})); }

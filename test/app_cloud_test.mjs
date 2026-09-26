@@ -35,7 +35,7 @@ if(!E){ console.log('app_cloud_test: אין חשבון בדיקה — מדלג �
   await y.rest('DELETE','bb_matches?profile_id=neq.__none',undefined,{Prefer:'return=minimal'}); await y.rest('DELETE','bb_profiles?id=neq.__none',undefined,{Prefer:'return=minimal'}); }
 ok(await win.evaluate(()=>/חשבון הקבוצה — לא מחובר/.test(document.getElementById('pfAcct').textContent)&&/חשבון אישי — לא מחובר/.test(document.getElementById('pfAcct').textContent)),'לפני התחברות: שני החשבונות ״לא מחובר״');
 // נתונים במחשב 1
-await win.evaluate(async()=>{ await bbApp.profileUpdate(bbApp.profile.id,{name:'יערי',emoji:'🚀'}); __sim.bk._set('wheelD',133); });
+await win.evaluate(async()=>{ await bbApp.profileUpdate(bbApp.profile.id,{name:'מאיה',emoji:'🚀'}); __sim.bk._set('wheelD',133); });
 await win.waitForTimeout(900);
 await win.evaluate(()=>document.querySelector('#pfAcct [data-acc="open"]').click());
 ok(await win.evaluate(()=>!document.getElementById('acctModal').hidden),'חלון ״חשבון הקבוצה״ נפתח');
@@ -56,7 +56,7 @@ const reload=win.waitForEvent('load',{timeout:60000});
 await win.evaluate(()=>document.getElementById('acIn').click());
 await reload; await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
 r=await win.evaluate(()=>({chip:document.getElementById('profChip').textContent, w:document.getElementById('welcome').hidden, d:__sim.bk._diff().find(x=>x[0]==='wheelD')}));
-ok(/יערי/.test(r.chip)&&/🚀/.test(r.chip),'מחשב 2 קיבל את הנהג: '+r.chip);
+ok(/מאיה/.test(r.chip)&&/🚀/.test(r.chip),'מחשב 2 קיבל את הנהג: '+r.chip);
 ok(r.w,'בלי ״ברוכים הבאים״ אחרי ההתחברות');
 ok(r.d&&r.d[2]===133,'מחשב 2 קיבל את ההגדרות (קוטר 133)');
 ok(errs.length===0,'אין שגיאות '+errs.slice(0,2).join(' | '));

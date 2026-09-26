@@ -6,7 +6,7 @@ const DATA=fs.mkdtempSync(path.join(os.tmpdir(),'bbshot-'));
 const L=(id)=>path.join(DATA,'profiles',id);
 fs.mkdirSync(DATA,{recursive:true});
 const mk=(n,base,wr)=>{ const a=[]; const t0=Date.now()-n*3600e3; for(let i=0;i<n;i++){ const my=base+Math.round(10*Math.sin(i/3))+Math.round(i/3), opp=my+(((i*7)%10)<wr?-8:6); a.push(JSON.stringify({at:t0+i*3600e3,ally:i%2?'blue':'red',my,opp,win:my>opp?1:-1,shots:10,hits:5+(i%4),autoPts:10+(i%5),fouls:0,faults:0,leave:true,park:i%2==0,kind:['match','quick','split'][i%3],skill:i%3})); } return a.join('\n')+'\n'; };
-const P=[['p1','יערי','🚀','#FFB020',60,40,7],['p2','שחר','🦊','#35D6A4',42,36,5],['p3','נועה','🐝','#4C9AF5',25,44,6]];
+const P=[['p1','מאיה','🚀','#FFB020',60,40,7],['p2','שחר','🦊','#35D6A4',42,36,5],['p3','נועה','🐝','#4C9AF5',25,44,6]];
 fs.writeFileSync(path.join(DATA,'profiles.json'),JSON.stringify({v:1,active:'p1',list:P.map(p=>({id:p[0],name:p[1],emoji:p[2],color:p[3],created:1}))}));
 for(const p of P){ fs.mkdirSync(L(p[0]),{recursive:true}); fs.writeFileSync(path.join(L(p[0]),'matches.jsonl'),mk(p[4],p[5],p[6])); fs.writeFileSync(path.join(L(p[0]),'store.json'),JSON.stringify({bbUiMode1:'play'})); }
 const cap=async(a,file)=>{ const b64=await a.evaluate(async({BrowserWindow})=>{ const w=BrowserWindow.getAllWindows()[0]; const img=await w.webContents.capturePage(); return img.toPNG().toString('base64'); }); fs.writeFileSync(file,Buffer.from(b64,'base64')); };

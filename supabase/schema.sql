@@ -44,3 +44,28 @@ create or replace function public.bb_touch() returns trigger language plpgsql as
 begin new.updated_at := now(); return new; end $$;
 drop trigger if exists bb_profiles_touch on public.bb_profiles;
 create trigger bb_profiles_touch before update on public.bb_profiles for each row execute function public.bb_touch();
+
+-- v56: דיווחי באגים מהאפליקציה — מותר רק להוסיף, אף אחד לא קורא דרך המפתח הציבורי
+create table if not exists public.bb_bugs (
+  id bigserial primary key,
+  created_at timestamptz not null default now(),
+  uid uuid default auth.uid(),
+  ver text, lang text, platform text,
+  what text not null, steps text, contact text,
+  sys jsonb, errors jsonb, shot text
+);
+alter table public.bb_bugs enable row level security;
+drop policy if exists bb_bugs_insert on public.bb_bugs;
+create policy bb_bugs_insert on public.bb_bugs for insert to anon, authenticated with check (
+  length(what) between 3 and 4000
+  and coalesce(length(steps),0) <= 4000
+  and coalesce(length(contact),0) <= 200
+  and coalesce(length(ver),0) <= 40 and coalesce(length(lang),0) <= 8 and coalesce(length(platform),0) <= 200
+  and coalesce(length(shot),0) <= 700000
+  and coalesce(pg_column_size(sys),0) <= 20000
+  and coalesce(pg_column_size(errors),0) <= 40000
+  and (uid is null or uid = auth.uid())
+);
+revoke all on public.bb_bugs from anon, authenticated;
+grant insert on public.bb_bugs to anon, authenticated;
+grant usage on sequence public.bb_bugs_id_seq to anon, authenticated;

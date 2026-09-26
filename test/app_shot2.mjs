@@ -8,7 +8,7 @@ const cap=async(i,file)=>{ const b64=await app.evaluate(async({BrowserWindow},i)
 const win=await app.firstWindow();
 await app.evaluate(({BrowserWindow})=>{ const w=BrowserWindow.getAllWindows()[0]; w.unmaximize(); w.setContentSize(1400,860); });
 await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
-await win.evaluate(async()=>{ document.getElementById('welcome').hidden=true; await bbApp.profileUpdate(bbApp.profile.id,{name:'יערי',emoji:'🚀'}); await bbApp.firstRunDone(); });
+await win.evaluate(async()=>{ document.getElementById('welcome').hidden=true; await bbApp.profileUpdate(bbApp.profile.id,{name:'מאיה',emoji:'🚀'}); await bbApp.firstRunDone(); });
 await win.reload(); await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
 await win.waitForTimeout(3000);
 await win.evaluate(()=>document.getElementById('profChip').click()); await win.waitForTimeout(6000);
