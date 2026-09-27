@@ -30,7 +30,12 @@ function summarize(l) {
   let W = 0, L = 0, pts = 0, best = 0, shots = 0, hits = 0, last = 0;
   for (const m of l) { if (m.win > 0) W++; else if (m.win < 0) L++; pts += +m.my || 0; best = Math.max(best, +m.my || 0);
     shots += +m.shots || 0; hits += +m.hits || 0; last = Math.max(last, +m.at || 0); }
-  return { n, W, L, T: n - W - L, avg: pts / n, best, acc: shots ? hits / shots : null, shots, last };
+  /* v60: עוד כמה מספרים בשביל ״נתח את הקבוצה״ */
+  const avgOf = (a, f) => { const v = a.map(f).filter(x => x != null && isFinite(x)); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+  const s = l.slice().sort((a, b) => (+a.at || 0) - (+b.at || 0)), l10 = s.slice(-10), p10 = s.slice(-20, -10);
+  return { n, W, L, T: n - W - L, avg: pts / n, best, acc: shots ? hits / shots : null, shots, last,
+    cyc: avgOf(l, m => m.avgCycle > 0 ? +m.avgCycle : null), fouls: avgOf(l, m => +m.fouls || 0), park: avgOf(l, m => m.park ? 1 : 0),
+    auto: avgOf(l, m => m.autoPts != null ? +m.autoPts : null), l10: avgOf(l10, m => +m.my || 0), p10: p10.length >= 3 ? avgOf(p10, m => +m.my || 0) : null };
 }
 class Store {
   constructor(root) {

@@ -6,6 +6,7 @@ const fs = require("fs");
 const { Store, writeAtomic } = require("./store");
 const { Sync } = require("./sync");
 const { Bridge, findAdb } = require("./bridge");
+const { AI } = require("./ai");
 const { execFile } = require("child_process");
 const os = require("os");
 const REPO = { owner: "yaarilevrosen-cpu", repo: "BIOBUZZ" };
@@ -24,7 +25,7 @@ app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 const DATA = process.env.BIOBUZZ_DATA ||
   (process.env.PORTABLE_EXECUTABLE_DIR ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, "BIOBUZZ-data") : path.join(app.getPath("userData"), "data"));
 const SIM = process.env.BIOBUZZ_SIM || path.join(__dirname, "sim", "index.html");
-let store = null, win = null, sync = null, bridge = null;
+let store = null, win = null, sync = null, bridge = null, ai = null;
 /* v57: חשבון אחד לכל אדם; הקבוצה — קוד הצטרפות */
 function acctStatus() { return sync ? sync.status() : { loggedIn: false }; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
@@ -176,6 +177,13 @@ function reg() {
   ipcMain.handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
   ipcMain.handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   ipcMain.handle("bb:syncNow", () => runSync("manual"));
+  /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
+  ipcMain.handle("bb:aiStatus", () => ai.status());
+  ipcMain.handle("bb:aiSetKey", async (e, k) => { const r = await ai.setKey(String(k || "")); return Object.assign({ status: ai.status() }, r, { status: ai.status() }); });
+  ipcMain.handle("bb:aiClear", () => ai.clear());
+  ipcMain.handle("bb:aiCheck", async () => { const r = await ai.check(); return Object.assign({}, r, { status: ai.status() }); });
+  ipcMain.handle("bb:aiDrills", () => ai.drills());
+  ipcMain.handle("bb:aiAsk", (e, kind, o) => ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
   ipcMain.handle("bb:acctName", async (e, n) => { const r = await sync.nameSet(String(n || "")); send("bb:sync", { status: acctStatus() }); return r; });
   /* ── עדכונים ── */
   ipcMain.handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
@@ -293,6 +301,10 @@ app.whenReady().then(() => {
   const enc = s => (safeStorage && safeStorage.isEncryptionAvailable()) ? "e:" + safeStorage.encryptString(s).toString("base64") : "p:" + Buffer.from(s, "utf8").toString("base64");
   const dec = s => s.startsWith("e:") ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : Buffer.from(s.replace(/^p:/, ""), "base64").toString("utf8");
   sync = new Sync(store, DATA, { enc, dec });
+  /* מפתח גוגל: רק מוצפן באמת (safeStorage). בלי הצפנה — נשמר בזיכרון עד היציאה */
+  ai = new AI(DATA, { enc: s => "e:" + safeStorage.encryptString(s).toString("base64"),
+    dec: s => s.startsWith("e:") && safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : "",
+    canEnc: () => !!(safeStorage && safeStorage.isEncryptionAvailable()) || !!process.env.BIOBUZZ_AI_PLAIN });
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
     bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html") });

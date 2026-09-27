@@ -51,6 +51,13 @@ contextBridge.exposeInMainWorld("bbApp", {
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
   acctName: n => ipcRenderer.invoke("bb:acctName", String(n || "")),
+  /* בינה מלאכותית — המפתח נכנס פעם אחת ולא חוזר לדף */
+  aiStatus: () => ipcRenderer.invoke("bb:aiStatus"),
+  aiSetKey: k => ipcRenderer.invoke("bb:aiSetKey", String(k || "")),
+  aiClear: () => ipcRenderer.invoke("bb:aiClear"),
+  aiCheck: () => ipcRenderer.invoke("bb:aiCheck"),
+  aiDrills: () => ipcRenderer.invoke("bb:aiDrills"),
+  aiAsk: (kind, o) => ipcRenderer.invoke("bb:aiAsk", String(kind || ""), o),
   onSync: cb => { ipcRenderer.on("bb:sync", (e, d) => { try { cb(d); } catch (err) {} }); },
   /* עדכונים */
   updCheck: () => ipcRenderer.invoke("bb:updCheck"),

@@ -32,6 +32,7 @@
       "store.js",
       "sync.js",
       "bridge.js",
+      "ai.js",
       "sim/**",
       "pad/**",
       "build/icon.png"
@@ -106,7 +107,17 @@
     },
     "deb": {
       "artifactName": "BIOBUZZ-${version}-linux-${arch}.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "../ai",
+        "to": "ai",
+        "filter": [
+          "*.md",
+          "*.json"
+        ]
+      }
+    ]
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
