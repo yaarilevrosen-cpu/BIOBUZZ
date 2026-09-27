@@ -45,6 +45,7 @@ let r=await E(async()=>{ const s=await bbApp.aiStatus(); document.querySelector(
 ok(!r.s.has&&!r.aion&&r.box,'בלי מפתח: הכול כבוי, ויש תיבה בהגדרות');
 // 2. מפתח לא בפורמט / מפתח שגוי
 r=await E(()=>bbApp.aiSetKey('abc')); ok(!r.ok&&/לא נראה כמו מפתח/.test(r.why),'מפתח קצר מדי נדחה בלי לפנות לגוגל');
+r=await E(k=>bbApp.aiSetKey(k),'AQ.WRONG'+'y'.repeat(40)); ok(!r.ok&&!/לא נראה כמו מפתח/.test(r.why),'מפתח בפורמט החדש (AQ. עם נקודה) עובר את בדיקת הפורמט ומגיע לגוגל ('+r.why+')');
 r=await E(k=>bbApp.aiSetKey(k),'AIzaWRONG'+'y'.repeat(30)); ok(!r.ok&&/לא תקין/.test(r.why)&&!r.status.ok,'מפתח שגוי: ״המפתח לא תקין״ ('+r.why+')');
 // 3. המפתח הנכון דרך התיבה
 r=await E(async k=>{ const i=document.getElementById('aiKeyIn'); i.value=k; document.querySelector('[data-ai="save"]').click();

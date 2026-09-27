@@ -12,7 +12,8 @@ const { writeAtomic, readJSON } = require("./store");
 const BASE = () => (process.env.BIOBUZZ_GEMINI_BASE || "https://generativelanguage.googleapis.com").replace(/\/+$/, "");
 /* מודלים שלא מתאימים לשיחת טקסט — לפי מילים בשם, לא לפי רשימה קבועה */
 const SKIP = /embed|aqa|imagen|image|tts|audio|live|veo|native|vision-only|learnlm|robotics|computer-use/i;
-const KEYRE = /^[A-Za-z0-9_\-]{30,60}$/;
+/* פורמט חופשי: מפתחות ישנים מתחילים ב-AIza, חדשים ב-AQ. (עם נקודה). גוגל עצמה מכריעה ב״בדוק״ */
+const KEYRE = /^[A-Za-z0-9_.\-]{30,300}$/;
 
 function aiDir(dataDir) {
   /* קבצי ההוראות: באפליקציה הארוזה — resources/ai; בפיתוח — ai/ בשורש הריפו */
@@ -43,10 +44,10 @@ class AI {
       pick: Object.assign({}, s.pick), error: s.error || "", files: !!this.files };
   }
   saveSt() { try { writeAtomic(this.stFile, JSON.stringify(this.st)); } catch (e) {} }
-  scrub(msg) { msg = String(msg || ""); if (this.key) msg = msg.split(this.key).join("•••"); return msg.replace(/key=[A-Za-z0-9_\-]{10,}/g, "key=•••").slice(0, 240); }
+  scrub(msg) { msg = String(msg || ""); if (this.key) msg = msg.split(this.key).join("•••"); return msg.replace(/key=[A-Za-z0-9_.\-]{10,}/g, "key=•••").slice(0, 240); }
   async setKey(k) {
     k = String(k || "").trim();
-    if (!KEYRE.test(k)) return { ok: false, why: "זה לא נראה כמו מפתח של גוגל — מעתיקים אותו מ-Google AI Studio (מתחיל בדרך כלל ב-AIza)" };
+    if (!KEYRE.test(k)) return { ok: false, why: "זה לא נראה כמו מפתח של גוגל — מעתיקים אותו מ-Google AI Studio (מתחיל ב-AIza או ב-AQ.)" };
     this.key = k; this.mem = false;
     if (this.canEnc()) { try { writeAtomic(this.keyFile, this.enc(k)); } catch (e) { this.mem = true; } }
     else { this.mem = true; try { fs.unlinkSync(this.keyFile); } catch (e) {} }

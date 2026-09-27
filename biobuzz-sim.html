@@ -14057,7 +14057,7 @@ function aiRender(){
   else if(s.ok) st='<div class="aiStat ok">✓ מפתח <bdi dir="ltr">···'+appEsc(s.tail)+'</bdi> עובד · נבדק '+aiAgo(s.checkedAt)+(s.saved?'':' · <b>לא נשמר</b> (אין הצפנה במחשב הזה — עד שסוגרים את האפליקציה)')+
     '<br>⚡ לעוזר: <bdi dir="ltr">'+appEsc(pickName(s.pick.fast))+'</bdi> · 🧠 למאמן: <bdi dir="ltr">'+appEsc(pickName(s.pick.strong))+'</bdi></div>';
   else st='<div class="aiStat err">⚠ מפתח <bdi dir="ltr">···'+appEsc(s.tail)+'</bdi> — '+appEsc(s.error||"עוד לא נבדק")+'</div>';
-  let h=st+'<div class="row aiKeyRow"><input type="password" id="aiKeyIn" autocomplete="off" spellcheck="false" dir="ltr" placeholder="AIza…" aria-label="מפתח של גוגל"><button data-ai="save" class="primary">שמור ובדוק</button></div>'+
+  let h=st+'<div class="row aiKeyRow"><input type="password" id="aiKeyIn" autocomplete="off" spellcheck="false" dir="ltr" placeholder="AIza… / AQ.…" aria-label="מפתח של גוגל"><button data-ai="save" class="primary">שמור ובדוק</button></div>'+
     '<div class="row">'+(s.has?'<button data-ai="check">🔄 בדוק שוב</button><button data-ai="clear" class="bkDanger">מחק מפתח</button>':'')+'</div>'+
     '<div class="acMsg" id="aiMsg"></div>';
   const M=s.models||[];
