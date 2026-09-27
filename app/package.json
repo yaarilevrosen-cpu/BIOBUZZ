@@ -87,7 +87,7 @@
       "artifactName": "BIOBUZZ-${version}-mac-${arch}.${ext}"
     },
     "dmg": {
-      "title": "BIOBUZZ ${version}",
+      "title": "BIOBUZZ ${version}${arch}",
       "artifactName": "BIOBUZZ-${version}-mac-${arch}.${ext}"
     },
     "linux": {
