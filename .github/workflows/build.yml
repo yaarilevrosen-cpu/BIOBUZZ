@@ -11,15 +11,18 @@ on:
 permissions:
   contents: write
 
+# כל הפעולות בגרסאות שרצות על node 24 (בלי אזהרת ״node 20 יוצא משימוש״).
+# אובונטו נעול על 24.04: ubuntu-latest עובר לאובונטו 26 — מעבר בכוונה, אחרי בדיקה, לא בהפתעה.
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22 }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: בנייה
         run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
@@ -53,10 +56,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22 }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: בנייה
         shell: bash
@@ -68,7 +71,7 @@ jobs:
       - name: EXE
         shell: bash
         run: cd app && npm ci && npx electron-builder --win nsis portable --x64 --publish never
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: BIOBUZZ-windows
           path: |
@@ -81,10 +84,10 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22 }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: בנייה
         run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
@@ -101,7 +104,7 @@ jobs:
           codesign --verify --deep "$APP" && echo "חתימה מקומית תקינה"
           ( BIOBUZZ_TEST=1 BIOBUZZ_NOADB=1 "$APP/Contents/MacOS/BIOBUZZ" & echo $! > pid ); sleep 25
           kill -0 "$(cat pid)" && echo "רץ 25 שניות בלי לקרוס" && kill "$(cat pid)"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: BIOBUZZ-mac
           path: |
@@ -110,13 +113,13 @@ jobs:
 
   linux:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with: { node-version: 22 }
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with: { python-version: "3.12" }
       - name: בנייה
         run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
@@ -130,7 +133,7 @@ jobs:
         run: |
           cd test && npm install && npx playwright install --with-deps chromium
           timeout 400 xvfb-run -a node linux_pkg_test.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: BIOBUZZ-linux
           path: |
@@ -142,12 +145,12 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [windows, mac, linux]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with: { path: out, merge-multiple: true }
       - run: ls -la out
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: out/*
           generate_release_notes: true
