@@ -4,7 +4,7 @@ export const URL0='http://127.0.0.1:8899/sim.html?nocad=1';
 export async function open(opts={}){
   const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
   const page=await browser.newPage({viewport:opts.viewport||{width:1400,height:860}});
-  if(opts.noraf) await page.addInitScript(()=>{ window.requestAnimationFrame=()=>0; });
+  if(opts.noraf) await page.addInitScript(()=>{ window.__raf0=window.requestAnimationFrame.bind(window); window.requestAnimationFrame=()=>0; });
   /* הבדיקות רצות במצב ״בדיקות״ (כל הלוחות), אלא אם ביקשו ״משחק״ */
   if(!opts.play) await page.addInitScript(()=>{ try{ if(!localStorage.getItem('bbUiMode1')) localStorage.setItem('bbUiMode1','lab'); }catch(e){} });
   const errs=[]; page.on('pageerror',e=>errs.push(String(e))); page.on('console',m=>{ if(m.type()==='error') errs.push(m.text()); });

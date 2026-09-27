@@ -69,5 +69,43 @@ ok(r.accuracy>0.6&&r.accuracy<0.8&&r.avgCycleSec>7.5&&r.avgCycleSec<8.1&&r.autoA
 ok(!/[A-Za-z0-9_\-]{35,}/.test(JSON.stringify(r))&&!('email' in r),'בסיכום אין מזהים ארוכים או מייל');
 r=await E(()=>({bar:document.getElementById('coachBar').hidden, html:document.getElementById('coachBar').innerHTML}));
 ok(r.bar,'בדפדפן אין כפתור ״נתח אותי״');
+// 5. סקינים
+r=await E(()=>{ __sim.uiSetMode('play'); document.getElementById('ppSkins').click(); const m=document.getElementById('skinBox');
+  return {open:!m.hidden, rows:m.querySelectorAll('.skRow').length, sw:m.querySelectorAll('.skRow')[0].querySelectorAll('button').length}; });
+ok(r.open&&r.sw===11,'״🎨 סקינים״ מלוח המשחק: חלון עם 11 סקינים ('+r.rows+' שורות)');
+r=await E(()=>{ const P0=JSON.stringify([__sim.P.botW,__sim.P.botL,__sim.botBody.mass]);
+  document.querySelector('#skinRows [data-skin="-1|hive"]').click();
+  const mats=new Set(); __sim.bot.group.traverse(o=>{ if(o.isMesh) mats.add(o.material.color&&o.material.color.getHexString()); });
+  const band=__sim.bot.group.children.find(o=>o.userData&&o.userData.allyBand);
+  return {me:__sim.SKIN.me, saved:JSON.parse(localStorage.getItem('bbSkin1')).me, hasYellow:mats.has('ffc21a'), band:!!band, bandCol:band&&band.children[0].material.color.getHexString(), same:P0===JSON.stringify([__sim.P.botW,__sim.P.botL,__sim.botBody.mass])}; });
+ok(r.me==='hive'&&r.saved==='hive'&&r.hasYellow,'סקין לרובוט שלי: מוחל ונשמר לנהג');
+ok(r.band&&r.bandCol==='ff3b30','פס הברית: אדום סביב הרובוט שלי ('+r.bandCol+')');
+ok(r.same,'מראה בלבד — מידות ומסה לא השתנו');
+r=await E(()=>{ __sim.rebuildRobot(); let y=false; __sim.bot.group.traverse(o=>{ if(o.isMesh&&o.material.color&&o.material.color.getHexString()==='ffc21a') y=true; }); return y; });
+ok(r,'אחרי בנייה מחדש של הרובוט (שינוי פרמטר) — הסקין נשאר');
+r=await E(()=>{ __sim.drillStart('pressure'); __sim.skinSet(0,'neon'); __sim.skinSet(1,'candy'); __sim.skinSet(2,'chrome');
+  const B=__sim.BOTS; const band=b=>b.group.children.find(o=>o.userData&&o.userData.allyBand).children[0].material.color.getHexString();
+  return {b0:B[0].matBody.color.getHexString(), b1:B[1].matBody.color.getHexString(), band0:band(B[0]), ring0:B[0].ring.material.color.getHexString(), saved:JSON.parse(localStorage.getItem('bbSkin1')).bots}; });
+ok(r.b0==='14181c'&&r.b1==='ff8cc4','סקין לכל בוט בנפרד (ניאון, סוכרייה)');
+ok(r.band0==='2d8cff'&&r.ring0!=='','בוט כחול בסקין — הפס נשאר כחול');
+ok(r.saved.join()==='neon,candy,chrome','שלושת הבוטים נשמרים');
+// ברית מתחלפת → הפס מתחלף
+r=await E(()=>new Promise(res=>{ __sim.matchStop(); __sim.SETUP.ally='blue'; setTimeout(()=>{ const band=__sim.bot.group.children.find(o=>o.userData&&o.userData.allyBand); res({ally:__sim.myAlly(),col:band.children[0].material.color.getHexString()}); },900); }));
+ok(r.ally==='blue'&&r.col==='2d8cff','החלפת ברית — הפס של הרובוט שלי מתחלף ('+JSON.stringify(r)+')');
+await E(()=>{ __sim.SETUP.ally='red'; });
+// ברשת: אורח שולח סקין, המארח מחיל ומשדר
+r=await E(()=>{ const N=__sim.NET, cap=[]; const old={mode:N.mode,sock:N.sock}; N.mode='host'; N.sock={readyState:1,send:s=>cap.push(JSON.parse(s))};
+  const b=__sim.BOTS[0]; const h0=b.hum; b.hum={src:'net',id:'g1',label:'שחר'};
+  __sim.netFromGuest('g1',{t:'skin',s:'gold'});
+  const msg=cap.filter(m=>m.t==='skins').pop(); const body=b.matBody.color.getHexString();
+  b.hum=h0; N.mode=old.mode; N.sock=old.sock; __sim.SKIN.net={}; __sim.skinApplyAll();
+  return {msg, body}; });
+ok(r.msg&&r.msg.bots[0]==='gold'&&r.msg.me==='hive'&&r.body==='6b520f','מארח: אורח בחר ״זהב״ לרובוט שלו — מוחל ומשודר לכולם');
+r=await E(()=>{ const N=__sim.NET; const m0=N.mode; N.mode='guest';
+  __sim.netOnMsg(JSON.stringify({t:'skins',me:'snow',bots:['forest','classic','sunset']}));
+  const res={me:__sim.skinOf(-1), b0:__sim.BOTS[0].matBody.color.getHexString(), saved:JSON.parse(localStorage.getItem('bbSkin1')).me};
+  N.mode=m0; __sim.SKIN.remote=null; __sim.skinApplyAll(); return res; });
+ok(r.me==='snow'&&r.b0==='24462a'&&r.saved==='hive','אורח: מקבל את הסקינים של המארח (בלי לדרוס את הבחירה השמורה שלו)');
+await E(()=>__sim.skinClose());
 ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,3).join(' | '));
 await browser.close(); done('v60');
