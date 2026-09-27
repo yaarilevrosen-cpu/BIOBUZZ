@@ -128,7 +128,7 @@ function reg() {
   ipcMain.on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
   ipcMain.on("bb:ready", () => showMain());
   ipcMain.handle("bb:profiles", () => store.profiles());
-  ipcMain.handle("bb:profileAdd", (e, name, emoji, color) => { const p = store.addProfile(name, { emoji, color }); soonSync(); return p; });
+  ipcMain.handle("bb:profileAdd", (e, name, emoji, color, local) => { const p = store.addProfile(name, { emoji, color, local: !!local }); soonSync(); return p; });
   ipcMain.handle("bb:profileUpdate", (e, id, patch) => { const p = store.updateProfile(id, patch || {}); soonSync(); return p; });
   ipcMain.handle("bb:profileRemove", (e, id) => { const r = store.removeProfile(id); soonSync(); return r; });
   ipcMain.handle("bb:profileSwitch", (e, id) => { const ok = store.switchTo(id); if (ok) setTimeout(() => win && win.webContents.reload(), 30); return ok; });

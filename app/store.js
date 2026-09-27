@@ -68,6 +68,7 @@ class Store {
     const p = { id: newId(), name: this.uniqueName(name), emoji: opt.emoji || EMOJI[i % EMOJI.length],
       color: opt.color || COLORS[i % COLORS.length], created: Date.now(), metaAt: opt.quiet ? 0 : Date.now(), kvAt: 0 };
     if (opt.id) p.id = opt.id;
+    if (opt.local) p.local = true;       /* נהג מקומי — נשאר רק במחשב הזה, לא עולה לחשבון */
     this.meta.list.push(p);
     fs.mkdirSync(this.dir(p.id), { recursive: true });
     if (!opt.quiet) this.saveMeta();
@@ -78,6 +79,7 @@ class Store {
     if (patch.name != null) p.name = this.uniqueName(patch.name, id);
     if (patch.emoji) p.emoji = String(patch.emoji).slice(0, 4);
     if (patch.color && /^#[0-9a-f]{6}$/i.test(patch.color)) p.color = patch.color;
+    if (patch.local != null) { if (patch.local) p.local = true; else { delete p.local; p.kvAt = Date.now(); } }
     p.metaAt = Date.now();
     this.saveMeta(); return p;
   }
@@ -90,7 +92,7 @@ class Store {
     fs.mkdirSync(path.dirname(dst), { recursive: true });
     try { fs.renameSync(src, dst); writeAtomic(path.join(dst, "profile.json"), JSON.stringify(p)); } catch (e) {}
     this.meta.list.splice(i, 1);
-    if (!(arguments[1] && arguments[1].noTomb)) this.meta.tombs.push({ id, at: Date.now(), acct: p.acct || "team" });
+    if (!(arguments[1] && arguments[1].noTomb) && !p.local) this.meta.tombs.push({ id, at: Date.now(), acct: p.acct || "team" });
     this.saveMeta(); return true;
   }
   switchTo(id) {

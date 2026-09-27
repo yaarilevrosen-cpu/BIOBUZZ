@@ -150,7 +150,7 @@ class Sync {
     }
     return out;
   }
-  mine() { return true; }   /* חשבון אחד — כל הנהגים במחשב הם שלי */
+  mine(p) { return !(p && p.local); }   /* חשבון אחד — כל הנהגים במחשב, חוץ מנהגים מקומיים */
   own() { return "owner=eq." + encodeURIComponent(this.uid()); }
   async _sync() {
     const S = this.store; S.flushKv(); const K = this.kind;
@@ -160,7 +160,7 @@ class Sync {
     const R = new Map(rows.map(r => [r.id, r]));
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */
     const live = rows.filter(r => !r.deleted);
-    if (live.length && S.meta.list.length === 1 && !R.has(S.meta.list[0].id) && S.isBlank(S.meta.list[0].id)) {
+    if (live.length && S.meta.list.length === 1 && !S.meta.list[0].local && !R.has(S.meta.list[0].id) && S.isBlank(S.meta.list[0].id)) {
       const blank = S.meta.list[0].id;
       S.applyRemoteMeta(live[0], K); S.meta.active = live[0].id; S.saveMeta();
       S.removeProfile(blank, { noTomb: true }); S.loadKv(); res.profilesChanged = true;
@@ -256,6 +256,9 @@ class Sync {
     const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner&id=eq." + tid);
     if (!this.team || this.team.id !== tid) this.team = { id: tid, profiles: {}, matches: {}, since: "" };
     const T = this.team; T.team = tt && tt[0] || null; T.members = mem.map(m => ({ uid: m.uid, label: m.label, me: m.uid === me }));
+    /* השם שלי בקבוצה עוקב אחרי שם הנהג — משנים פה, וכל החברים רואים */
+    const mine = mem.find(m => m.uid === me), want = String(this.label() || "").slice(0, 40);
+    if (mine && want && mine.label !== want) { try { await this.rpc("bb_team_label", { p_label: want }); mine.label = want; T.members.forEach(x => { if (x.me) x.label = want; }); } catch (e) {} }
     const others = mem.filter(m => m.uid !== me).map(m => m.uid);
     const alive = new Set(others);
     for (const k of Object.keys(T.profiles)) if (!alive.has(T.profiles[k].owner)) { delete T.profiles[k]; delete T.matches[k]; }

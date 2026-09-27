@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld("bbApp", {
   shot: () => ipcRenderer.invoke("bb:shot"),
   ready: () => ipcRenderer.send("bb:ready"),
   profiles: () => ipcRenderer.invoke("bb:profiles"),
-  profileAdd: (name, emoji, color) => ipcRenderer.invoke("bb:profileAdd", String(name || ""), emoji, color),
+  profileAdd: (name, emoji, color, local) => ipcRenderer.invoke("bb:profileAdd", String(name || ""), emoji, color, !!local),
   profileUpdate: (id, patch) => ipcRenderer.invoke("bb:profileUpdate", id, patch),
   profileRemove: id => ipcRenderer.invoke("bb:profileRemove", id),
   profileSwitch: id => ipcRenderer.invoke("bb:profileSwitch", id),

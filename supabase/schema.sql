@@ -158,3 +158,10 @@ end $$;
 
 revoke all on function public.bb_team_create(text,text,text), public.bb_team_join(text,text), public.bb_team_leave(), public.bb_team_update(text,text), public.bb_code() from public, anon;
 grant execute on function public.bb_team_create(text,text,text), public.bb_team_join(text,text), public.bb_team_leave(), public.bb_team_update(text,text), public.bb_my_team(), public.bb_teammates() to authenticated;
+
+-- v58: כל חבר מעדכן את השם שלו בקבוצה (כשמשנים את שם הנהג) — וכולם רואים את השם החדש
+create or replace function public.bb_team_label(p_label text) returns void
+language plpgsql security definer set search_path = public as $$
+begin update public.bb_team_members set label = left(coalesce(p_label,''),40) where uid = auth.uid(); end $$;
+revoke all on function public.bb_team_label(text) from public, anon;
+grant execute on function public.bb_team_label(text) to authenticated;

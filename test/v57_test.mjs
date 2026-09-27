@@ -10,10 +10,8 @@ ok(r.open&&r.t==='הגדרות'&&r.parts.every(Boolean),'⚙ פותח ״הגדר
 await E(()=>document.getElementById('pmX').click());
 ok(await E(()=>document.getElementById('setBody').parentNode.id==='setBox'),'סגירה מחזירה את החלקים למקומם');
 // לוח המשחק — שליטה
-r=await E(()=>{ const b=document.querySelector('#ppCtl [data-ppt="assist"]'), t=document.querySelector('#toolbar [data-tog="assist"]'); const before=t.classList.contains('on'); b.click(); __sim.ppRefresh(); return {before, after:t.classList.contains('on'), on:b.classList.contains('on')}; });
-ok(r.after===!r.before&&r.on===r.after,'״סיוע כיוון״ בלוח המשחק מחליף ומסומן');
-r=await E(()=>{ document.getElementById('ppMagic').click(); const m=document.getElementById('magicMenu'); const vis=!m.hidden; m.querySelector('[data-act="cancel"]').click(); return {vis, closed:m.hidden, mode:__sim.UI.mode}; });
-ok(r.vis&&r.closed&&r.mode==='play','✨ קסם נפתח במצב משחק, פועל ונסגר — בלי לעבור למעבדה');
+r=await E(()=>({ids:[...document.querySelectorAll('#ppCtl button')].map(b=>b.id), magic:!!document.getElementById('ppMagic')}));
+ok(r.ids.join()==='ppFC,ppPadStudio'&&!r.magic,'שורת ״שליטה״: רק ציר ו״שלט ומקשים״ — בלי פעולות מיידיות ('+r.ids+')');
 // העדפות נשמרות
 await E(()=>{ const b=document.querySelector('#ppCtl [data-ppt="fc"]'); if(!__sim.fieldCentric) b.click(); });
 ok(await E(()=>JSON.parse(localStorage.getItem('bbPrefs1')||'{}').fc===true),'ציר המגרש נשמר ב-bbPrefs1');

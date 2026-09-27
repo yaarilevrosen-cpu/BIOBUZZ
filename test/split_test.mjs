@@ -1,4 +1,4 @@
-// v50 — אחרי מסך מפוצל, מאץ׳ רשמי חוזר למסך שלם (אלא אם בוחרים להשאיר)
+// v58 — משחק מלא עם חברים: החבר במפוצל נשאר כברירת מחדל; אפשר לבטל את הסימון ולשחק לבד
 import {open,ok,done,realErrs} from './h.mjs';
 const {browser,page,errs}=await open({noraf:true,play:true});
 const S=()=>page.evaluate(()=>({split:document.body.classList.contains('split2'), hum:__sim.BOTS.filter(b=>b.hum&&b.hum.src==='split').length, live:!document.body.classList.contains('nomatch'), setup:document.body.classList.contains('setup')}));
@@ -10,24 +10,27 @@ await splitOn();
 let s=await S(); ok(s.split&&s.hum===1,'מסך מפוצל פעיל עם שחקן 2');
 await stopAll();
 await page.evaluate(()=>document.getElementById('ppMatch').click());
-ok(await page.evaluate(()=>!document.getElementById('sSplitRow').hidden&&!document.getElementById('sKeepSplit').checked),'בחלון המשחק: שורת ״להשאיר את החבר״ מופיעה, לא מסומנת');
+ok(await page.evaluate(()=>!document.getElementById('sSplitRow').hidden&&document.getElementById('sKeepSplit').checked),'בחלון המשחק: ״להשאיר את החבר״ מופיע ומסומן');
+ok(await page.evaluate(()=>{ const i=[0,1,2].find(k=>__sim.BOTS[k].hum); const e=document.getElementById(['sBlue1','sBlue2','sPartner'][i]); return e.disabled&&e.checked&&/חבר/.test(e.parentNode.textContent); }),'העמדה של החבר נעולה ומסומנת ״חבר נוהג כאן״');
 await page.evaluate(()=>document.getElementById('setupX').click());
 s=await S(); ok(s.split,'סגירת החלון בלי להתחיל — המפוצל נשאר');
 await page.evaluate(()=>document.getElementById('ppMatch').click());
-await page.evaluate(()=>{ document.getElementById('setupGo').click(); __sim.advance(1,1/60); });
-s=await S(); ok(!s.split&&s.hum===0&&s.live,'״התחל משחק״ — מסך שלם, בלי שחקן 2, והמאץ׳ רץ');
+await page.evaluate(()=>{ document.getElementById('sKeepSplit').checked=false; document.getElementById('setupGo').click(); __sim.advance(1,1/60); });
+s=await S(); ok(!s.split&&s.hum===0&&s.live,'בלי הסימון — מסך שלם, בלי שחקן 2, והמאץ׳ רץ');
 ok(await page.evaluate(()=>document.querySelector('.ppCard.on')?.id)==='ppMatch','הכרטיס ״מאץ׳ מול בוטים״ מסומן');
 
 // 2. להשאיר את החבר
 await stopAll(); await splitOn();
 await stopAll();
-await page.evaluate(()=>{ document.getElementById('ppMatch').click(); document.getElementById('sKeepSplit').checked=true; document.getElementById('setupGo').click(); __sim.advance(1,1/60); });
-s=await S(); ok(s.split&&s.hum===1&&s.live,'עם הסימון — המאץ׳ מתחיל והחבר נשאר במפוצל');
+await page.evaluate(()=>{ __sim.SETUP.partner=false; document.getElementById('ppMatch').click(); document.getElementById('setupGo').click(); __sim.advance(1,1/60); });
+s=await S(); ok(s.split&&s.hum===1&&s.live,'ברירת המחדל — המאץ׳ מתחיל והחבר נשאר במפוצל');
+ok(await page.evaluate(()=>__sim.BOTS.filter(b=>b.on).length===3&&__sim.BOTS.find(b=>b.hum).on),'גם כש״שותף״ כבוי — החבר בזירה, והבוטים רק בעמדות הפנויות');
+ok(await page.evaluate(()=>!document.getElementById('ppFriendsMatch').hidden),'בלוח: ״🏆 משחק מלא עם החברים״ מופיע');
 
-// 3. מאץ׳ מהיר ונסיעה חופשית סוגרים את המפוצל
+// 3. מאץ׳ מהיר שומר על החבר; נסיעה חופשית סוגרת את המפוצל
 await stopAll();
 await page.evaluate(()=>{ document.getElementById('ppQuick').click(); __sim.advance(1,1/60); });
-s=await S(); ok(!s.split&&s.hum===0&&s.live,'מאץ׳ מהיר — מסך שלם');
+s=await S(); ok(s.split&&s.hum===1&&s.live,'מאץ׳ מהיר עם חבר — החבר נשאר');
 await stopAll(); await splitOn(); await stopAll();
 await page.evaluate(()=>{ document.getElementById('ppFree').click(); __sim.advance(0.5,1/60); });
 s=await S(); ok(!s.split&&s.hum===0,'נסיעה חופשית — מסך שלם');

@@ -2,7 +2,7 @@
 import path from 'path'; import fs from 'fs'; import os from 'os'; import { createRequire } from 'module'; import { fileURLToPath } from 'url';
 import {ok,done} from './h.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url)); const require=createRequire(import.meta.url);
-const { Bridge } = require(path.resolve(HERE,'../app/bridge.js'));
+const { Bridge, roomCode } = require(path.resolve(HERE,'../app/bridge.js'));
 const WebSocket = require(path.resolve(HERE,'../app/node_modules/ws'));
 const D=fs.mkdtempSync(path.join(os.tmpdir(),'bbbr-'));
 const b=new Bridge({port:9671,dataDir:D,simPath:path.resolve(HERE,'../dist/BIOBUZZ-lab-lite.html'),padPath:path.resolve(HERE,'../app/pad/pad.html')});
@@ -32,6 +32,15 @@ g.send('{"t":"in","x":1}'); await wait(100);
 ok(host.msgs.some(m=>/"t":"g","id":"g1"/.test(m)),'קלט האורח מגיע למארח');
 host.send(Buffer.from([1,2,3]),{binary:true}); await wait(100);
 ok(g.msgs.some(m=>Buffer.isBuffer(m)&&m.length===3),'מצב הזירה (בינארי) מגיע לאורח');
+// v58 — קוד חדר קצר וקוד חדש לבקשת המארח
+ok(roomCode('192.168.1.23',9662,1234)==='012-X6J'&&roomCode('10.0.0.5',9662,1234).length===13,'קוד קצר ב-192.168, ארוך ברשת אחרת');
+ok(b.key>0&&b.key<0x1000,'מפתח של 12 ביט ('+b.key+')');
+const k0=b.key; host.msgs.length=0; host.send('{"t":"rekey"}'); await wait(150);
+const inf=host.msgs.map(m=>{ try{ return JSON.parse(m); }catch(e){ return {}; } }).find(m=>m.t==='info')||{};
+ok(inf.key&&inf.key!==k0&&inf.key===b.key,'״קוד חדש״ — המפתח התחלף ('+k0+' → '+inf.key+')');
+ok(fs.readFileSync(path.join(D,'.room-key'),'utf8').trim()===String(b.key),'המפתח החדש נשמר');
+let bad2=null; try{ await open('role=guest&k='+k0+'&n=x'); }catch(e){ bad2=e; } ok(!!bad2,'המפתח הישן כבר לא נכנס');
+ok(g.readyState===1,'האורח שכבר בפנים נשאר');
 host.close(); await wait(150);
 ok(g.msgs.some(m=>/"t":"nohost"/.test(m)),'המארח יצא — האורח יודע');
 for(const w of [sim,pad,g]) w.close();

@@ -50,15 +50,15 @@ ok(r.b==='KeyI'&&/שחקן 2/.test(r.note),'חץ שמור לשחקן 2 — לא 
 
 // 5. מקש חדש עם פעולה: G = היפוך… ואז ירי בהחזקה
 const nb=await E(()=>__sim.KB.binds.length);
-await page.click('#kbBinds .row .kbk'); await page.keyboard.press('g');
+await page.click('#kbBinds .row .kbk'); await page.keyboard.press('j');
 r=await E(()=>__sim.KB.binds.length);
 ok(r===nb+1,'״הוסף מקש״ + G מוסיף שורה');
 await page.selectOption('#kbBinds select[data-kact="'+nb+'"]','fire');
 await page.click('#kbBinds button[data-kmode="'+nb+'"][data-m="hold"]');
 r=await E(()=>__sim.KB.binds[__sim.KB.binds.length-1]);
-ok(r.k==='KeyG'&&r.a==='fire'&&r.m==='hold','G = ירי בהחזקה');
+ok(r.k==='KeyJ'&&r.a==='fire'&&r.m==='hold','J = ירי בהחזקה');
 await E(()=>{ __sim.stageMatch(); __sim.homeRobot(); __sim.bot.mag=4; __sim.resetCounters(); });
-await page.keyboard.down('g'); await E(()=>__sim.advance(2.5,1/120)); await page.keyboard.up('g');
+await page.keyboard.down('j'); await E(()=>__sim.advance(2.5,1/120)); await page.keyboard.up('j');
 r=await E(()=>__sim.state().shots);
 ok(r>=3,'החזקה יורה ברצף בקצב המשגר ('+r+' יריות)');
 
@@ -78,11 +78,11 @@ ok(r===r2,'הקלדה בתיבת טקסט לא מפעילה את החרטום');
 
 // 8. נשמר אחרי פתיחה מחדש, ואיפוס מחזיר
 await page.close(); page=await pg();
-r=await page.evaluate(()=>({f:__sim.KB.move.fwd, g:__sim.KB.binds.some(b=>b.k==='KeyG'&&b.a==='fire')}));
+r=await page.evaluate(()=>({f:__sim.KB.move.fwd, g:__sim.KB.binds.some(b=>b.k==='KeyJ'&&b.a==='fire')}));
 ok(r.f==='KeyS'&&r.g,'המיפוי נשמר בפתיחה הבאה');
 await page.click('#bKbReset');
 r=await page.evaluate(()=>({f:__sim.KB.move.fwd, n:__sim.KB.binds.length}));
-ok(r.f==='KeyW'&&r.n===8,'״החזר ברירת מחדל״ מחזיר W ושמונה מקשים');
+ok(r.f==='KeyW'&&r.n===13,'״החזר ברירת מחדל״ מחזיר W ושלושה־עשר מקשים (כולל חמשת מקשי הקסם)');
 await page.screenshot({path:'kb.png'});
 ok(errs.filter(e=>!/WebSocket/.test(e)).length===0,'אין שגיאות: '+errs.slice(0,2).join(' | '));
 await browser.close(); done('kb_test');

@@ -12,9 +12,16 @@ const { execFile } = require("child_process");
 const { WebSocketServer } = require("ws");
 
 const AB = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+/* קוד חדר. ברוב הבתים ובתי הספר הרשת היא 192.168.x.y — אז הקוד קצר: 6 תווים (XXX-XXX).
+   אחרת — הקוד הארוך הישן (11 תווים). אותה פונקציה בדיוק בסימולטור ובגשר בפייתון. */
 function roomCode(ip, port, key) {
   const p = ip.split(".").map(Number); const off = port - 9662;
   if (p.length !== 4 || off < 0 || off > 15) return "";
+  if (p[0] === 192 && p[1] === 168 && off === 0 && key > 0 && key < 0x1000) {
+    let n = (p[2] << 20) | (p[3] << 12) | key; const d = [];
+    for (let i = 0; i < 6; i++) { d.unshift(n & 31); n >>>= 5; }
+    const s = d.map(v => AB[v]).join(""); return s.slice(0, 3) + "-" + s.slice(3);
+  }
   let n = 0n;
   for (const v of p) n = (n << 8n) | BigInt(v);
   n = (n << 4n) | BigInt(off); n = (n << 14n) | BigInt(key & 0x3FFF);
@@ -65,13 +72,20 @@ class Bridge {
     this.lan = lanIps(); this.code = this.lan.length ? roomCode(this.lan[0], this.port, this.key) : "";
     this.on = false; this.error = ""; this.adb = null; this.adbSeen = new Set(); this.adbT = null;
   }
+  /* מפתח של 12 ביט (1–4095) — נכנס לקוד הקצר. מפתח ישן גדול יותר מוחלף */
   loadKey(fixed) {
     if (fixed != null) return fixed & 0x3FFF;
     const f = this.dataDir ? path.join(this.dataDir, ".room-key") : null;
-    try { if (f) return parseInt(fs.readFileSync(f, "utf8"), 10) & 0x3FFF || this._newKey(f); } catch (e) {}
+    try { if (f) { const k = parseInt(fs.readFileSync(f, "utf8"), 10); if (k > 0 && k < 0x1000) return k; } } catch (e) {}
     return this._newKey(f);
   }
-  _newKey(f) { const k = crypto.randomInt(1, 0x4000); try { if (f) fs.writeFileSync(f, String(k)); } catch (e) {} return k; }
+  _newKey(f) { const k = crypto.randomInt(1, 0x1000); try { if (f) fs.writeFileSync(f, String(k)); } catch (e) {} return k; }
+  /* קוד חדש לבקשת המארח — אורחים שכבר בפנים נשארים, חדשים צריכים את הקוד החדש */
+  rekey() {
+    const f = this.dataDir ? path.join(this.dataDir, ".room-key") : null;
+    let k; do { k = this._newKey(f); } while (k === this.key); this.key = k;
+    this.lan = lanIps(); this.code = this.lan.length ? roomCode(this.lan[0], this.port, this.key) : "";
+  }
   info() { return { t: "info", lan: this.lan, port: this.port, key: this.key, code: this.code }; }
   health() {
     return { ok: true, host: !!this.host, sims: this.sims.size, pad: this.pads.size > 0, app: true,
@@ -158,6 +172,7 @@ class Bridge {
       if (op === 2) { for (const g of this.guests.values()) { try { if (g.readyState === 1) g.send(data, { binary: true }); } catch (e) {} } return; }
       let m; try { m = JSON.parse(data.toString("utf8")); } catch (e) { return; }
       if (m.t === "info") { this.sendTxt(ws, JSON.stringify(this.info())); return; }
+      if (m.t === "rekey") { this.rekey(); this.sendTxt(ws, JSON.stringify(this.info())); return; }
       const to = m.to; delete m.to; const s = JSON.stringify(m);
       if (to === "*") for (const g of this.guests.values()) this.sendTxt(g, s);
       else if (this.guests.has(to)) { const g = this.guests.get(to); this.sendTxt(g, s); if (m.t === "deny") try { g.close(); } catch (e) {} }

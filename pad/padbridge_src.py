@@ -48,6 +48,15 @@ def room_code(ip, port, key):
     off = port - 9662
     if len(p) != 4 or not (0 <= off <= 15):
         return ""
+    # ברוב הבתים ובתי הספר הרשת היא 192.168.x.y — אז הקוד קצר: 6 תווים (XXX-XXX)
+    if p[0] == 192 and p[1] == 168 and off == 0 and 0 < key < 0x1000:
+        n = (p[2] << 20) | (p[3] << 12) | key
+        d = []
+        for _ in range(6):
+            d.insert(0, n & 31)
+            n >>= 5
+        s = "".join(AB[v] for v in d)
+        return s[:3] + "-" + s[3:]
     n = 0
     for v in p:
         n = (n << 8) | v
@@ -103,9 +112,12 @@ def load_key(fixed):
     path = os.path.join(HERE, ".room-key")
     try:
         with open(path) as f:
-            return int(f.read().strip()) & 0x3FFF
+            k = int(f.read().strip())
+        if 0 < k < 0x1000:
+            return k
+        raise ValueError("old key")          # מפתח ישן וגדול — מחליפים במפתח של 12 ביט לקוד הקצר
     except Exception:
-        k = random.SystemRandom().randrange(1, 0x4000)
+        k = random.SystemRandom().randrange(1, 0x1000)
         try:
             with open(path, "w") as f:
                 f.write(str(k))
@@ -198,6 +210,20 @@ class Room:
         self.n = 0
         self.lan = lan_ips()
         self.code = room_code(self.lan[0], port, key) if self.lan else ""
+
+    def rekey(self):
+        # קוד חדש לבקשת המארח — מי שכבר בפנים נשאר
+        k = self.key
+        while k == self.key:
+            k = random.SystemRandom().randrange(1, 0x1000)
+        self.key = k
+        try:
+            with open(os.path.join(HERE, ".room-key"), "w") as f:
+                f.write(str(k))
+        except Exception:
+            pass
+        self.lan = lan_ips()
+        self.code = room_code(self.lan[0], self.port, k) if self.lan else ""
 
     def info(self):
         return {"t": "info", "lan": self.lan, "port": self.port, "key": self.key, "code": self.code}
@@ -296,6 +322,10 @@ class Room:
             except Exception:
                 return
             if m.get("t") == "info":
+                ws.send(json.dumps(self.info()))
+                return
+            if m.get("t") == "rekey" and ws is self.host:
+                self.rekey()
                 ws.send(json.dumps(self.info()))
                 return
             to = m.pop("to", None)
