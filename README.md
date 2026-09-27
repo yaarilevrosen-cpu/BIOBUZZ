@@ -11,7 +11,7 @@
 - **מק:** `BIOBUZZ-x.y.z-mac-arm64.dmg` (שבב של אפל, M1 ומעלה) או `…-mac-x64.dmg` (אינטל). גוררים ל-Applications.
   בפעם הראשונה מק חוסם (לא חתום אצל אפל): **הגדרות המערכת ← פרטיות ואבטחה ← ״פתח בכל זאת״**. אם כתוב שהקובץ ״פגום״ — פעם אחת בטרמינל: `xattr -dr com.apple.quarantine /Applications/BIOBUZZ.app`
 - **לינוקס:** `BIOBUZZ-x.y.z-linux-amd64.deb` (`sudo apt install ./BIOBUZZ-*.deb`) או `…-linux-x86_64.AppImage` (`chmod +x` ומריצים; באובונטו 24.04 ומעלה אם לא עולה — להוסיף `--no-sandbox`).
-- **עדכונים:** ב-Windows וב-AppImage — מתעדכן לבד. במק וב-deb — האפליקציה מודיעה ומקשרת להורדה.
+- **עדכונים:** ב-Windows ובלינוקס (AppImage ו-deb) — מוריד לבד; ב-deb לוחצים ״התקן״ ומקלידים סיסמה. במק — האפליקציה מודיעה ומקשרת להורדה.
 - **איפה הנתונים:** Windows `%APPDATA%\BIOBUZZ\data` · מק `~/Library/Application Support/BIOBUZZ/data` · לינוקס `~/.config/BIOBUZZ/data`
 - **דפדפן:** `dist/BIOBUZZ-lab.html` אחרי בנייה (ראו למטה) — פותחים בכרום.
 

@@ -84,7 +84,7 @@ footer{padding:36px 0 50px;color:var(--muted);font-size:13px;border-top:1px soli
         <li><div><b>Mac:</b> open the <code>.dmg</code> and drag BIOBUZZ into <b>Applications</b>. The first time, macOS blocks it (not signed by Apple yet): open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>. If it says the app is “damaged”, run <code>xattr -dr com.apple.quarantine /Applications/BIOBUZZ.app</code> in Terminal once.</div></li>
         <li><div><b>Linux:</b> <code>.deb</code> — <code>sudo apt install ./BIOBUZZ-*.deb</code>. AppImage — <code>chmod +x BIOBUZZ-*.AppImage</code> and run it (on Ubuntu 24.04+ add <code>--no-sandbox</code> if it doesn't start).</div></li>
         <li><div><b>Open BIOBUZZ</b>, type your name and (optionally) your team name and number. A one-minute tour shows you around.</div></li>
-        <li><div><b>Updates</b> — the app checks on every launch. On Windows and the Linux AppImage it installs them for you; on Mac and .deb it tells you and links to the new download.</div></li>
+        <li><div><b>Updates</b> — the app checks on every launch. On Windows and Linux (AppImage and .deb) it downloads them for you — .deb asks for your password when you click Install; on Mac it tells you and links to the new download.</div></li>
       </ol>
       <p class="note" style="margin:16px 0 0">Prefer not to install? On Windows the portable version runs straight from the file; on Linux the AppImage does. Your data stays on your computer; signing in to an account (optional) syncs drivers and matches across computers.</p>
     </div>

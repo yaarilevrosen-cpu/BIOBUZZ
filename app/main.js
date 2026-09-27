@@ -253,13 +253,18 @@ const UPD = { state: "idle", version: "", percent: 0, url: "https://github.com/"
 function updSet(p) { Object.assign(UPD, p); send("bb:upd", UPD); }
 function verCmp(a, b) { const x = String(a).replace(/^v/, "").split(/[.-]/).map(n => parseInt(n, 10) || 0), y = String(b).replace(/^v/, "").split(/[.-]/).map(n => parseInt(n, 10) || 0);
   for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); } return 0; }
-/* עדכון אוטומטי: Windows (מתקין) ולינוקס (AppImage). במק ובחבילת deb — בודקים ומציעים להוריד
+/* עדכון אוטומטי: Windows (מתקין), לינוקס AppImage, ולינוקס deb. במק — בודקים ומציעים להוריד
    (במק עדכון אוטומטי דורש חתימה של אפל, ועוד אין) */
+function isDeb() {
+  try { return LINUX && fs.readFileSync(path.join(process.resourcesPath, "package-type"), "utf8").trim() === "deb"; } catch (e) { return false; }
+}
 function updInit() {
-  const can = process.platform === "win32" || (LINUX && !!process.env.APPIMAGE);
+  const deb = isDeb();
+  const can = process.platform === "win32" || (LINUX && (!!process.env.APPIMAGE || deb));
   if (!app.isPackaged || PORTABLE || !can || process.env.BIOBUZZ_TEST) return;
   try { AU = require("electron-updater").autoUpdater; } catch (e) { AU = null; return; }
-  AU.autoDownload = true; AU.autoInstallOnAppQuit = true; AU.allowPrerelease = false;
+  /* deb: מורידים לבד, ומתקינים רק כשלוחצים ״התקן״ — ההתקנה מבקשת סיסמה (pkexec), ולא נקפיץ אותה ביציאה */
+  AU.autoDownload = true; AU.autoInstallOnAppQuit = !deb; AU.allowPrerelease = false;
   AU.on("checking-for-update", () => updSet({ state: "checking", error: "" }));
   AU.on("update-not-available", () => updSet({ state: "none" }));
   AU.on("update-available", i => updSet({ state: "downloading", version: i.version, percent: 0 }));
