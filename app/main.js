@@ -176,6 +176,7 @@ function reg() {
   ipcMain.handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
   ipcMain.handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   ipcMain.handle("bb:syncNow", () => runSync("manual"));
+  ipcMain.handle("bb:acctName", async (e, n) => { const r = await sync.nameSet(String(n || "")); send("bb:sync", { status: acctStatus() }); return r; });
   /* ── עדכונים ── */
   ipcMain.handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
   ipcMain.handle("bb:shot", async () => { try { let img = await win.webContents.capturePage(); const sz = img.getSize();

@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld("bbApp", {
   acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
+  acctName: n => ipcRenderer.invoke("bb:acctName", String(n || "")),
   onSync: cb => { ipcRenderer.on("bb:sync", (e, d) => { try { cb(d); } catch (err) {} }); },
   /* עדכונים */
   updCheck: () => ipcRenderer.invoke("bb:updCheck"),

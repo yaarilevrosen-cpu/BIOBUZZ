@@ -88,6 +88,9 @@ if(E2){
 const A2=new (require(path.resolve(HERE,'../app/sync.js')).Sync)(A.s,A.d);
 ok(A2.status().loggedIn&&A2.status().email===E,'אחרי הפעלה מחדש: עדיין מחוברים');
 A2.sess.expires_at=0; r=await A2.syncNow(); ok(r.ok,'רענון אסימון שפג תוקפו עובד');
+// v60 — שם החשבון בשרת, זהה בשני המחשבים
+{ const nm='בודק '+(Date.now()%1000); r=await A.y.nameSet(nm); ok(r.ok,'שם חשבון נשמר בשרת '+(r.why||''));
+  await B.y.syncNow(); ok(B.y.label()===nm&&A.y.label()===nm,'אותו שם חשבון בשני המחשבים ('+B.y.label()+')'); }
 // שגיאות בעברית
 const X=mk(); r=await X.y.signIn(E,'wrong-pass'); ok(!r.ok&&/לא נכונים/.test(r.why),'סיסמה שגויה: '+r.why);
 r=await A.y.signOut(); ok(!A.y.status().loggedIn,'התנתקות');

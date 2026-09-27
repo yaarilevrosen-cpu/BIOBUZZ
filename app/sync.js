@@ -23,6 +23,8 @@ const HEB = {
   "Password should be at least 6 characters.": "הסיסמה צריכה להיות לפחות 6 תווים",
   "Unable to validate email address: invalid format": "כתובת המייל לא תקינה"
 };
+/* v60: שם החשבון שמור בשרת (user_metadata.name) — אותו שם בכל מחשב */
+function userName(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.name === "string" ? m.name.trim().slice(0, 40) : ""; }
 function heb(msg) {
   msg = String(msg || "שגיאה");
   for (const k in HEB) if (msg.indexOf(k) >= 0) return HEB[k];
@@ -65,7 +67,7 @@ class Sync {
   uid() { return this.sess && this.sess.user && this.sess.user.id || ""; }
   status() {
     const t = this.team && this.team.team;
-    return { kind: this.kind, loggedIn: !!this.sess, team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
+    return { kind: this.kind, loggedIn: !!this.sess, name: this.label(), team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url };
   }
   /* ── רשת ── */
@@ -83,7 +85,7 @@ class Sync {
   setSession(d) {
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
       expires_at: d.expires_at ? d.expires_at * 1000 : Date.now() + (d.expires_in || 3600) * 1000,
-      user: { id: d.user && d.user.id, email: d.user && d.user.email } };
+      user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "" } };
     this.saveSess();
   }
   async token() {
@@ -156,6 +158,7 @@ class Sync {
     const S = this.store; S.flushKv(); const K = this.kind;
     const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0 };
     const activeBefore = S.meta.active;
+    try { await this.namePull(await this.myTeamLabel()); } catch (e) {}
     const rows = await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own());
     const R = new Map(rows.map(r => [r.id, r]));
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */
@@ -231,7 +234,34 @@ class Sync {
   /* ── קבוצה: קוד הצטרפות, חברים, ומה שהחברים שיחקו (קריאה בלבד) ── */
   async rpc(fn, args) { const { data } = await this.rest("POST", "rpc/" + fn, args || {}); return data; }
   saveTeam() { if (this.team) writeAtomic(this.teamFile, JSON.stringify(this.team)); else { try { fs.unlinkSync(this.teamFile); } catch (e) {} } }
-  label() { const a = this.store.meta.list.find(p => p.id === this.store.meta.active); return (a && a.name) || (this.sess && this.sess.user && this.sess.user.email || "").split("@")[0]; }
+  /* שם החשבון — אחד לכל חשבון, שמור בשרת. לא תלוי בנהג הפעיל (עד v59 היה, ולכן כל מחשב הציג שם אחר) */
+  label() { const u = this.sess && this.sess.user || {}; return u.name || String(u.email || "").split("@")[0]; }
+  /* מושך את השם מהשרת; אם עוד אין (חשבון מלפני v60) — קובע פעם אחת: השם שכבר מופיע בקבוצה, אחרת הנהג הפעיל, אחרת תחילת המייל */
+  async namePull(teamLabel) {
+    if (!this.sess) return "";
+    const tok = await this.token();
+    const { data } = await this.http("GET", this.cloud.url + "/auth/v1/user", undefined, { Authorization: "Bearer " + tok });
+    let n = userName(data);
+    if (!n) {
+      const a = this.store.meta.list.find(p => p.id === this.store.meta.active);
+      n = String(teamLabel || (a && !/^נהג( \d+)?$/.test(a.name || "") && a.name) || "").trim().slice(0, 40) || String(this.sess.user.email || "").split("@")[0];
+      try { await this.nameSet(n, true); } catch (e) {}
+    }
+    if (n && this.sess.user.name !== n) { this.sess.user.name = n; this.saveSess(); }
+    return n;
+  }
+  async nameSet(n, quiet) {
+    if (!this.sess) return { ok: false, why: "לא מחוברים" };
+    n = String(n || "").replace(/\s+/g, " ").trim().slice(0, 40);
+    if (!n) return { ok: false, why: "צריך שם" };
+    try {
+      const tok = await this.token();
+      await this.http("PUT", this.cloud.url + "/auth/v1/user", { data: { name: n } }, { Authorization: "Bearer " + tok });
+      this.sess.user.name = n; this.saveSess();
+      if (this.team && this.team.members) { try { await this.rpc("bb_team_label", { p_label: n }); this.team.members.forEach(x => { if (x.me) x.label = n; }); this.saveTeam(); } catch (e) {} }
+      return { ok: true, name: n };
+    } catch (e) { if (quiet) throw e; return { ok: false, why: heb(e.message) }; }
+  }
   async teamCall(what, a, b) {
     if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
     try {
@@ -247,6 +277,10 @@ class Sync {
       return { ok: false, why: /code not found/.test(m) ? "אין קבוצה עם הקוד הזה — בדקו שוב" : heb(m) };
     }
   }
+  async myTeamLabel() {
+    if (this.sess && this.sess.user && this.sess.user.name) return "";
+    try { const { data } = await this.rest("GET", "bb_team_members?select=label&uid=eq." + encodeURIComponent(this.uid())); return data && data[0] && data[0].label || ""; } catch (e) { return ""; }
+  }
   async teamPull() {
     if (!this.sess) return null;
     const me = this.uid();
@@ -256,7 +290,7 @@ class Sync {
     const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner&id=eq." + tid);
     if (!this.team || this.team.id !== tid) this.team = { id: tid, profiles: {}, matches: {}, since: "" };
     const T = this.team; T.team = tt && tt[0] || null; T.members = mem.map(m => ({ uid: m.uid, label: m.label, me: m.uid === me }));
-    /* השם שלי בקבוצה עוקב אחרי שם הנהג — משנים פה, וכל החברים רואים */
+    /* השם שלי בקבוצה = שם החשבון (אחד בכל המחשבים) */
     const mine = mem.find(m => m.uid === me), want = String(this.label() || "").slice(0, 40);
     if (mine && want && mine.label !== want) { try { await this.rpc("bb_team_label", { p_label: want }); mine.label = want; T.members.forEach(x => { if (x.me) x.label = want; }); } catch (e) {} }
     const others = mem.filter(m => m.uid !== me).map(m => m.uid);
