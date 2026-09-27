@@ -35,6 +35,8 @@ const launch=()=>electron.launch({executablePath:path.resolve(APPDIR,'node_modul
 let app=await launch(); let win=await app.firstWindow(); const errs=[]; win.on('pageerror',e=>errs.push(String(e)));
 await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:120000});
 const E=(f,a)=>win.evaluate(f,a);
+const SH=async n=>{ if(process.env.BB_SHOTS) try{ await win.screenshot({path:process.env.BB_SHOTS+'/'+n,timeout:60000}); }catch(e){} };
+
 await E(()=>{ const w=document.getElementById('welcome'); if(w&&!w.hidden){ document.getElementById('wcName').value='מאיה'; document.getElementById('wcGo').click(); } });
 await win.waitForTimeout(500);
 // 1. בלי מפתח
@@ -53,6 +55,7 @@ ok(r.st.pick.fast==='gemini-9.9-flash'&&r.st.pick.strong==='gemini-9.9-pro','ב�
 ok(r.rows===4,'בטבלה 4 מודלים (בלי הטמעות ותמונות) — '+r.rows);
 ok(/עברת את המכסה/.test(r.txt)&&/לא מקבל הוראות מערכת/.test(r.txt),'✗ עם סיבה: מכסה, ומודל שלא מקבל הוראת מערכת');
 ok(r.inVal==='','התיבה מתרוקנת מיד אחרי השמירה');
+await E(()=>{ const d=document.querySelector('.aiModels'); if(d) d.open=true; document.getElementById('setAI').scrollIntoView(); }); await SH('app-ai-key.png');
 ok(REQ.filter(x=>x.url.includes(':generateContent')).every(x=>!JSON.stringify(x.body).includes(KEY))&&REQ.every(x=>!x.url.includes(KEY)),'המפתח נשלח רק בכותרת — לא בכתובת ולא בגוף');
 // 4. המפתח לא בדף ולא בקבצים הפתוחים
 r=await E(async k=>{ const ls=JSON.stringify(Object.assign({},localStorage)); const st=await bbApp.aiStatus();
@@ -69,6 +72,7 @@ r=await E(async()=>{ __sim.cmdkOpen(); const i=document.getElementById('cmdkIn')
   const log=document.getElementById('aiChatLog');
   return {ask, open:!document.getElementById('aiChat').hidden, n:__sim.AICHAT.msgs.length, btn:[...log.querySelectorAll('.aiF')].map(b=>b.dataset.f), bold:!!log.querySelector('.aiM.bot b'), li:!!log.querySelector('.aiLi')}; });
 ok(r.ask&&r.open&&r.n===2,'Tab בחיפוש ← שאלה לעוזר, התשובה בחלון');
+await SH('app-ai-helper.png');
 ok(r.btn.join()==='split'&&r.bold&&r.li,'קישור ליכולת אמיתית הופך לכפתור, קישור מומצא נמחק ('+r.btn+')');
 const hq=REQ.filter(x=>x.body&&/in-app helper/.test(JSON.stringify(x.body.systemInstruction||''))).pop();
 ok(hq&&hq.url.includes('gemini-9.9-flash:')&&/split — /.test(hq.body.systemInstruction.parts[0].text)&&/Hebrew/.test(hq.body.systemInstruction.parts[0].text),'העוזר: המודל המהיר, עם רשימת היכולות והוראת עברית');
@@ -87,6 +91,7 @@ r=await E(async()=>{ document.querySelector('#coachBar [data-coach="me"]').click
   for(let t=0;t<80;t++){ await new Promise(r=>setTimeout(r,100)); if(!__sim.COACH.busy&&document.querySelector('#coachBody .coHead')) break; }
   const b=document.getElementById('coachBody'); return {open:!document.getElementById('coachBox').hidden, head:(b.querySelector('.coHead')||{}).textContent, drills:[...b.querySelectorAll('[data-drill-go]')].map(x=>x.dataset.drillGo), goal:!!b.querySelector('.coGoal'), sent:!!b.querySelector('.coSent pre')}; });
 ok(r.open&&r.head==='כותרת בדיקה'&&r.goal&&r.sent,'הניתוח מוצג: כותרת, יעד, ו״מה נשלח לגוגל״');
+await SH('app-ai-coach.png');
 ok(r.drills.join()==='park','רק תרגילים אמיתיים הופכים לכפתור ('+r.drills+')');
 const cq=REQ.filter(x=>x.body&&/driving coach/.test(JSON.stringify(x.body.systemInstruction||''))).pop();
 const sent=cq&&cq.body.contents[0].parts[0].text;

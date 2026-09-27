@@ -26,6 +26,8 @@ await win.keyboard.press('Meta+Digit4'); ok(await on()==='stats','⌘4 (מק) �
 await win.keyboard.press('Control+Digit1'); ok(await on()==='home','Ctrl+1 — בית');
 fs.writeFileSync(DATA+'/probe','x');
 ok(fs.readdirSync(DATA).some(f=>/profiles|store/.test(f)),'הנתונים נכתבים לדיסק');
+{ const a=await E(async()=>{ const s=await bbApp.aiStatus(); const d=await bbApp.aiDrills(); return {files:s.files, n:d.length}; });
+  ok(a.files&&a.n===9,'v60: קבצי ai/ (הוראות ותרגילים) נארזו ונמצאים ('+a.n+' תרגילים)'); }
 ok(errs.length===0,'בלי שגיאות בדף'+(errs.length?': '+errs[0]:''));
 console.log('זמן עלייה: '+secs+' שניות');
 await app.close(); done();

@@ -35,7 +35,7 @@ jobs:
           cd test && ./mk.sh
           (python3 -m http.server 8899 >/dev/null 2>&1 &)
           sleep 1
-          for t in smoke name_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test; do node $t.mjs; done
+          for t in smoke name_test v60_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test; do node $t.mjs; done
       - name: בדיקות — האפליקציה
         env:
           BB_TEST_EMAIL: ${{ secrets.BB_TEST_EMAIL }}
@@ -50,6 +50,7 @@ jobs:
           timeout 600 xvfb-run -a node app_p2_test.mjs
           timeout 600 xvfb-run -a node app_shell_test.mjs
           timeout 600 xvfb-run -a node app_v56_test.mjs
+          timeout 600 xvfb-run -a node app_ai_test.mjs
 
   windows:
     needs: test
