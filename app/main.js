@@ -1,6 +1,6 @@
 /* BIOBUZZ — האפליקציה (Electron, התהליך הראשי) */
 "use strict";
-const { app, BrowserWindow, ipcMain, dialog, shell, screen, safeStorage } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell, screen, safeStorage, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { Store, writeAtomic } = require("./store");
@@ -9,6 +9,7 @@ const { Bridge, findAdb } = require("./bridge");
 const { execFile } = require("child_process");
 const os = require("os");
 const REPO = { owner: "yaarilevrosen-cpu", repo: "BIOBUZZ" };
+const MAC = process.platform === "darwin", LINUX = process.platform === "linux";
 
 /* במחשב נייד עם שני כרטיסי מסך — תמיד החזק */
 app.commandLine.appendSwitch("force_high_performance_gpu");
@@ -19,7 +20,7 @@ app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 
-/* הנתונים: באפליקציה המותקנת — %APPDATA%\BIOBUZZ\data. בגרסה הניידת — ליד קובץ ה-EXE (טוב לדיסק און קי) */
+/* הנתונים: באפליקציה המותקנת — %APPDATA%\BIOBUZZ\data (במק: ~/Library/Application Support/BIOBUZZ/data, בלינוקס: ~/.config/BIOBUZZ/data). בגרסה הניידת — ליד קובץ ה-EXE (טוב לדיסק און קי) */
 const DATA = process.env.BIOBUZZ_DATA ||
   (process.env.PORTABLE_EXECUTABLE_DIR ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, "BIOBUZZ-data") : path.join(app.getPath("userData"), "data"));
 const SIM = process.env.BIOBUZZ_SIM || path.join(__dirname, "sim", "index.html");
@@ -78,6 +79,8 @@ function createWindow() {
     backgroundColor: "#0B0E12", title: "BIOBUZZ", show: false, autoHideMenuBar: true,
     /* שורת כותרת משלנו: הכותרת של הסימולטור היא ״ידית״ החלון, וכפתורי Windows מצוירים עליה */
     titleBarStyle: "hidden", titleBarOverlay: { color: "#141A21", symbolColor: "#B9C6D2", height: 67 },
+    /* במק: שלושת הכפתורים משמאל, באמצע הכותרת */
+    ...(MAC ? { trafficLightPosition: { x: 20, y: 27 } } : {}),
     icon: path.join(__dirname, "build", "icon.png"),
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, nodeIntegration: false,
       sandbox: true, backgroundThrottling: false, spellcheck: false }
@@ -87,6 +90,8 @@ function createWindow() {
   if (b.full) win.setFullScreen(true);
   win.once("ready-to-show", () => setTimeout(showMain, 400));
   win.webContents.on("did-finish-load", () => { try { win.webContents.setVisualZoomLevelLimits(1, 1); } catch (e) {} });
+  /* במק הכפתורים משמאל — מפנים להם מקום בכותרת (בשתי השפות) */
+  if (MAC) win.webContents.on("did-finish-load", () => { try { win.webContents.insertCSS("html.app header{padding-left:92px!important}"); } catch (e) {} });
   win.on("close", saveBounds);
   win.on("resize", () => { clearTimeout(win._bt); win._bt = setTimeout(saveBounds, 500); });
   /* קישורים חיצוניים נפתחים בדפדפן, לא בתוך האפליקציה */
@@ -110,8 +115,8 @@ function createWindow() {
   win.webContents.on("before-input-event", (e, i) => {
     if (i.type !== "keyDown") return;
     if (i.key === "F11") { win.setFullScreen(!win.isFullScreen()); e.preventDefault(); }
-    else if (i.key === "F12" || (i.control && i.shift && i.key.toLowerCase() === "i")) { win.webContents.toggleDevTools(); e.preventDefault(); }
-    else if (i.control && i.key.toLowerCase() === "r") { store.flushKv(); win.webContents.reload(); e.preventDefault(); }
+    else if (i.key === "F12" || ((i.control || i.meta) && (i.shift || i.alt) && i.key.toLowerCase() === "i")) { win.webContents.toggleDevTools(); e.preventDefault(); }
+    else if ((i.control || i.meta) && i.key.toLowerCase() === "r") { store.flushKv(); win.webContents.reload(); e.preventDefault(); }
   });
   win.loadFile(SIM);
 }
@@ -239,8 +244,11 @@ const UPD = { state: "idle", version: "", percent: 0, url: "https://github.com/"
 function updSet(p) { Object.assign(UPD, p); send("bb:upd", UPD); }
 function verCmp(a, b) { const x = String(a).replace(/^v/, "").split(/[.-]/).map(n => parseInt(n, 10) || 0), y = String(b).replace(/^v/, "").split(/[.-]/).map(n => parseInt(n, 10) || 0);
   for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); } return 0; }
+/* עדכון אוטומטי: Windows (מתקין) ולינוקס (AppImage). במק ובחבילת deb — בודקים ומציעים להוריד
+   (במק עדכון אוטומטי דורש חתימה של אפל, ועוד אין) */
 function updInit() {
-  if (!app.isPackaged || PORTABLE || process.platform !== "win32" || process.env.BIOBUZZ_TEST) return;
+  const can = process.platform === "win32" || (LINUX && !!process.env.APPIMAGE);
+  if (!app.isPackaged || PORTABLE || !can || process.env.BIOBUZZ_TEST) return;
   try { AU = require("electron-updater").autoUpdater; } catch (e) { AU = null; return; }
   AU.autoDownload = true; AU.autoInstallOnAppQuit = true; AU.allowPrerelease = false;
   AU.on("checking-for-update", () => updSet({ state: "checking", error: "" }));
@@ -267,7 +275,18 @@ async function updCheck(manual) {
   return UPD;
 }
 
+/* במק אין תפריט בתוך החלון — אבל בלי תפריט יישום לא עובדים ⌘C / ⌘V / ⌘Q ושדות הטקסט */
+function macMenu() {
+  if (!MAC) return;
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { role: "appMenu" }, { role: "editMenu" },
+    { label: "View", submenu: [{ role: "togglefullscreen" }] },
+    { role: "windowMenu" }
+  ]));
+}
+
 app.whenReady().then(() => {
+  macMenu();
   store = new Store(DATA);
   try { store.dailyBackup(14); } catch (e) { console.error(e); }
   const enc = s => (safeStorage && safeStorage.isEncryptionAvailable()) ? "e:" + safeStorage.encryptString(s).toString("base64") : "p:" + Buffer.from(s, "utf8").toString("base64");
@@ -300,3 +319,5 @@ app.on("before-quit", e => {
 });
 app.on("will-quit", () => { try { bridge && bridge.stop(); } catch (e) {} });
 app.on("window-all-closed", () => { try { store && store.flushKv(); } catch (e) {} app.quit(); });
+/* במק: לחיצה על האייקון במזח מחזירה את החלון */
+app.on("activate", () => { if (win && !win.isDestroyed()) { win.show(); win.focus(); } });

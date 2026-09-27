@@ -1,0 +1,31 @@
+// v59 — האפליקציה הארוזה ללינוקס עולה ועובדת (release/linux-unpacked)
+import { _electron as electron } from 'playwright';
+import fs from 'fs'; import os from 'os'; import path from 'path'; import { fileURLToPath } from 'url';
+import {ok,done} from './h.mjs';
+const HERE=path.dirname(fileURLToPath(import.meta.url));
+const BIN=path.resolve(HERE,'../app/release/linux-unpacked/biobuzz');
+const DATA=fs.mkdtempSync(path.join(os.tmpdir(),'bblx-'));
+ok(fs.existsSync(BIN),'יש קובץ הרצה ארוז ללינוקס');
+const t0=Date.now();
+const app=await electron.launch({executablePath:BIN,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'],
+  env:{...process.env,BIOBUZZ_DATA:DATA,BIOBUZZ_TEST:'1',BIOBUZZ_NOADB:'1',BIOBUZZ_UPD_URL:'http://127.0.0.1:1/none'}});
+const win=await app.firstWindow(); const errs=[]; win.on('pageerror',e=>errs.push(String(e)));
+await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:180000});
+const secs=((Date.now()-t0)/1000).toFixed(1);
+const E=f=>win.evaluate(f);
+const VER=JSON.parse(fs.readFileSync(path.resolve(HERE,'../app/package.json'),'utf8')).version;
+ok(await app.evaluate(({app},v)=>app.isPackaged&&app.getVersion()===v,VER),'ארוז, גרסה '+VER);
+ok(await app.evaluate(()=>process.platform)==='linux','רץ על לינוקס');
+ok(await E(()=>document.documentElement.classList.contains('app')&&!!window.bbApp),'מצב אפליקציה (bbApp קיים)');
+ok(await E(()=>window.__sim.BOTS.length===3),'הזירה עלתה עם שלושה בוטים');
+await E(()=>{ const w=document.getElementById('welcome'); if(w) w.hidden=true; });
+await win.waitForTimeout(1500);
+await win.screenshot({path:'linux_app.png'});
+const on=()=>E(()=>[...document.querySelectorAll('#appNav [data-nav].on')].map(b=>b.dataset.nav).join());
+await win.keyboard.press('Meta+Digit4'); ok(await on()==='stats','⌘4 (מק) — סטטיסטיקות');
+await win.keyboard.press('Control+Digit1'); ok(await on()==='home','Ctrl+1 — בית');
+fs.writeFileSync(DATA+'/probe','x');
+ok(fs.readdirSync(DATA).some(f=>/profiles|store/.test(f)),'הנתונים נכתבים לדיסק');
+ok(errs.length===0,'בלי שגיאות בדף'+(errs.length?': '+errs[0]:''));
+console.log('זמן עלייה: '+secs+' שניות');
+await app.close(); done();

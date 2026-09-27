@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BIOBUZZ — FTC field simulator</title>
-<meta name="description" content="A 3D FTC field simulator for driver practice, autonomous testing and match strategy. Free Windows app.">
+<meta name="description" content="A 3D FTC field simulator for driver practice, autonomous testing and match strategy. Free app for Windows, macOS and Linux.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23FFB020'/%3E%3Cpath d='M12 4 6 7.5v9L12 20l6-3.5v-9z' fill='none' stroke='%2312161c' stroke-width='2'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#0B0E12;--panel:#12171D;--panel2:#1A2129;--line:#26303A;--ink:#E9EFF5;--ink2:#B7C3CF;--muted:#7D8C9A;--accent:#FFB020;--good:#33D69F;--red:#FF5A5F;
@@ -62,23 +62,31 @@ footer{padding:36px 0 50px;color:var(--muted);font-size:13px;border-top:1px soli
     <h1>Practice FTC <em>before</em> the robot is ready.</h1>
     <p>BIOBUZZ is a 3D FTC field simulator: drive with a keyboard or gamepad, test your autonomous, play full matches against bots or friends, and track every driver's stats.</p>
     <div class="btns">
-      <a class="btn go" id="dlSetup" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">⬇ Download for Windows <small id="dlVer"></small></a>
-      <a class="btn" id="dlPortable" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Portable version (no install)</a>
+      <a class="btn go" id="dlMain" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">⬇ <span id="dlLabel">Download for Windows</span> <small id="dlVer"></small></a>
+      <a class="btn" id="dlAlt" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Portable version (no install)</a>
     </div>
-    <div class="meta" id="dlMeta">Windows 10 / 11 · 64-bit · free · English and Hebrew</div>
+    <div class="meta" id="dlMeta">Windows · macOS · Linux · free · English and Hebrew</div>
+    <div class="meta" id="dlOther">Other systems:
+      <a data-dl="win" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Windows</a> ·
+      <a data-dl="macArm" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Mac (Apple chip)</a> ·
+      <a data-dl="macIntel" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Mac (Intel)</a> ·
+      <a data-dl="appimage" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Linux AppImage</a> ·
+      <a data-dl="deb" href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/releases/latest">Linux .deb</a>
+    </div>
   </div>
 
   <section id="install">
     <h2>Install in one minute</h2>
     <div class="card">
       <ol class="steps">
-        <li><div><b>Download</b> <code>BIOBUZZ-Setup.exe</code> with the button above.</div></li>
-        <li><div><b>Run it.</b> Windows may show <i>“Windows protected your PC”</i> because the app is not code-signed yet — click <b>More info</b> → <b>Run anyway</b>.</div></li>
-        <li><div><b>Pick a folder</b> (or keep the default) and click <b>Install</b>. A desktop shortcut is created.</div></li>
+        <li><div><b>Download</b> with the button above — it picks the right file for your computer.</div></li>
+        <li><div><b>Windows:</b> run <code>BIOBUZZ-Setup.exe</code>. If you see <i>“Windows protected your PC”</i> (the app is not code-signed yet), click <b>More info</b> → <b>Run anyway</b>, then <b>Install</b>.</div></li>
+        <li><div><b>Mac:</b> open the <code>.dmg</code> and drag BIOBUZZ into <b>Applications</b>. The first time, macOS blocks it (not signed by Apple yet): open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>. If it says the app is “damaged”, run <code>xattr -dr com.apple.quarantine /Applications/BIOBUZZ.app</code> in Terminal once.</div></li>
+        <li><div><b>Linux:</b> <code>.deb</code> — <code>sudo apt install ./BIOBUZZ-*.deb</code>. AppImage — <code>chmod +x BIOBUZZ-*.AppImage</code> and run it (on Ubuntu 24.04+ add <code>--no-sandbox</code> if it doesn't start).</div></li>
         <li><div><b>Open BIOBUZZ</b>, type your name and (optionally) your team name and number. A one-minute tour shows you around.</div></li>
-        <li><div><b>Updates are automatic</b> — the app checks on every launch and offers to install new versions.</div></li>
+        <li><div><b>Updates</b> — the app checks on every launch. On Windows and the Linux AppImage it installs them for you; on Mac and .deb it tells you and links to the new download.</div></li>
       </ol>
-      <p class="note" style="margin:16px 0 0">Prefer not to install? The portable version runs straight from the file. Your data stays on your computer; signing in to an account (optional) syncs drivers and matches across computers.</p>
+      <p class="note" style="margin:16px 0 0">Prefer not to install? On Windows the portable version runs straight from the file; on Linux the AppImage does. Your data stays on your computer; signing in to an account (optional) syncs drivers and matches across computers.</p>
     </div>
   </section>
 
@@ -98,15 +106,29 @@ footer{padding:36px 0 50px;color:var(--muted);font-size:13px;border-top:1px soli
 </div>
 <script>
 const REPO="yaarilevrosen-cpu/BIOBUZZ";
-/* newest release → direct download links */
-fetch("https://api.github.com/repos/"+REPO+"/releases/latest").then(r=>r.ok?r.json():null).then(r=>{
+/* newest release → direct download links, the main button matches this computer */
+const OS=(()=>{ const u=navigator.userAgent, p=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||"";
+  if(/Mac/i.test(p)||/Macintosh/.test(u)) return "mac"; if(/Linux|X11/i.test(p+u)&&!/Android/i.test(u)) return "linux"; return "win"; })();
+fetch("https://api.github.com/repos/"+REPO+"/releases/latest").then(r=>r.ok?r.json():null).then(async r=>{
   if(!r||!r.assets) return;
   const a=n=>r.assets.find(x=>n.test(x.name));
-  const s=a(/Setup.*\.exe$/), p=a(/portable.*\.exe$/);
-  if(s){ document.getElementById("dlSetup").href=s.browser_download_url; }
-  if(p){ document.getElementById("dlPortable").href=p.browser_download_url; }
+  const F={win:a(/Setup.*\.exe$/), portable:a(/portable.*\.exe$/), macArm:a(/mac-arm64\.dmg$/), macIntel:a(/mac-x64\.dmg$/),
+    appimage:a(/\.AppImage$/), deb:a(/\.deb$/)};
+  document.querySelectorAll("[data-dl]").forEach(el=>{ const f=F[el.dataset.dl]; if(f) el.href=f.browser_download_url; else el.style.display="none"; });
+  const main=document.getElementById("dlMain"), alt=document.getElementById("dlAlt"), lab=document.getElementById("dlLabel"), meta=document.getElementById("dlMeta");
+  const mb=f=>f?" · "+Math.round(f.size/1048576)+" MB":"";
+  let m=F.win, n=F.portable, label="Download for Windows", altLabel="Portable version (no install)", info="Windows 10 / 11 · 64-bit";
+  if(OS==="mac"&&(F.macArm||F.macIntel)){
+    let arm=true; try{ const h=await navigator.userAgentData.getHighEntropyValues(["architecture"]); arm=h.architecture==="arm"; }catch(e){ /* Safari: can't tell — most Macs sold since 2020 are Apple chip */ }
+    m=arm?(F.macArm||F.macIntel):(F.macIntel||F.macArm); n=arm?F.macIntel:F.macArm;
+    label="Download for Mac"; altLabel=arm?"Mac with Intel chip":"Mac with Apple chip"; info="macOS 12+ · "+(arm?"Apple chip (M1 and newer)":"Intel");
+  } else if(OS==="linux"&&(F.appimage||F.deb)){
+    m=F.appimage||F.deb; n=F.appimage?F.deb:null; label="Download for Linux"; altLabel=".deb package (Ubuntu / Debian)"; info="Linux · 64-bit · AppImage";
+  }
+  if(m){ main.href=m.browser_download_url; lab.textContent=label; }
+  if(n){ alt.href=n.browser_download_url; alt.textContent=altLabel; } else alt.style.display="none";
   document.getElementById("dlVer").textContent="v"+String(r.tag_name||"").replace(/^v/,"");
-  if(s) document.getElementById("dlMeta").textContent="Windows 10 / 11 · 64-bit · "+Math.round(s.size/1048576)+" MB · free · English and Hebrew";
+  meta.textContent=info+mb(m)+" · free · English and Hebrew";
 }).catch(()=>{});
 
 /* links from account emails land here (#access_token=…&type=signup|recovery, or #error=…) */

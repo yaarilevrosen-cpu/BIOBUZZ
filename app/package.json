@@ -1,14 +1,19 @@
 {
   "name": "biobuzz",
   "productName": "BIOBUZZ",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "BIOBUZZ — FTC field simulator",
-  "author": "BIOBUZZ",
+  "author": {
+    "name": "BIOBUZZ",
+    "email": "biobuzz@users.noreply.github.com"
+  },
   "main": "main.js",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win nsis portable --x64"
+    "dist:win": "electron-builder --win nsis portable --x64",
+    "dist:mac": "electron-builder --mac dmg --x64 --arm64",
+    "dist:linux": "electron-builder --linux AppImage deb --x64"
   },
   "devDependencies": {
     "electron": "38.2.0",
@@ -68,7 +73,40 @@
         "releaseType": "release"
       }
     ],
-    "copyright": "BIOBUZZ contributors"
+    "copyright": "BIOBUZZ contributors",
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.games",
+      "target": [
+        "dmg"
+      ],
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "artifactName": "BIOBUZZ-${version}-mac-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "BIOBUZZ ${version}",
+      "artifactName": "BIOBUZZ-${version}-mac-${arch}.${ext}"
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Game;Education",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "BIOBUZZ <biobuzz@users.noreply.github.com>",
+      "synopsis": "FTC field simulator",
+      "executableName": "biobuzz",
+      "artifactName": "BIOBUZZ-${version}-linux-${arch}.${ext}"
+    },
+    "appImage": {
+      "artifactName": "BIOBUZZ-${version}-linux-${arch}.${ext}"
+    },
+    "deb": {
+      "artifactName": "BIOBUZZ-${version}-linux-${arch}.${ext}"
+    }
   },
   "dependencies": {
     "electron-updater": "^6.8.9",
@@ -77,5 +115,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/yaarilevrosen-cpu/BIOBUZZ.git"
-  }
+  },
+  "homepage": "https://yaarilevrosen-cpu.github.io/BIOBUZZ/"
 }

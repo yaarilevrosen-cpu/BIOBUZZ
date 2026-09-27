@@ -1,4 +1,4 @@
-# בנייה אוטומטית: בכל דחיפה — בדיקות ו-EXE; בכל תגית v* — גרסה חדשה ב-Releases (והאפליקציות המותקנות מתעדכנות לבד)
+# בנייה אוטומטית: בכל דחיפה — בדיקות ובנייה ל-Windows, מק ולינוקס; בכל תגית v* — גרסה חדשה ב-Releases (והאפליקציות המותקנות מתעדכנות לבד)
 name: build
 
 on:
@@ -65,17 +65,89 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
         run: cd app && npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
-      - name: EXE (ובתגית — פרסום ל-Releases)
+      - name: EXE
         shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd app && npm ci
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then PUB=always; else PUB=never; fi
-          npx electron-builder --win nsis portable --x64 --publish $PUB
+        run: cd app && npm ci && npx electron-builder --win nsis portable --x64 --publish never
       - uses: actions/upload-artifact@v4
         with:
           name: BIOBUZZ-windows
           path: |
             app/release/*.exe
+            app/release/*.blockmap
             app/release/latest.yml
+
+  mac:
+    needs: test
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: בנייה
+        run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
+      - name: גרסה מהתגית
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cd app && npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+      - name: DMG — אפל סיליקון ואינטל (חתימה מקומית בלבד, בלי אישור אפל)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: cd app && npm ci && npx electron-builder --mac dmg --arm64 --x64 --publish never
+      - name: בדיקה — האפליקציה נפתחת במק
+        run: |
+          APP="$(ls -d app/release/mac-arm64/*.app | head -1)"
+          codesign --verify --deep "$APP" && echo "חתימה מקומית תקינה"
+          ( BIOBUZZ_TEST=1 BIOBUZZ_NOADB=1 "$APP/Contents/MacOS/BIOBUZZ" & echo $! > pid ); sleep 25
+          kill -0 "$(cat pid)" && echo "רץ 25 שניות בלי לקרוס" && kill "$(cat pid)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIOBUZZ-mac
+          path: |
+            app/release/*.dmg
+            app/release/*.blockmap
+
+  linux:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: בנייה
+        run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
+      - name: גרסה מהתגית
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cd app && npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+      - name: AppImage ו-deb
+        run: cd app && npm ci && npx electron-builder --linux AppImage deb --x64 --publish never
+      - name: בדיקה — האפליקציה הארוזה עולה
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        run: |
+          cd test && npm install && npx playwright install --with-deps chromium
+          timeout 400 xvfb-run -a node linux_pkg_test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BIOBUZZ-linux
+          path: |
+            app/release/*.AppImage
+            app/release/*.deb
+            app/release/latest-linux.yml
+
+  # בתגית v* — גרסה אחת ב-Releases עם כל הקבצים של שלוש המערכות
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, mac, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - run: ls -la out
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
+          generate_release_notes: true

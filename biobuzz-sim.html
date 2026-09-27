@@ -2820,7 +2820,7 @@ function teamSet(name,num){
 }
 function teamBadge(){ const b=document.getElementById("verBadge"); if(!b) return;
   const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:""); }
-const BUILD_VER="v58";
+const BUILD_VER="v59";
 function logoPanel(){
   const[c,g]=cv2d(1024,256);
   g.fillStyle="#12171c";g.fillRect(0,0,1024,256);
@@ -13402,7 +13402,7 @@ function shellWire(){
   /* כפתור ״הסטטיסטיקות שלי״ בלוח המשחק — באפליקציה פותח את הדף */
   const ps=$("ppStats"); if(ps) ps.addEventListener("click",e=>{ e.stopImmediatePropagation(); playModalClose(); shellGo("stats"); },true);
   addEventListener("keydown",e=>{
-    if(e.ctrlKey&&!e.altKey&&!e.shiftKey&&/^Digit[1-6]$/.test(e.code)){ e.preventDefault(); shellGo(["home","play","lab","stats","drivers","settings"][+e.code.slice(5)-1]); return; }
+    if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&/^Digit[1-6]$/.test(e.code)){ e.preventDefault(); shellGo(["home","play","lab","stats","drivers","settings"][+e.code.slice(5)-1]); return; }
     if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden])")){ e.preventDefault(); shellGo(UI.mode==="lab"?"lab":"play"); } },true);
   /* בלי תחושת ״אתר״: בלי תפריט לחיצה ימנית (חוץ משדות טקסט) ובלי גרירת קישורים */
   document.addEventListener("contextmenu",e=>{ if(!e.target.closest("input,textarea,[contenteditable]")) e.preventDefault(); });
