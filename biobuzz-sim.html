@@ -2824,7 +2824,12 @@ function loadParams(){
   try{ const j=JSON.parse(localStorage.getItem(LSKEY)||"null");
     if(!j) return false;
     let n=0;
-    for(const k in j) if(Object.prototype.hasOwnProperty.call(P,k)&&isFinite(j[k])){ setP(k,j[k]); n++; }
+    /* v63: רק מספרים (לא true, לא מחרוזת ריקה), ובטווח סביר סביב הטווח של המחוון */
+    for(const k in j){ if(!Object.prototype.hasOwnProperty.call(P,k)) continue;
+      const v=typeof j[k]==="number"?j[k]:(typeof j[k]==="string"&&j[k].trim()!==""?+j[k]:NaN);
+      if(!isFinite(v)) continue;
+      const sp=SPECOF[k]; if(sp&&isFinite(sp.lo)&&isFinite(sp.hi)){ const w=sp.hi-sp.lo; if(v<sp.lo-w||v>sp.hi+w) continue; }
+      setP(k,v); n++; }
     return n>0;
   }catch(e){ return false; }
 }
@@ -3375,14 +3380,17 @@ function rebuildField(){
     row("פתח שליפה מהפרח",fmt(P.flowGapTop-P.flowGapBot,2)+"″");
   try{ geoPrune(); }catch(e){}
 }
+/* v63: אובייקטי עזר קבועים לצעדים החמים — בלי הקצאה בכל צעד פיזיקה */
+const _cUpY=new CANNON.Vec3(0,1,0), _cAxX=new CANNON.Vec3(1,0,0), _cQy=new CANNON.Quaternion(), _cQx=new CANNON.Quaternion();
+const _m4inv=new THREE.Matrix4();
 function hiveSet(h,a){
   h.group.rotation.x=a;
   if(typeof syncCadHives==="function") syncCadHives();
   const up=a<0?1:-1;
   for(const o of outlines) if(o.h===h) o.o.visible=(o.side===up);
-  const qy=new CANNON.Quaternion(), qx=new CANNON.Quaternion();
-  qy.setFromAxisAngle(new CANNON.Vec3(0,1,0),h.rot);
-  qx.setFromAxisAngle(new CANNON.Vec3(1,0,0),a);
+  const qy=_cQy, qx=_cQx;
+  qy.setFromAxisAngle(_cUpY,h.rot);
+  qx.setFromAxisAngle(_cAxX,a);
   qy.mult(qx,h.body.quaternion);
   const x=h===hiveRed?-P.hiveSep/2:P.hiveSep/2;
   h.body.position.set(M(Math.cos(h.rot)*x),M(P.pivotY),M(-Math.sin(h.rot)*x));
@@ -4201,7 +4209,7 @@ function cellContents(h){
   if(!h) return {mass:0,n:0};
   const s=upSign(h); let mass=0,n=0;
   h.group.updateMatrixWorld(true);
-  const inv=h.group.matrixWorld.clone().invert();
+  const inv=_m4inv.copy(h.group.matrixWorld).invert();
   for(const b of balls){
     _v.copy(b.body.position).applyMatrix4(inv);
     const x=I(_v.x),y=I(_v.y),z=I(_v.z)*s;
@@ -5458,9 +5466,10 @@ function aiDrive(b,tx,tz,dt,speedCap){
   /* עקיפה של רובוטים אחרים — גם של השחקן. המתכנן כבר מרחיק את המסלול
      מהם, וזה מה שנשאר לאינץ׳ האחרון: מי שנוסע ישר לתוך רובוט אחר צובר
      מגע רצוף, וזו בדיוק העבירה שהבולם צריך להימנע ממנה. */
-  const others=BOTS.filter(o=>o!==b&&o.on).map(o=>o.body.position)
-                   .concat(botBody?[botBody.position]:[]);
-  for(const op of others){
+  /* v63: בלי filter/map/concat בכל צעד של כל בוט */
+  for(let k=0;k<=BOTS.length;k++){
+    const o=k<BOTS.length?BOTS[k]:null; if(o&&(o===b||!o.on)) continue;
+    const op=o?o.body.position:(botBody?botBody.position:null); if(!op) continue;
     const ox=I(b.body.position.x)-I(op.x), oz=I(b.body.position.z)-I(op.z);
     const od=Math.hypot(ox,oz);
     if(od<21&&od>0.3){ const k=(21-od)/21*26;
@@ -5865,6 +5874,10 @@ function aiStep(b,dt){
   b.group.visible=b.on; b.body.collisionResponse=b.on;
   if(!b.on){ b.body.position.set(M(300),0,M(300)); b.vx=b.vz=0; return; }
   b.t+=dt;
+  /* v63: המהירות שהבוט באמת משיג כשהוא נוסע (אחרי מגעים ובלימות) — לתכנון זמן החניה */
+  { const cmd=Math.hypot(b.vx||0,b.vz||0);
+    if(cmd>0.6*AIC.vMax*skill().v){ const sp=Math.hypot(b.body.velocity.x,b.body.velocity.z);
+      b.vMeas=b.vMeas==null?sp:b.vMeas*0.98+sp*0.02; } }
   if(MATCH.on&&MATCH.phase==="AUTO"&&!b.leaveDone){
     const gp=Math.min(HALF-Math.abs(I(b.body.position.x)),HALF-Math.abs(I(b.body.position.z)));
     if(gp>Math.hypot(AIC.W/2,AIC.L/2)+3.25) b.leaveDone=true;     /* LEAVE לפי ההגדרה */
@@ -5877,7 +5890,7 @@ function aiStep(b,dt){
   else if(brainParkNow(b,dt)) aiParkStep(b,dt);
   else if(b.role==="score") aiScoreStep(b,dt); else aiDefendStep(b,dt);
   b.body.position.y=0; b.body.velocity.y=0; b.body.wakeUp();
-  b.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),b.yaw);
+  b.body.quaternion.setFromAxisAngle(_cUpY,b.yaw);
   b.group.position.copy(b.body.position); b.group.rotation.y=b.yaw;
   /* חוסם את קו הירי שלנו? */
   if(aimHive()&&bot.muzzleMark){
@@ -6203,8 +6216,9 @@ function brainParkDue(b,tLeft,dt){
   const s=brainParkSpot(b), px=I(b.body.position.x), pz=I(b.body.position.z);
   let d=navDist(px,pz,s.x,s.z,navClrBot(),navDyn(b.body));
   if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
-  const vIn=AIC.vMax*skill().v/IN;
-  return tLeft<d/(vIn*0.45)+6+skill().think;
+  /* v63: לפי המהירות הנמדדת (לא הנומינלית), ועם מרווח — בוט שנתקע בדרך עדיין מגיע */
+  const vNom=AIC.vMax*skill().v, vm=b.vMeas==null?vNom:Math.max(0.4*vNom,Math.min(vNom,b.vMeas));
+  return tLeft<d/(vm/IN*0.45)+7.5+skill().think;
 }
 function brainParkNow(b,dt){
   if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2) return false;
@@ -6268,7 +6282,7 @@ function gameStart(full){
   brainReset();
   const set=(b,on,role)=>{ b.on=on; if(role) setAIRole(b,role);
     b.body.position.set(M(b.home.x),0,M(b.home.z));
-    b.vx=b.vz=0; b.clip.length=0; b.shots=0; b.hits=0; b.blockT=0; b.contact=0;
+    b.vx=b.vz=0; b.clip.length=0; b.shots=0; b.hits=0; b.blockT=0; b.contact=0; b.vMeas=null;
     b.ph=b.role==="score"?"seek":"guard"; b.t=0; b.target=null; };
   if(full){
     set(B_BLUE1,true, GAME.randomRoles?rollRole():B_BLUE1.role);
@@ -7977,9 +7991,10 @@ function refBackStep(){
 function refRobots(){
   const out=[];
   const my=myAlly(), s=P.speed||2;
+  const cw=bot.cmdAct||bot.cmdW;
   out.push({id:"me",team:"me",ally:my,x:I(botBody.position.x),z:I(botBody.position.z),
     vx:botBody.velocity.x,vz:botBody.velocity.z,
-    ix:(bot.cmdW?bot.cmdW.x:0)*s, iz:(bot.cmdW?bot.cmdW.z:0)*s,
+    ix:(cw?cw.x:0)*s, iz:(cw?cw.z:0)*s,
     half:Math.max(P.botW,P.botL)/2});
   for(const b of BOTS){ if(!b.on||!b.body) continue;
     out.push({id:b.name,team:b.name,ally:b.ally,x:I(b.body.position.x),z:I(b.body.position.z),
@@ -8064,7 +8079,7 @@ function legContact(b){
 function cellBalls(h){
   const out=[]; if(!h) return out;
   const s=upSign(h); h.group.updateMatrixWorld(true);
-  const inv=h.group.matrixWorld.clone().invert();
+  const inv=_m4inv.copy(h.group.matrixWorld).invert();
   for(const b of balls){
     _v.copy(b.body.position).applyMatrix4(inv);
     const x=I(_v.x),y=I(_v.y),z=I(_v.z)*s;
@@ -8336,7 +8351,7 @@ function scoreNow(){
      בתוך האזור״ — ולכן הבדיקה מורחבת ברדיוס הכדור. */
   let gd=0;
   for(const b of balls){
-    const x=I(b.body.position.x),z=I(b.body.position.z), r=(P.bd||2.8)/2;
+    const x=I(b.body.position.x),z=I(b.body.position.z), r=(b.bd||b.def.bd||2.8)/2;   /* v63: הגודל של הכדור עצמו (נקטר 3.6) */
     if(inRect(x,z,-70.1-r,-47.41+r,68.1-r,70.1+r)) gd++;
   }
   S.garden=gd;
@@ -9068,7 +9083,7 @@ function refreshOri(){
       row("מצב",fieldCentric?"ציר המגרש":"ציר הרובוט","ok")+
       row("״קדימה״ בסטיק",fieldCentric
             ?("מעמדת "+driverAt().name+" · "+fmt(Math.atan2(f.x,f.z)*180/Math.PI,0)+"°")
-            :("חרטום הרובוט · "+fmt(bot.yaw*180/Math.PI,0)+"°"))+
+            :("חרטום הרובוט · "+fmt(Math.atan2(Math.sin(bot.yaw),Math.cos(bot.yaw))*180/Math.PI,0)+"°"))+
       row("מסתובב עם הרובוט",fieldCentric?"לא":"כן",fieldCentric?"":"hl");
   }
   if(typeof refreshDrv==="function") refreshDrv();
@@ -9425,8 +9440,19 @@ const PRESETS={
   auto:    {cd:3,auto:30,trans:0,tele:0,  autoOn:true},
   sprint:  {cd:3,auto:0, trans:0,tele:60, autoOn:false}
 };
+/* v63: ערך שמור נכנס רק אם הוא מאותו סוג כמו ברירת המחדל ובטווח סביר */
+const SETUP_RANGE={skill:[0,5],cd:[0,10],auto:[0,60],trans:[0,30],tele:[0,600],mag:[1,8],flow:[0,12]};
+function setupOk(k,v,d){
+  if(Array.isArray(d)) return Array.isArray(v)&&v.length===d.length&&v.every((x,i)=>typeof x===typeof d[i]&&(typeof x!=="string"||x.length<=60))
+    &&(k!=="roles"||v.every(x=>x==="score"||x==="defend"));
+  if(typeof v!==typeof d) return false;
+  if(typeof d==="number"){ const r=SETUP_RANGE[k]; return isFinite(v)&&(!r||(v>=r[0]&&v<=r[1])); }
+  if(k==="ally") return v==="red"||v==="blue";
+  if(typeof d==="string") return v.length<=80;
+  return true;
+}
 function setupLoad(){ try{ const j=JSON.parse(localStorage.getItem(SKEY)||"null");
-  if(j) for(const k in SETUP) if(j[k]!==undefined) SETUP[k]=j[k]; }catch(e){} }
+  if(j&&typeof j==="object") for(const k in SETUP) if(j[k]!==undefined&&setupOk(k,j[k],SETUP[k])) SETUP[k]=j[k]; }catch(e){} }
 function setupSave(){ try{ localStorage.setItem(SKEY,JSON.stringify(SETUP)); }catch(e){} }
 function setupOpen(){ setupFill(); document.body.classList.add("setup");
   { const r=$("sSplitRow"), k=$("sKeepSplit"), on=typeof SPLIT!=="undefined"&&SPLIT.on;
@@ -10704,6 +10730,8 @@ addEventListener("orientationchange",()=>setTimeout(resize,260));
 let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,fastMode=false;
 let physAcc=0;   /* v63: זמן פיזיקה שעוד לא נצעד (תת־צעדים של 1/120) */
 const upV=new CANNON.Vec3(0,1,0);
+const _sF=new THREE.Vector3(), _sR=new THREE.Vector3(), _sDR=new THREE.Vector3(), _sUP=new THREE.Vector3(0,1,0),
+      _sMouth=new THREE.Vector3(), _sRel=new THREE.Vector3(), _sCam=new THREE.Vector3();
 function stepSim(dt){
   /* v63: השהיה עוצרת הכול — שעון, בוטים, שופט, שחקן אנושי, כוורות. הקלט עדיין נקרא
      (כדי ש-P/כפתור ימשיכו לעבוד), והמארח ממשיך לשדר את התמונה הקפואה לאורחים */
@@ -10747,19 +10775,22 @@ function stepSim(dt){
     if(dr>0.06||Math.abs(kt)>0.06) runStop("בוטל ידנית",false);
     else matchCmd=runCmd(dt);
   }
-  const f=botForward(),rgt=new THREE.Vector3(-f.z,0,f.x);   // forward × up = ימין
+  const f=_sF.set(Math.sin(bot.yaw),0,Math.cos(bot.yaw)),rgt=_sR.set(-f.z,0,f.x);   // forward × up = ימין (v63: בלי הקצאה)
   let dF=f, dR=rgt;
   if(fieldCentric){
     /* ״קדימה״ נמדד מעמדת הנהג ולא מהמצלמה. ברובוט אמיתי ה-IMU מאופס
        לכיוון הקיר של הברית בתחילת המאץ׳, והוא לא מסתובב כשהמצלמה זזה —
        אחרת כל שינוי תצוגה היה משנה לנהג את משמעות הסטיק באמצע נסיעה. */
     dF=driverFwd();
-    dR=dF.clone().cross(new THREE.Vector3(0,1,0)).normalize();
+    dR=_sDR.copy(dF).cross(_sUP).normalize();
   }
   // הפיקוד מגיע ממערכת הצירים של המצלמה או של הרובוט, ומתורגם לצירי הגוף
   const wx=(dF.x*ky+dR.x*kx)*sc, wz=(dF.z*ky+dR.z*kx)*sc;
   bot.cmdW=driverLocked()?{x:0,z:0}:{x:wx,z:wz};
   const cmdFwd=wx*f.x+wz*f.z, cmdRight=wx*rgt.x+wz*rgt.z;
+  /* v63: הכוונה האמיתית של הרובוט (גם כשהאוטונומי או הסיוע נוהגים) — לזיהוי הצמדה (G421) */
+  { const ac=faultFrozen()?{f:0,r:0}:(matchCmd||asCmd), w=bot.cmdAct||(bot.cmdAct={x:0,z:0});
+    if(ac){ w.x=f.x*ac.f+rgt.x*ac.r; w.z=f.z*ac.f+rgt.z*ac.r; } else { w.x=bot.cmdW.x; w.z=bot.cmdW.z; } }
   if(faultFrozen()) driveStep(dt,0,0,0);                 /* תקלה: המקלט מנותק — הרובוט עוצר */
   else if(matchCmd) driveStep(dt,matchCmd.f,matchCmd.r,matchCmd.turn);
   else if(asCmd) driveStep(dt,asCmd.f,asCmd.r,asCmd.turn);
@@ -10788,10 +10819,11 @@ function stepSim(dt){
   /* v61: כל פתח איסוף של הבנייה — קדימה ואם יש גם מאחור. פתח רחב (גלגלים גמישים, מכאנום) מושך
      אל הקטע הקרוב לאורך הפתח; מכאנום גם מעביר את הכדור למרכז לפני שהוא נבלע. */
   if(intake&&bot.mag<4&&!paused&&!(FAULT.jam>0)){
+    const rgv={x:rgt.x,z:rgt.z};
     for(const mo of bldMouths()){
-    const mouth=bot.group.position.clone().addScaledVector(f,mo.s*M(P.botL/2+1.2));
+    const mouth=_sMouth.copy(bot.group.position).addScaledVector(f,mo.s*M(P.botL/2+1.2));
     mouth.y=M(P.intakeH);
-    const Rr=M(mo.R), rgv={x:rgt.x,z:rgt.z};
+    const Rr=M(mo.R);
     for(let i=balls.length-1;i>=0;i--){
       const b=balls[i];
       if(b.body.position.y>M(10)) continue;
@@ -10890,7 +10922,7 @@ function stepSim(dt){
     }
     if(b.tracked){
       const mf=mouthFrame(b.tracked);
-      const rel=new THREE.Vector3().copy(b.body.position).sub(mf.c);
+      const rel=_sRel.copy(b.body.position).sub(mf.c);
       const d=rel.dot(mf.n);
       if(d<0&&Math.abs(rel.dot(mf.ex))<=M(P.cellW/2)&&Math.abs(rel.dot(mf.ey))<=M(P.cellH/2)){
         b.tracked=null;
@@ -10911,7 +10943,7 @@ function stepSim(dt){
        b.body.position.y<-M(20)) removeBall(b);
   }
   if(chase){
-    cam.target.lerp(new THREE.Vector3(bot.group.position.x,M(14),bot.group.position.z),.14);
+    cam.target.lerp(_sCam.set(bot.group.position.x,M(14),bot.group.position.z),.14);
     const want=Math.atan2(-f.z,-f.x);
     cam.theta+=(((want-cam.theta+Math.PI*3)%(Math.PI*2))-Math.PI)*.12;
   }
@@ -11272,6 +11304,16 @@ function splitPoll(){
 }
 /* הדלקה וכיבוי. המסך המפוצל תמיד מעלה משחק מלא — ארבעה רובוטים, שניים
    אנושיים ושניים בוטים — כי זה מה שיש בזירה אמיתית. */
+/* v63: שחקן שמצטרף לעמדה (רשת, שלט, מסך מפוצל). לפני מאץ׳ — משחק מלא כמו קודם.
+   באמצע מאץ׳ — לא מתחילים מחדש (זה היה מחזיר את כל הרובוטים הביתה, מאפס את המוח ומכריח שופט):
+   רק הרובוט של העמדה נכנס לזירה, מעמדת הבית שלו אם היה כבוי. */
+function gameJoinSeat(b){
+  if(GAME.full) return;
+  if(MATCH.on||MATCH.cd>0){
+    if(b&&!b.on&&b.body){ b.body.position.set(M(b.home.x),0,M(b.home.z)); b.vx=b.vz=0; if(b.clip) b.clip.length=0; }
+    return; }
+  gameStart(true);
+}
 function splitSet(v,opt){
   opt=opt||{};
   if(opt.seat!==undefined&&BOTS[opt.seat]){
@@ -11284,7 +11326,14 @@ function splitSet(v,opt){
   if(v!==undefined) SPLIT.on=!!v&&!PHONE;
   if(!B_BLUE1) buildOpp();
   if(SPLIT.on){
-    if(!GAME.full) gameStart(true);
+    /* v63: לא לוקחים עמדה של אורח ברשת (הוא היה ממשיך לשלוח קלט בלי לדעת שהרובוט כבר לא שלו) */
+    { const cur=splitBot();
+      if(cur&&cur.hum&&cur.hum.src==="net"){
+        const alt=BOTS.findIndex(o=>o&&!o.hum);
+        if(alt>=0) SPLIT.seat=alt;
+        else { SPLIT.on=false; try{ refToast("כל העמדות תפוסות בשחקנים — אין מקום לשחקן 2","block"); }catch(e){}
+          document.body.classList.toggle("split2",false); resize(); refreshSplit(); return; } } }
+    gameJoinSeat(splitBot());
     const b=splitBot(); b.on=true; SPLIT.intakeOn=false;
     if(!b.hum||b.hum.src!=="split") humSeat(b,"split","שחקן 2");
     if(!was){ SPLIT.camPrev=camView; setCamView("driver"); }
@@ -11552,7 +11601,7 @@ function netPadSeat(s,padIdx){
   const b=netSeatBot(s); if(!b) return;
   if(padIdx===null||padIdx===undefined){ if(b.hum&&b.hum.src==="pad") humFree(b); netRefresh(); return; }
   for(const o of BOTS) if(o.hum&&o.hum.src==="pad"&&o.hum.padIdx===padIdx) humFree(o);
-  if(!GAME.full) gameStart(true);
+  gameJoinSeat(b);
   b.on=true; humSeat(b,"pad","שלט "+(padIdx+1)); b.hum.padIdx=padIdx; b.hum.intakeOn=false;
   netRefresh();
 }
@@ -11674,7 +11723,7 @@ function netAutoSeat(id){ const s=netFreeSeat(); if(s===null){ netSend({to:id,t:
 function netSeatGuest(id,s){
   const b=netSeatBot(s); if(!b) return;
   netUnseat(id,true);
-  if(!GAME.full) gameStart(true);
+  gameJoinSeat(b);
   b.on=true; humSeat(b,"net",(NET.guests[id]&&NET.guests[id].name)||"אורח"); b.hum.id=id;
   NET.guests[id]&&(NET.guests[id].seat=s);
   netSend({to:id,t:"seat",seat:s,ally:b.ally,allies:netAllies()});

@@ -22,7 +22,7 @@ let r=await E(()=>({st:__sim.LIVE.st, n:__sim.LIVE.n, rr:__sim.LIVE.rr, p:__sim.
 ok(r.st==='on'&&r.n>5,'מחובר לדשבורד ומקבל מיקומים ('+r.n+')');
 ok(r.op==='LocalizationTest'&&/LocalizationTest/.test(r.txt),'רואים את האופמוד שרץ');
 ok(Math.abs(r.rr.h-Math.PI/2)<1e-3&&r.rr.y===-30,'heading (deg) הומר לרדיאנים');
-ok(Math.abs(r.p.x-30)<1e-6&&Math.abs(r.p.z-r.rr.x)<1e-6&&Math.abs(r.p.yaw+Math.PI/2)<1e-6,'המרה לצירי הסימולטור: x=−y, z=x, yaw=−θ');
+ok(Math.abs(r.p.x-r.rr.y)<1e-6&&Math.abs(r.p.z-r.rr.x)<1e-6&&Math.abs(r.p.yaw-Math.PI/2)<1e-6,'המרה לצירי הסימולטור (v63, סיבוב): x=y, z=x, yaw=θ');
 ok(r.vis,'הרובוט האמיתי מופיע על הזירה');
 // הקלטה → יומן אודומטריה
 await E(()=>document.getElementById('bLiveRec').click()); await page.waitForTimeout(1200);

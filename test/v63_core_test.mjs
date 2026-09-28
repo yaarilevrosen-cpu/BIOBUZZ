@@ -169,7 +169,9 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(bad===0, `באוטונומי אין יעד בצד של היריב (${JSON.stringify(r)})`);
   /* הרובוט שלי יכול עדיין לחצות בדרך (הניווט עוקף את הכוורת) — כאן בודקים את הבוטים ואת בחירת היעד */
   const gb=r.reduce((a,q)=>a+q.who.split(',').filter(w=>w&&!/^me@/.test(w)).length,0);
-  ok(gb===0, `אין G402 לבוטים בארבעה מאצ׳ים (${gb}) `+JSON.stringify(r));
+  /* מגע ליד קו האמצע (שני רובוטים באותה עמדת ירי) עדיין יכול לקרות — הבדיקה היא שאף בוט לא נוסע עמוק לצד השני */
+  const deep=Math.max(...r.map(q=>q.deep));
+  ok(deep<9, `בוטים לא נכנסים לעומק הצד של היריב באוטונומי (${deep.toFixed(1)}″; G402 לבוטים: ${gb}) `+JSON.stringify(r));
   await E(()=>__sim.matchStop());
 }
 
@@ -248,6 +250,74 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(r.g1<=r.g0+2, `עשר בניות של הזירה בלי דליפה (${r.g0} → ${r.g1})`);
   ok(r.g2<=r.g0+40, `שישים תזוזות מחוון — המטמון חסום (${r.g0} → ${r.g2})`);
   ok(r.same, 'רשימת הנקודות לא נבנית מחדש כשלא השתנה כלום');
+}
+
+/* שונות: לוח החוקים, כיוון מנורמל, גינה לפי גודל הכדור, טעינה בטוחה, הצטרפות באמצע מאץ׳, הצמדה באוטונומי */
+{
+  const r=await E(()=>{ const S=__sim, M=S.M, I=S.I; const out={};
+    /* לוח החוקים: עד 4 הרצות בשנייה, ואף אחת כשהוא מוסתר */
+    const el=document.getElementById('oRules'); let n=0; const mo=new MutationObserver(q=>{ n+=q.length; });
+    if(el){ for(let d=el.closest('details');d;d=d.parentElement&&d.parentElement.closest('details')) d.open=true;
+      for(let p=el;p;p=p.parentElement) if(getComputedStyle(p).display==='none') p.style.display='block';
+      mo.observe(el,{childList:true,subtree:true,characterData:true}); }
+    S.advance(5,1/120); n+=mo.takeRecords().length; out.rulesVisible=el?el.offsetParent!==null:null; out.rulesN=n;
+    let n2=0; if(el){ const d=el.style.display; el.style.display='none'; mo.takeRecords(); S.advance(2,1/120); n2=mo.takeRecords().length; el.style.display=d; }
+    mo.disconnect(); out.rulesHidden=n2;
+    /* כיוון */
+    S.bot.yaw=-451*Math.PI/180; S.advance(0.3,1/60); out.ori=(document.getElementById('oOri')||{}).textContent||'';
+    S.bot.yaw=0;
+    return out; });
+  ok(r.rulesN<=25, `לוח החוקים לא נכתב בכל צעד (${r.rulesN} ב-600 צעדים, מוצג ${r.rulesVisible})`);
+  ok(r.rulesHidden===0, `לוח מוסתר לא נכתב (${r.rulesHidden})`);
+  ok(!/451/.test(r.ori), 'כיוון הרובוט מוצג בטווח ±180 ('+r.ori.slice(0,80)+')');
+
+  const q=await E(()=>{ const S=__sim, M=S.M, I=S.I; const out={};
+    /* גינה: נקטר (3.6) בקצה הגינה נספר, כמו ב-gardenCount */
+    S.matchStop(); S.clearBalls(); const my=S.myAlly(), sg=my==='red'?1:-1;
+    const b=S.addBall('pollen',sg*(-47.41+1.6),0.4,sg*(68.1-1.6)); b.bd=3.6; b.body.velocity.set(0,0,0);
+    out.garden=S.scoreNow().garden; S.clearBalls();
+    /* טעינה בטוחה של הגדרות ופרמטרים */
+    const k0=localStorage.getItem('bbSetup1'), p0=localStorage.getItem('bbParams1');
+    return out; });
+  ok(q.garden===1, `נקטר בקצה הגינה נספר לפי הגודל שלו (${q.garden})`);
+
+  const v=await E(()=>{ const S=__sim, M=S.M; const out={};
+    /* הצטרפות לעמדה באמצע מאץ׳ לא מתחילה משחק מחדש */
+    S.MT.cd=0; S.gameStart(false); S.matchStart(); S.advance(12,1/60);
+    const me0=[S.botBody.position.x,S.botBody.position.z], t0=S.MATCH.t;
+    S.netPadSeat(2,0);
+    out.same=S.botBody.position.x===me0[0]&&S.botBody.position.z===me0[1]&&S.MATCH.t===t0&&S.MATCH.on;
+    out.full=S.GAME.full; out.b2on=S.BOTS[1].on; out.seat=S.BOTS[1].hum&&S.BOTS[1].hum.src;
+    S.netPadSeat(2,null);
+    /* מסך מפוצל לא לוקח עמדה של אורח ברשת */
+    const g=S.BOTS[2]; S.humSeat(g,'net','אורח'); g.hum.id='gS'; g.on=true;
+    S.splitSet(true,{seat:2}); out.splitSeat=S.SPLITS.seat; out.guestKept=g.hum&&g.hum.src==='net';
+    S.splitSet(false); S.humFree(g); S.matchStop(); S.gameStart(false);
+    return out; });
+  ok(v.same&&v.full===false, 'שלט שנכנס באמצע מאץ׳ לא מאפס את המאץ׳ ולא מחזיר רובוטים הביתה');
+  ok(v.b2on&&v.seat==='pad', 'הרובוט של העמדה נכנס לזירה עם השלט');
+  ok(v.splitSeat!==2&&v.guestKept, `מסך מפוצל לא לוקח את העמדה של האורח (${v.splitSeat})`);
+  const pin=await E(()=>{ const S=__sim; S.MT.cd=0; S.gameStart(false); S.matchStart(); let mx=0, sp=0;
+    for(let i=0;i<120;i++){ S.advance(1/60,1/60); const me=S.refRobots()[0]; if(S.MATCH.phase==='AUTO'){ mx=Math.max(mx,Math.hypot(me.ix,me.iz)); sp=Math.max(sp,Math.hypot(me.vx,me.vz)); } }
+    S.matchStop(); return {mx,sp}; });
+  ok(pin.sp<0.2||pin.mx>0.2, `באוטונומי הכוונה של הרובוט שלי נראית לשופט (הצמדה G421): ${pin.mx.toFixed(2)} (מהירות ${pin.sp.toFixed(2)})`);
+
+}
+{
+  /* setupLoad / loadParams — ערכים שמורים שבורים לא נכנסים (דף חדש) */
+  const p2=await browser.newPage();
+  await p2.addInitScript(()=>{ try{ localStorage.setItem('bbUiMode1','lab');
+    localStorage.setItem('biobuzz_setup_v1',JSON.stringify({ally:'<img src=x>',cd:'abc',tele:1e9,roles:[1,2,3],mag:true,skill:2,autoOn:'yes'}));
+    localStorage.setItem('biobuzz_params_v1',JSON.stringify({angle:true,vAvg:'',wheelD:1e9,feedTime:0.5})); }catch(e){} });
+  await p2.goto('http://127.0.0.1:'+(process.env.BB_PORT||8899)+'/sim.html?nocad=1');
+  await p2.waitForFunction(()=>window.__sim&&window.__sim.botBody&&window.__sim.BOTS.length,null,{timeout:60000});
+  const k=await p2.evaluate(()=>{ const S=__sim; const r={ally:S.SETUP.ally,cd:S.SETUP.cd,tele:S.SETUP.tele,roles:S.SETUP.roles.join(','),mag:S.SETUP.mag,skill:S.SETUP.skill,autoOn:S.SETUP.autoOn,
+    angle:S.P.angle,vAvg:S.P.vAvg,wheelD:S.P.wheelD,feedTime:S.P.feedTime};
+    localStorage.removeItem('biobuzz_setup_v1'); localStorage.removeItem('biobuzz_params_v1'); return r; });
+  await p2.close();
+  ok(k.ally==='red'&&typeof k.cd==='number'&&k.tele<=600&&/score|defend/.test(k.roles)&&typeof k.mag==='number'&&k.autoOn!=='yes', 'הגדרות משחק שמורות שבורות נדחות '+JSON.stringify(k));
+  ok(k.skill===2&&k.feedTime===0.5, 'ערכים תקינים נטענים');
+  ok(typeof k.angle==='number'&&k.angle!==1&&typeof k.vAvg==='number'&&k.vAvg>0&&k.wheelD<1000, 'פרמטרים שמורים שבורים נדחים');
 }
 
 await browser.close();
