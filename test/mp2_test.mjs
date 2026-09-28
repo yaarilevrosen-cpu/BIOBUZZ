@@ -44,15 +44,17 @@ ok(r===false,'משחק לבד — אין סיכום משותף');
 await browser.close();
 
 // 4. ברשת אמיתית: גשר + מארח + אורח
-const br=spawn('python3',['../pad/padbridge.py','--port','9662','--no-adb','--key','1234'],{stdio:'ignore'});
+/* v63: המארח נפתח מהגשר (/sim — שם מוזרק האסימון), והאורח מכתובת ההצטרפות של הגשר (/join) — כמו אצל המשתמשים */
+const BP=String(+process.env.BB_BRIDGE_PORT||9662);   /* פורט אחר כשכמה בדיקות רצות במקביל */
+const br=spawn('python3',['../pad/padbridge.py','--port',BP,'--no-adb','--key','1234','--sim','../dist/BIOBUZZ-lab-lite.html'],{stdio:'ignore'});
 await new Promise(r=>setTimeout(r,1500));
 try{
-  const H=await open(), G=await open();
-  await H.page.evaluate(()=>{ __sim.netHost(9662); });
-  await H.page.waitForFunction(()=>__sim.NET.sock&&__sim.NET.sock.readyState===1&&__sim.NET.key,null,{timeout:20000});
+  const H=await open({url:'http://127.0.0.1:'+BP+'/sim?nocad=1'}), G=await open({url:'http://127.0.0.1:'+BP+'/join?k=1234&nocad=1'});
+  await H.page.evaluate(()=>{ __sim.netHost(+location.port); });
+  await H.page.waitForFunction(()=>__sim.NET.sock&&__sim.NET.sock.readyState===1&&__sim.NET.key,null,{timeout:90000});
   const key=await H.page.evaluate(()=>__sim.NET.key);
-  await G.page.evaluate(k=>{ __sim.netJoin('127.0.0.1:9662#'+k,'דני'); },key);
-  await G.page.waitForFunction(()=>__sim.NET.seat!==null&&__sim.NET.seat!==undefined,null,{timeout:30000});
+  await G.page.evaluate(k=>{ __sim.netJoin('127.0.0.1:'+location.port+'#'+k,'דני'); },key);
+  await G.page.waitForFunction(()=>__sim.NET.seat!==null&&__sim.NET.seat!==undefined,null,{timeout:90000});
   ok(true,'האורח התיישב');
   await G.page.waitForFunction(()=>__sim.NET.rtt>0,null,{timeout:30000}).catch(()=>{});
   const trace=[];

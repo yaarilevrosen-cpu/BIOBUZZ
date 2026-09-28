@@ -15,7 +15,8 @@ ok((await fetch('http://127.0.0.1:9671/sim')).status===200,'הסימולטור �
 ok((await fetch('http://127.0.0.1:9671/join?k=1')).status===403,'הצטרפות בלי קוד — נחסם');
 const open=(q)=>new Promise((res,rej)=>{ const w=new WebSocket('ws://127.0.0.1:9671/ws?'+q); w.msgs=[]; w.on('message',(d,bin)=>w.msgs.push(bin?d:d.toString())); w.on('open',()=>res(w)); w.on('error',rej); w.on('unexpected-response',(q2,r)=>rej(new Error('HTTP '+r.statusCode))); });
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const sim=await open('role=sim'); await wait(100);
+const T='&t='+encodeURIComponent(b.token);
+const sim=await open('role=sim'+T); await wait(100);
 ok(sim.msgs.some(m=>/"t":"pad","on":false/.test(m)),'הסימולטור מקבל ״אין טלפון״');
 const pad=await open('role=pad'); await wait(100);
 ok(sim.msgs.some(m=>/"t":"pad","on":true/.test(m)),'טלפון התחבר → הסימולטור יודע');
@@ -23,7 +24,7 @@ pad.send('{"t":"in","x":0.5}'); await wait(100);
 ok(sim.msgs.some(m=>/"t":"in"/.test(m)),'קלט מהטלפון מגיע לסימולטור');
 sim.send('{"t":"q","id":1}'); await wait(100);
 ok(pad.msgs.some(m=>/"t":"q"/.test(m)),'הודעה מהסימולטור מגיעה לטלפון');
-const host=await open('role=host'); await wait(100);
+const host=await open('role=host'+T); await wait(100);
 ok(host.msgs.some(m=>/"t":"info"/.test(m)&&/"key":/.test(m)),'מארח מקבל פרטי חדר');
 let bad=null; try{ await open('role=guest&k=0'); }catch(e){ bad=e; } ok(!!bad,'אורח עם מפתח שגוי — נחסם');
 const g=await open('role=guest&k='+b.key+'&n=נועה'); await wait(150);
@@ -34,7 +35,7 @@ host.send(Buffer.from([1,2,3]),{binary:true}); await wait(100);
 ok(g.msgs.some(m=>Buffer.isBuffer(m)&&m.length===3),'מצב הזירה (בינארי) מגיע לאורח');
 // v58 — קוד חדר קצר וקוד חדש לבקשת המארח
 ok(roomCode('192.168.1.23',9662,1234)==='012-X6J'&&roomCode('10.0.0.5',9662,1234).length===13,'קוד קצר ב-192.168, ארוך ברשת אחרת');
-ok(b.key>0&&b.key<0x1000,'מפתח של 12 ביט ('+b.key+')');
+ok(b.key>=0x10000&&b.key<2**32,'מפתח של 32 ביט ('+b.key+')');
 const k0=b.key; host.msgs.length=0; host.send('{"t":"rekey"}'); await wait(150);
 const inf=host.msgs.map(m=>{ try{ return JSON.parse(m); }catch(e){ return {}; } }).find(m=>m.t==='info')||{};
 ok(inf.key&&inf.key!==k0&&inf.key===b.key,'״קוד חדש״ — המפתח התחלף ('+k0+' → '+inf.key+')');

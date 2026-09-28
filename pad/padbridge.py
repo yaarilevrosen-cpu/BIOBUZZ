@@ -13,7 +13,7 @@ padbridge — גשר ושרת חדר לסימולטור BIOBUZZ של אפולו 
        python padbridge.py --no-adb   (בלי לחפש טלפון בכבל)
        python padbridge.py --sim BIOBUZZ-lab.html
 """
-import argparse, base64, hashlib, ipaddress, json, os, random, shutil, socket, struct
+import argparse, base64, hashlib, hmac, ipaddress, json, os, re, secrets, socket, struct
 import subprocess, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, quote
@@ -39,36 +39,54 @@ def say(he, en):
 
 # ── קוד חדר: אותה פונקציה בדיוק כמו netCodeMake בסימולטור ──
 AB = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+KEY_MIN, KEY_MAX = 0x10000, 0x100000000          # v63: מפתח של 32 ביט
 
 def _check(d):
     return sum((i + 1) * v for i, v in enumerate(d)) % 32
 
+def _b32(n, ln):
+    d = []
+    for _ in range(ln):
+        d.insert(0, n & 31)
+        n >>= 5
+    return d
+
 def room_code(ip, port, key):
-    p = [int(x) for x in ip.split(".")]
-    off = port - 9662
-    if len(p) != 4 or not (0 <= off <= 15):
+    try:
+        p = [int(x) for x in ip.split(".")]
+    except ValueError:
         return ""
-    # ברוב הבתים ובתי הספר הרשת היא 192.168.x.y — אז הקוד קצר: 6 תווים (XXX-XXX)
-    if p[0] == 192 and p[1] == 168 and off == 0 and 0 < key < 0x1000:
-        n = (p[2] << 20) | (p[3] << 12) | key
-        d = []
-        for _ in range(6):
-            d.insert(0, n & 31)
-            n >>= 5
-        s = "".join(AB[v] for v in d)
+    off = port - 9662
+    if len(p) != 4 or any(not (0 <= v <= 255) for v in p) or not (0 <= off <= 15) or not key > 0:
+        return ""
+    # מפתח ישן (12 ביט) ב-192.168 — הקוד הקצר הישן: 6 תווים (XXX-XXX)
+    if key < 0x1000 and p[0] == 192 and p[1] == 168 and off == 0:
+        s = "".join(AB[v] for v in _b32((p[2] << 20) | (p[3] << 12) | key, 6))
         return s[:3] + "-" + s[3:]
+    if key < 0x4000:
+        n = 0
+        for v in p:
+            n = (n << 8) | v
+        n = (((n << 4) | off) << 14) | (key & 0x3FFF)
+        d = _b32(n, 10)
+        d.append(_check(d))
+        s = "".join(AB[v] for v in d)
+        return s[:4] + "-" + s[4:8] + "-" + s[8:]
+    k = int(key) & 0xFFFFFFFF
+    # v63: מפתח 32 ביט. ב-192.168 — XXXXX-XXXXX (כתובת 16 ביט + מפתח 32 ביט + 2 ביט ביקורת)
+    if p[0] == 192 and p[1] == 168 and off == 0:
+        d = _b32((p[2] << 40) | (p[3] << 32) | k, 10)
+        d[0] += 8 * (_check(d[1:]) & 3)
+        s = "".join(AB[v] for v in d)
+        return s[:5] + "-" + s[5:]
     n = 0
     for v in p:
         n = (n << 8) | v
-    n = (n << 4) | off
-    n = (n << 14) | (key & 0x3FFF)
-    d = []
-    for _ in range(10):
-        d.insert(0, n & 31)
-        n >>= 5
+    n = (((n << 4) | off) << 32) | k
+    d = _b32(n, 14)
     d.append(_check(d))
     s = "".join(AB[v] for v in d)
-    return s[:4] + "-" + s[4:8] + "-" + s[8:]
+    return s[:5] + "-" + s[5:10] + "-" + s[10:]
 
 def is_lan(addr):
     try:
@@ -88,6 +106,36 @@ def is_local(addr):
     except ValueError:
         return False
 
+def host_ok(h):
+    """כתובת IP מספרית או localhost — לא שם דומיין (מונע DNS rebinding)"""
+    h = (h or "").lower().strip("[]")
+    return h == "localhost" or re.match(r"^\d{1,3}(\.\d{1,3}){3}$", h) is not None or re.match(r"^[0-9a-f:]+$", h) is not None
+
+def split_host(hp):
+    hp = (hp or "").lower()
+    m = re.match(r"^\[([^\]]+)\](?::(\d+))?$", hp) or re.match(r"^([^:]+)(?::(\d+))?$", hp)
+    return (m.group(1), int(m.group(2)) if m.group(2) else 80) if m else None
+
+def origin_ok(origin, host_hdr, role):
+    """Origin מותר: בלי Origin (לא דפדפן), file:// / null, או הכתובת של הגשר עצמו.
+    לאורח מותר גם גשר BIOBUZZ אחר ברשת (http://<IP>:9662–9677)"""
+    if origin is None:
+        return True
+    origin = origin.lower()
+    if origin == "null" or origin.startswith("file:"):
+        return True
+    if not origin.startswith("http://"):
+        return False
+    o, h = split_host(origin[7:]), split_host(host_hdr)
+    if not o or not host_ok(o[0]):
+        return False
+    loop = lambda x: x == "localhost" or is_local(x)
+    if h and o[1] == h[1] and (o[0] == h[0] or (loop(o[0]) and loop(h[0]))):
+        return True
+    if role == "guest" and 9662 <= o[1] <= 9677 and (o[0] == "localhost" or is_lan(o[0])):
+        return True
+    return False
+
 def lan_ips():
     out = []
     try:
@@ -106,24 +154,31 @@ def lan_ips():
     good = [ip for ip in out if is_lan(ip) and not ip.startswith("127.")]
     return good
 
+def _new_key():
+    return secrets.randbelow(KEY_MAX - KEY_MIN) + KEY_MIN
+
 def load_key(fixed):
     if fixed is not None:
-        return fixed & 0x3FFF
+        return int(fixed) & 0xFFFFFFFF
     path = os.path.join(HERE, ".room-key")
     try:
         with open(path) as f:
             k = int(f.read().strip())
-        if 0 < k < 0x1000:
+        if KEY_MIN <= k < KEY_MAX:
             return k
-        raise ValueError("old key")          # מפתח ישן וגדול — מחליפים במפתח של 12 ביט לקוד הקצר
+        raise ValueError("old key")          # מפתח ישן וקטן — מחליפים במפתח של 32 ביט
     except Exception:
-        k = random.SystemRandom().randrange(1, 0x1000)
+        k = _new_key()
         try:
             with open(path, "w") as f:
                 f.write(str(k))
         except Exception:
             pass
         return k
+
+# ── הגבלות (v63) ──
+LIM = {"fails_per_ip": 8, "fail_window": 300, "lock": 300, "fails_global": 60, "lock_global": 120,
+       "join_per_min": 20, "ws_per_ip": 12, "small": 64 * 1024, "big": 4 * 1024 * 1024}
 
 # ── WebSocket מינימלי (RFC 6455) ──
 class WS:
@@ -133,7 +188,10 @@ class WS:
         self.alive = True
         self.id = None
         self.name = ""
+        self.maxlen = LIM["small"] if role in ("pad", "guest") else LIM["big"]
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        # חיבור מת (טלפון שנכבה) לא נשאר לנצח: הגשר שולח פינג כל 20 שניות, ו-60 שניות בלי כלום = נסגר
+        sock.settimeout(60)
 
     def _recv(self, n):
         buf = b""
@@ -155,7 +213,7 @@ class WS:
                 ln = struct.unpack(">H", self._recv(2))[0]
             elif ln == 127:
                 ln = struct.unpack(">Q", self._recv(8))[0]
-            if ln > 4 * 1024 * 1024:
+            if ln > self.maxlen or len(data) + ln > self.maxlen:
                 raise ConnectionError
             mask = self._recv(4) if masked else b"\0\0\0\0"
             p = bytearray(self._recv(ln))
@@ -202,8 +260,10 @@ class WS:
 
 # ── החדר: מי מחובר, ולאן כל הודעה הולכת ──
 class Room:
-    def __init__(self, port, key):
+    def __init__(self, port, key, token=None):
         self.port, self.key = port, key
+        self.token = token or secrets.token_urlsafe(24)
+        self.fails, self.gfails, self.glock, self.joins, self.conns = {}, [], 0.0, {}, {}
         self.lock = threading.Lock()
         self.sims, self.pads, self.guests = [], [], {}
         self.host = None
@@ -215,7 +275,7 @@ class Room:
         # קוד חדש לבקשת המארח — מי שכבר בפנים נשאר
         k = self.key
         while k == self.key:
-            k = random.SystemRandom().randrange(1, 0x1000)
+            k = _new_key()
         self.key = k
         try:
             with open(os.path.join(HERE, ".room-key"), "w") as f:
@@ -228,15 +288,77 @@ class Room:
     def info(self):
         return {"t": "info", "lan": self.lan, "port": self.port, "key": self.key, "code": self.code}
 
-    def health(self):
+    def health(self, local):
+        # v63: בלי קוד חדר ובלי שמות/כתובות של אורחים. כתובות הרשת — רק למחשב הזה (קוד QR לטלפון)
         with self.lock:
-            return {"ok": True, "host": self.host is not None, "sims": len(self.sims),
-                    "pad": len(self.pads) > 0,
-                    "guests": [{"id": g.id, "name": g.name, "addr": g.addr} for g in self.guests.values()],
-                    "port": self.port, "lan": self.lan, "code": self.code}
+            o = {"ok": True, "host": self.host is not None, "sims": len(self.sims),
+                 "pad": len(self.pads) > 0, "guests": len(self.guests), "port": self.port}
+        if local:
+            o["lan"] = self.lan
+        return o
+
+    # ── ניסיונות שגויים ──
+    def locked(self, ip):
+        now = time.time()
+        with self.lock:
+            if self.glock > now:
+                return True
+            f = self.fails.get(ip)
+            return bool(f and f[2] > now)
+
+    def fail(self, ip):
+        now = time.time()
+        with self.lock:
+            n, t0, until = self.fails.get(ip, (0, now, 0))
+            if now - t0 > LIM["fail_window"]:
+                n, t0 = 0, now
+            n += 1
+            if n >= LIM["fails_per_ip"]:
+                n, t0, until = 0, now, now + LIM["lock"]
+            self.fails[ip] = (n, t0, until)
+            self.gfails = [t for t in self.gfails if now - t < LIM["fail_window"]] + [now]
+            if len(self.gfails) >= LIM["fails_global"]:
+                self.glock, self.gfails = now + LIM["lock_global"], []
+                say("! יותר מדי קודים שגויים — הצטרפות מושהית לשתי דקות", "! too many wrong room codes — joining paused for 2 minutes")
+            if len(self.fails) > 5000:
+                self.fails.clear()
+
+    def key_ok(self, v):
+        return bool(re.match(r"^\d{1,10}$", v or "")) and int(v) == self.key
+
+    def tok_ok(self, v):
+        return hmac.compare_digest((v or "").encode(), self.token.encode())
+
+    def join_rate(self, ip):
+        now = time.time()
+        with self.lock:
+            n, t0 = self.joins.get(ip, (0, now))
+            if now - t0 > 60:
+                n, t0 = 0, now
+            self.joins[ip] = (n + 1, t0)
+            if len(self.joins) > 5000:
+                self.joins.clear()
+            return n + 1 <= LIM["join_per_min"]
+
+    def conn(self, ip, d):
+        with self.lock:
+            n = self.conns.get(ip, 0) + d
+            if n > 0:
+                self.conns[ip] = n
+            else:
+                self.conns.pop(ip, None)
+            return n
 
     def join_url(self):
         return "http://%s:%d/join?k=%d" % (self.lan[0], self.port, self.key) if self.lan else ""
+
+    def busy(self):
+        return bool(self.sims) or self.host is not None
+
+    def all(self):
+        with self.lock:
+            return list(self.sims) + list(self.pads) + list(self.guests.values()) + ([self.host] if self.host else [])
+
 
     # שלט טלפון ↔ סימולטור
     def to_sims(self, msg):
@@ -313,6 +435,8 @@ class Room:
             elif '"t":"q"' in s:                      # אין טלפון — הגשר עונה לבד
                 ws.send(s.replace('"t":"q"', '"t":"qr"'))
         elif r == "host":
+            if ws is not self.host:
+                return
             if op == 2:                               # מצב הזירה — לכל האורחים כמו שהוא
                 for g in list(self.guests.values()):
                     g.send(data, 2)
@@ -320,6 +444,8 @@ class Room:
             try:
                 m = json.loads(data.decode("utf-8"))
             except Exception:
+                return
+            if not isinstance(m, dict):
                 return
             if m.get("t") == "info":
                 ws.send(json.dumps(self.info()))
@@ -333,16 +459,30 @@ class Room:
             if to == "*":
                 for g in list(self.guests.values()):
                     g.send(s)
-            elif to in self.guests:
+            elif isinstance(to, str) and to in self.guests:
                 g = self.guests[to]
                 g.send(s)
                 if m.get("t") == "deny":
                     g.close()
         elif r == "guest":
-            if op != 1 or len(data) > 2000 or not data.startswith(b"{"):
+            # v63: מפענחים ובונים מחדש — אורח לא יכול להוסיף ״id״ משלו ולהתחזות לאורח אחר
+            if op != 1 or len(data) > 2000:
                 return
-            if self.host:
-                self.host.send('{"t":"g","id":"%s","m":%s}' % (ws.id, data.decode("utf-8", "replace")))
+            try:
+                m = json.loads(data.decode("utf-8"))
+            except Exception:
+                return
+            if not isinstance(m, dict):
+                return
+            h = self.host
+            if h:
+                h.send(json.dumps({"t": "g", "id": ws.id, "m": m}, ensure_ascii=False))
+
+def pinger():
+    while True:
+        time.sleep(20)
+        for w in ROOM.all():
+            w.send(b"", 9)
 
 ROOM = None
 SIM_PATH = None
@@ -354,16 +494,28 @@ def pad_page():
             return f.read()
     return base64.b64decode(PAD_B64)
 
-def sim_page(join=None):
-    if not SIM_PATH or not os.path.exists(SIM_PATH):
+_SIM_CACHE = {"key": None, "body": None, "at": 0}
+_SIM_LOCK = threading.Lock()
+
+def sim_body():
+    """הסימולטור מהדיסק — נקרא פעם אחת ונשמר (מתחדש כשהקובץ משתנה)"""
+    if not SIM_PATH:
         return None
-    with open(SIM_PATH, "rb") as f:
-        body = f.read()
-    if join is not None:
-        inj = ("<script>window.BB_JOIN={port:%d,key:%d};</script>" % (join[0], join[1])).encode()
-        i = body.find(b"<head>")
-        body = body[:i + 6] + inj + body[i + 6:] if i >= 0 else inj + body
-    return body
+    try:
+        st = os.stat(SIM_PATH)
+    except OSError:
+        return None
+    k = (st.st_mtime_ns, st.st_size)
+    with _SIM_LOCK:
+        if _SIM_CACHE["key"] != k:
+            try:
+                with open(SIM_PATH, "rb") as f:
+                    body = f.read()
+            except OSError:
+                return None
+            i = body.find(b"<head>")
+            _SIM_CACHE.update(key=k, body=body, at=i + 6 if i >= 0 else 0)
+        return _SIM_CACHE["body"], _SIM_CACHE["at"]
 
 class H(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
@@ -372,59 +524,92 @@ class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
-    def _send(self, code, body, ctype="text/html; charset=utf-8"):
+    timeout = 30                                      # בקשה שלא נגמרת — נסגרת
+
+    def _send(self, code, body, ctype="text/html; charset=utf-8", extra=None):
         if isinstance(body, str):
             body = body.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
+
+    def _send_sim(self, inj):
+        b = sim_body()
+        if not b:
+            return self._send(404, "sim file not found")
+        body, at = b
+        inj = inj.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body) + len(inj)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.end_headers()
+        mv = memoryview(body)
+        self.wfile.write(mv[:at])
+        self.wfile.write(inj)
+        self.wfile.write(mv[at:])
 
     def do_GET(self):
         peer = self.client_address[0]
         if not is_lan(peer):                          # רשת מקומית בלבד — אין חריגים
             return self._send(403, "LAN only")
+        hh = split_host(self.headers.get("Host"))
+        if not hh or not host_ok(hh[0]):                  # שם דומיין בכותרת Host = ניסיון DNS rebinding
+            return self._send(403, "bad host")
         u = urlparse(self.path)
         q = parse_qs(u.query)
         path = u.path.rstrip("/") or "/"
         if path == "/ws":
             return self.upgrade(q, peer)
         if path == "/health":
-            return self._send(200, json.dumps(ROOM.health()), "application/json")
+            o = (self.headers.get("Origin") or "").lower()
+            cors = {"Access-Control-Allow-Origin": "null", "Vary": "Origin"} if (o == "null" or o.startswith("file:")) else {"Vary": "Origin"}
+            return self._send(200, json.dumps(ROOM.health(is_local(peer))), "application/json", cors)
         if path == "/":
             return self._send(200, pad_page())
         if path == "/sim":
             if not is_local(peer):
                 return self._send(403, "local only")
-            b = sim_page()
-            return self._send(200, b) if b else self._send(404, "sim file not found")
+            return self._send_sim("<script>window.BB_TOK=%s;</script>" % json.dumps(ROOM.token))
         if path == "/join":
-            try:
-                k = int((q.get("k") or ["-1"])[0])
-            except ValueError:
-                k = -1
-            if k != ROOM.key:
+            if not ROOM.join_rate(peer) or ROOM.locked(peer):
+                return self._send(429, "<meta charset=utf-8><body dir=rtl style='font:18px system-ui'>יותר מדי ניסיונות — נסו שוב בעוד כמה דקות.")
+            if not ROOM.key_ok((q.get("k") or [""])[0]):
+                ROOM.fail(peer)
                 return self._send(403, "<meta charset=utf-8><body dir=rtl style='font:18px system-ui'>"
                                   "צריך את קוד החדר. פתח את הסימולטור והקלד אותו בלובי.")
-            b = sim_page((ROOM.port, ROOM.key))
-            return self._send(200, b) if b else self._send(404, "sim file not found")
+            return self._send_sim("<script>window.BB_JOIN={port:%d,key:%d};</script>" % (ROOM.port, ROOM.key))
         return self._send(404, "not found")
 
     def upgrade(self, q, peer):
         role = (q.get("role") or [""])[0]
         if role not in ("pad", "sim", "host", "guest"):
             return self._send(400, "bad role")
+        origin = self.headers.get("Origin")
+        if not origin_ok(origin, self.headers.get("Host"), role):
+            return self._send(403, "bad origin")
         if role in ("sim", "host") and not is_local(peer):
             return self._send(403, "local only")
+        # מארח צריך את האסימון הסודי (מוזרק לדף /sim). ״sim״ (שלט הטלפון בסימולטור) מותר גם מסימולטור שנפתח מקובץ
+        tok = ROOM.tok_ok((q.get("t") or [""])[0])
+        if role == "host" and not tok:
+            return self._send(403, "open the simulator from the bridge: http://localhost:%d/sim" % ROOM.port)
+        if role == "sim" and not tok and not (origin is None or origin.lower() == "null" or origin.lower().startswith("file:")):
+            return self._send(403, "bad token")
+        if ROOM.conn(peer, 0) >= LIM["ws_per_ip"]:
+            return self._send(429, "too many connections")
         if role == "guest":
-            try:
-                k = int((q.get("k") or ["-1"])[0])
-            except ValueError:
-                k = -1
-            if k != ROOM.key:
+            if ROOM.locked(peer):
+                return self._send(429, "too many attempts")
+            if not ROOM.key_ok((q.get("k") or [""])[0]):
+                ROOM.fail(peer)
                 return self._send(403, "bad key")
         key = self.headers.get("Sec-WebSocket-Key")
         if not key:
@@ -437,7 +622,8 @@ class H(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.flush()
         ws = WS(self.connection, role, peer)
-        ws.name = ((q.get("n") or ["אורח"])[0])[:20]
+        ws.name = re.sub(r"[\x00-\x1f<>]", "", (q.get("n") or ["אורח"])[0])[:20] or "אורח"
+        ROOM.conn(peer, 1)
         ROOM.add(ws)
         try:
             while ws.alive:
@@ -446,27 +632,27 @@ class H(BaseHTTPRequestHandler):
         except Exception:
             pass
         finally:
+            ROOM.conn(peer, -1)
             ROOM.drop(ws)
             ws.close()
             self.close_connection = True
 
 # ── צופה ADB: כל טלפון חדש מקבל adb reverse מיד ──
 def find_adb():
-    a = shutil.which("adb")
-    if a:
-        return a
-    cands = []
+    # v63: רק תיקיות מוחלטות ב-PATH (shutil.which בוינדוס בודק קודם את התיקייה הנוכחית)
+    names = ("adb.exe",) if os.name == "nt" else ("adb",)
+    cands = [d for d in os.environ.get("PATH", "").split(os.pathsep) if d and os.path.isabs(d)]
     for env in ("ANDROID_HOME", "ANDROID_SDK_ROOT"):
-        if os.environ.get(env):
+        if os.environ.get(env) and os.path.isabs(os.environ[env]):
             cands.append(os.path.join(os.environ[env], "platform-tools"))
     home = os.path.expanduser("~")
     cands += [os.path.join(home, "AppData", "Local", "Android", "Sdk", "platform-tools"),
               os.path.join(home, "Library", "Android", "sdk", "platform-tools"),
               os.path.join(home, "Android", "Sdk", "platform-tools")]
     for c in cands:
-        for n in ("adb.exe", "adb"):
+        for n in names:
             p = os.path.join(c, n)
-            if os.path.exists(p):
+            if os.path.isfile(p):
                 return p
     return None
 
@@ -478,6 +664,10 @@ def adb_watch(port):
     seen = set()
     flags = 0x08000000 if os.name == "nt" else 0
     while True:
+        if not ROOM.busy():                       # רק כשהסימולטור מחובר לגשר (או שיש חדר)
+            seen = set()
+            time.sleep(1.5)
+            continue
         try:
             out = subprocess.run([adb, "devices"], capture_output=True, text=True, timeout=5,
                                  creationflags=flags).stdout
@@ -514,6 +704,7 @@ def main():
     say(" גשר BIOBUZZ · אפולו 9662 · פורט %d" % a.port, " BIOBUZZ bridge · Apollo 9662 · port %d" % a.port)
     say("═" * 52, "=" * 52)
     say(" סימולטור במחשב הזה:  http://localhost:%d/sim" % a.port, " simulator here:  http://localhost:%d/sim" % a.port)
+    say("   (לפתוח חדר — רק מהכתובת הזאת)", "   (to host a room, open the simulator from this address)")
     if not SIM_PATH:
         say("   (לא נמצא BIOBUZZ-lab.html ליד הגשר)", "   (BIOBUZZ-lab.html not found next to the bridge)")
     if ROOM.lan:
@@ -523,6 +714,7 @@ def main():
     else:
         say(" לא נמצאה רשת מקומית — משחק ברשת לא זמין", " no LAN found — network play unavailable")
     say(" רשת מקומית בלבד. Ctrl+C לסגירה.", " LAN only. Ctrl+C to quit.")
+    threading.Thread(target=pinger, daemon=True).start()
     if not a.no_adb:
         threading.Thread(target=adb_watch, args=(a.port,), daemon=True).start()
     try:

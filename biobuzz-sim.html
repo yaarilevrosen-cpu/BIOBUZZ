@@ -9797,7 +9797,7 @@ function vpadConnect(){
   if(!VPAD.want) return;
   if(VPAD.sock&&VPAD.sock.readyState<2) return;
   if(typeof WebSocket==="undefined") return;
-  const u="ws://localhost:"+VPAD.port+"/ws?role=sim";
+  const u="ws://localhost:"+VPAD.port+"/ws?role=sim"+bbTokQ();
   VPAD.url=u; VPAD.tries++;
   let s=null;
   /* דף שנטען ב-https לא תמיד מרשה ws לא מוצפן. אם זה נחסם, אומרים את זה
@@ -11324,34 +11324,57 @@ const NET_HZ=25, NET_IN_HZ=30, NET_MAGIC=51;
 const NET_KINDS=["pollen","red","blue"];
 
 /* ── קוד חדר ──
-   הקוד הוא גם הכתובת וגם המפתח: 32 ביט של כתובת הרשת המקומית, 4 ביט של
-   היסט הפורט מ-9662, ו-14 ביט של מפתח סודי שהגשר מגריל. 50 ביט = עשר
-   ספרות בבסיס 32, ועוד ספרת ביקורת. מי שלא יודע את הקוד לא נכנס, גם אם
-   הוא באותה רשת. אותה פונקציה בדיוק גם בגשר בפייתון. */
+   הקוד הוא גם הכתובת וגם המפתח. מפתח ישן (12/14 ביט): XXX-XXX ב-192.168, אחרת XXXX-XXXX-XXX.
+   v63 — מפתח סודי של 32 ביט שהגשר מגריל: ב-192.168 — XXXXX-XXXXX (16 ביט כתובת + 32 ביט מפתח +
+   2 ביט ביקורת), אחרת XXXXX-XXXXX-XXXXX (כתובת, היסט הפורט מ-9662, מפתח, ספרת ביקורת).
+   הגשר מגביל ניסיונות שגויים. אותה פונקציה בדיוק גם בגשר של האפליקציה ובגשר בפייתון. */
 const NET_AB="0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 function netCheck(d){ let s=0; for(let i=0;i<d.length;i++) s+=(i+1)*d[i]; return s%32; }
+function netB32(n,len){ const d=[]; for(let i=0;i<len;i++){ d.unshift(Number(n&31n)); n>>=5n; } return d; }
 function netCodeMake(ip,port,key){
   const p=String(ip).split(".").map(Number);
   if(p.length!==4||p.some(v=>!(v>=0&&v<=255))) return "";
   const off=(+port||9662)-9662; if(off<0||off>15) return "";
-  /* רשת 192.168.x.y — קוד קצר של 6 תווים */
-  if(p[0]===192&&p[1]===168&&off===0&&key>0&&key<0x1000){ let n=(p[2]<<20)|(p[3]<<12)|key; const d=[];
+  key=+key||0; if(!(key>0)) return "";
+  /* רשת 192.168.x.y ומפתח ישן — קוד קצר של 6 תווים */
+  if(key<0x1000&&p[0]===192&&p[1]===168&&off===0){ let n=(p[2]<<20)|(p[3]<<12)|key; const d=[];
     for(let i=0;i<6;i++){ d.unshift(n&31); n>>>=5; } const s=d.map(v=>NET_AB[v]).join(""); return s.slice(0,3)+"-"+s.slice(3); }
-  let n=0n;
-  for(const v of p) n=(n<<8n)|BigInt(v);
-  n=(n<<4n)|BigInt(off); n=(n<<14n)|BigInt((+key||0)&0x3fff);
-  const d=[]; for(let i=0;i<10;i++){ d.unshift(Number(n&31n)); n>>=5n; }
-  d.push(netCheck(d));
+  if(key<0x4000){
+    let n=0n;
+    for(const v of p) n=(n<<8n)|BigInt(v);
+    n=(n<<4n)|BigInt(off); n=(n<<14n)|BigInt(key&0x3fff);
+    const d=netB32(n,10); d.push(netCheck(d));
+    const s=d.map(v=>NET_AB[v]).join("");
+    return s.slice(0,4)+"-"+s.slice(4,8)+"-"+s.slice(8);
+  }
+  const k=BigInt(Math.floor(key)>>>0);
+  if(p[0]===192&&p[1]===168&&off===0){ const d=netB32((BigInt(p[2])<<40n)|(BigInt(p[3])<<32n)|k,10); d[0]+=8*(netCheck(d.slice(1))&3);
+    const s=d.map(v=>NET_AB[v]).join(""); return s.slice(0,5)+"-"+s.slice(5); }
+  let n=0n; for(const v of p) n=(n<<8n)|BigInt(v);
+  n=(n<<4n)|BigInt(off); n=(n<<32n)|k;
+  const d=netB32(n,14); d.push(netCheck(d));
   const s=d.map(v=>NET_AB[v]).join("");
-  return s.slice(0,4)+"-"+s.slice(4,8)+"-"+s.slice(8);
+  return s.slice(0,5)+"-"+s.slice(5,10)+"-"+s.slice(10);
 }
 function netCodeRead(code){
   const s=String(code||"").toUpperCase().replace(/[\s-]/g,"").replace(/[IL]/g,"1").replace(/O/g,"0");
-  if(s.length===6){ let n=0; for(const ch of s){ const v=NET_AB.indexOf(ch); if(v<0) return null; n=n*32+v; }
-    const key=n&0xfff, d=(n>>>12)&255, c=(n>>>20)&255; if(!key) return null;
-    return {host:"192.168."+c+"."+d, port:9662, key}; }
+  const dig=()=>{ const d=[]; for(const ch of s){ const v=NET_AB.indexOf(ch); if(v<0) return null; d.push(v); } return d; };
+  const d=dig(); if(!d) return null;
+  if(s.length===6){ let n=0; for(const v of d) n=n*32+v;
+    const key=n&0xfff, dd=(n>>>12)&255, c=(n>>>20)&255; if(!key) return null;
+    return {host:"192.168."+c+"."+dd, port:9662, key}; }
+  if(s.length===10){ const chk=d[0]>>3; d[0]&=7; if((netCheck(d.slice(1))&3)!==chk) return null;
+    let n=0n; for(const v of d) n=(n<<5n)|BigInt(v);
+    const key=Number(n&0xffffffffn), dd=Number((n>>32n)&255n), c=Number((n>>40n)&255n); if(!key) return null;
+    return {host:"192.168."+c+"."+dd, port:9662, key}; }
+  if(s.length===15){ if(netCheck(d.slice(0,14))!==d[14]) return null;
+    let n=0n; for(let i=0;i<14;i++) n=(n<<5n)|BigInt(d[i]);
+    const key=Number(n&0xffffffffn); n>>=32n;
+    const off=Number(n&15n); n>>=4n;
+    const ip=[]; for(let i=0;i<4;i++){ ip.unshift(Number(n&255n)); n>>=8n; }
+    if(n) return null;
+    return {host:ip.join("."), port:9662+off, key}; }
   if(s.length!==11) return null;
-  const d=[]; for(const ch of s){ const v=NET_AB.indexOf(ch); if(v<0) return null; d.push(v); }
   if(netCheck(d.slice(0,10))!==d[10]) return null;
   let n=0n; for(let i=0;i<10;i++) n=(n<<5n)|BigInt(d[i]);
   const key=Number(n&0x3fffn); n>>=14n;
@@ -11431,6 +11454,8 @@ function netLocalPads(){
 function netPadTaken(i){ return BOTS.some(b=>b.hum&&b.hum.src==="pad"&&b.hum.padIdx===i); }
 
 /* ── חיבור לגשר ── */
+/* v63: חיבור ״sim״/״host״ לגשר במחשב הזה צריך את האסימון הסודי של ההפעלה (באפליקציה — מ-preload; בדפדפן — מוזרק לדף /sim של הגשר) */
+function bbTokQ(){ const t=(window.bbApp&&bbApp.bridgeTok)||window.BB_TOK||""; return t?"&t="+encodeURIComponent(t):""; }
 function netSend(o){ try{ if(NET.sock&&NET.sock.readyState===1){ const s=JSON.stringify(o);
   NET.sock.send(s); NET.tx++; NET.txB+=s.length; } }catch(e){} }
 /* כשחדר או הצטרפות נכשלים — הודעה ברורה על המסך, לא רק שורה קטנה בלוח (אחרת נראה שהכפתור לא עובד) */
@@ -11467,7 +11492,7 @@ function netHost(port){
   netClose("");
   NET.mode="host"; NET.port=+port||NET.port||9662;
   if(!B_BLUE1) buildOpp();
-  netOpenSock("ws://localhost:"+NET.port+"/ws?role=host",()=>netSend({t:"info"}));
+  netOpenSock("ws://localhost:"+NET.port+"/ws?role=host"+bbTokQ(),()=>netSend({t:"info"}));
   netRefresh();
 }
 /* ── אורח ── */
@@ -11490,7 +11515,7 @@ function netOnMsg(data){
   let m=null; try{ m=JSON.parse(data); }catch(e){ return; }
   if(!m||!m.t) return;
   if(NET.mode==="host"){
-    if(m.t==="info"){ NET.lan=m.lan||[]; NET.key=m.key|0; NET.code=m.code||"";
+    if(m.t==="info"){ NET.lan=m.lan||[]; NET.key=(+m.key>>>0)||0; NET.code=m.code||"";
       NET.port=m.port||NET.port; }
     else if(m.t==="gj"){ NET.guests[m.id]={name:m.name||"אורח"}; netAutoSeat(m.id); }
     else if(m.t==="gl"){ netUnseat(m.id); delete NET.guests[m.id]; }
@@ -12714,8 +12739,9 @@ function qrSvg(text,px){
 async function phoneFindUrl(){
   PHN.busy=true; PHN.err="";
   try{
-    const r=await fetch("http://localhost:"+VPAD.port+"/health",{cache:"no-store"});
-    const j=await r.json();
+    let j=null;
+    if(window.bbApp&&bbApp.bridgeStatus){ const b=await bbApp.bridgeStatus(); if(!b||!b.on) throw new Error("off"); j={lan:b.lan,port:b.port}; }
+    else { const r=await fetch("http://localhost:"+VPAD.port+"/health",{cache:"no-store"}); j=await r.json(); }
     if(j&&j.lan&&j.lan.length) PHN.url="http://"+j.lan[0]+":"+(j.port||VPAD.port)+"/";
     else PHN.err="הגשר פועל, אבל לא מצא רשת אלחוטית. חבר את המחשב לאותה רשת של הטלפון.";
   }catch(e){ PHN.err=window.bbApp?"הגשר המובנה לא עלה (אולי start.bat כבר רץ ותופס את הפורט). סגרו אותו והפעילו את האפליקציה מחדש."
