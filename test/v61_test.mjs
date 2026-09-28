@@ -121,9 +121,10 @@ const moved=r.map((b,i)=>Math.hypot(b.x-t0[i].x,b.z-t0[i].z));
 /* בוט מעלית שאין לו מה לאסוף מחכה ליד הבית — זה נכון; הוא צריך לנסוע או להפקיד */
 ok(r.every((b,i)=>!b.on||moved[i]>6||(b.id==='lift'&&b.lifted>0)),'כל הבוטים נוסעים או מפקידים ('+moved.map(x=>x.toFixed(0)).join(',')+'″)');
 const dbl=r.find(b=>b.id==='double'), lf=r.find(b=>b.id==='lift'), tu=r.find(b=>b.id==='turret');
-ok(!dbl||!dbl.on||dbl.shots>=2,'בוט יורה כפול יורה ('+(dbl&&dbl.shots)+')');
-ok(!tu||!tu.on||tu.shots>=1,'בוט צריח יורה ('+(tu&&tu.shots)+')');
-ok(!lf||!lf.on||(lf.shots===0&&lf.lifted>=1),'בוט מעלית לא יורה ומפקיד בפרח ('+(lf&&JSON.stringify(lf))+')');
+/* v63: השומרים (!x||!x.on) גרמו לבדיקה לעבור כשהבוט חסר או כבוי — עכשיו הבוט חייב להיות שם ולפעול */
+ok(!!dbl&&dbl.on&&dbl.shots>=2,'בוט יורה כפול יורה ('+(dbl&&dbl.shots)+')');
+ok(!!tu&&tu.on&&tu.shots>=1,'בוט צריח יורה ('+(tu&&tu.shots)+')');
+ok(!!lf&&lf.on&&lf.shots===0&&lf.lifted>=1,'בוט מעלית לא יורה ומפקיד בפרח ('+(lf&&JSON.stringify(lf))+')');
 await E(()=>{ __sim.matchStop(); });
 
 // 6ב. אסטרטגיית מעלית: לא מאכילים פרח של היריב, ונקטר רק בדקה האחרונה
