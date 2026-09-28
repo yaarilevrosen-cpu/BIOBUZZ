@@ -2597,15 +2597,16 @@ addEventListener("keydown",e=>{
 /* מיקוד: פתיחה ← הפקד הראשון; סגירה ← חזרה לאן שהיה — רק כשפתחו מהמקלדת
    (אחרי לחיצת עכבר המיקוד לא חוזר לכפתור, כדי שרווח ימשיך לירות ולא יפתח שוב את החלון) */
 (function ovlFocusWire(){
-  const prev={}; let kbAt=0, blurEl=null, blurAt=0;
-  addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "||e.key==="Tab") kbAt=performance.now(); },true);
-  addEventListener("pointerdown",()=>{ kbAt=0; },true);
-  addEventListener("focusout",e=>{ blurEl=e.target; blurAt=performance.now(); },true);
+  const prev={}; let kbAt=0, kbEl=null;
+  /* הפעלה מהמקלדת (Enter/רווח על פקד) — זוכרים את הפקד; לחיצת עכבר מבטלת */
+  addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ kbAt=performance.now(); kbEl=e.target&&e.target.nodeType===1&&e.target!==document.body?e.target:null; } },true);
+  addEventListener("pointerdown",()=>{ kbAt=0; kbEl=null; },true);
   const onOpen=o=>{ const m=document.getElementById(o.id); if(!m) return;
     let a=document.activeElement; const now=performance.now();
-    /* הכפתור שפתח מוריד מעצמו את המיקוד (on) — לוקחים אותו אם זה קרה אחרי לחיצת המקלדת */
-    if((!a||a===document.body)&&blurEl&&blurAt>=kbAt) a=blurEl;
-    prev[o.id]=kbAt&&now-kbAt<5000&&a&&a!==document.body&&!m.contains(a)?a:null;
+    /* הכפתור שפתח מוריד מעצמו את המיקוד (on), ויש חלונות שנפתחים אחרי המתנה (צילום לדיווח באג) */
+    if(!a||a===document.body) a=kbEl;
+    prev[o.id]=kbAt&&now-kbAt<20000&&a&&a!==document.body&&!m.contains(a)?a:null;
+    if(prev[o.id]){ kbAt=0; kbEl=null; }
     setTimeout(()=>{ if(!ovlOpen(o)) return; const b=document.activeElement; if(b&&m.contains(b)) return;
       const f=ovlFocusables(m); const first=m.querySelector("[autofocus]")||f[0]; if(first) try{ first.focus({preventScroll:true}); }catch(e){} },40); };
   const onClose=o=>{ const m=document.getElementById(o.id), p=prev[o.id]; prev[o.id]=null; if(!m) return;
