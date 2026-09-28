@@ -18,6 +18,11 @@ r=await E(()=>{ const S=__sim, B=Object.assign({},S.bldById('classic'),{id:'x',i
   const c=S.bldCheck(B); return {ok:c.ok,mot:c.mot,rows:c.rows.filter(x=>!x.ok).map(x=>x.r)}; });
 ok(!r.ok&&r.mot>8&&r.rows.indexOf('R503')>=0&&r.rows.indexOf('R102')>=0,'בנייה חורגת נתפסת: '+r.mot+' מנועים, '+r.rows.join(','));
 
+// 1ב. ״מה משחקים?״ — רק סוגי משחק; הבונה והסקינים ב״הרובוט שלי״ עם שם הרובוט
+r=await E(()=>({cards:[...document.querySelectorAll('#playPanel .ppCard b')].map(b=>b.textContent), name:(document.getElementById('ppBuildName')||{}).textContent,
+  inMine:!!document.querySelector('.ppMine #ppBuild')&&!!document.querySelector('.ppMine #ppSkins')}));
+ok(!r.cards.some(x=>/בונה|סקינים/.test(x))&&r.inMine&&r.name==='BIOBUZZ קלאסי','״מה משחקים?״ רק משחקים ('+r.cards.join(', ')+'); ״הרובוט שלי״: '+r.name);
+
 // 2. החלון
 r=await E(()=>{ document.getElementById('ppBuild').click(); const m=document.getElementById('bldBox');
   return {open:!m.hidden, sel:m.querySelectorAll('[data-bsel]').length, cards:m.querySelectorAll('.bldCard').length, chk:m.querySelectorAll('.bldChk>div').length}; });
@@ -69,6 +74,8 @@ r=await E(()=>{ const S=__sim; S.bldSet(-1,'turret'); S.shotPose(); const y0=S.b
   const v=rec.body.velocity, h=S.mouthFrame(S.aimHive()).c, p=rec.body.position;
   const want=Math.atan2(h.x-p.x,h.z-p.z), got=Math.atan2(v.x,v.z); let e=got-want; e=Math.atan2(Math.sin(e),Math.cos(e));
   return {err:e*180/Math.PI, tur:S.BLD.tur.yaw*180/Math.PI, aim:S.bldAimErr(0)*180/Math.PI}; });
+r.hud=await E(()=>{ const S=__sim; S.advance(0.4,1/120); const e=document.getElementById('mhSys'); return e&&!e.hidden?e.textContent:''; }); r.name=await E(()=>document.getElementById('ppBuildName').textContent);
+ok(/נעול על הכוורת/.test(r.hud)&&r.name==='צריח','שורת הצריח בכרטיס המחסנית: '+r.hud+' · שם הרובוט: '+r.name);
 ok(r.rec!==null&&Math.abs(r.err)<4&&Math.abs(r.tur)>50,'צריח: הרובוט מסובב 70°, הצריח '+(r.tur||0).toFixed(0)+'° והכדור יוצא לכוורת (שגיאה '+(r.err||0).toFixed(1)+'°)');
 r=await E(()=>{ const S=__sim; S.bldSet(-1,'lift'); S.setClip(['pollen']); const rec=S.fire(); return {rec:!!rec, n:S.clip.length}; });
 ok(!r.rec&&r.n===1,'בלי יורה: ירי לא עושה כלום והכדור נשאר');
