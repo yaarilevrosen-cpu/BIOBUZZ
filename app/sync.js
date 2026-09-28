@@ -8,7 +8,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { writeAtomic, readJSON } = require("./store");
+const { writeAtomic, readJSON, validId, KVAT } = require("./store");
 
 const DEFAULT_CLOUD = {
   url: "https://somhwsjbhanyxzrxkyer.supabase.co",
@@ -43,7 +43,11 @@ class Sync {
     this.cloud = Object.assign({}, DEFAULT_CLOUD, readJSON(path.join(dir, "cloud.json"), {}) || {}, opt.cloud || {});
     this.enc = opt.enc || (s => Buffer.from(s, "utf8").toString("base64"));
     this.dec = opt.dec || (s => Buffer.from(s, "base64").toString("utf8"));
+    /* v63: בלי הצפנה אמיתית (לינוקס בלי מחזיק מפתחות) — ההתחברות נשמרת רק בזיכרון, עד היציאה */
+    this.canPersist = opt.canEnc || (() => true);
     this.file = path.join(dir, "account.json");
+    /* v63: האם כבר התחבר מישהו במחשב הזה (בשביל ״של מי הנהגים״ בהתחברות הבאה) */
+    this.hadAcct = ["account.json", "account-team.json", "account-personal.json"].some(f => fs.existsSync(path.join(dir, f)));
     this.migrated = "";
     /* 1.2–1.3 שמרו שני חשבונות (קבוצה/אישי). נשאר אחד: הקבוצה אם יש, אחרת האישי */
     if (!fs.existsSync(this.file)) {
@@ -54,20 +58,27 @@ class Sync {
         else if (has(pr)) fs.renameSync(pr, this.file);
       } catch (e) {}
     }
-    this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null;
+    this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null; this.refreshing = null; this.viewerSwitched = false;
     this.teamFile = path.join(dir, "team-cache.json");
     this.team = readJSON(this.teamFile, null) || null;
     try { const o = readJSON(this.file, null); if (o && o.blob) this.sess = JSON.parse(this.dec(o.blob)); if (o) this.lastSync = o.lastSync || 0; } catch (e) { this.sess = null; }
+    if (this.sess && !(this.sess.user && this.sess.user.id)) this.sess = null;
+    this.sessAtBoot = !!this.sess;
+    /* אסימון גלוי מגרסה קודמת, ועכשיו אין הצפנה — נשאר בזיכרון ונמחק מהדיסק */
+    if (this.sess && !this.canPersist()) this.saveSess();
+    if (this.store && this.store.setViewer) this.store.setViewer(this.uid() || null);
   }
   saveSess() {
     const o = { lastSync: this.lastSync };
-    if (this.sess) o.blob = this.enc(JSON.stringify(this.sess));
-    writeAtomic(this.file, JSON.stringify(o));
+    if (this.sess && this.canPersist()) { const b = this.enc(JSON.stringify(this.sess)); if (b) o.blob = b; }
+    try { writeAtomic(this.file, JSON.stringify(o)); } catch (e) {}
   }
+  /* נהגים של חשבון אחר במחשב הזה (לא מוצגים ולא עולים) */
+  viewer(uid) { if (this.store && this.store.setViewer && this.store.setViewer(uid || null)) this.viewerSwitched = true; }
   uid() { return this.sess && this.sess.user && this.sess.user.id || ""; }
   status() {
     const t = this.team && this.team.team;
-    return { kind: this.kind, loggedIn: !!this.sess, name: this.label(), team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
+    return { kind: this.kind, loggedIn: !!this.sess, name: this.label(), parked: this.store && this.store.parked ? this.store.parked() : 0, persist: !!this.canPersist(), team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url };
   }
   /* ── רשת ── */
@@ -83,25 +94,45 @@ class Sync {
     finally { clearTimeout(t); }
   }
   setSession(d) {
+    const prev = this.uid();
+    /* v63: התוקף לפי השעון של המחשב הזה (expires_in), לא לפי expires_at של השרת — שעון שזז לא מנתק */
+    const ttl = +d.expires_in > 0 ? +d.expires_in : 3600;
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
-      expires_at: d.expires_at ? d.expires_at * 1000 : Date.now() + (d.expires_in || 3600) * 1000,
+      expires_at: Date.now() + ttl * 1000,
       user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "" } };
     this.saveSess();
+    if (this.uid() !== prev) this.viewer(this.uid());
   }
-  async token() {
+  /* v63: רענון אחד בכל רגע (שתי בקשות במקביל לא שורפות את אסימון הרענון) */
+  async token(force) {
     if (!this.sess) throw new Error("לא מחוברים");
-    if (Date.now() < this.sess.expires_at - 60000) return this.sess.access_token;
+    if (!force && Date.now() < this.sess.expires_at - 60000) return this.sess.access_token;
+    if (!this.refreshing) this.refreshing = this._refresh().finally(() => { this.refreshing = null; });
+    return this.refreshing;
+  }
+  async _refresh() {
+    const s = this.sess;
     try {
-      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/token?grant_type=refresh_token", { refresh_token: this.sess.refresh_token });
+      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/token?grant_type=refresh_token", { refresh_token: s.refresh_token });
+      if (this.sess !== s) throw new Error("לא מחוברים");
       this.setSession(data); return this.sess.access_token;
     } catch (e) {
-      if (e.status === 400 || e.status === 401) { this.sess = null; this.saveSess(); throw new Error("צריך להתחבר מחדש"); }
+      if ((e.status === 400 || e.status === 401) && this.sess === s) { this.sess = null; this.saveSess(); this.viewer(null); throw new Error("צריך להתחבר מחדש"); }
       throw e;
     }
   }
-  async rest(method, pathq, body, extraHeaders) {
+  /* בקשה עם אסימון; 401 = האסימון פג (למשל השעון זז) — רענון אחד ועוד ניסיון */
+  async authed(method, url, body, headers, timeoutMs) {
+    const go = tok => this.http(method, url, body, Object.assign({ Authorization: "Bearer " + tok }, headers || {}), timeoutMs);
     const tok = await this.token();
-    return this.http(method, this.cloud.url + "/rest/v1/" + pathq, body, Object.assign({ Authorization: "Bearer " + tok }, extraHeaders || {}), 30000);
+    try { return await go(tok); }
+    catch (e) {
+      if (e.status !== 401 || !this.sess) throw e;
+      return go(await this.token(true));
+    }
+  }
+  async rest(method, pathq, body, extraHeaders) {
+    return this.authed(method, this.cloud.url + "/rest/v1/" + pathq, body, extraHeaders, 30000);
   }
   /* דיווח על באג — מותר רק להוסיף; מחובר = נרשם עם המשתמש, אחרת אנונימי */
   async bugSend(row) {
@@ -131,7 +162,7 @@ class Sync {
   async signOut() {
     this.team = null; this.saveTeam();
     try { if (this.sess) await this.http("POST", this.cloud.url + "/auth/v1/logout", {}, { Authorization: "Bearer " + this.sess.access_token }, 8000); } catch (e) {}
-    this.sess = null; this.lastSync = 0; this.saveSess(); return { ok: true };
+    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null); return { ok: true };
   }
   /* ── סנכרון ── */
   syncNow() {
@@ -152,64 +183,91 @@ class Sync {
     }
     return out;
   }
-  mine(p) { return !(p && p.local); }   /* חשבון אחד — כל הנהגים במחשב, חוץ מנהגים מקומיים */
+  /* v63: רק נהגים של החשבון המחובר (לא מקומיים, ולא של חשבון אחר שהתחבר קודם במחשב הזה) */
+  mine(p) { return !!p && !p.local && !!p.owner && p.owner === this.uid(); }
   own() { return "owner=eq." + encodeURIComponent(this.uid()); }
   async _sync() {
-    const S = this.store; S.flushKv(); const K = this.kind;
+    const S = this.store; S.flushKv(); const K = this.kind; const uid = this.uid();
     const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0 };
+    if (this.viewerSwitched) { this.viewerSwitched = false; res.changedActive = true; }
     const activeBefore = S.meta.active;
     try { await this.namePull(await this.myTeamLabel()); } catch (e) {}
-    const rows = await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own());
+    const rows = (await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own())).filter(r => r && validId(r.id));
     const R = new Map(rows.map(r => [r.id, r]));
+    if (this.uid() !== uid) throw new Error("לא מחוברים");
+    /* v63: של מי הנהגים. במחשב שעוד לא התחבר אליו אף חשבון (או שהחשבון הזה כבר היה מחובר בו כשעדכנו) — כל הנהגים הם של החשבון.
+       אחרת — רק נהג שכבר קיים בחשבון הזה, או שנוצר בזמן שהחשבון הזה מחובר. */
+    const claimAll = !S.meta.acctSeen && (this.sessAtBoot || !this.hadAcct);
+    let claimed = false;
+    for (const p of S.meta.list) if (!p.local && !p.owner && (claimAll || R.has(p.id))) { p.owner = uid; claimed = true; }
+    for (const t of S.meta.tombs) if (!t.owner && claimAll) { t.owner = uid; claimed = true; }
+    if (!S.meta.acctSeen || claimed) { S.meta.acctSeen = true; S.saveMeta(); }
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */
     const live = rows.filter(r => !r.deleted);
-    if (live.length && S.meta.list.length === 1 && !S.meta.list[0].local && !R.has(S.meta.list[0].id) && S.isBlank(S.meta.list[0].id)) {
-      const blank = S.meta.list[0].id;
+    const vis = S.vis();
+    if (live.length && vis.length === 1 && this.mine(vis[0]) && !R.has(vis[0].id) && S.isBlank(vis[0].id)) {
+      const blank = vis[0].id;
       S.applyRemoteMeta(live[0], K); S.meta.active = live[0].id; S.saveMeta();
       S.removeProfile(blank, { noTomb: true }); S.loadKv(); res.profilesChanged = true;
     }
-    /* מחיקות מקומיות → לענן */
+    /* מחיקות מקומיות → לענן (רק של החשבון הזה; של חשבון אחר מחכות לו) */
     for (const t of S.meta.tombs.slice()) {
+      if (t.owner && t.owner !== uid) continue;
       const r = R.get(t.id);
-      if (!r || !r.deleted) await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
+      if (t.owner && (!r || !r.deleted)) await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
         { Prefer: "resolution=merge-duplicates,return=minimal" });
       S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
     }
     S.saveMeta();
-    const tombIds = new Set();
     /* מחיקות מהענן → כאן */
-    for (const r of rows) if (r.deleted) { tombIds.add(r.id); if (S.meta.list.some(p => p.id === r.id && this.mine(p))) { if (S.removeFromRemote(r.id)) res.profilesChanged = true; } }
+    for (const r of rows) if (r.deleted) { if (S.meta.list.some(p => p.id === r.id && this.mine(p))) { if (S.removeFromRemote(r.id)) res.profilesChanged = true; } }
     /* נהגים שיש רק בענן → כאן */
-    for (const r of live) if (!S.meta.list.some(p => p.id === r.id)) { S.applyRemoteMeta(r, K); res.profilesChanged = true; res.pulledProfiles++; }
-    /* השוואה אחד מול אחד */
+    for (const r of live) if (!S.meta.list.some(p => p.id === r.id)) { if (S.applyRemoteMeta(r, K)) { res.profilesChanged = true; res.pulledProfiles++; } }
+    /* השוואה אחד מול אחד. ההגדרות — איחוד לפי מפתח (v63) */
     const push = [];
     for (const p of S.meta.list.filter(q => this.mine(q))) {
       const r = R.get(p.id);
       if (r && r.deleted) continue;
-      const pm = p.metaAt || 0, pk = p.kvAt || 0, rm = r ? r.meta_at || 0 : -1, rk = r ? r.kv_at || 0 : -1;
+      const pm = p.metaAt || 0, rm = r ? r.meta_at || 0 : -1, rk = r ? +r.kv_at || 0 : -1;
       if (r && rm > pm) { S.applyRemoteMeta(r, K); res.profilesChanged = true; }
-      if (r && rk > pk) {
+      let kvPush = !r;
+      if (r && rk > 0 && rk !== (p.kvSeen || 0)) {
         const { data } = await this.rest("GET", "bb_profiles?select=kv,kv_at&" + this.own() + "&id=eq." + encodeURIComponent(p.id));
-        if (data && data[0]) { S.applyRemoteKv(p.id, data[0].kv || {}, data[0].kv_at || rk); if (p.id === S.meta.active) res.changedActive = true; res.pulledProfiles++; }
-      }
-      const pushMeta = !r || pm > rm, pushKv = !r || pk > rk;
-      if (pushMeta || pushKv) {
         const q = S.meta.list.find(x => x.id === p.id);
+        if (q && data && data[0]) {
+          const at = +data[0].kv_at || rk;
+          const m = S.mergeRemoteKv(p.id, data[0].kv || {}, at);
+          q.kvSeen = at;
+          if (m.changed) { if (p.id === S.meta.active) res.changedActive = true; res.pulledProfiles++; }
+          if (m.needPush) kvPush = true;
+        }
+      }
+      const q = S.meta.list.find(x => x.id === p.id); if (!q) continue;
+      if ((q.kvAt || 0) > (q.kvDone || 0)) kvPush = true;
+      const pushMeta = !r || pm > rm;
+      if (pushMeta || kvPush) {
         const row = { id: q.id, name: q.name, emoji: q.emoji || null, color: q.color || null, created: q.created || null, meta_at: q.metaAt || 0, deleted: false };
-        if (pushKv) { row.kv = S.kvSynced(q.id); row.kv_at = q.kvAt || 0; }
-        else { row.kv_at = r.kv_at; }
-        push.push(row);
+        let done = null;
+        if (kvPush) {
+          const at = Math.max(Date.now(), rk + 1); done = q.kvAt || 0;
+          row.kv = S.kvSynced(q.id); row.kv[KVAT] = JSON.stringify({ k: at, t: S.katSynced(q.id) }); row.kv_at = at;
+        } else { row.kv_at = r.kv_at; }
+        push.push({ row, done });
       }
     }
+    S.saveMeta();
     /* שורה אחת לכל נהג (שורות בלי kv לא יכולות להיות באותה בקשה עם שורות עם kv) */
-    for (const row of push) {
+    for (const { row, done } of push) {
       await this.rest("POST", "bb_profiles?on_conflict=owner,id", [row], { Prefer: "resolution=merge-duplicates,return=minimal" });
+      const q = S.meta.list.find(x => x.id === row.id);
+      if (q && row.kv) { q.kvSeen = row.kv_at; q.kvDone = Math.max(q.kvDone || 0, done); }
       res.pushedProfiles++;
     }
+    S.saveMeta();
     /* מאצ׳ים — איחוד */
     const remoteM = await this.remoteAll("bb_matches", "profile_id,at", this.own());
     const rset = new Map();
-    for (const m of remoteM) { if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
+    for (const m of remoteM) { if (!validId(m.profile_id)) continue; if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
     for (const p of S.meta.list.filter(q => this.mine(q))) {
       const local = S.matches(p.id); const lset = new Set(local.map(m => +m.at));
       const rs = rset.get(p.id) || new Set();
@@ -219,11 +277,11 @@ class Sync {
         await this.rest("POST", "bb_matches?on_conflict=owner,profile_id,at", chunk, { Prefer: "resolution=ignore-duplicates,return=minimal" });
         res.pushedMatches += chunk.length;
       }
-      const down = [...rs].filter(a => !lset.has(a));
+      const down = [...rs].filter(a => isFinite(a) && !lset.has(a));
       for (let i = 0; i < down.length; i += 100) {
         const ats = down.slice(i, i + 100);
         const { data } = await this.rest("GET", "bb_matches?select=at,data&" + this.own() + "&profile_id=eq." + encodeURIComponent(p.id) + "&at=in.(" + ats.join(",") + ")");
-        const got = (data || []).map(x => x.data).filter(m => m && isFinite(m.at)).sort((a, b) => a.at - b.at);
+        const got = (data || []).map(x => x.data).filter(m => m && typeof m === "object" && isFinite(m.at)).sort((a, b) => a.at - b.at);
         res.pulledMatches += S.appendMatches(p.id, got);
       }
     }
@@ -239,8 +297,7 @@ class Sync {
   /* מושך את השם מהשרת; אם עוד אין (חשבון מלפני v60) — קובע פעם אחת: השם שכבר מופיע בקבוצה, אחרת הנהג הפעיל, אחרת תחילת המייל */
   async namePull(teamLabel) {
     if (!this.sess) return "";
-    const tok = await this.token();
-    const { data } = await this.http("GET", this.cloud.url + "/auth/v1/user", undefined, { Authorization: "Bearer " + tok });
+    const { data } = await this.authed("GET", this.cloud.url + "/auth/v1/user", undefined, {});
     let n = userName(data);
     if (!n) {
       const a = this.store.meta.list.find(p => p.id === this.store.meta.active);
@@ -255,8 +312,7 @@ class Sync {
     n = String(n || "").replace(/\s+/g, " ").trim().slice(0, 40);
     if (!n) return { ok: false, why: "צריך שם" };
     try {
-      const tok = await this.token();
-      await this.http("PUT", this.cloud.url + "/auth/v1/user", { data: { name: n } }, { Authorization: "Bearer " + tok });
+      await this.authed("PUT", this.cloud.url + "/auth/v1/user", { data: { name: n } }, {});
       this.sess.user.name = n; this.saveSess();
       if (this.team && this.team.members) { try { await this.rpc("bb_team_label", { p_label: n }); this.team.members.forEach(x => { if (x.me) x.label = n; }); this.saveTeam(); } catch (e) {} }
       return { ok: true, name: n };
@@ -266,15 +322,25 @@ class Sync {
     if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
     try {
       if (what === "create") await this.rpc("bb_team_create", { p_name: a || "", p_num: b || "", p_label: this.label() });
-      else if (what === "join") await this.rpc("bb_team_join", { p_code: String(a || "").trim().toUpperCase(), p_label: this.label() });
+      else if (what === "join") {
+        /* v63: קוד שגוי מחזיר null (כדי שהשרת יספור ניסיונות), ולא שגיאה */
+        const t = await this.rpc("bb_team_join", { p_code: String(a || "").trim().toUpperCase(), p_label: this.label() });
+        if (!t || (Array.isArray(t) && !t.length) || (typeof t === "object" && !Array.isArray(t) && !t.id)) return { ok: false, why: "אין קבוצה עם הקוד הזה — בדקו שוב" };
+      }
       else if (what === "leave") await this.rpc("bb_team_leave");
       else if (what === "update") await this.rpc("bb_team_update", { p_name: a || "", p_num: b || "" });
+      /* v63: רק מי שפתח את הקבוצה — הוצאת חבר והחלפת קוד */
+      else if (what === "kick") await this.rpc("bb_team_kick", { p_uid: String(a || "") });
+      else if (what === "rotate") await this.rpc("bb_team_rotate_code");
+      else return { ok: false, why: "?" };
       this.team = null; this.saveTeam();
       await this.teamPull();
       return { ok: true, team: this.status().team };
     } catch (e) {
       const m = String(e.message || "");
-      return { ok: false, why: /code not found/.test(m) ? "אין קבוצה עם הקוד הזה — בדקו שוב" : heb(m) };
+      return { ok: false, why: /code not found/.test(m) ? "אין קבוצה עם הקוד הזה — בדקו שוב"
+        : /too many/.test(m) ? "יותר מדי ניסיונות עם קוד שגוי — נסו שוב בעוד שעה"
+        : /only the team owner|not the owner/.test(m) ? "רק מי שפתח את הקבוצה יכול לעשות את זה" : heb(m) };
     }
   }
   async myTeamLabel() {
@@ -293,19 +359,27 @@ class Sync {
     /* השם שלי בקבוצה = שם החשבון (אחד בכל המחשבים) */
     const mine = mem.find(m => m.uid === me), want = String(this.label() || "").slice(0, 40);
     if (mine && want && mine.label !== want) { try { await this.rpc("bb_team_label", { p_label: want }); mine.label = want; T.members.forEach(x => { if (x.me) x.label = want; }); } catch (e) {} }
-    const others = mem.filter(m => m.uid !== me).map(m => m.uid);
+    const others = mem.filter(m => m.uid !== me).map(m => m.uid).filter(u => /^[0-9a-f-]{36}$/i.test(String(u)));
     const alive = new Set(others);
     for (const k of Object.keys(T.profiles)) if (!alive.has(T.profiles[k].owner)) { delete T.profiles[k]; delete T.matches[k]; }
+    /* v63: ״מאיפה להמשיך״ לכל חבר בנפרד — חבר חדש מקבל את כל ההיסטוריה שלו */
+    if (!T.sinceBy || typeof T.sinceBy !== "object") T.sinceBy = {};
+    delete T.since;
+    for (const k of Object.keys(T.sinceBy)) if (!alive.has(k)) delete T.sinceBy[k];
     if (others.length) {
       const inq = "owner=in.(" + others.join(",") + ")";
       const profs = await this.remoteAll("bb_profiles", "owner,id,name,emoji,color,deleted", inq);
-      for (const r of profs) T.profiles[r.owner + "/" + r.id] = r;
-      const ms = await this.remoteAll("bb_matches", "owner,profile_id,at,data,created_at", inq + (T.since ? "&created_at=gte." + encodeURIComponent(T.since) : ""));
+      for (const r of profs) if (r && validId(r.id)) T.profiles[r.owner + "/" + r.id] = r;
       let pulled = 0;
-      for (const m of ms) {
-        const k = m.owner + "/" + m.profile_id; const l = T.matches[k] || (T.matches[k] = []);
-        if (m.data && !l.some(x => +x.at === +m.at)) { l.push(m.data); pulled++; }
-        if (!T.since || m.created_at > T.since) T.since = m.created_at;
+      for (const u of others) {
+        const since = T.sinceBy[u] || "";
+        const ms = await this.remoteAll("bb_matches", "owner,profile_id,at,data,created_at", "owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : ""));
+        for (const m of ms) {
+          if (!m || !validId(m.profile_id)) continue;
+          const k = m.owner + "/" + m.profile_id; const l = T.matches[k] || (T.matches[k] = []);
+          if (m.data && !l.some(x => +x.at === +m.at)) { l.push(m.data); pulled++; }
+          if (m.created_at && (!T.sinceBy[u] || m.created_at > T.sinceBy[u])) T.sinceBy[u] = m.created_at;
+        }
       }
       for (const k in T.matches) if (T.matches[k].length > 3000) T.matches[k] = T.matches[k].slice(-3000);
       T.pulled = pulled;
