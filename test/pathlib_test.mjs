@@ -77,5 +77,5 @@ await page.screenshot({path:'pathlib.png'});
 // המסלול שנטען רץ
 r=await E(()=>{ const res=__sim.pathRun(); return {done:res.done, why:res.why}; });
 ok(r.done,'המסלול אחרי העריכה רץ עד הסוף ('+r.why+')');
-ok(errs.filter(e=>!/WebSocket/.test(e)).length===0,'אין שגיאות: '+errs.slice(0,2).join(' | '));
+ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
 await browser.close(); done('pathlib_test');
