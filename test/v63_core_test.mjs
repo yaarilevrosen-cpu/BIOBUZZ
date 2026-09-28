@@ -154,6 +154,22 @@ const E=(f,a)=>page.evaluate(f,a);
   await E(()=>{ __sim.pathClear&&__sim.pathClear(); });
 }
 
+/* 18 · באוטונומי בוחרים פרח/כדור רק בצד שלי — אין G402 במאצ׳ים של בוטים */
+{
+  const r=await E(()=>{ const S=__sim, I=S.I; const res=[];
+    for(let m=0;m<4;m++){ S.MT.cd=0; S.gameStart(true); S.matchStart(); let badT=0, deep=0;
+      while(S.MATCH.on&&S.MATCH.phase==='AUTO'){ S.advance(0.25,1/60);
+        for(const b of S.BOTS){ if(!b.on) continue; const sg=b.ally==='red'?-1:1;
+          const t=b.target; if(t&&t.x!=null&&t.x*sg<0) badT++;
+          deep=Math.max(deep,-I(b.body.position.x)*sg); } }
+      const g402=S.REF.log.filter(e=>e.rule==='G402').length; S.matchStop(); res.push({badT,deep:+deep.toFixed(1),g402}); }
+    return res; });
+  const bad=r.reduce((a,q)=>a+q.badT,0), g=r.reduce((a,q)=>a+q.g402,0);
+  ok(bad===0, `באוטונומי אין יעד בצד של היריב (${JSON.stringify(r)})`);
+  ok(g===0, `אין G402 בארבעה מאצ׳ים של בוטים (${g})`);
+  await E(()=>__sim.matchStop());
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');

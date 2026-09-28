@@ -4250,10 +4250,13 @@ function flowerCount(f){
     if(y>0.3&&y<P.flowTop&&Math.hypot(x-f.x,z-f.z)<f.r+0.8) n++; }
   return n;
 }
+/* v63: באוטונומי לא חוצים את קו האמצע (G402) — יעד רק בצד של הברית שלי (אדום x≤0, כחול x≥0) */
+function autoOwnSide(ally,x){ if(!(MATCH.on&&MATCH.phase==="AUTO")) return true;
+  return x*(ally==="red"?-1:1)>=0; }
 function nearestFlower(){
   let best=null,bd=1e9;
   for(const f of flowers){
-    if(!flowerCount(f)) continue;
+    if(!flowerCount(f)||!autoOwnSide(myAlly(),f.x)) continue;
     const d=Math.hypot(I(botBody.position.x)-f.x,I(botBody.position.z)-f.z);
     if(d<bd){bd=d;best=f;}
   }
@@ -4266,7 +4269,7 @@ function nearestLooseBall(){
     if(y>5) continue;
     let inFlower=false;
     for(const f of flowers) if(Math.hypot(x-f.x,z-f.z)<f.r+0.8){inFlower=true;break;}
-    if(inFlower) continue;
+    if(inFlower||!autoOwnSide(myAlly(),x)) continue;
     const d=Math.hypot(I(botBody.position.x)-x,I(botBody.position.z)-z);
     if(d<bd){bd=d;best={x:x,z:z,loose:true};}
   }
@@ -5580,7 +5583,7 @@ function aiFlowerFor(b){
   const R=BRAIN.on?brainRobots():[];
   for(const fl of flowers){
     const cnt=flowerCount(fl);
-    if(!cnt||banned(fl)) continue;
+    if(!cnt||banned(fl)||!autoOwnSide(b.ally,fl.x)) continue;
     /* לא רצים לפרח שרובוט אחר כבר עובד עליו */
     if(BOTS.some(o=>o!==b&&o.on&&o.target===fl)) continue;
     const a=approach(fl);
@@ -5606,6 +5609,7 @@ function aiFlowerFor(b){
     const y=I(ball.body.position.y);
     if(y>5||!aiCanEat(ball.kind,b)||banned(ball)) continue;
     const bx=I(ball.body.position.x), bz=I(ball.body.position.z);
+    if(!autoOwnSide(b.ally,bx)) continue;
     cands.push({x:bx,z:bz,loose:true,ref:ball,air:Math.hypot(px-bx,pz-bz)});
   }
   cands.sort((u,v)=>u.air-v.air);
@@ -6112,7 +6116,9 @@ function brainSpotCost(b,s,R){
 }
 /* בוחר עמדה, ומחליף רק אם החדשה טובה בהרבה — אחרת הוא ירקוד בין שתיים */
 function brainPickSpot(b){
-  const L=brainSpots(aiHive(b)); if(!L.length) return null;
+  let L=brainSpots(aiHive(b)); if(!L.length) return null;
+  /* v63: באוטונומי עמדת ירי רק בצד שלי, עם מרווח מקו האמצע (G402) */
+  if(MATCH.on&&MATCH.phase==="AUTO"){ const sg=b.ally==="red"?-1:1, own=L.filter(s=>s.x*sg>=6); if(own.length) L=own; }
   const R=brainRobots();
   let best=null,bc=1e9;
   for(const s of L){ const c=brainSpotCost(b,s,R); if(c<bc){ bc=c; best=s; } }
