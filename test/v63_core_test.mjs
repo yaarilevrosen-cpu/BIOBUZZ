@@ -98,6 +98,44 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(fired===0,'שום קוד מהרשת לא רץ');
 }
 
+/* 2 · ייצוא RoadRunner: סיבוב ולא שיקוף, פנייה שמאלה = כיוון עולה, הלוך־חזור זהה, דטרמיננטה +1 */
+{
+  const r=await E(()=>{ const S=__sim, out={rots:{}};
+    const pts=[{x:-60,z:40,h:Math.PI/2,act:'none',start:true},{x:-40,z:40,h:Math.PI/2,act:'none'},{x:-30,z:30,h:Math.PI,act:'none'}];
+    for(const rot of [0,90,180,270]){ S.rrSetRot(rot);
+      const java=S.pathJava(pts);
+      const hs=[...java.matchAll(/new Pose2d\([^)]*?Math\.toRadians\((-?[\d.]+)\)\)/g)].map(m=>+m[1]);
+      let dh=hs[hs.length-1]-hs[0]; dh=((dh+540)%360)-180;
+      /* דטרמיננטה של המיפוי (x,z) → (RR.x,RR.y) */
+      const o=S.rrFromSim(0,0), ex=S.rrFromSim(1,0), ez=S.rrFromSim(0,1);
+      const det=(ex.x-o.x)*(ez.y-o.y)-(ex.y-o.y)*(ez.x-o.x);
+      /* det בצירים הימניים (z,x): */
+      const detZX=(ez.x-o.x)*(ex.y-o.y)-(ez.y-o.y)*(ex.x-o.x);
+      /* הלוך־חזור */
+      let maxErr=0; for(let i=0;i<20;i++){ const x=Math.random()*140-70, z=Math.random()*140-70, h=Math.random()*6.2-3.1;
+        const q=S.rrFromSim(x,z,h), b=S.rrToSim(q.x,q.y,q.h); const dy=Math.atan2(Math.sin(b.yaw-h),Math.cos(b.yaw-h));
+        maxErr=Math.max(maxErr,Math.abs(b.x-x),Math.abs(b.z-z),Math.abs(dy)); }
+      /* יומן אודומטריה בצירי RR → חוזר לנקודות הסימולטור */
+      let csv='t,x,y,heading\n'; pts.forEach((p,i)=>{ const q=S.rrFromSim(p.x,p.z,p.h); csv+=(i*0.5)+','+q.x+','+q.y+','+q.h+'\n'; });
+      const odo=S.odoParse(csv,'in','rad'); let odoErr=0; odo.forEach((p,i)=>{ odoErr=Math.max(odoErr,Math.abs(p.x-pts[i].x),Math.abs(p.z-pts[i].z),Math.abs(Math.atan2(Math.sin(p.yaw-pts[i].h),Math.cos(p.yaw-pts[i].h)))); });
+      /* סיבוב שמאלה בסימולטור (yaw עולה) = θ עולה ב-RR */
+      const h1=S.rrFromSim(0,0,0.1).h-S.rrFromSim(0,0,0).h;
+      /* נסיעה קדימה בסימולטור = נסיעה בכיוון θ ב-RR: (cos θ, sin θ) */
+      let fwdErr=0; for(const yaw of [0,0.7,2,-2.5]){ const a=S.rrFromSim(0,0,yaw), b=S.rrFromSim(Math.sin(yaw),Math.cos(yaw));
+        fwdErr=Math.max(fwdErr,Math.abs(b.x-a.x-Math.cos(a.h)),Math.abs(b.y-a.y-Math.sin(a.h))); }
+      out.rots[rot]={dh,detZX,maxErr,odoErr,h1,fwdErr,hasMap:java.indexOf(S.rrMapText())>=0};
+    }
+    S.rrSetRot(0); out.stored=localStorage.getItem('bbRRrot1'); return out; });
+  for(const rot of [0,90,180,270]){ const q=r.rots[rot];
+    ok(Math.abs(q.dh-90)<0.5, `סיבוב ${rot}°: פנייה שמאלה בסימולטור = כיוון RR עולה ב-90° (${q.dh})`);
+    ok(Math.abs(q.detZX-1)<1e-9, `סיבוב ${rot}°: דטרמיננטה +1 (סיבוב, לא שיקוף)`);
+    ok(q.maxErr<1e-9&&q.odoErr<1e-6, `סיבוב ${rot}°: ייצוא←ייבוא זהה (${q.maxErr.toExponential(1)}, ${q.odoErr.toExponential(1)})`);
+    ok(q.hasMap, `סיבוב ${rot}°: המיפוי כתוב בראש הקוד`);
+    ok(q.fwdErr<1e-9, `סיבוב ${rot}°: ״קדימה״ של הרובוט = (cos θ, sin θ) ב-RR`);
+  }
+  ok(r.stored==='0','הבחירה נשמרת ב-bbRRrot1');
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');
