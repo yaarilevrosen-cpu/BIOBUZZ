@@ -135,13 +135,20 @@ fetch("https://api.github.com/repos/"+REPO+"/releases/latest").then(r=>r.ok?r.js
 const CLOUD="https://somhwsjbhanyxzrxkyer.supabase.co", ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNvbWh3c2piaGFueXh6cnhreWVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MzAyNjUsImV4cCI6MjEwNjAwNjI2NX0.xwEQUo_RXVyMJ9_UJ7FJzKq5CHMIN5EuLM25UEaFIiE";
 (function(){
   const h=new URLSearchParams((location.hash||"").replace(/^#/,"")), q=new URLSearchParams(location.search);
-  const type=h.get("type")||q.get("type"), err=h.get("error_description")||q.get("error_description"), tok=h.get("access_token");
-  if(!type&&!err) return;
+  const type=h.get("type")||q.get("type"), tok=h.get("access_token");
+  const err=h.get("error")||q.get("error")||h.get("error_code")||q.get("error_code")||h.get("error_description")||q.get("error_description");
+  const code=String(h.get("error_code")||q.get("error_code")||h.get("error")||q.get("error")||"");
+  /* only known link types get a message; anything else in the address is ignored (never shown as text) */
+  const KNOWN=["signup","email","email_change","invite","magiclink","recovery"];
+  if(!err&&!KNOWN.includes(type)) return;
   const box=document.getElementById("auth"), T=document.getElementById("aT"), P=document.getElementById("aP");
   box.classList.add("show");
   history.replaceState(null,"",location.pathname);   /* don't leave the token in the address bar */
   if(err){ box.classList.add("err"); T.textContent="⚠ This link didn't work";
-    P.textContent=err.replace(/\+/g," ")+". Links expire after a while — go back to the app and ask for a new one."; return; }
+    /* fixed messages only — text from the address is never displayed */
+    const MSG={otp_expired:"This link has expired.", access_denied:"This link is not valid any more.", flow_state_expired:"This link has expired.",
+      flow_state_not_found:"This link was already used or is not valid.", email_address_invalid:"The email address is not valid."};
+    P.textContent=(MSG[code]||"This link is not valid.")+" Links expire after a while — go back to the app and ask for a new one."; return; }
   if(type==="recovery"&&tok){
     T.textContent="Choose a new password"; P.textContent="Then go back to the BIOBUZZ app and sign in with it.";
     const f=document.getElementById("aForm"), m=document.getElementById("aMsg"); f.hidden=false;
@@ -155,6 +162,7 @@ const CLOUD="https://somhwsjbhanyxzrxkyer.supabase.co", ANON="eyJhbGciOiJIUzI1Ni
         else { const j=await r.json().catch(()=>({})); m.className="bad"; m.textContent="⚠ "+(j.msg||j.message||("Error "+r.status)); } }
       catch(e){ m.className="bad"; m.textContent="⚠ No internet connection."; } });
     return; }
+  if(type==="recovery"){ box.classList.add("err"); T.textContent="⚠ This link didn't work"; P.textContent="This link is not valid. Go back to the app and ask for a new one."; return; }
   T.textContent="✅ Your email is confirmed";
   P.textContent="Your BIOBUZZ account is ready. Go back to the app and sign in with your email and password.";
 })();
