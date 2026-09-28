@@ -109,7 +109,7 @@ r=await win.evaluate(()=>bbApp.aiStatus());
 if(enc) ok(r.has&&r.ok&&r.saved&&REQ.length===nReq,'אחרי הפעלה מחדש: המפתח נשמר מוצפן, בלי לפנות שוב לגוגל');
 else ok(!r.has,'אין הצפנה במחשב הזה: המפתח לא נשמר לדיסק (רק עד היציאה)');
 // 8. מחיקה
-r=await win.evaluate(()=>bbApp.aiClear()); ok(!r.has&&!fs.existsSync||!r.has,'מחיקת מפתח');
+r=await win.evaluate(()=>bbApp.aiClear()); ok(!r.has,'מחיקת מפתח');
 ok(!fs.existsSync(path.join(DATA,'ai-key.bin')),'הקובץ המוצפן נמחק');
 ok(errs.length===0,'בלי שגיאות בדף '+errs.slice(0,2).join(' | '));
 await app.close(); srv.close(); fs.rmSync(DATA,{recursive:true,force:true});

@@ -49,12 +49,15 @@ await new Promise(r=>setTimeout(r,1500));
 try{
   const H=await open(), G=await open();
   await H.page.evaluate(()=>{ __sim.netHost(9662); });
-  await H.page.waitForFunction(()=>__sim.NET.sock&&__sim.NET.sock.readyState===1&&__sim.NET.key,null,{timeout:20000});
+  await H.page.waitForFunction(()=>__sim.NET.sock&&__sim.NET.sock.readyState===1&&__sim.NET.key,null,{timeout:60000});
   const key=await H.page.evaluate(()=>__sim.NET.key);
   await G.page.evaluate(k=>{ __sim.netJoin('127.0.0.1:9662#'+k,'דני'); },key);
-  await G.page.waitForFunction(()=>__sim.NET.seat!==null&&__sim.NET.seat!==undefined,null,{timeout:30000});
-  ok(true,'האורח התיישב');
-  await G.page.waitForFunction(()=>__sim.NET.rtt>0,null,{timeout:30000}).catch(()=>{});
+  /* המתנה שמחזירה אמת/שקר — פקיעת זמן היא כישלון גלוי, לא נבלעת */
+  const until=(P,f,t)=>P.waitForFunction(f,null,{timeout:t}).then(()=>true,()=>false);
+  const seated=await until(G.page,()=>__sim.NET.seat!==null&&__sim.NET.seat!==undefined,30000);
+  const seat=await G.page.evaluate(()=>__sim.NET.seat);
+  ok(seated&&Number.isInteger(seat)&&seat>=1,'האורח התיישב (מושב '+seat+')');
+  ok(await until(G.page,()=>__sim.NET.rtt>0,30000),'האורח קיבל מדידת השהיה ראשונה');
   const trace=[];
   for(let i=0;i<8;i++){ await G.page.waitForTimeout(2500); trace.push(Math.round(await G.page.evaluate(()=>__sim.NET.rtt||0))); }
   console.log('    השהיה לאורך זמן:',trace.join(' → '));
@@ -62,15 +65,15 @@ try{
   /* בסביבת הבדיקה כל פריים של דפדפן תוכנה לוקח שנייה-שתיים, וההודעה מחכה לסוף הפריים —
      לכן כאן בודקים שהמדידה קיימת ועקבית, לא שהיא קטנה. במחשב אמיתי זה מילישניות. */
   ok(grtt>0&&grtt<15000&&trace.every(v=>v>0),'האורח מודד השהיה ('+grtt.toFixed(0)+' מ״ש בסביבת הבדיקה)');
-  await H.page.waitForFunction(()=>Object.values(__sim.NET.guests).some(g=>g.rtt>0),null,{timeout:30000}).catch(()=>{});
+  ok(await until(H.page,()=>Object.values(__sim.NET.guests).some(g=>g.rtt>0),30000),'המארח קיבל מדידת השהיה של האורח');
   const hr=await H.page.evaluate(()=>{ __sim.netRefresh(); return {g:Object.values(__sim.NET.guests).map(g=>g.rtt||0), html:document.getElementById('oNet').textContent}; });
   ok(hr.g.some(v=>v>0)&&/השהיה/.test(hr.html),'המארח רואה את ההשהיה של כל אורח ('+hr.g.map(v=>Math.round(v)).join(',')+')');
   await H.page.evaluate(()=>{ const b=__sim.BOTS.find(o=>o.hum&&o.hum.src==='net'); __sim.humWarn(b,'שחרר! בדיקה','coach'); });
-  await G.page.waitForFunction(()=>(__sim.HUM.log||[]).some(e=>/בדיקה/.test(e.txt)),null,{timeout:20000}).catch(()=>{});
+  ok(await until(G.page,()=>(__sim.HUM.log||[]).some(e=>/בדיקה/.test(e.txt)),20000),'התראת השופט הגיעה לאורח בזמן');
   const gl=await G.page.evaluate(()=>({log:(__sim.HUM.log||[]).map(e=>e.txt), toast:document.getElementById('refToast').textContent}));
   ok(gl.log.some(t=>/בדיקה/.test(t))&&/בדיקה/.test(gl.toast),'התראה של השופט מגיעה לאורח ומוצגת אצלו');
   await H.page.evaluate(()=>{ const b=__sim.BOTS.find(o=>o.hum&&o.hum.src==='net'); b.shots=3; b.hits=2; __sim.mpMatchEnd(); });
-  await G.page.waitForFunction(()=>!document.getElementById('mpSum').hidden,null,{timeout:20000}).catch(()=>{});
+  ok(await until(G.page,()=>!document.getElementById('mpSum').hidden,20000),'חלון הסיכום נפתח אצל האורח בזמן');
   const gs=await G.page.evaluate(()=>({hid:document.getElementById('mpSum').hidden, t:document.getElementById('mpSum').textContent}));
   ok(!gs.hid&&/דני/.test(gs.t),'הסיכום מגיע לאורח עם השם שלו');
   try{ await G.page.screenshot({path:'mp-guest.png',timeout:60000}); }catch(e){}
