@@ -14,6 +14,21 @@ const BASE = () => (process.env.BIOBUZZ_GEMINI_BASE || "https://generativelangua
 const SKIP = /embed|aqa|imagen|image|tts|audio|live|veo|native|vision-only|learnlm|robotics|computer-use/i;
 /* פורמט חופשי: מפתחות ישנים מתחילים ב-AIza, חדשים ב-AQ. (עם נקודה). גוגל עצמה מכריעה ב״בדוק״ */
 const KEYRE = /^[A-Za-z0-9_.\-]{30,300}$/;
+/* v63: הסיכום שנשלח למאמן — רק מספרים, בוליאנים ומחרוזות קצרות. שמות (של הנהג ושל חברי הקבוצה) נחתכים ומנוקים,
+   כדי ששם של חבר לא יהיה ״הוראה״ למודל, והגודל מוגבל */
+const NAMEK = /^(name|driver|team)$/;
+function cleanStr(v, max) { return String(v).replace(/[\u0000-\u001f\u007f<>{}\[\]`\\|]/g, " ").replace(/\s+/g, " ").trim().slice(0, max); }
+function cleanSummary(v, key, depth) {
+  depth = depth || 0;
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return isFinite(v) ? v : null;
+  if (typeof v === "boolean") return v;
+  if (typeof v === "string") return cleanStr(v, NAMEK.test(key || "") ? 24 : 60);
+  if (depth > 5) return null;
+  if (Array.isArray(v)) return v.slice(0, 40).map(x => cleanSummary(x, key, depth + 1));
+  if (typeof v === "object") { const o = {}; let n = 0; for (const k of Object.keys(v)) { if (n++ >= 80) break; o[cleanStr(k, 40)] = cleanSummary(v[k], k, depth + 1); } return o; }
+  return null;
+}
 
 function aiDir(dataDir) {
   /* קבצי ההוראות: באפליקציה הארוזה — resources/ai; בפיתוח — ai/ בשורש הריפו */
@@ -32,7 +47,7 @@ class AI {
     this.key = ""; this.mem = false;
     this.st = readJSON(this.stFile, null) || { checkedAt: 0, ok: false, models: [], pick: { fast: "", strong: "" } };
     try { if (fs.existsSync(this.keyFile)) this.key = this.dec(fs.readFileSync(this.keyFile, "utf8")) || ""; } catch (e) { this.key = ""; }
-    this.busy = null;
+    this.busy = null; this.gen = 0; this.ctl = null;
     this.files = aiDir(dataDir);
   }
   /* ── מה שהדף רואה: אין שם מפתח ── */
@@ -48,6 +63,7 @@ class AI {
   async setKey(k) {
     k = String(k || "").trim();
     if (!KEYRE.test(k)) return { ok: false, why: "זה לא נראה כמו מפתח של גוגל — מעתיקים אותו מ-Google AI Studio (מתחיל ב-AIza או ב-AQ.)" };
+    this.cancel();
     this.key = k; this.mem = false;
     if (this.canEnc()) { try { writeAtomic(this.keyFile, this.enc(k)); } catch (e) { this.mem = true; } }
     else { this.mem = true; try { fs.unlinkSync(this.keyFile); } catch (e) {} }
@@ -55,22 +71,27 @@ class AI {
     const r = await this.check();
     return Object.assign({ saved: !this.mem }, r);
   }
+  /* v63: מפתח חדש (או מחיקה) באמצע ״בדוק״ — הבדיקה הישנה נעצרת ותוצאותיה לא נשמרות */
+  cancel() { this.gen++; try { this.ctl && this.ctl.abort(); } catch (e) {} this.ctl = null; }
   clear() {
+    this.cancel();
     this.key = ""; this.mem = false; try { fs.unlinkSync(this.keyFile); } catch (e) {}
     this.st = { checkedAt: 0, ok: false, models: [], pick: { fast: "", strong: "" } }; this.saveSt();
     return this.status();
   }
   /* ── רשת ── */
-  async req(method, p, body, ms) {
+  async req(method, p, body, ms, opt) {
+    opt = opt || {};
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms || 20000); const t0 = Date.now();
+    const outer = opt.signal; const onAbort = () => ctl.abort(); if (outer) { if (outer.aborted) ctl.abort(); else outer.addEventListener("abort", onAbort); }
     try {
       const r = await fetch(BASE() + p, { method, signal: ctl.signal,
-        headers: { "x-goog-api-key": this.key, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+        headers: { "x-goog-api-key": opt.key || this.key, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
       const txt = await r.text(); let j = null; try { j = JSON.parse(txt); } catch (e) {}
       if (!r.ok) { const m = j && j.error && (j.error.message || j.error.status) || ("HTTP " + r.status); const e = new Error(m); e.status = r.status; throw e; }
       return { data: j, ms: Date.now() - t0 };
-    } catch (e) { if (e.name === "AbortError") { const x = new Error("timeout"); x.status = 0; throw x; } throw e; }
-    finally { clearTimeout(t); }
+    } catch (e) { if (e.name === "AbortError") { const x = new Error(outer && outer.aborted ? "canceled" : "timeout"); x.status = 0; throw x; } throw e; }
+    finally { clearTimeout(t); if (outer) outer.removeEventListener("abort", onAbort); }
   }
   why(e) {
     const s = e && e.status, m = this.scrub(e && e.message);
@@ -79,30 +100,42 @@ class AI {
     if (s === 404) return "המודל לא זמין";
     if (s === 400) return /instruction/i.test(m) ? "המודל לא מקבל הוראות מערכת" : "המודל לא תומך בבקשה כזו";
     if (s === 429) return "עברת את המכסה החינמית (נסו מאוחר יותר)";
+    if (m === "canceled") return "הבדיקה הופסקה";
     if (s >= 500) return "שגיאה בשרת של גוגל";
     if (m === "timeout") return "אין תשובה (לקח יותר מדי זמן)";
     if (/fetch failed|ENOTFOUND|ECONN|network/i.test(m)) return "אין חיבור לאינטרנט";
     return m || "שגיאה";
   }
-  async listModels() {
+  async listModels(opt) {
     const out = []; let tok = "";
     for (let i = 0; i < 10; i++) {
-      const { data } = await this.req("GET", "/v1beta/models?pageSize=200" + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""), null, 20000);
+      const { data } = await this.req("GET", "/v1beta/models?pageSize=200" + (tok ? "&pageToken=" + encodeURIComponent(tok) : ""), null, 20000, opt);
       for (const m of (data && data.models) || []) out.push(m);
       tok = data && data.nextPageToken; if (!tok) break;
     }
-    return out.filter(m => (m.supportedGenerationMethods || []).includes("generateContent") && !SKIP.test(m.name + " " + (m.displayName || "")))
+    return out.filter(m => m && typeof m.name === "string" && (m.supportedGenerationMethods || []).includes("generateContent") && !SKIP.test(m.name + " " + (m.displayName || "")))
       .map(m => ({ id: String(m.name).replace(/^models\//, ""), name: m.displayName || String(m.name).replace(/^models\//, "") }));
   }
   /* דירוג בלי שמות קבועים: גרסה (המספר בשם), משפחה (pro > flash > lite), יציב לפני ניסיוני */
   static rank(id) {
-    const v = (String(id).match(/(\d+(?:\.\d+)?)/) || [0, 0])[1] * 1;
+    /* v63: הגרסה רק מ-״gemini-<מספר>״ (gemini-exp-1206 הוא לא גרסה 1206) */
+    const v = (String(id).match(/gemini-(\d+(?:\.\d+)?)/i) || [0, 0])[1] * 1;
     const tier = /pro/i.test(id) ? 3 : /lite|nano|8b/i.test(id) ? 1 : /flash/i.test(id) ? 2 : 1.5;
     const stable = /exp|preview|experimental|latest/i.test(id) ? 0 : 1;
     return { v, tier, stable };
   }
+  /* סדר המועמדים לכל תפקיד (בלי לבדוק) */
+  static order(list) {
+    const R = m => AI.rank(m.id);
+    const strong = list.slice().sort((a, b) => (R(b).tier - R(a).tier) || (R(b).v - R(a).v) || (R(b).stable - R(a).stable));
+    const fastT = m => { const t = R(m).tier; return t === 2 ? 3 : t === 1 ? 2 : t === 1.5 ? 1 : 0; };
+    const fast = list.slice().sort((a, b) => (fastT(b) - fastT(a)) || (R(b).v - R(a).v) || (R(b).stable - R(a).stable));
+    return { strong, fast };
+  }
   static choose(models) {
-    const ok = models.filter(m => m.ok);
+    /* 429 = מכסה — המודל עובד, רק לא עכשיו. בוחרים בו רק אם אין אחר */
+    let ok = models.filter(m => m.ok);
+    if (!ok.length) ok = models.filter(m => m.quota).map(m => Object.assign({}, m, { ms: m.ms || 1e6 }));
     if (!ok.length) return { fast: "", strong: "" };
     const R = m => AI.rank(m.id);
     const strong = ok.slice().sort((a, b) => (R(b).tier - R(a).tier) || (R(b).v - R(a).v) || (R(b).stable - R(a).stable) || (a.ms - b.ms))[0];
@@ -113,32 +146,53 @@ class AI {
     return { fast: fast.id, strong: strong.id };
   }
   check() {
-    if (this.busy) return this.busy;
-    this.busy = this._check().finally(() => { this.busy = null; });
-    return this.busy;
+    if (this.busy && this.busyGen === this.gen) return this.busy;
+    const g = this.gen;
+    const p = this._check(g).finally(() => { if (this.busy === p) this.busy = null; });
+    this.busy = p; this.busyGen = g;
+    return p;
   }
-  async _check() {
+  /* v63: לא בודקים את כל המודלים (זה שורף את המכסה החינמית) — רק 3 המועמדים הראשונים לכל תפקיד,
+     ועוד 3 רק אם אף אחד מהם לא ענה */
+  async _check(g) {
     if (!this.key) return { ok: false, why: "אין מפתח" };
+    const key = this.key, ctl = new AbortController(); this.ctl = ctl;
+    const stale = () => g !== this.gen;
+    const canceled = () => ({ ok: false, why: "הבדיקה הופסקה", canceled: true, status: this.status() });
     let list;
-    try { list = await this.listModels(); }
-    catch (e) { this.st = { checkedAt: Date.now(), ok: false, models: [], pick: { fast: "", strong: "" }, error: this.why(e) }; this.saveSt(); return { ok: false, why: this.st.error, status: this.status() }; }
-    list = list.slice(0, 40);
-    const res = []; let i = 0;
-    const one = async () => {
-      while (i < list.length) {
-        const m = list[i++];
-        try {
-          const { ms } = await this.req("POST", "/v1beta/models/" + encodeURIComponent(m.id) + ":generateContent",
-            /* כמו בשימוש האמיתי: עם הוראת מערכת (יש מודלים שלא מקבלים אותה — הם ייפסלו כאן ולא באמצע שאלה) */
-            { systemInstruction: { parts: [{ text: "You are a test." }] }, contents: [{ role: "user", parts: [{ text: "Reply with the single word OK." }] }], generationConfig: { maxOutputTokens: 16, temperature: 0 } }, 15000);
-          res.push(Object.assign({}, m, { ok: true, ms, why: "" }));
-        } catch (e) { res.push(Object.assign({}, m, { ok: false, ms: 0, why: this.why(e) })); }
-      }
+    try { list = await this.listModels({ key, signal: ctl.signal }); }
+    catch (e) {
+      if (stale()) return canceled();
+      this.st = { checkedAt: Date.now(), ok: false, models: [], pick: { fast: "", strong: "" }, error: this.why(e) }; this.saveSt(); return { ok: false, why: this.st.error, status: this.status() };
+    }
+    if (stale()) return canceled();
+    const ord = AI.order(list.slice(0, 60));
+    const res = [], tried = new Set();
+    const probe = async m => {
+      tried.add(m.id);
+      try {
+        const { ms } = await this.req("POST", "/v1beta/models/" + encodeURIComponent(m.id) + ":generateContent",
+          /* כמו בשימוש האמיתי: עם הוראת מערכת (יש מודלים שלא מקבלים אותה — הם ייפסלו כאן ולא באמצע שאלה) */
+          { systemInstruction: { parts: [{ text: "You are a test." }] }, contents: [{ role: "user", parts: [{ text: "Reply with the single word OK." }] }], generationConfig: { maxOutputTokens: 16, temperature: 0 } }, 15000, { key, signal: ctl.signal });
+        res.push(Object.assign({}, m, { ok: true, ms, why: "" }));
+      } catch (e) { res.push(Object.assign({}, m, { ok: false, quota: e.status === 429, ms: 0, why: this.why(e) })); }
     };
-    await Promise.all([one(), one(), one(), one()]);
+    for (let round = 0; round < 2; round++) {
+      const want = [];
+      for (const role of ["strong", "fast"]) {
+        if (round > 0 && res.some(r => r.ok && ord[role].some(x => x.id === r.id))) continue;
+        for (const m of ord[role].filter(x => !tried.has(x.id) && !want.includes(x)).slice(0, 3)) want.push(m);
+      }
+      if (!want.length) break;
+      await Promise.all(want.map(probe));
+      if (stale()) return canceled();
+    }
     res.sort((a, b) => (b.ok - a.ok) || (a.ok ? a.ms - b.ms : a.id.localeCompare(b.id)));
     const pick = AI.choose(res);
-    this.st = { checkedAt: Date.now(), ok: !!(pick.fast || pick.strong), models: res, pick, error: res.length ? (pick.fast ? "" : "אף מודל לא ענה") : "גוגל לא החזיר מודלים לטקסט" };
+    const quotaOnly = !res.some(r => r.ok) && res.some(r => r.quota);
+    this.st = { checkedAt: Date.now(), ok: !!(pick.fast || pick.strong), models: res, pick,
+      error: res.length ? (quotaOnly ? "עברת את המכסה החינמית — המפתח תקין, נסו שוב מאוחר יותר" : pick.fast ? "" : "אף מודל לא ענה") : "גוגל לא החזיר מודלים לטקסט" };
+    if (this.ctl === ctl) this.ctl = null;
     this.saveSt();
     return { ok: this.st.ok, why: this.st.error, status: this.status() };
   }
@@ -151,41 +205,52 @@ class AI {
       const D = this.drills().map(d => "- " + d.id + ": " + (lang === "en" ? d.en + " — " + d.what_en : d.he + " — " + d.what_he) + " (" + d.metric + ", " + d.better + " is better; trains: " + (d.trains || []).join(", ") + ")").join("\n");
       return this.file("coach-prompt.md").replace(/<!--[\s\S]*?-->/g, "").split("{{LANG}}").join(L).split("{{DRILLS}}").join(D);
     }
-    const F = (Array.isArray(features) ? features : []).slice(0, 220).map(f => "- " + String(f.id).slice(0, 40) + " — " + String(f.n).slice(0, 80)).join("\n");
+    const F = (Array.isArray(features) ? features : []).filter(f => f && typeof f === "object").slice(0, 220).map(f => "- " + cleanStr(f.id, 40) + " — " + cleanStr(f.n, 80)).join("\n");
     return this.file("helper-prompt.md").replace(/<!--[\s\S]*?-->/g, "").split("{{LANG}}").join(L).split("{{FEATURES}}").join(F || "(none)");
   }
   /* ── שאלה ── kind: helper (מהיר, שיחה) / coach (חזק, JSON) */
   async ask(kind, o) {
-    o = o || {};
+    o = o && typeof o === "object" ? o : {};
     if (!this.key) return { ok: false, why: "אין מפתח של גוגל — מוסיפים אותו בהגדרות" };
     if (!this.st.ok) return { ok: false, why: "המפתח עוד לא נבדק — ״בדוק״ בהגדרות" };
     const coach = kind === "coach";
     const order = coach ? [this.st.pick.strong, this.st.pick.fast] : [this.st.pick.fast, this.st.pick.strong];
     const models = order.filter((x, i, a) => x && a.indexOf(x) === i);
-    const msgs = coach ? [{ role: "user", text: JSON.stringify(o.summary || {}) }]
-      : (Array.isArray(o.messages) ? o.messages : []).slice(-12).map(m => ({ role: m.role === "model" ? "model" : "user", text: String(m.text || "").slice(0, 2000) }));
+    let sent = null;
+    if (coach) {
+      sent = cleanSummary(o.summary && typeof o.summary === "object" ? o.summary : {}, "", 0) || {};
+      if (JSON.stringify(sent).length > 24000) return { ok: false, why: "יותר מדי נתונים לניתוח" };
+    }
+    const msgs = coach ? [{ role: "user", text: JSON.stringify(sent) }]
+      : (Array.isArray(o.messages) ? o.messages : []).filter(m => m && typeof m === "object").slice(-12).map(m => ({ role: m.role === "model" ? "model" : "user", text: String(m.text == null ? "" : m.text).slice(0, 2000) })).filter(m => m.text);
     if (!msgs.length) return { ok: false, why: "אין שאלה" };
-    const body = {
-      systemInstruction: { parts: [{ text: this.sys(coach ? "coach" : "helper", o.lang, o.features) }] },
+    const sys = this.sys(coach ? "coach" : "helper", o.lang, o.features);
+    const mk = extra => ({
+      systemInstruction: { parts: [{ text: sys + (extra || "") }] },
       contents: msgs.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
       generationConfig: Object.assign({ temperature: coach ? 0.4 : 0.3, maxOutputTokens: coach ? 8192 : 2048 }, coach ? { responseMimeType: "application/json" } : {})
-    };
+    });
     let last = null;
     for (const id of models) {
-      try {
-        const { data, ms } = await this.req("POST", "/v1beta/models/" + encodeURIComponent(id) + ":generateContent", body, coach ? 90000 : 45000);
-        const c = data && data.candidates && data.candidates[0];
-        const text = ((c && c.content && c.content.parts) || []).map(p => p.text || "").join("").trim();
-        if (!text) { last = { status: 0, message: c && c.finishReason === "SAFETY" ? "safety" : "empty" }; continue; }
-        if (coach) {
-          let j = null; try { j = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, "")); } catch (e) {}
-          if (!j || typeof j !== "object") { last = { status: 0, message: "bad json" }; continue; }
-          return { ok: true, model: id, ms, json: j };
-        }
-        return { ok: true, model: id, ms, text: text.slice(0, 6000) };
-      } catch (e) { last = e; }
+      /* המאמן: תשובה שנקטעה (JSON לא שלם) — עוד ניסיון אחד עם בקשה לתשובה קצרה יותר */
+      for (let attempt = 0; attempt < (coach ? 2 : 1); attempt++) {
+        try {
+          const body = mk(attempt ? "\n\nIMPORTANT: your previous answer was cut off. Answer again with a SHORT, complete JSON object: at most 3 items per list and one short sentence per field." : "");
+          const { data, ms } = await this.req("POST", "/v1beta/models/" + encodeURIComponent(id) + ":generateContent", body, coach ? 90000 : 45000);
+          const c = data && data.candidates && data.candidates[0];
+          const text = ((c && c.content && c.content.parts) || []).map(p => (p && p.text) || "").join("").trim();
+          if (!text) { last = { status: 0, message: c && c.finishReason === "SAFETY" ? "safety" : c && c.finishReason === "MAX_TOKENS" ? "cut" : "empty" }; if (last.message === "cut") continue; break; }
+          if (coach) {
+            let j = null; try { j = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, "")); } catch (e) {}
+            if (!j || typeof j !== "object" || Array.isArray(j)) { last = { status: 0, message: c && c.finishReason === "MAX_TOKENS" ? "cut" : "bad json" }; continue; }
+            return { ok: true, model: id, ms, json: j, sent };
+          }
+          return { ok: true, model: id, ms, text: text.slice(0, 6000) };
+        } catch (e) { last = e; break; }
+      }
     }
-    return { ok: false, why: last && last.message === "empty" ? "המודל לא החזיר תשובה — נסו שוב" : last && last.message === "bad json" ? "התשובה לא הגיעה בצורה הנכונה — נסו שוב" : this.why(last) };
+    const m = last && last.message;
+    return { ok: false, sent, why: m === "empty" ? "המודל לא החזיר תשובה — נסו שוב" : m === "cut" ? "התשובה נקטעה באמצע — נסו שוב" : m === "bad json" ? "התשובה לא הגיעה בצורה הנכונה — נסו שוב" : m === "safety" ? "המודל סירב לענות — נסו שוב" : this.why(last) };
   }
 }
-module.exports = { AI, aiDir };
+module.exports = { AI, aiDir, cleanSummary };
