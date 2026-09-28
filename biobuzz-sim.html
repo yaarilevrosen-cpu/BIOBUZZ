@@ -10581,6 +10581,7 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)retur
 addEventListener("resize",resize);
 addEventListener("orientationchange",()=>setTimeout(resize,260));
 let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,fastMode=false;
+let physAcc=0;   /* v63: זמן פיזיקה שעוד לא נצעד (תת־צעדים של 1/120) */
 const upV=new CANNON.Vec3(0,1,0);
 function stepSim(dt){
   /* v63: השהיה עוצרת הכול — שעון, בוטים, שופט, שחקן אנושי, כוורות. הקלט עדיין נקרא
@@ -10733,8 +10734,13 @@ function stepSim(dt){
       }
     }
     const vPre={x:botBody.velocity.x,z:botBody.velocity.z};
-    /* v63: מספיק תת־צעדים לכל אורך הצעד — בצעד של 0.05 (מחשב איטי) ארבעה תת־צעדים איבדו שליש מהזמן */
-    { const dts=dt*(slow?.22:1); world.step(1/120,dts,Math.ceil(dts*120)+1); }
+    /* v63: מספיק תת־צעדים לכל אורך הצעד — בצעד של 0.05 (מחשב איטי) ארבעה תת־צעדים איבדו שליש מהזמן.
+       ולא world.step: הוא גם מפסיק באמצע אם התת־צעדים לקחו יותר מ-8 מ״ש של זמן אמיתי,
+       כלומר דווקא במחשב איטי הפיזיקה מפגרת אחרי השעון. כאן סופרים צעדים לפי זמן הסימולציה בלבד. */
+    { const h=1/120; physAcc+=dt*(slow?.22:1);
+      const n=Math.min(Math.ceil(dt*120)+1,Math.floor(physAcc/h+1e-9));
+      for(let i=0;i<n;i++) world.internalStep(h);
+      physAcc=Math.max(0,Math.min(h,physAcc-n*h)); }
     botBody.position.y=0; botBody.velocity.y=0;   // נעילת גובה אחרי הצעד
     /* שלדת מקנום עם מנועים עצורים לא מחליקה מדחיפה של מכשול —
        בלי זה דחיפת שחרור מהפיזיקה מעיפה את הרובוט חצי מטר אחורה */
