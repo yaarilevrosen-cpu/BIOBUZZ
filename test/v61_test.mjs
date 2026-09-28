@@ -85,6 +85,17 @@ ok(r.go&&r.left===0,'מעלית: שני הכדורים הופקדו ('+JSON.stri
 ok(r.p1>r.p0&&r.p1>=5,'הנקטר שלנו למעלה — הפרח שלנו: '+r.p0+' ← '+r.p1+' נקודות');
 r=await E(()=>{ const S=__sim; S.setPose(0,0,0); S.setClip(['pollen']); return S.bldLiftGo(); });
 ok(r===false,'מעלית רחוק מפרח — לא מפעילים');
+// מעלית של כמה כדורים: ״מעלית לפרח״ מרימה שלושה בבת אחת; מעלית של כדור אחד מספיקה רק אחד באותו זמן
+const liftRun=async(n)=>{ await clean(); return E(n=>{ const S=__sim; const B=S.bldDup(); B.lift=true; B.liftN=n; B.shoot='none'; S.bldSet(-1,B.id);
+  const fl=S.flowers[2], ax=Math.abs(fl.x)>Math.abs(fl.z), off=ax?{x:-Math.sign(fl.x)*12.5,z:0}:{x:0,z:-Math.sign(fl.z)*12.5};
+  S.setPose(fl.x+off.x,fl.z+off.z,Math.atan2(-off.x,-off.z)*180/Math.PI); S.advance(0.3,1/120);
+  S.setClip(['pollen','pollen','pollen']); S.bldLiftGo(); S.advance(2.45,1/120); const left=S.clip.length; S.bldDel(); return left; },n); };
+r=await E(()=>{ const S=__sim; S.bldOpen('lift'); const m=document.getElementById('bldBox'); m.querySelector('[data-bact="dup"]').click();
+  const opts=[...m.querySelectorAll('[data-bopt^="liftN|"]')].map(x=>x.textContent); m.querySelector('[data-bopt="liftN|4"]').click();
+  const B=S.BLD.custom.find(x=>x.id===S.BLD.edit); const n=B.liftN; S.bldDel(); S.bldClose(); return {opts,n}; });
+ok(r.opts.join()==='1,2,3,4'&&r.n===4,'בחלון: ״כדורים בהרמה״ — 1, 2, 3 או 4 ('+JSON.stringify(r)+')');
+const l3=await liftRun(3), l1=await liftRun(1);
+ok(l3===0&&l1===2,'מעלית של 3 כדורים: 3 בפרח אחרי 2.45 שנ׳ (נשארו '+l3+'); של כדור אחד — רק 1 (נשארו '+l1+')');
 
 // 6. בוטים עם בניות שונות — מאץ׳ מלא בלי שגיאות
 await clean();
