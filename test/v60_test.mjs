@@ -39,10 +39,9 @@ r=await E(()=>{ __sim.matchStop(); __sim.drillStart('pressure'); const on=__sim.
 ok(r.n===2,'לחץ: שני יריבים ('+r.n+')');
 r=await E(()=>{ __sim.matchStop(); __sim.drillStart('auto'); return {on:__sim.DRILL.on, auto:__sim.MT.auto, tele:__sim.MT.tele, trans:__sim.MT.trans}; });
 ok(r.on==='auto'&&r.auto===30&&r.tele===0&&r.trans===0,'אוטונומי בלבד: 30 שנ׳ ותו לא ('+JSON.stringify(r)+')');
-r=await E(()=>{ const t0=performance.now(); while(performance.now()-t0<4000&&(__sim.MATCH.on||__sim.MATCH.cd>0)) __sim.advance(0.5,1/30);
-  return {on:__sim.MATCH.on, ph:__sim.MATCH.phase, best:__sim.DRILL.best.auto, drill:__sim.DRILL.on}; });
-if(r.on) r=await E(()=>{ const t0=performance.now(); while(performance.now()-t0<4000&&(__sim.MATCH.on||__sim.MATCH.cd>0)) __sim.advance(0.5,1/30); return {on:__sim.MATCH.on, ph:__sim.MATCH.phase, best:__sim.DRILL.best.auto, drill:__sim.DRILL.on}; });
-if(r.on) r=await E(()=>{ const t0=performance.now(); while(performance.now()-t0<4000&&(__sim.MATCH.on||__sim.MATCH.cd>0)) __sim.advance(0.5,1/30); return {on:__sim.MATCH.on, ph:__sim.MATCH.phase, best:__sim.DRILL.best.auto, drill:__sim.DRILL.on}; });
+/* לפי שעון הסימולציה, לא לפי שעון הקיר: עד 60 שנ׳ סימולציה (ספירה לאחור + 30 שנ׳ אוטונומי), במנות של 5 שנ׳ */
+for(let k=0;k<12;k++){ r=await E(()=>{ for(let i=0;i<10&&(__sim.MATCH.on||__sim.MATCH.cd>0);i++) __sim.advance(0.5,1/30);
+  return {on:__sim.MATCH.on||__sim.MATCH.cd>0, ph:__sim.MATCH.phase, best:__sim.DRILL.best.auto, drill:__sim.DRILL.on}; }); if(!r.on) break; }
 ok(!r.on&&r.best!=null&&r.drill===null,'אוטונומי בלבד: נגמר אחרי האוטונומי ונרשם שיא ('+JSON.stringify(r)+')');
 // 3 מחזורים על זמן: מתחילים ריקים, כל ריקון מחסנית = מחזור
 r=await E(()=>{ __sim.drillStart('speed'); const clip0=__sim.clip.length; let g=0; while(!__sim.MATCH.on&&g++<200) __sim.advance(0.1,1/30);
@@ -53,13 +52,19 @@ r=await E(()=>{ __sim.drillStart('far'); const D=__sim.DRILL;
   __sim.drillFire({logEntry:{range:30,hit:true}}); const a=D.far.length;
   for(let i=0;i<10;i++) __sim.drillFire({logEntry:{range:60,hit:i<7}}); return {a,b:D.far.length}; });
 ok(r.a===0&&r.b===10,'דיוק מרחוק: קרוב מ-48″ לא נספר, רחוק כן ('+r.a+'→'+r.b+')');
-r=await E(()=>{ const t0=performance.now(); while(performance.now()-t0<3000&&__sim.DRILL.on==='far') __sim.advance(0.5,1/30); return new Promise(res=>setTimeout(()=>res({on:__sim.DRILL.on,best:__sim.DRILL.best.far}),600)); });
+/* הכדורים נוחתים: 4 שנ׳ סימולציה (הסף הוא 3.5), ואז מחכים לבדיקה התקופתית של התרגיל */
+await E(()=>{ for(let i=0;i<8;i++) __sim.advance(0.5,1/30); });
+await page.waitForFunction(()=>__sim.DRILL.on!=='far',null,{timeout:15000}).catch(()=>{});
+r=await E(()=>({on:__sim.DRILL.on,best:__sim.DRILL.best.far}));
 ok(r.on===null&&r.best===7,'דיוק מרחוק: 7/10 נרשם ('+JSON.stringify(r)+')');
 // חניה על זמן: מתחילים רחוק, השיא ״נמוך יותר = טוב יותר״
 r=await E(()=>{ __sim.drillStart('park'); const x=__sim.I(__sim.botBody.position.x); return {on:__sim.DRILL.on, x, lz:__sim.myInLZ()}; });
 ok(r.on==='park'&&!r.lz&&Math.abs(r.x)>40,'חניה על זמן: מתחילים רחוק מאזור הטעינה (x='+r.x.toFixed(0)+')');
 r=await E(()=>{ const D=__sim.DRILL; D.best.park=20; __sim.drillStart('park'); D.t0=__sim.simT()-12.4; const s=__sim.myAlly()==='red'?-1:1; __sim.setPose(s*64,-35,0);
-  return new Promise(res=>setTimeout(()=>res({best:D.best.park,on:D.on,lz:__sim.myInLZ()}),900)); });
+  return {lz:__sim.myInLZ()}; });
+ok(r.lz,'חניה: הרובוט הוצב באזור הטעינה');
+await page.waitForFunction(()=>__sim.DRILL.on!=='park',null,{timeout:15000}).catch(()=>{});
+r=await E(()=>({best:__sim.DRILL.best.park,on:__sim.DRILL.on}));
 ok(r.on===null&&r.best<20,'חניה: זמן קצר יותר = שיא חדש ('+JSON.stringify(r)+')');
 // 4. סיכום למאמן (בלי רשת) — רק מספרים
 r=await E(()=>{ const a=[]; for(let i=0;i<25;i++) a.push({at:1e12+i*1000,ally:'red',my:40+i,opp:30,win:1,shots:10,hits:6+(i%3),fouls:i%4?0:1,leave:true,park:i%2===0,autoPts:10,avgCycle:9-i*0.1,kind:'match',skill:1,sh:[],bl:[[0,0],[1,1]],pts:{tip:0,cell:30,flower:5,garden:0,leave:3,park:5}});
@@ -90,7 +95,10 @@ ok(r.b0==='14181c'&&r.b1==='ff8cc4','סקין לכל בוט בנפרד (ניאו
 ok(r.band0==='2d8cff'&&r.ring0!=='','בוט כחול בסקין — הפס נשאר כחול');
 ok(r.saved.join()==='neon,candy,chrome','שלושת הבוטים נשמרים');
 // ברית מתחלפת → הפס מתחלף
-r=await E(()=>new Promise(res=>{ __sim.matchStop(); __sim.SETUP.ally='blue'; setTimeout(()=>{ const band=__sim.bot.group.children.find(o=>o.userData&&o.userData.allyBand); res({ally:__sim.myAlly(),col:band.children[0].material.color.getHexString()}); },900); }));
+await E(()=>{ __sim.matchStop(); __sim.SETUP.ally='blue';
+  window.__bandCol=()=>{ const band=__sim.bot.group.children.find(o=>o.userData&&o.userData.allyBand); return band&&band.children[0].material.color.getHexString(); }; });
+await page.waitForFunction(()=>__bandCol()==='2d8cff',null,{timeout:15000}).catch(()=>{}); // התוצאה נבדקת מיד למטה
+r=await E(()=>({ally:__sim.myAlly(),col:__bandCol()}));
 ok(r.ally==='blue'&&r.col==='2d8cff','החלפת ברית — הפס של הרובוט שלי מתחלף ('+JSON.stringify(r)+')');
 await E(()=>{ __sim.SETUP.ally='red'; });
 // ברשת: אורח שולח סקין, המארח מחיל ומשדר

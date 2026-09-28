@@ -35,8 +35,10 @@ ok(await E(()=>!__sim.VREC.on&&document.getElementById('recTag').hidden),'ההק
 // הקלטה אוטומטית
 await E(()=>{ const k=document.getElementById('ppRecAuto'); k.checked=true; k.dispatchEvent(new Event('change')); const S=__sim; S.matchStart(); });
 ok(await E(()=>__sim.VREC.on),'״להקליט כל מאץ׳ לבד״ — מאץ׳ התחיל והקלטה התחילה');
-await E(()=>{ const S=__sim; S.matchStop(); });
-await page.waitForTimeout(5600);
-ok(await E(()=>!__sim.VREC.on),'…ונעצרה 5 שניות אחרי הסוף');
+const tStop=Date.now();
+ok(await E(()=>{ const S=__sim; S.matchStop(); return __sim.VREC.on; }),'בסוף המאץ׳ ההקלטה עוד ממשיכה (עוצרת רק אחרי 5 שניות)');
+await page.waitForFunction(()=>!__sim.VREC.on,null,{timeout:20000}).catch(()=>{});
+const tWait=Date.now()-tStop;
+ok(await E(()=>!__sim.VREC.on)&&tWait>=4900,'…ונעצרה 5 שניות אחרי הסוף ('+(tWait/1000).toFixed(1)+' שנ׳)');
 ok(realErrs(errs).length===0,'אין שגיאות '+realErrs(errs).slice(0,2).join(' | '));
 await browser.close(); done('p2_test');
