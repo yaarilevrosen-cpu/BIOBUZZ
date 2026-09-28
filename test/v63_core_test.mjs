@@ -10,7 +10,7 @@ const E=(f,a)=>page.evaluate(f,a);
       S.advance(0.3,st); out[st]=S.I(b.body.position.y); }
     S.clearBalls(); return out; });
   const a=r[1/120], b=r[0.05];
-  ok(Math.abs(a-b)<1.5, `נפילה בצעדים של 0.05 זהה ל-1/120 (${a.toFixed(2)} מול ${b.toFixed(2)})`);
+  ok(Math.abs(a-b)<0.5, `נפילה בצעדים של 0.05 זהה ל-1/120 (${a.toFixed(2)} מול ${b.toFixed(2)})`);
 }
 
 /* 17 · השהיה עוצרת את השעון, הבוטים והשופט */
@@ -64,6 +64,38 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(r.nex===0, 'אין חריגות אחרי העזיבה '+r.ex.join(' | '));
   ok(r.rec0===r.rec1, 'לא נשמר שיא מזויף');
   ok(r.n1===r.n0&&r.n2===r.n0+1, `תמונות פגומות נדחות (${r.n0}→${r.n1}→${r.n2})`);
+}
+
+/* 11 · מחרוזות מהרשת לא נכנסות כ-HTML */
+{
+  const X='<img src=x onerror="window.__x=(window.__x||0)+1">';
+  const r=await E((X)=>{ const S=__sim; window.__x=0;
+    /* מארח: אורח עם שם זדוני */
+    S.NET.mode='host'; S.netOnMsg(JSON.stringify({t:'gj',id:'g9',name:X+X+X}));
+    S.netRefresh(); const tb=document.getElementById('netSeats');
+    const hostHtml=tb?tb.innerHTML:''; const nameLen=(S.NET.guests.g9||{}).name.length;
+    S.netOnMsg(JSON.stringify({t:'gl',id:'g9'}));
+    S.NET.mode='solo'; S.netRefresh();
+    /* אורח: חדר, סירוב וסיכום מהמארח */
+    S.NET.mode='guest'; S.NET.seat=null;
+    S.netOnMsg(JSON.stringify({t:'room',host:X,seats:[{kind:'bot" onmouseover="x',name:X,ally:'red"><img src=x onerror=alert(1)>'},{kind:'net',name:X,ally:'blue'}],allies:['red','blue','blue','red']}));
+    S.netOnMsg(JSON.stringify({t:'seat',seat:1,allies:['red','blue','blue','red']}));
+    S.netOnMsg(JSON.stringify({t:'deny',why:X}));
+    S.netRefresh();
+    const gHtml=(document.getElementById('netSeats')||{}).innerHTML+(document.getElementById('netTag')||{}).innerHTML+(document.getElementById('oNet')||{}).innerHTML;
+    S.netOnMsg(JSON.stringify({t:'sum',red:'<b>1</b>',blue:3,rows:[{s:1,name:X,kind:X,ally:'red" onclick="x',shots:'<i>',hits:2,fouls:0,park:1}]}));
+    const sHtml=(document.getElementById('mpSum')||{}).innerHTML||'';
+    const el=document.getElementById('mpSum'); if(el) el.hidden=true;
+    S.NET.mode='solo'; S.NET.err=''; S.NET.seats=[]; S.NET.hostName=''; S.netRefresh();
+    return {hostImg:/<img/i.test(hostHtml), nameLen, gImg:/<img/i.test(gHtml), gAttr:/onmouseover/.test(gHtml), sImg:/<img/i.test(sHtml), sAttr:/onclick/.test(sHtml), sLen:sHtml.length};
+  },X);
+  await page.waitForTimeout(300);
+  const fired=await E(()=>window.__x);
+  ok(!r.hostImg,'שם אורח אצל המארח מוצג כטקסט');
+  ok(r.nameLen<=20,`שם אורח נחתך ל-20 תווים (${r.nameLen})`);
+  ok(!r.gImg&&!r.gAttr,'שמות, סוג וברית מהמארח אצל האורח — טקסט בלבד');
+  ok(!r.sImg&&!r.sAttr&&r.sLen>0,'טבלת הסיכום מהרשת — טקסט בלבד');
+  ok(fired===0,'שום קוד מהרשת לא רץ');
 }
 
 await browser.close();

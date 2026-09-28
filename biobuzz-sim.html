@@ -6843,7 +6843,7 @@ function pathLibUI(){
   const sel=$("pathLibSel"); if(!sel) return;
   const L=pathLib(), names=Object.keys(L).sort((a,b)=>(L[b].at||0)-(L[a].at||0));
   sel.innerHTML='<optgroup label="שמרתי">'+(names.length?names.map(n=>'<option value="'+pathEsc(n)+'"'+(n===PATH.cur?" selected":"")+'>'+
-    pathEsc(n)+" · "+L[n].pts.length+" נק׳"+(L[n].t?" · "+L[n].t+" שנ׳":"")+'</option>').join("")
+    pathEsc(n)+" · "+((L[n].pts&&L[n].pts.length)|0)+" נק׳"+(+L[n].t>0?" · "+(+(+L[n].t).toFixed(1))+" שנ׳":"")+'</option>').join("")
     :'<option value="" disabled>אין מסלולים שמורים</option>')+'</optgroup><optgroup label="דוגמאות">'+
     AUTO_EX.map(e=>'<option value="ex:'+e.k+'"'+("ex:"+e.k===PATH.cur?" selected":"")+' title="'+pathEsc(e.d)+'">'+pathEsc(e.n)+'</option>').join("")+'</optgroup>';
   const nm=$("pathName"); if(nm&&PATH.cur&&document.activeElement!==nm) nm.value=PATH.cur.indexOf("ex:")===0?"":PATH.cur;
@@ -11060,7 +11060,12 @@ function mpSumBuild(){
   return {t:"sum",rows,red:allianceScore("red"),blue:allianceScore("blue")};
 }
 function mpSumShow(m){
-  const el=$("mpSum"); if(!el||!m||!m.rows) return;
+  const el=$("mpSum"); if(!el||!m||!Array.isArray(m.rows)) return;
+  /* v63: הסיכום מגיע גם מהרשת — מספרים כמספרים, שמות כטקסט, ברית מתוך רשימה */
+  const nn=v=>{ v=+v; return isFinite(v)?Math.max(0,Math.round(v)):0; };
+  m={t:"sum",red:nn(m.red),blue:nn(m.blue),rows:m.rows.slice(0,8).filter(r=>r&&typeof r==="object").map(r=>({
+    s:nn(r.s),name:netStr(r.name,24),kind:netStr(r.kind,12),ally:netAllyOk(r.ally)||"red",
+    shots:nn(r.shots),hits:nn(r.hits),fouls:nn(r.fouls),park:r.park?1:0}))};
   const win=m.red===m.blue?"תיקו":(m.red>m.blue?"אדום ניצח":"כחול ניצח");
   const humans=m.rows.filter(r=>r.kind!=="בוט"&&r.shots>0);
   const acc=r=>r.shots?r.hits/r.shots:0;
@@ -11068,7 +11073,7 @@ function mpSumShow(m){
   el.innerHTML='<div class="mpsHead"><b>'+win+'</b><span class="r">'+m.red+'</span> : <span class="b">'+m.blue+'</span>'+
     '<button id="mpSumX" title="סגור">✕</button></div><table><tr><th></th><th>נהג</th><th>ירה</th><th>נכנס</th><th>דיוק</th><th>עבירות</th><th>חנה</th></tr>'+
     m.rows.map(r=>'<tr class="'+r.ally+(r===star?" star":"")+'"><td><i class="dot '+r.ally+'"></i>'+r.s+'</td><td>'+
-      r.name+' <small>'+r.kind+'</small>'+(r===star?' <em>הכי הרבה פגיעות</em>':'')+'</td><td>'+r.shots+'</td><td>'+r.hits+'</td><td>'+
+      appEsc(r.name)+' <small>'+appEsc(r.kind)+'</small>'+(r===star?' <em>הכי הרבה פגיעות</em>':'')+'</td><td>'+r.shots+'</td><td>'+r.hits+'</td><td>'+
       (r.shots?Math.round(100*acc(r))+"%":"—")+'</td><td>'+(r.fouls||"—")+'</td><td>'+(r.park?"כן":"—")+'</td></tr>').join("")+
     '</table>';
   el.hidden=false;
@@ -11501,29 +11506,38 @@ function netOnMsg(data){
   let m=null; try{ m=JSON.parse(data); }catch(e){ return; }
   if(!m||!m.t) return;
   if(NET.mode==="host"){
-    if(m.t==="info"){ NET.lan=m.lan||[]; NET.key=m.key|0; NET.code=m.code||"";
-      NET.port=m.port||NET.port; }
-    else if(m.t==="gj"){ NET.guests[m.id]={name:m.name||"אורח"}; netAutoSeat(m.id); }
+    if(m.t==="info"){ NET.lan=(Array.isArray(m.lan)?m.lan:[]).map(String).filter(x=>/^[0-9A-Za-z.:\-]{1,64}$/.test(x)).slice(0,8);
+      NET.key=m.key|0; NET.code=netStr(m.code,16);
+      NET.port=(+m.port>0&&+m.port<65536)?+m.port|0:NET.port; }
+    else if(m.t==="gj"){ NET.guests[m.id]={name:netStr(m.name,20)||"אורח"}; netAutoSeat(m.id); }
     else if(m.t==="gl"){ netUnseat(m.id); delete NET.guests[m.id]; }
     else if(m.t==="g"&&m.m) netFromGuest(m.id,m.m);
     netRefresh();
   } else if(NET.mode==="guest"){
-    if(m.t==="seat"){ NET.seat=m.seat; netGuestCam(m.allies); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
+    if(m.t==="seat"){ NET.seat=(m.seat|0)===m.seat&&m.seat>=0&&m.seat<=3?m.seat:null; m.allies=netAlliesOk(m.allies); netGuestCam(m.allies); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
       try{ netSend({t:"build",b:bldPack(bldById(BLD.sel.me))}); }catch(e){} }
     else if(m.t==="builds"){ try{ bldFromHost(m); }catch(e){} }
     else if(m.t==="skins"){ SKIN.remote={me:String(m.me||""),bots:Array.isArray(m.bots)?m.bots.map(String):[]}; skinApplyAll(); }
-    else if(m.t==="room"){ NET.seats=m.seats||[]; NET.hostName=m.host||"";
+    else if(m.t==="room"){ NET.seats=(Array.isArray(m.seats)?m.seats.slice(0,4):[]).map(x=>({
+        kind:NET_KINDOK[x&&x.kind]?x.kind:"bot", name:netStr(x&&x.name,20), ally:netAllyOk(x&&x.ally)}));
+      NET.hostName=netStr(m.host,20); m.allies=netAlliesOk(m.allies);
       if(m.allies) NET.allies=m.allies; if(NET.seat!==null) netGuestCam(m.allies); netRefresh(); }
-    else if(m.t==="deny"){ NET.err=m.why||"החדר סירב"; netRefresh(); }
+    else if(m.t==="deny"){ NET.err=netStr(m.why,80)||"החדר סירב"; netRefresh(); }
     else if(m.t==="nohost"){ NET.err="הגשר פתוח אבל אין מארח שפתח חדר"; netRefresh(); }
     else if(m.t==="pong"){ const r=Math.max(0,performance.now()-(+m.c||0));
       NET.rtt=NET.rtt?NET.rtt*0.7+r*0.3:r; }
-    else if(m.t==="ev"){ refToast(String(m.txt||""),m.k==="foul"?"foul":"coach");
+    else if(m.t==="ev"){ m.txt=netStr(m.txt,160); refToast(m.txt,m.k==="foul"?"foul":"coach");
       const g=netGuestPad(); if(g) padRumble(g,0.7,0.4,260);
-      (HUM.log||(HUM.log=[])).push({t:simT,who:"net",txt:m.txt,kind:m.k}); }
+      (HUM.log||(HUM.log=[])).push({t:simT,who:"net",txt:m.txt,kind:m.k==="foul"?"foul":"coach"}); }
     else if(m.t==="sum"){ mpSumShow(m); }
   }
 }
+/* v63: כל מחרוזת שמגיעה מהרשת — טקסט קצר בלי תווי בקרה; סוג וברית רק מתוך רשימה */
+const NET_KINDOK={host:1,net:1,pad:1,split:1,bot:1,none:1};
+function netStr(v,n){ return String(v==null?"":v).replace(/[\u0000-\u001f\u007f]/g,"").slice(0,n||20); }
+function netAllyOk(a){ return a==="blue"?"blue":a==="red"?"red":""; }
+function netAlliesOk(a){ if(!Array.isArray(a)||a.length!==4) return null;
+  const o=a.map(netAllyOk); return o.every(Boolean)?o:null; }
 function netFreeSeat(){
   for(let s=1;s<=BOTS.length;s++){ const k=netSeatInfo(s).kind; if(k==="bot") return s; }
   return null;
@@ -11731,19 +11745,19 @@ function netRefresh(){
     else if(NET.mode==="joinform") h=row("הצטרפות","כתבו את קוד החדר מהמחשב של המארח ולחצו ״הצטרף לחדר״","hl");
     else if(NET.mode==="host"){
       h=row("חדר",st===1?"פתוח":st===0?"מתחבר לגשר…":"הגשר לא עונה",st===1?"ok":"bad")+
-        (NET.code?row("קוד חדר",'<b class="netcode">'+NET.code+'</b>',"hl"):"")+
-        (NET.lan.length?row("כתובת להצטרפות","http://"+NET.lan[0]+":"+NET.port+"/join?k="+NET.key):"")+
+        (NET.code?row("קוד חדר",'<b class="netcode">'+appEsc(NET.code)+'</b>',"hl"):"")+
+        (NET.lan.length?row("כתובת להצטרפות",appEsc("http://"+NET.lan[0]+":"+NET.port+"/join?k="+NET.key)):"")+
         row("שחקנים ברשת",Object.keys(NET.guests).length+"")+
         Object.keys(NET.guests).map(id=>{ const g=NET.guests[id];
-          return g.rtt?row("השהיה · "+g.name,Math.round(g.rtt)+" מ״ש",g.rtt<40?"ok":g.rtt<90?"hl":"bad"):""; }).join("")+
+          return g.rtt?row("השהיה · "+appEsc(g.name),Math.round(g.rtt)+" מ״ש",g.rtt<40?"ok":g.rtt<90?"hl":"bad"):""; }).join("")+
         row("שידור",Math.round(NET.rate.txHz)+" לשנייה · "+NET.rate.kbs.toFixed(1)+" ק״ב/ש׳");
     } else {
-      h=row("חיבור",st===1?"מחובר ל-"+NET.host:st===0?"מתחבר…":"מנותק",st===1?"ok":"bad")+
+      h=row("חיבור",st===1?"מחובר ל-"+appEsc(NET.host):st===0?"מתחבר…":"מנותק",st===1?"ok":"bad")+
         row("העמדה שלי",NET.seat===null?"—":(NET.seat+1)+" · "+(NET.seats[NET.seat]?NET.seats[NET.seat].ally==="red"?"אדום":"כחול":""))+
         row("קבלה",Math.round(NET.rate.rxHz)+" לשנייה · "+NET.rate.kbs.toFixed(1)+" ק״ב/ש׳")+
         (NET.rtt?row("השהיה הלוך־חזור",Math.round(NET.rtt)+" מ״ש",NET.rtt<40?"ok":NET.rtt<90?"hl":"bad"):"");
     }
-    if(NET.err) h+=row("הערה",NET.err,"bad");
+    if(NET.err) h+=row("הערה",appEsc(NET.err),"bad");
     o.innerHTML=h;
   }
   const tb=$("netSeats");
@@ -11755,11 +11769,11 @@ function netRefresh(){
     let h="";
     for(let s=0;s<4;s++){
       const inf=guest?(NET.seats[s]||{kind:"bot",name:"—",ally:allies[s]}):netSeatInfo(s);
-      const al=inf.ally||allies[s];
+      const al=netAllyOk(inf.ally||allies[s])||"red", kd=NET_KINDOK[inf.kind]?inf.kind:"bot";
       const rel=s===(guest?NET.seat:0)?"אני":al===myA?"לצידי":"מולי";
       const KN={host:"מארח",net:"רשת",pad:"שלט",split:"מפוצל",bot:"בוט",none:"—"};
       const gr=!guest&&inf.kind==="net"&&NET.guests[inf.id]&&NET.guests[inf.id].rtt;
-      const who='<i class="kb '+inf.kind+'">'+(KN[inf.kind]||"")+'</i>'+(inf.kind==="bot"?"":inf.name)+
+      const who='<i class="kb '+kd+'">'+(KN[kd]||"")+'</i>'+(kd==="bot"?"":appEsc(inf.name))+
         (gr?' <small class="rtt">'+Math.round(gr)+' מ״ש</small>':"");
       let act="";
       if(guest&&inf.kind==="bot"&&s!==NET.seat) act='<button data-want="'+s+'">לשבת כאן</button>';
@@ -11781,7 +11795,7 @@ function netRefresh(){
   const tag=$("netTag");
   if(tag){ tag.hidden=NET.mode!=="guest";
     if(NET.mode==="guest") tag.innerHTML='<b>'+(NET.seat===null?"מחכה לעמדה…":"עמדה "+(NET.seat+1))+'</b><span>'+
-      (NET.hostName?"החדר של "+NET.hostName:"")+'</span><span>מחסנית <i>'+(NET.seat===0?bot.mag:
+      (NET.hostName?"החדר של "+appEsc(NET.hostName):"")+'</span><span>מחסנית <i>'+(NET.seat===0?bot.mag:
       (BOTS[NET.seat-1]?BOTS[NET.seat-1].clip.length:0))+'</i></span>'; }
 }
 function netWire(){
@@ -13055,6 +13069,9 @@ window.__sim={
     inFlowers:ballsInFlowers(), cad:!!cadRoot }; },
   ballsAt(){ return balls.map(b=>({k:b.kind,p:[+I(b.body.position.x).toFixed(2),+I(b.body.position.y).toFixed(2),+I(b.body.position.z).toFixed(2)],v:+b.body.velocity.length().toFixed(3)})); }
 };
+/* v63 · ליבה — פונקציות לבדיקות */
+Object.assign(window.__sim,{netOnMsg,mpSumShow,netStr});
+Object.defineProperty(window.__sim,"simT",{get(){ return simT; },configurable:true});
 
 /* ══════ v48 — גיבוי, שחזור ואיפוס הכול ══════
    כל מפתח ששייך לסימולטור (bb… / biobuzz…) נכנס לגיבוי. הגיבויים עצמם ב-bbBackups1, עד 6.
@@ -14539,7 +14556,7 @@ const SKINS=[
   {id:"gold",   n:"זהב",       frame:0xd4a017, panel:0x3a2e0a, accent:0xffe08a, body:0x6b520f, trim:0xffd24a, rough:.25, metal:.95},
   {id:"snow",   n:"שלג",       frame:0xf2f2f2, panel:0xcfd3d6, accent:0x2a2e33, body:0xe9ecef, trim:0x3a3f45, rough:.6, metal:.05}
 ];
-const SKINBY=Object.fromEntries(SKINS.map(s=>[s.id,s]));
+const SKINBY=Object.assign(Object.create(null),Object.fromEntries(SKINS.map(s=>[s.id,s])));   /* v63: ״constructor״ מהרשת הוא לא ערכה */
 const SKIN={me:"classic", bots:["classic","classic","classic"], net:{}, remote:null, KEY:"bbSkin1", mats:{}, sig:""};
 try{ const o=JSON.parse(localStorage.getItem(SKIN.KEY)||"null");
   if(o){ if(SKINBY[o.me]) SKIN.me=o.me; if(Array.isArray(o.bots)) o.bots.slice(0,3).forEach((k,i)=>{ if(SKINBY[k]) SKIN.bots[i]=k; }); } }catch(e){}
