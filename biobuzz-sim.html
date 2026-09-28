@@ -4168,7 +4168,7 @@ function fire(){
            v:+st.v.toFixed(2), diff:P.vDiff, kind:kind, hit:false, entry:null};
   logShot(rec.logEntry);
   if(REC.on) REC.shots.push(Object.assign({t:+(simT-REC.t0).toFixed(2)},rec.logEntry));
-  bot.clip.shift(); syncClip(); shots++; bot.flySpin=1; updateHUD();
+  bot.clip.shift(); syncClip(); shots++; bot.flySpin=1; if(!fire._m2) bot.lastShotT=simT; updateHUD();
   brainShot("me",I(botBody.position.x),I(botBody.position.z));
   teachEvent("fire"); debriefShot(); if(typeof seasonShot==="function") seasonShot(rec);
   if(typeof drillFire==="function"&&typeof DRILL!=="undefined"&&DRILL.on) drillFire(rec);
@@ -8141,7 +8141,11 @@ function uHome(){ if(inMatchPlay()){ refuse("G304","אי אפשר להזיז ר�
 function uDump(){ if(inMatchPlay()){ refuse("§10.8","כדורים לא נעלמים מהרובוט באמצע מאץ׳"); return; }
   bot.clip.length=0; updateHUD(); }
 function uFire(){ if(driverLocked()){ refuse("G401","באוטונומי ובמעבר השלט לא מגיע לרובוט"); return null; }
+  if(paused) return null;
+  /* v63: קצב ירי של משגר אמיתי — לחיצות מהירות לא יורות מהר יותר מזמן ההזנה וההתאוששות של הגלגל */
+  if(simT-(bot.lastShotT==null?-99:bot.lastShotT)<humShotGap()-1e-6) return null;
   return fire(); }
+function humShotGap(){ return Math.max(P.feedTime||0.35,MOT.trec||0.35); }
 function uIntake(){ if(driverLocked()){ refuse("G401","באוטונומי ובמעבר השלט לא מגיע לרובוט"); return; }
   intake=!intake; const c=$("kIntake"); if(c) c.checked=intake; teachEvent(intake?"intake":"stop"); }
 function uAssist(fn){ if(driverLocked()){ refuse("G401","באוטונומי ובמעבר השלט לא מגיע לרובוט"); return; }
@@ -10576,6 +10580,9 @@ addEventListener("orientationchange",()=>setTimeout(resize,260));
 let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,fastMode=false;
 const upV=new CANNON.Vec3(0,1,0);
 function stepSim(dt){
+  /* v63: השהיה עוצרת הכול — שעון, בוטים, שופט, שחקן אנושי, כוורות. הקלט עדיין נקרא
+     (כדי ש-P/כפתור ימשיכו לעבוד), והמארח ממשיך לשדר את התמונה הקפואה לאורחים */
+  if(paused){ padPoll(dt); splitPoll(); netLocalPads(); netHostTick(dt); kbPoll(dt); pathVisTick(); return; }
   simT+=dt;
   padPoll(dt);
   splitPoll();
@@ -10976,7 +10983,7 @@ function humStep(b,dt){
   /* ירי: לחיצה אחת = כדור אחד; החזקה = ירי רצוף בקצב של משגר אמיתי */
   b.hum.fireT+=dt;
   const fire=live&&c.fire;
-  if(fire&&(!b.hum.prevFire||b.hum.fireT>AIC.cycleShot*0.6)&&b.clip.length){
+  if(fire&&(!b.hum.prevFire?b.hum.fireT>=humShotGap()-1e-6:b.hum.fireT>AIC.cycleShot*0.6)&&b.clip.length){
     if(aiFire(b)||humFireRaw(b)){ b.hum.fired++; b.hum.fireT=0; } }
   b.hum.prevFire=fire;
   b.ph=live?"נהג אנושי":"ממתין לקלט";
