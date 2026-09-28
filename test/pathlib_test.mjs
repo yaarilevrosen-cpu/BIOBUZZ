@@ -5,7 +5,7 @@ const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsa
 const ctx=await browser.newContext({viewport:{width:1400,height:860}});
 const errs=[];
 async function page1(){ const p=await ctx.newPage(); p.on('pageerror',e=>errs.push(String(e))); p.on('console',m=>{ if(/^arm/.test(m.text())) console.log('   ',m.text()); });
-  await p.goto('http://127.0.0.1:8899/sim.html?nocad=1');
+  await p.goto('http://127.0.0.1:'+(process.env.BB_PORT||8899)+'/sim.html?nocad=1');
   await p.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:60000}); return p; }
 let page=await page1();
 const E=(f,a)=>page.evaluate(f,a);

@@ -6,7 +6,7 @@ const ctx=await browser.newContext({viewport:{width:1400,height:860}});
 const errs=[];
 async function pg(){ const p=await ctx.newPage(); p.on('pageerror',e=>errs.push(String(e)));
   await p.addInitScript(()=>{ window.requestAnimationFrame=()=>0; });
-  await p.goto('http://127.0.0.1:8899/sim.html?nocad=1');
+  await p.goto('http://127.0.0.1:'+(process.env.BB_PORT||8899)+'/sim.html?nocad=1');
   await p.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length,null,{timeout:60000});
   await p.evaluate(()=>{ __sim.setWS('drive'); document.querySelectorAll('details').forEach(d=>{ if(d.querySelector('#kbBinds')) d.open=true; }); });
   return p; }

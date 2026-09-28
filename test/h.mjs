@@ -1,6 +1,6 @@
 // עוזר פתיחה: דפדפן + דף הסימולטור בלי CAD
 import { chromium } from 'playwright';
-export const URL0='http://127.0.0.1:8899/sim.html?nocad=1';
+export const URL0='http://127.0.0.1:'+(process.env.BB_PORT||8899)+'/sim.html?nocad=1';
 export async function open(opts={}){
   const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
   const page=await browser.newPage({viewport:opts.viewport||{width:1400,height:860}});
