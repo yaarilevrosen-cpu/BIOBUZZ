@@ -1,7 +1,7 @@
 // v63 — ממשק: מקלדת אחרי לחיצה על פקד, כפתורי העתקה, Enter בחיפוש ריק, Esc אחד לחלון העליון,
 // מיקוד בחלונות, טלפון 390, ציר השידור החוזר באנגלית, ובלי עברית שנשארה במצב אנגלית (גם במסכי האפליקציה)
 import {chromium} from 'playwright';
-import {URL0,ok,done,realErrs} from './h.mjs';
+import {URL0,ok,done,realErrs,errText} from './h.mjs';
 
 const MOCK=`(function(){
  const prof={id:'p1',name:'Maya',emoji:'🚀',color:'#f5b921',active:true,local:true};
@@ -30,7 +30,7 @@ async function openPage({en=true,mode='lab',app=false,viewport={width:1400,heigh
   await page.addInitScript(()=>{ window.__raf0=window.requestAnimationFrame.bind(window); window.requestAnimationFrame=()=>0; });
   await page.addInitScript(o=>{ try{ localStorage.setItem('bbUiMode1',o.mode); localStorage.setItem('bbTour1','1'); if(o.en) localStorage.setItem('bbLang1','en'); }catch(e){} },{en,mode});
   if(app) await page.addInitScript(MOCK);
-  page.on('pageerror',e=>allErrs.push('PAGEERR '+String(e))); page.on('console',m=>{ if(m.type()==='error') allErrs.push(m.text()); });
+  page.on('pageerror',e=>allErrs.push('PAGEERR '+String(e))); page.on('console',m=>{ if(m.type()==='error') allErrs.push(errText(m)); });
   page.on('dialog',d=>d.dismiss().catch(()=>{}));
   await page.goto(URL0);
   await page.waitForFunction(()=>window.__sim&&window.__sim.botBody&&window.__sim.BOTS.length,null,{timeout:60000});

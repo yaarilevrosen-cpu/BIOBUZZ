@@ -216,9 +216,12 @@ const E=(f,a)=>page.evaluate(f,a);
     const g408=S.REF.log.filter(e=>e.rule==='G408'&&e.team===b.name).length;
     /* במהירות מלאה, כמעט צמוד לרגל המסגרת */
     const L=S.frameLegs()[0]; b.clip.length=0; S.REF.legSt={};
-    b.yaw=Math.PI/2; b.body.position.set(M(L.x-8.5-0.8),0,M(L.z)); b.vx=1.45; b.vz=0; b.body.velocity.set(1.45,0,0);
-    for(let i=0;i<3;i++){ S.humFeed(b,{x:0,y:1,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); }
-    const g417=S.REF.log.filter(e=>e.rule==='G417'&&e.team===b.name).length;
+    /* הלולאה של הדף רצה גם היא בזמן אמת בין הצעדים של הבדיקה — עד שלושה ניסיונות גישה, כל אחד מאפס את החימוש */
+    let g417=0;
+    for(let tr=0;tr<3&&!g417;tr++){ S.REF.legSt={};
+      b.yaw=Math.PI/2; b.body.position.set(M(L.x-8.5-0.8),0,M(L.z)); b.vx=1.45; b.vz=0; b.body.velocity.set(1.45,0,0);
+      for(let i=0;i<3;i++){ S.humFeed(b,{x:0,y:1,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); }
+      g417=S.REF.log.filter(e=>e.rule==='G417'&&e.team===b.name).length; }
     S.humFree(b); S.matchStop(); return {g408,g417}; });
   ok(r.g408>=1, `G408 לנהג ברשת שבלע נקטר של היריב (${r.g408})`);
   ok(r.g417>=1, `G417 לנהג ברשת שנכנס במהירות במסגרת (${r.g417})`);
