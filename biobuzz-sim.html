@@ -9250,15 +9250,23 @@ on($("bPathExport"),e=>{ const ta=$("pathOut"); if(!ta) return; ta.value=pathExp
   const b=e.currentTarget, o="העתק כטקסט", ok=()=>{ b.textContent="הועתק"; setTimeout(()=>b.textContent=o,1300); };
   try{ navigator.clipboard.writeText(ta.value).then(ok,()=>{ ta.focus(); ta.select(); }); }catch(err){ ta.focus(); ta.select(); } });
 on($("bPathImport"),()=>{ const ta=$("pathOut"); if(ta) pathImportText(ta.value); });
-on($("bPathCopy"),()=>{ const ta=$("pathOut"); if(!ta) return; ta.focus(); ta.select();
-  try{ navigator.clipboard&&navigator.clipboard.writeText(ta.value); }catch(e){}
-  try{ document.execCommand("copy"); }catch(e){} });
+/* v63 — כפתורי ״העתק״: הכפתור נלכד לפני ההבטחה, וכישלון מוצג (לא ״הועתק״ שקרי) */
+function copyFlash(b,ok){
+  if(!ok) refToast("ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)","block");
+  if(!b) return; if(b.dataset.copyO==null) b.dataset.copyO=b.textContent;
+  clearTimeout(b._copyT); b.textContent=ok?"הועתק":"לא הועתק";
+  b._copyT=setTimeout(()=>{ b.textContent=b.dataset.copyO; delete b.dataset.copyO; },1400);
+}
+function copyText(b,txt,ta){
+  const fb=()=>{ let ok=false; if(ta){ try{ ta.focus(); ta.select(); ok=document.execCommand("copy"); }catch(e){ ok=false; } } copyFlash(b,ok); };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>copyFlash(b,true)).catch(fb); return; } }catch(e){}
+  fb();
+}
+on($("bPathCopy"),e=>{ const b=e&&e.currentTarget, ta=$("pathOut"); if(!ta) return; ta.focus(); ta.select(); copyText(b,ta.value,ta); });
 on($("bRecStart"),()=>{recStart();renderRec();});
 on($("bRecStop"),recStop);
-on($("bRecCopy"),()=>{ const ta=$("recOut"); if(!ta) return;
-  ta.value=REC.rows.length?recCSV():""; ta.focus(); ta.select();
-  try{ navigator.clipboard&&navigator.clipboard.writeText(ta.value); }catch(e){}
-  try{ document.execCommand("copy"); }catch(e){} });
+on($("bRecCopy"),e=>{ const b=e&&e.currentTarget, ta=$("recOut"); if(!ta) return;
+  ta.value=REC.rows.length?recCSV():""; ta.focus(); ta.select(); copyText(b,ta.value,ta); });
 on($("bHeat"),()=>{ const b2=buildHeat(3);
   if(b2&&$("kHeatGo").checked){ const f=mouthFrame(aimHive());
     setPose2(b2.x,b2.z,Math.atan2(f.c.x-M(b2.x),f.c.z-M(b2.z))*180/Math.PI); } });
@@ -9302,14 +9310,11 @@ function solveAvgHere(){
 }
 on($("bLogClear"),()=>{ shotLog.length=0; renderLog(); clearTrails(); });
 on($("bForget"),forgetParams);
-on($("bCopyP"),e=>{
+on($("bCopyP"),e=>{ const b=e&&e.currentTarget;
   const txt=JSON.stringify({params:P,ball:BALLSETS[kind],aim:aim,kind:kind,
     lips:{low:+lipY(-1).toFixed(2),high:+lipY(1).toFixed(2)},
     shots:shotLog.slice(-40)},null,2);
-  const done=()=>{ const t=e.currentTarget; const o=t.textContent;
-    t.textContent="הועתק"; setTimeout(()=>t.textContent=o,1400); };
-  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,done);
-  else done();
+  copyText(b,txt,null);
 });
 /* ── בורר רמת האוטונומי, שורה לכל רובוט כולל שלי ── */
 function refreshAutoRows(){
@@ -9356,12 +9361,8 @@ on($("bTeachRun"),()=>{
   pathGo("teach");
 });
 on($("bTeachToPath"),()=>{ if(TEACH.on) teachStop(); teachToPath(); });
-on($("bTeachCopy"),e=>{
-  const txt=$("teachOut").value;
-  const done=()=>{ const t=e.currentTarget, o=t.textContent;
-    t.textContent="הועתק"; setTimeout(()=>t.textContent=o,1300); };
-  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,done);
-  else done();
+on($("bTeachCopy"),e=>{ const b=e&&e.currentTarget, ta=$("teachOut");
+  copyText(b,ta.value,ta);
 });
 /* ══════ חלון הגדרות המשחק ══════ */
 const SKEY="biobuzz_setup_v1";
