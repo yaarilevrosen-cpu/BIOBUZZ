@@ -41,6 +41,31 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(r.hs<=1, `נהג אנושי ברשת לא יורה מהר מהמשגר (${r.hs} ב-8 פריימים)`);
 }
 
+/* 3 · אורח שעוזב חדר: אין מאץ׳ רפאים, אין חריגות, אין שיא מזויף. netOnState דוחה תמונות פגומות */
+{
+  const r=await E(()=>{ const S=__sim; S.MT.cd=0; S.gameStart(true); S.matchStart(); S.advance(60,1/60);
+    const pk=S.netPack(); S.matchStop(); S.gameStart(false);
+    const rec0=localStorage.getItem('biobuzz_records_v1');
+    S.NET.mode='guest'; S.netOnState(pk.buffer.slice(0)); S.netOnState(pk.buffer.slice(0)); S.netGuestStep(0.05);
+    const holes=S.BOTS.some(b=>{ for(let i=0;i<b.clip.length;i++) if(typeof b.clip[i]!=='string') return true; return false; });
+    const g={on:S.MATCH.on};
+    S.netClose('');
+    let ex=[]; for(let i=0;i<220;i++){ try{ S.advance(0.5,1/60);}catch(e){ ex.push(String(e).slice(0,80)); } }
+    /* תמונות פגומות */
+    S.NET.mode='guest'; const n0=S.NET.snaps.length;
+    const bad=[new ArrayBuffer(7), new Float32Array(12).buffer, (()=>{ const a=S.netPack(); a[9]=50; return a.buffer; })(),
+      (()=>{ const a=S.netPack(); a[12]=NaN; return a.buffer; })(), (()=>{ const a=S.netPack(); if(a[9]>0) a[33]=99; else a[3]=77; return a.buffer; })()];
+    for(const x of bad) S.netOnState(x);
+    const n1=S.NET.snaps.length; S.netOnState(S.netPack().buffer); const n2=S.NET.snaps.length; S.NET.snaps.length=0; S.NET.mode='solo';
+    return {holes,g,after:{on:S.MATCH.on,ph:S.MATCH.phase,bots:S.BOTS.map(b=>b.on)},nex:ex.length,ex:ex.slice(0,2),rec0,rec1:localStorage.getItem('biobuzz_records_v1'),n0,n1,n2}; });
+  ok(r.g.on===true,'אורח רואה מאץ׳ פעיל מהמארח');
+  ok(!r.holes,'מחסנית בוט מרוחק בלי חורים');
+  ok(r.after.on===false&&!r.after.bots.some(Boolean), `אחרי עזיבה המאץ׳ נעצר והבוטים כבויים (${JSON.stringify(r.after)})`);
+  ok(r.nex===0, 'אין חריגות אחרי העזיבה '+r.ex.join(' | '));
+  ok(r.rec0===r.rec1, 'לא נשמר שיא מזויף');
+  ok(r.n1===r.n0&&r.n2===r.n0+1, `תמונות פגומות נדחות (${r.n0}→${r.n1}→${r.n2})`);
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');

@@ -7697,6 +7697,7 @@ function placeAllAtStart(){
   }
 }
 function matchStart(){
+  MATCH.netMirror=false;
   if(typeof GEN!=="undefined"&&GEN.running&&!GEN.inEval){ refToast("המחולל רץ — חכה שיסיים או עצור אותו","block"); return; }
   if(typeof vrecMatchStart==="function"&&!(typeof GEN!=="undefined"&&GEN.running)&&!fastMode) try{ vrecMatchStart(); }catch(e){}
   /* ספירה לאחור לפני שהשעון רץ — כמו על המגרש */
@@ -8260,6 +8261,8 @@ function updateMatch(dt){
       for(const b of BOTS) b.autoPark=MT.auto>0&&b.on&&!!b.body&&botInLZ(b); }
     /* בזמן המעבר הכיתוב סופר אחורה, אז הוא צריך רענון בכל פריים */
     if(MATCH.phase==="מעבר"||MATCH.t<2.5) showBanner();
+    /* v63: מאץ׳ שהגיע מהמארח (אורח ברשת) לא נשמר כאן — לא שיא, לא עונה, לא שידור חוזר */
+    if(MATCH.netMirror&&MATCH.t>=tEnd()){ MATCH.on=false; MATCH.phase="סיום"; return; }
     if(MATCH.t>=tEnd()){ MATCH.final={red:scoreAlly("red").total, blue:scoreAlly("blue").total};
       MATCH.on=false; MATCH.phase="סיום"; MATCH.locked=false;
       MATCH.endT=simT; MATCH.rp=refRP();
@@ -11599,11 +11602,27 @@ function netGuestLeave(){
   document.body.classList.remove("netguest");
   for(const m of NET.pool) if(m) m.visible=false;
   if(typeof traj!=="undefined") traj.visible=showTraj;
+  /* v63: המאץ׳ שהאורח ראה היה של המארח — עוצרים אותו בלי שידור חוזר ובלי שיאים,
+     ומחזירים את הבוטים למצב רגיל (אחרת המאץ׳ ממשיך לרוץ כאן כרפאים) */
+  MATCH.on=false; MATCH.cd=0; MATCH.netMirror=false;
+  try{ matchStop(); }catch(e){}
+  gameStart(false);
   stageMatch(); homeRobot();
 }
+/* מספר הכדורים במחסנית של בוט מרוחק — מחסנית אמיתית עם סוגים, לא מערך עם חורים */
+function netClipTo(bb,n){ n=Math.max(0,Math.min(4,n|0));
+  if(bb.clip.length>n) bb.clip.length=n;
+  while(bb.clip.length<n) bb.clip.push("pollen"); }
 function netOnState(buf){
+  /* v63: תמונה פגומה (אורך, מספר כדורים, ערכים לא סופיים) — מתעלמים ממנה */
+  if(!buf||typeof buf.byteLength!=="number"||buf.byteLength%4||buf.byteLength<30*4||buf.byteLength>(30+60*4)*4) return;
   const a=new Float32Array(buf);
   if(a[0]!==NET_MAGIC) return;
+  const n=a[9];
+  if(!(n>=0&&n<=60&&n===Math.floor(n)&&a.length===30+n*4)) return;
+  for(let i=0;i<a.length;i++) if(!isFinite(a[i])) return;
+  if(!(a[3]>=0&&a[3]<=5)) return;
+  for(let i=0;i<n;i++){ const k=a[33+i*4]; if(!(k>=0&&k<NET_KINDS.length)) return; }
   NET.snaps.push({at:performance.now(),a});
   if(NET.snaps.length>4) NET.snaps.shift();
 }
@@ -11665,7 +11684,7 @@ function netGuestStep(dt){
   botBody.position.set(M(L(10)),0,M(L(11))); bot.yaw=LA(12);
   for(let i=0;i<3;i++){ const bb=BOTS[i]; if(!bb) continue; setR(i+1,bb.group);
     if(bb.body){ bb.body.position.set(M(L(10+(i+1)*5)),0,M(L(11+(i+1)*5))); bb.yaw=LA(12+(i+1)*5);
-      bb.on=b[14+(i+1)*5]>0.5; bb.clip.length=b[13+(i+1)*5]|0; } }
+      bb.on=b[14+(i+1)*5]>0.5; netClipTo(bb,b[13+(i+1)*5]); } }
   bot.mag=b[13]|0;
   /* כדורים — לפי הסדר; אותו אינדקס באותו סוג מוחלק, אחרת קופץ */
   const n=b[9]|0, na=a[9]|0;
@@ -11678,7 +11697,7 @@ function netGuestStep(dt){
   if(hiveRed) hiveSet(hiveRed,L(7)); if(hiveBlue) hiveSet(hiveBlue,L(8));
   /* שעון וניקוד */
   const ph=b[3]|0;
-  MATCH.cd=ph===5?b[4]:0; MATCH.on=ph>=1&&ph<=3; MATCH.t=b[2];
+  MATCH.cd=ph===5?b[4]:0; MATCH.on=ph>=1&&ph<=3; MATCH.t=b[2]; MATCH.netMirror=true;
   MATCH.phase=ph===4?"סיום":ph>=1&&ph<=3?PH[ph-1][0]:"idle";
   NET.score=[b[5],b[6]];
   clkT+=dt; if(clkT>0.1){ clkT=0; refreshClock(); netGuestScore(); magHud(); }
