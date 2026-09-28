@@ -5467,6 +5467,8 @@ function aiIntake(b,dt){
   if(b.clip.length>=AIC.magCap) return;
   const f=aiForward(b), rgv={x:-f.z,z:f.x};
   const gap=BLD?bldGapBot(b):P.intakeGap;
+  /* v62: בוט מעלית לא לוקח נקטר של היריב (G408) — הוא לא יכול להפקיד אותו, והוא תופס מקום */
+  const noOpp=!!BLD&&!!bldBot(b).lift;
   /* v61: הפתחים של הבנייה של הבוט — קדימה, ואם יש גם מאחור */
   const MS=BLD?bldBotMouths(b):[{s:1,hw:0,R:AIC.intakeR,F:P.intakeF,cap:4.0,center:0}];
   for(const mo of MS){
@@ -5482,6 +5484,7 @@ function aiIntake(b,dt){
     const d=Math.hypot(dx,dy,dz);
     if(d>Rr) continue;
     if(BALLSETS[bb.kind].bd>gap+0.02) continue;   // נקטר לא נכנס בגרון צר
+    if(noOpp&&bb.kind!=="pollen"&&bb.kind!==b.ally) continue;
     if(d<M(mo.cap)&&(!mo.center||Math.abs(q.lat)<M(3.2))){ const kk=bb.kind; removeBall(bb); b.clip.push(kk);
       if(b.clip.length>=AIC.magCap) break; continue; }
     const k=mo.F*(1-d/Rr)/Math.max(d,1e-4);
@@ -14978,7 +14981,9 @@ function bldLiftSeek(b){
     const x=I(ball.body.position.x), z=I(ball.body.position.z);
     if(Math.abs(x)>HALF-4||Math.abs(z)>HALF-4||nearFl(x,z)) continue;
     const d=Math.hypot(x-px,z-pz); if(d<bd){ bd=d; best={x,z,loose:true,ref:ball}; } }
-  if(want!=="pollen"&&best) return best;
+  if(want!=="pollen"){ if(best) return best;
+    /* אין עדיין נקטר על הרצפה — מחכים ליד המקום שבו השחקן האנושי מכניס אותו (אזור הטעינה) */
+    const sg=b.ally==="red"?-1:1; return {x:sg*54,z:sg*35.25,loose:true,ref:null,wait:true}; }
   for(const fl of flowers){ if(fl===home||!flowerCount(fl)) continue; const f=bldFlowerInfo(fl); if(f.owner===b.ally) continue;
     const d=Math.hypot(fl.x-px,fl.z-pz)+6; if(d<bd){ bd=d; best=fl; } }
   return best;
@@ -15134,7 +15139,7 @@ function bldNetReset(){ if(!BLD) return; const had=BLD.remote||Object.keys(BLD.n
 (function(o){ const S=window.__sim; if(!S) return; for(const k in o){ try{ if(!(k in S)) S[k]=o[k]; }catch(e){} } })({BLD,BLD_PRESETS,BLD_DRIVE,BLD_INTAKE,BLD_SHOOT,bldAll,bldById,bldOf,bldMe,bldBot,bldSet,bldCheck,bldSum,bldOpen,bldClose,
   bldDup,bldDel,bldEditSet,bldRandomBots,bldLiftGo,bldLiftFlower,bldDeposit,bldTurCmd,bldTurAuto,bldMouths,bldBotMouths,bldNet,bldFromGuest,bldFromHost,
   bldNetReset,bldIsClassic,bldGapBot,bldAimErr,shotFwd,bldStepMe,vdMe,flowerPoints,fire,shotPose,refreshAim,mouthFrame,aimHive,solveAvgHere,
-  PADACT,PACTS,pathJava,aiCanEat,humSeat,humFree,bldFlowerInfo,bldEndgame,bldLiftTarget,bldLiftSeek,bldBotWantsLiftTest:bldBotWantsLift});
+  PADACT,PACTS,pathJava,aiCanEat,humSeat,humFree,bldFlowerInfo,bldEndgame,bldLiftTarget,bldLiftSeek,bldBotWantsLiftTest:bldBotWantsLift,bldHomeFlowerTest:bldHomeFlower,addBallTest:addBall});
 
 
 /* ── דיווח על באג ── */

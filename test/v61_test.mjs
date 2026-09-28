@@ -136,11 +136,15 @@ r=await E(()=>{ const S=__sim, b=S.BOTS[1]; S.bldSet(1,'lift'); const opp=b.ally
 ok(r.owner===r.opp&&r.avoided,'בוט מעלית לא מכניס פולן לפרח של היריב ('+JSON.stringify(r)+')');
 ok(r.wants===false,'נקטר לא נכנס לפרח לפני הדקה האחרונה (בוט מעלית מחזיק אותו)');
 
-// 6ג. מאץ׳ אמיתי: בוטי מעלית ממלאים פרח ובדקה האחרונה שמים עליו נקטר של הברית
-r=await E(()=>{ const S=__sim; for(let i=0;i<3;i++) S.bldSet(i,'lift'); S.GAME.randomRoles=false; S.gameStart(true); S.BOTS.forEach(b=>{ b.role='score'; b.ph='seek'; });
-  S.matchStart(); S.advance(175,1/60); const R=S.scoreAlly('red'), B=S.scoreAlly('blue');
-  const fl=S.flowers.map(f=>S.bldFlowerInfo(f)); S.matchStop&&S.matchStop(); return {red:R.flower, blue:B.flower, fl:fl.map(x=>x.n+(x.owner?x.owner[0]:'-')).join(' ')}; });
-ok(r.red+r.blue>0,'במאץ׳: בוטי המעלית לוקחים פרח עם נקטר בסוף (פרח: אדום '+r.red+', כחול '+r.blue+' · '+r.fl+')');
+// 6ג. הדקה האחרונה: בוט מעלית לוקח נקטר של הברית ושם אותו למעלה בפרח — הפרח עובר אליו
+r=await E(()=>{ const S=__sim; S.bldSet(0,'classic'); S.bldSet(1,'lift'); S.bldSet(2,'classic'); S.GAME.randomRoles=false; S.gameStart(true);
+  const b=S.BOTS[1]; S.BOTS.forEach(o=>{ o.role='score'; o.ph='seek'; if(o!==b){ o.on=false; o.group.visible=false; o.body.collisionResponse=false; o.body.position.set(9,0,9); } });
+  S.matchStart(); S.advance((S.MATCH.cd||0)+0.3,1/60); S.MATCH.t=S.MT.auto+S.MT.trans+S.MT.tele-55;          /* 55 שניות לסוף */
+  const home=S.bldHomeFlowerTest(b); b.clip.length=0; b.clip.push('pollen','pollen');
+  const px=S.I(b.body.position.x), pz=S.I(b.body.position.z); S.addBallTest(b.ally,px+(home.x-px)*0.35,3,pz+(home.z-pz)*0.35);
+  const eg=S.bldEndgame(); S.advance(30,1/60); const f=S.bldFlowerInfo(home); const all=S.flowers.map(x=>S.bldFlowerInfo(x));
+  S.matchStop&&S.matchStop(); return {eg, owner:f.owner, n:f.n, ally:b.ally, any:all.some(x=>x.owner===b.ally), lifted:b.lifted||0, clip:b.clip.slice()}; });
+ok(r.eg&&r.any,'דקה אחרונה: בוט מעלית שם נקטר של הברית למעלה ולוקח פרח ('+JSON.stringify(r)+')');
 
 // 7. חוקים במצב תחרות
 r=await E(id=>{ const S=__sim; const B=S.BLD.custom.find(x=>x.id===id); B.shoot='diff'; B.n2=2; B.intake='rollers'; B.sides=2; B.drive='mecanum';
