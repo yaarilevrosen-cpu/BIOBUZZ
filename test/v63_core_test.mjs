@@ -170,6 +170,33 @@ const E=(f,a)=>page.evaluate(f,a);
   await E(()=>__sim.matchStop());
 }
 
+/* 19 · חניה באזור הטעינה בדקה האחרונה: הנקטר של השחקן האנושי לא נופל על הרובוט ולא נספר כ-G411 */
+{
+  const r=await E(()=>{ const S=__sim, I=S.I; S.MT.cd=0; S.gameStart(false); S.REF.on=true; S.matchStart(); S.advance(85,1/60);
+    const sg=S.myAlly()==='red'?-1:1; S.setPose(sg*63,sg*35,sg<0?90:-90); S.setIntake(false); S.advance(70,1/60);
+    const me=[I(S.botBody.position.x),I(S.botBody.position.z)];
+    const onBot=S.BALLS.filter(b=>b.lastBy==='hp'&&Math.hypot(I(b.body.position.x)-me[0],I(b.body.position.z)-me[1])<8).length;
+    const under=S.BALLS.filter(b=>I(b.body.position.y)<-0.5).length;
+    const g=S.REF.log.filter(e=>e.rule==='G411'&&e.team==='me').length; const entered=S.REF.hp[S.myAlly()].entered;
+    S.matchStop(); return {g,onBot,under,entered,me}; });
+  ok(r.g===0, `אין G411 לרובוט שחונה באזור הטעינה (${r.g})`);
+  ok(r.onBot===0&&r.under===0, `נקטר לא נכנס לתוך הרובוט ולא מתחת לרצפה (${r.onBot}, ${r.under}; נכנסו ${r.entered})`);
+}
+/* 22 · G411 גם לבוט/נהג אנושי, לא רק לרובוט של המארח; פולן חוזר לא לגינה */
+{
+  const r=await E(()=>{ const S=__sim, I=S.I; S.MT.cd=0; S.gameStart(true); S.REF.on=true; S.matchStart(); S.advance(40,1/60);
+    const b=S.BOTS[0]; S.humSeat(b,'net','g'); b.hum.id='gH'; b.clip.length=0; b.clip.push('pollen','pollen','pollen','pollen');
+    b.body.position.set(S.M(0),0,S.M(20)); b.vx=b.vz=0;
+    for(let i=0;i<4;i++) S.addBall('pollen',[-4,4,0,2][i],0.4,20+[-5,-5,6,5][i]);
+    for(let i=0;i<60*8;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:false,aim:false,fc:true}); b.body.position.set(S.M(0),0,S.M(20)); S.advance(1/60,1/60); }
+    const g=S.REF.log.filter(e=>e.rule==='G411'&&e.team===b.name).length; S.humFree(b);
+    /* פולן שיוצא ליד הפינה חוזר מחוץ לגינה */
+    const sp=S.refBackSpot({x:60,z:60}); const bx=sp.x, bz=sp.z;
+    S.matchStop(); return {g,bx,bz}; });
+  ok(r.g>=1, `G411 נקרא גם לרובוט של נהג ברשת (${r.g})`);
+  ok(!(Math.abs(r.bz)>62&&Math.abs(r.bx)>40)&&Math.abs(r.bx)<=60.5&&Math.abs(r.bz)<=60.5, `פולן חוזר לא לגינה (${r.bx.toFixed(0)}, ${r.bz.toFixed(0)})`);
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');

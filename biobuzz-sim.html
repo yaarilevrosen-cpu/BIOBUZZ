@@ -6268,34 +6268,49 @@ function allianceScore(ally){
 /* ══════ מנוע חוקים ══════
    G411: מניעת גישה לכדורים. מזהים רובוט שעומד כמעט במקום מעל שלושה כדורים
    או יותר לאורך זמן. זו לא פסיקה רשמית — זו נורית אזהרה. */
-const RULE={hoardT:0,flags:[],lastFlag:0};
-function rulesStep(dt){
-  const sp=Math.hypot(botBody.velocity.x,botBody.velocity.z);
-  /* רק כדורים חופשיים על הרצפה: מה שבפרח או בגינה לא נחשב, ורובוט שאוסף
-     כרגע (חרטום פעיל ויש מקום) לא אוגר — הוא עובד. */
+const RULE={hoardT:0,flags:[],lastFlag:0,st:{},uiT:9,near:0};
+/* v63: כדור שהשחקן האנושי הכניס ועוד שוכב באזור הטעינה — לא ״נאגר״ ע״י רובוט שחונה שם */
+function ballInLZ(x,z){ for(const s of [1,-1]) if(inRect(x*s,z*s,-WALL_IN-1,-59.1+1,LZONE.red.z0-1,LZONE.red.z1+1)) return true; return false; }
+function hoardNear(rx,rz){
   let near=0;
-  const collecting=intake&&bot.mag<4;
   for(const b of balls){
     const x=I(b.body.position.x), z=I(b.body.position.z);
-    const dx=x-I(botBody.position.x), dz=z-I(botBody.position.z);
-    if(Math.hypot(dx,dz)>=14||I(b.body.position.y)>=6) continue;
+    if(Math.hypot(x-rx,z-rz)>=14||I(b.body.position.y)>=6) continue;
     let skip=false;
     for(const f of flowers) if(Math.hypot(x-f.x,z-f.z)<f.r+1) skip=true;
     if(Math.abs(z)>66&&Math.abs(x)>45) skip=true;
+    if(b.lastBy==="hp"&&ballInLZ(x,z)) skip=true;
     if(!skip) near++;
   }
-  if(sp<0.12&&near>=3&&!collecting) RULE.hoardT+=dt; else RULE.hoardT=Math.max(0,RULE.hoardT-dt*2);
-  if(RULE.hoardT>5&&simT-RULE.lastFlag>8){
-    RULE.lastFlag=simT;
-    RULE.flags.push({t:+simT.toFixed(1),rule:"G411",what:"עמידה על "+near+" כדורים"});
-    if(refActive()&&MATCH.on) refRepeat("G411","me",myAlly(),
-      "עומד על "+near+" כדורים ומונע מהיריב גישה אליהם",["major"]);
+  return near;
+}
+function rulesStep(dt){
+  /* רק כדורים חופשיים על הרצפה: מה שבפרח, בגינה או נקטר של השחקן האנושי באזור הטעינה לא נחשב,
+     ורובוט שאוסף כרגע (חרטום פעיל ויש מקום) לא אוגר — הוא עובד.
+     v63: לכל רובוט בזירה (מסך מפוצל, שלט, רשת, בוטים) — לא רק לרובוט של המארח */
+  let nearMe=0;
+  for(const r of refRobots()){
+    const me=r.id==="me", b=r.bot;
+    const S=me?RULE:(RULE.st[r.id]||(RULE.st[r.id]={hoardT:0,lastFlag:-99}));
+    const sp=Math.hypot(r.vx,r.vz);
+    const near=hoardNear(r.x,r.z); if(me) nearMe=near;
+    const collecting=me?(intake&&bot.mag<4):(b.clip.length<AIC.magCap&&(!b.hum||!!(b.hum.cmd&&b.hum.cmd.intake)));
+    if(sp<0.12&&near>=3&&!collecting) S.hoardT+=dt; else S.hoardT=Math.max(0,S.hoardT-dt*2);
+    if(S.hoardT>5&&simT-S.lastFlag>8){
+      S.lastFlag=simT;
+      RULE.flags.push({t:+simT.toFixed(1),rule:"G411",what:"עמידה על "+near+" כדורים",team:r.team});
+      if(refActive()&&MATCH.on) refRepeat("G411",r.team,r.ally,
+        "עומד על "+near+" כדורים ומונע מהיריב גישה אליהם",["major"]);
+    }
   }
+  RULE.near=nearMe;
+  /* v63: הלוח — עד ארבע פעמים בשנייה, ורק כשהוא על המסך (לא בכל צעד פיזיקה) */
+  RULE.uiT+=dt; if(RULE.uiT<0.25) return; RULE.uiT=0;
   const el=$("oRules");
-  if(el) el.innerHTML=
-    row("כדורים סביבי",near+"")+
+  if(el&&el.offsetParent!==null) el.innerHTML=
+    row("כדורים סביבי",nearMe+"")+
     row("שעון אגירה",fmt(RULE.hoardT,1)+" / 5.0 שנ׳",RULE.hoardT>3?"bad":"")+
-    row("אזהרות G411",RULE.flags.length+"",RULE.flags.length?"bad":"ok")+
+    row("אזהרות G411",RULE.flags.filter(f=>!f.team||f.team==="me").length+"",RULE.flags.length?"bad":"ok")+
     row("יריב חוסם קו ירי",OPP.on?(OPP.blocking?"כן":"לא"):"—",OPP.blocking?"bad":"")+
     row("זמן חסימה מצטבר",fmt(OPP.block,1)+" שנ׳");
 }
@@ -7876,16 +7891,21 @@ function hpEnter(ally,manual){
   if(!MATCH.on){ if(manual) refuse("G426","אין מאץ׳ — אין שחקן אנושי"); return false; }
   if(H.bank<=0){ if(manual) refuse("§10.3.1","לא נשאר נקטר באזור הברית"); return false; }
   const legal=hpLegal(ally);
+  if(!legal&&!manual) return false;
+  /* v63: הנקטר נכנס רק למקום פנוי באזור הטעינה — לא על רובוט שחונה שם ולא על כדור אחר */
+  const sg=ally==="red"?-1:1, rad=BALLSETS[ally].bd/2;
+  let spot=null;
+  const cand=[[64.6+(Math.random()-.5)*3,35.25+(Math.random()-.5)*8]];
+  for(const cx of [64.6,62.2,67.4]) for(let cz=LZONE.blue.z0+3;cz<=LZONE.blue.z1-3;cz+=3) cand.push([cx,cz]);
+  for(const [cx,cz] of cand){ if(ballFree(sg*cx,sg*cz,rad,{})){ spot={x:sg*cx,z:sg*cz}; break; } }
+  if(!spot){ if(manual) refuse("§10.3.1","אזור הטעינה תפוס — השחקן האנושי מחכה שיתפנה"); return false; }
   if(!legal){
-    if(!manual) return false;
     H.fouls++;
     refCall({rule:"G426",team:"hp-"+ally,ally,sev:["minor"],
              what:"נקטר נכנס לפני היפוך ולפני הדקה האחרונה"});
   } else if(!lastMinute()) H.byTip++;
   H.bank--; H.entered++;
-  const x=(ally==="red"?-1:1)*(64.6+(Math.random()-.5)*3);
-  const z=(ally==="red"?-35.25:35.25)+(Math.random()-.5)*8;
-  const rec=addBall(ally,x,3.2,z); rec.lastBy="hp";
+  const rec=addBall(ally,spot.x,3.2,spot.z); rec.lastBy="hp";
   updateHUD();
   return true;
 }
@@ -7897,9 +7917,36 @@ function refExit(b){
   const x=I(b.body.position.x), z=I(b.body.position.z), k=b.kind;
   removeBall(b);
   if(k==="pollen"){
-    const c=v=>Math.max(-(HALF-4),Math.min(HALF-4,v));
+    /* v63: ±60 — לא לתוך הגינות שבפינות ולא לאזור הטעינה; המקום המדויק נבחר כשהוא חוזר */
+    const c=v=>Math.max(-60,Math.min(60,v));
     REF.back.push({t:simT+3,x:c(x),z:c(z)});
   } else if(REF.hp[k]) { REF.hp[k].bank++; }
+}
+/* v63: האם אפשר להניח כאן כדור: לא בתוך רובוט, לא על כדור, לא בפרח; o.zones — גם לא בגינה או באזור טעינה */
+function ballFree(x,z,rad,o){
+  if(Math.abs(x)>HALF-rad-0.5||Math.abs(z)>HALF-rad-0.5) return false;
+  const robs=[{x:I(botBody.position.x),z:I(botBody.position.z),yaw:bot.yaw,hw:P.botW/2,hl:P.botL/2}];
+  for(const b of BOTS) if(b.on&&b.body) robs.push({x:I(b.body.position.x),z:I(b.body.position.z),yaw:b.yaw||0,hw:AIC.W/2,hl:AIC.L/2});
+  for(const r of robs){ const dx=x-r.x, dz=z-r.z, sn=Math.sin(r.yaw), cs=Math.cos(r.yaw);
+    if(Math.abs(dx*sn+dz*cs)<r.hl+rad+0.8&&Math.abs(dx*cs-dz*sn)<r.hw+rad+0.8) return false; }
+  for(const b of balls){ if(Math.hypot(I(b.body.position.x)-x,I(b.body.position.z)-z)<rad+b.def.bd/2+0.3&&I(b.body.position.y)<10) return false; }
+  for(const f of flowers) if(Math.hypot(x-f.x,z-f.z)<f.r+rad+1) return false;
+  if(o&&o.zones){ if(Math.abs(z)>62&&Math.abs(x)>40) return false; if(ballInLZ(x,z)) return false; }
+  return true;
+}
+/* פולן חוזר: המקום הפנוי הקרוב לנקודה שבה יצא */
+function refBackSpot(q){
+  const rad=BALLSETS.pollen.bd/2;
+  for(let d=0;d<=30;d+=3) for(let k=0;k<(d?12:1);k++){ const a=k*Math.PI/6;
+    const x=Math.max(-60,Math.min(60,q.x+d*Math.cos(a))), z=Math.max(-60,Math.min(60,q.z+d*Math.sin(a)));
+    if(ballFree(x,z,rad,{zones:true})) return {x,z}; }
+  return null;
+}
+function refBackStep(){
+  for(let i=REF.back.length-1;i>=0;i--) if(simT>=REF.back[i].t){
+    const q=REF.back[i], sp=refBackSpot(q);
+    if(!sp){ q.t=simT+1; continue; }             /* אין מקום פנוי — צוות הזירה מחכה רגע */
+    REF.back.splice(i,1); addBall("pollen",sp.x,0.4,sp.z); }
 }
 
 /* ── כל הרובוטים בזירה, בפורמט אחד ── */
@@ -8050,8 +8097,7 @@ function refStep(dt){
       refToast("G404 · אזהרה — הרובוט זז אחרי סוף המאץ׳","warn");
     }
     if(refActive()){
-      for(let i=REF.back.length-1;i>=0;i--) if(simT>=REF.back[i].t){
-        const q=REF.back[i]; REF.back.splice(i,1); addBall("pollen",q.x,0.4,q.z); }
+      refBackStep();
       refPins(refRobots(),dt);
       refLegs(dt);
     }
@@ -8060,8 +8106,7 @@ function refStep(dt){
   }
   const ph=matchPhase(MATCH.t);
   /* פולן שיצא חוזר */
-  for(let i=REF.back.length-1;i>=0;i--) if(simT>=REF.back[i].t){
-    const q=REF.back[i]; REF.back.splice(i,1); addBall("pollen",q.x,0.4,q.z); }
+  refBackStep();
   /* שחקנים אנושיים */
   for(const a of ["red","blue"]){
     const H=REF.hp[a];
@@ -13117,7 +13162,7 @@ window.__sim={
   ballsAt(){ return balls.map(b=>({k:b.kind,p:[+I(b.body.position.x).toFixed(2),+I(b.body.position.y).toFixed(2),+I(b.body.position.z).toFixed(2)],v:+b.body.velocity.length().toFixed(3)})); }
 };
 /* v63 · ליבה — פונקציות לבדיקות */
-Object.assign(window.__sim,{netOnMsg,mpSumShow,netStr,rrFromSim,rrToSim,rrSetRot,rrMapText});
+Object.assign(window.__sim,{netOnMsg,mpSumShow,netStr,rrFromSim,rrToSim,rrSetRot,rrMapText,refBackSpot,ballFree,hoardNear});
 Object.defineProperty(window.__sim,"simT",{get(){ return simT; },configurable:true});
 
 /* ══════ v48 — גיבוי, שחזור ואיפוס הכול ══════
