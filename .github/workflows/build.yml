@@ -8,16 +8,24 @@ on:
   pull_request:
   workflow_dispatch:
 
+# הרשאות מינימליות: קריאה בלבד. רק שלב ה-Release (בתגית) מקבל כתיבה.
 permissions:
-  contents: write
+  contents: read
+
+# ריצה אחת לכל ענף/PR: דחיפה חדשה מבטלת את הקודמת. בתגית v* — אף פעם לא מבטלים (גרסה חצי-משוחררת).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 # כל הפעולות בגרסאות שרצות על node 24 (בלי אזהרת ״node 20 יוצא משימוש״).
-# אובונטו נעול על 24.04: ubuntu-latest עובר לאובונטו 26 — מעבר בכוונה, אחרי בדיקה, לא בהפתעה.
+# הפעולות של GitHub עצמה (actions/*) על תגית ראשית; פעולות של צד שלישי נעולות ל-SHA מלא (עם הגרסה בהערה).
+# המכונות נעולות לגרסה: ubuntu-24.04, windows-2025, macos-15 (אפל סיליקון).
+# ה-latest זז לבד (ubuntu-latest עובר לאובונטו 26 וכו׳) — מעבר עושים בכוונה, אחרי בדיקה, לא בהפתעה.
 
 jobs:
   test:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -28,33 +36,71 @@ jobs:
         run: python build.py && mkdir -p app/sim && cp dist/BIOBUZZ-lab.html app/sim/index.html
       - name: התקנת כלים
         run: |
-          cd test && npm install && npx playwright install --with-deps chromium
+          cd test && npm ci && npx playwright install --with-deps chromium
           cd ../app && npm ci
       - name: בדיקות — הסימולטור בדפדפן
         run: |
           cd test && ./mk.sh
           (python3 -m http.server 8899 >/dev/null 2>&1 &)
-          sleep 1
-          for t in smoke name_test v60_test v61_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test; do node $t.mjs; done
+          # מחכים שהשרת יענה (עד 20 שניות), במקום ״sleep 1״ ולקוות
+          for i in $(seq 1 40); do curl -sf -o /dev/null http://127.0.0.1:8899/sim.html && break; sleep 0.5; done
+          curl -sf -o /dev/null http://127.0.0.1:8899/sim.html || { echo "::error::the static test server did not answer within 20 s"; exit 1; }
+          # mp2_test מפעיל בעצמו את גשר הטלפון (python3 ../pad/padbridge.py --port 9662 --no-adb) ומכבה אותו בסוף.
+          # dist_test בודק את dist/BIOBUZZ-lab.html המלא (ה-CAD ב-cad/*.json שמור בריפו, build.py מטמיע אותו).
+          for t in smoke name_test v60_test v61_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test \
+                   auto_test brain_test g304_test regress_test review_test teach_test v42_test dist_test mp2_test \
+                   v63_bld_test v63_core_test v63_ui_test v63_wiz_test; do
+            echo "::group::$t"; node $t.mjs; echo "::endgroup::"
+          done
+      - name: בדיקות — autosel (חניה ידועה כלא-יציבה — ניסיון חוזר אחד, גלוי)
+        run: |
+          cd test
+          # ״ירי מקדים וחניה״ נכשל לפעמים (בערך 1 מ-3). לא מסתירים: אם זו הבדיקה היחידה שנכשלה — מנסים שוב פעם אחת
+          # ומדפיסים אזהרה. כל כישלון אחר, או כישלון גם בניסיון השני — נכשל.
+          set +e
+          node autosel_test.mjs 2>&1 | tee autosel1.log; rc=${PIPESTATUS[0]}
+          set -e
+          if [ "$rc" != 0 ]; then
+            fails=$(sed -n '/^autosel_test: /,$p' autosel1.log | tail -n +2)
+            if [ "$(printf '%s\n' "$fails" | grep -c .)" = 1 ] && printf '%s' "$fails" | grep -q '^ירי מקדים וחניה'; then
+              echo "::warning title=autosel_test flaky::parking check failed on the first try, retrying once: $fails"
+              node autosel_test.mjs
+            else
+              exit "$rc"
+            fi
+          fi
       - name: בדיקות — האפליקציה
+        run: |
+          cd test
+          timeout 120 node bridge_test.mjs
+          timeout 600 xvfb-run -a node app_test.mjs
+          timeout 600 xvfb-run -a node app_p2_test.mjs
+          timeout 600 xvfb-run -a node app_shell_test.mjs
+          timeout 600 xvfb-run -a node app_v56_test.mjs
+          timeout 600 xvfb-run -a node app_ai_test.mjs
+          timeout 600 xvfb-run -a node app_drag_test.mjs
+          timeout 600 xvfb-run -a node v63_app_test.mjs
+      # סנכרון מול Supabase — שימו לב: זה פרויקט ה-Supabase של הייצור (הכתובת קבועה ב-app/sync.js, בלי דריסה מהסביבה),
+      # עם חשבונות בדיקה ייעודיים. לכן: לא רץ ב-PR ממזלג (אין שם סודות, וקוד זר לא נוגע בייצור).
+      # פרויקט בדיקות נפרד (BB_SUPABASE_URL/BB_SUPABASE_ANON) יתאפשר רק כש-sync.js יקרא את הכתובת מהסביבה.
+      - name: בדיקות — ענן (Supabase)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           BB_TEST_EMAIL: ${{ secrets.BB_TEST_EMAIL }}
           BB_TEST_EMAIL2: ${{ secrets.BB_TEST_EMAIL2 }}
           BB_TEST_PASS: ${{ secrets.BB_TEST_PASS }}
         run: |
           cd test
-          timeout 120 node bridge_test.mjs
+          if [ -z "$BB_TEST_EMAIL" ] || [ -z "$BB_TEST_PASS" ]; then
+            echo "::warning title=cloud tests skipped::BB_TEST_EMAIL / BB_TEST_PASS secrets are missing — sync_test and the sync part of app_cloud_test were NOT run"
+          fi
           timeout 300 node sync_test.mjs
-          timeout 600 xvfb-run -a node app_test.mjs
+          # בלי סודות app_cloud_test עדיין בודק את העדכון האוטומטי (שרת מקומי), ומדלג על הסנכרון
           timeout 600 xvfb-run -a node app_cloud_test.mjs
-          timeout 600 xvfb-run -a node app_p2_test.mjs
-          timeout 600 xvfb-run -a node app_shell_test.mjs
-          timeout 600 xvfb-run -a node app_v56_test.mjs
-          timeout 600 xvfb-run -a node app_ai_test.mjs
 
   windows:
     needs: test
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
@@ -82,7 +128,7 @@ jobs:
 
   mac:
     needs: test
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
@@ -98,7 +144,22 @@ jobs:
       - name: DMG — אפל סיליקון ואינטל (חתימה מקומית בלבד, בלי אישור אפל)
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: cd app && npm ci && npx electron-builder --mac dmg --arm64 --x64 --publish never
+        run: |
+          set -o pipefail   # בלי זה ״| tee״ מחזיר תמיד הצלחה
+          cd app && npm ci
+          # hdiutil במכונות של GitHub נכשל לפעמים (״Resource busy״ וכו׳) — עד 3 ניסיונות.
+          # כשכל הניסיונות נכשלים: סוף הלוג מוצג כהערת שגיאה בראש הריצה, בלי לחפור בלוג.
+          for i in 1 2 3; do
+            if npx electron-builder --mac dmg --arm64 --x64 --publish never 2>&1 | tee "../dmg-$i.log"; then exit 0; fi
+            echo "::warning title=DMG build::attempt $i/3 failed"
+            rm -rf release/*.dmg release/*.blockmap
+            [ "$i" = 3 ] || sleep 15
+          done
+          for i in 1 2 3; do
+            msg=$(tr -d '\r' < "../dmg-$i.log" | grep -v '^[[:space:]]*$' | tail -n 25 | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+            echo "::error title=DMG build failed (attempt $i/3)::$msg"
+          done
+          exit 1
       - name: בדיקה — האפליקציה נפתחת במק
         run: |
           APP="$(ls -d app/release/mac-arm64/*.app | head -1)"
@@ -129,10 +190,10 @@ jobs:
         run: cd app && npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
       - name: AppImage ו-deb
         run: cd app && npm ci && npx electron-builder --linux AppImage deb --x64 --publish never
+      # רץ גם בתגית: זו בדיקה של הקובץ שבאמת משתחרר (הגרסה ב-package.json עודכנה מהתגית, והבדיקה קוראת אותה משם)
       - name: בדיקה — האפליקציה הארוזה עולה
-        if: "!startsWith(github.ref, 'refs/tags/v')"
         run: |
-          cd test && npm install && npx playwright install --with-deps chromium
+          cd test && npm ci && npx playwright install --with-deps chromium
           timeout 400 xvfb-run -a node linux_pkg_test.mjs
       - uses: actions/upload-artifact@v6
         with:
@@ -147,11 +208,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [windows, mac, linux]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v7
         with: { path: out, merge-multiple: true }
       - run: ls -la out
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: out/*
           generate_release_notes: true
