@@ -1363,6 +1363,102 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   #ppDrills{display:flex; flex-direction:column; gap:6px} #ppDrills[hidden], body.pplive #ppDrills, body.play.netguest #ppDrills, body.play.netguest #ppDrillBtn{display:none} #ppDrills button{font-size:11.5px; white-space:nowrap; padding-inline:4px}
   .ppDrillGrid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px} .ppDrillGrid button{white-space:normal!important; line-height:1.25; padding-block:6px}
   #setBody #oSnd{display:none}
+  /* ══ v63 wiz — אשף הגדרה אישית (CSS) ══ */
+  #wizard{position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center; padding:16px;
+    background:radial-gradient(circle at 50% 28%,rgba(255,176,32,.13),rgba(8,11,14,.93) 62%); transition:background .35s}
+  #wizard[hidden]{display:none}
+  #wizard.peek{background:linear-gradient(to bottom,rgba(8,11,14,.25),rgba(8,11,14,.55))}
+  .wzCard{width:min(540px,100%); max-height:calc(100dvh - 32px); background:var(--panel); border:1px solid var(--line2); border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6); display:flex; flex-direction:column; overflow:hidden}
+  .wzTop{display:flex; align-items:center; gap:10px; padding:16px 20px 0}
+  .wzDots{display:flex; gap:6px; align-items:center; flex:1}
+  .wzDots i{width:8px; height:8px; border-radius:4px; background:var(--line2); transition:width .25s, background .25s}
+  .wzDots i.done{background:rgba(255,176,32,.45)} .wzDots i.on{width:24px; background:var(--accent)}
+  .wzTop .wzN{font-size:11.5px; color:var(--dim); font-family:var(--mono)}
+  .wzTop .wcLink{flex:0 0 auto; padding:4px 2px; font-size:12.5px}
+  .wzBody{padding:14px 20px 6px; overflow:auto; display:flex; flex-direction:column; gap:12px; min-height:0}
+  .wzHead{display:flex; gap:12px; align-items:center}
+  .wzHead>i{font-style:normal; font-size:30px; line-height:1; width:48px; height:48px; flex:0 0 48px; display:grid; place-items:center;
+    border-radius:14px; background:rgba(255,176,32,.12); border:1px solid rgba(255,176,32,.28)}
+  .wzHead h2{font-family:var(--display); font-weight:400; font-size:21px; margin:0; line-height:1.2}
+  .wzHead p{margin:2px 0 0; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .wzLbl{font-size:11.5px; color:var(--dim); letter-spacing:.02em; margin:2px 0 -4px; font-weight:500}
+  .wzOpts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+  .wzOpts.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .wzOpt{display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:start; padding:11px 12px; border-radius:13px; position:relative; min-width:0}
+  .wzOpt>i{font-style:normal; font-size:20px; line-height:1.1; margin-bottom:2px}
+  .wzOpt>b{font-size:14px; font-weight:600; color:var(--ink)} .wzOpt>small{font-size:11.5px; color:var(--muted); line-height:1.4}
+  .wzOpt.on{background:rgba(255,176,32,.13); border-color:var(--accent)} .wzOpt.on>b{color:var(--accent)}
+  .wzOpt>em{position:absolute; top:8px; inset-inline-end:8px; font-style:normal; font-size:10.5px; font-weight:600; color:#1A1200;
+    background:var(--accent2); border-radius:999px; padding:1px 7px}
+  .wzOpt.big{align-items:center; text-align:center; padding:16px 10px}
+  .wzOpt.big>i{font-size:26px; font-family:var(--display)}
+  .wzLangHe>b::after{content:"עברית"} .wzLangEn>b::after{content:"English"} .wzLangHe>i::after{content:"א"} .wzLangEn>i::after{content:"A"}
+  .wzMeas{display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:12.5px; color:var(--ink2)}
+  .wzMeas b{font-family:var(--mono); color:var(--accent); font-size:15px}
+  .wzMeas .sp{flex:1}
+  .wzMeas button{flex:0 0 auto; padding:5px 10px; font-size:12px}
+  .wzBar{flex:1; height:6px; border-radius:3px; background:var(--line); overflow:hidden}
+  .wzBar>span{display:block; height:100%; width:0; background:var(--accent); animation:wzFill 2s linear forwards}
+  @keyframes wzFill{to{width:100%}}
+  .wzField{display:flex; flex-direction:column; gap:6px}
+  #wzName{font-size:16px; padding:10px 12px; border-radius:11px}
+  .wzRow{display:flex; flex-wrap:wrap; gap:6px}
+  .wzRow button{flex:0 0 auto}
+  .wzEmo{display:grid; grid-template-columns:repeat(12,minmax(0,1fr))} .wzEmo button{font-size:19px; padding:4px 0; border-radius:9px; line-height:1.2}
+  .wzCol button{width:28px; height:28px; border-radius:50%; padding:0; border:2px solid transparent; box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+  .wzCol button.on{border-color:var(--ink); box-shadow:0 0 0 2px var(--panel) inset}
+  .wzSkin{display:grid; grid-template-columns:repeat(11,minmax(0,1fr))} .wzSkin button{width:100%; height:28px; border-radius:8px; padding:0; border:2px solid var(--line2)}
+  .wzSkin button.on{border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,176,32,.35)}
+  .wzAlly{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .wzAlly button{font-weight:600; padding:10px}
+  .wzAlly button[data-wz="ally:red"].on{border-color:var(--red); color:var(--red); background:rgba(242,84,91,.13)}
+  .wzAlly button[data-wz="ally:blue"].on{border-color:var(--blue); color:var(--blue); background:rgba(76,154,245,.13)}
+  .wzMe{display:flex; align-items:center; gap:10px}
+  .wzMe>i{font-style:normal; font-size:24px; width:42px; height:42px; flex:0 0 42px; border-radius:50%; display:grid; place-items:center; background:var(--panel2); border:2px solid var(--pc,var(--accent))}
+  .wzMe>.wzField{flex:1}
+  .wzKeys{display:flex; flex-wrap:wrap; gap:6px 12px; padding:10px 12px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:12px; color:var(--muted)}
+  .wzKeys span{display:inline-flex; gap:5px; align-items:center} .wzKeys u{text-decoration:none; font-weight:600; color:var(--ink2); margin-inline-end:2px}
+  .wzKeys kbd{font-family:var(--mono); font-size:11px; color:var(--ink); background:var(--bg); border:1px solid var(--line2); border-bottom-width:2px; border-radius:5px; padding:1px 6px}
+  .wzNote{margin:0; font-size:12px; color:var(--muted); line-height:1.55}
+  .wzNote.ok{color:var(--good)}
+  .wzLinks{display:flex; flex-wrap:wrap; gap:8px}
+  .wzLinks button{flex:0 0 auto; font-size:12.5px; padding:7px 11px}
+  .wzSnd{display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; background:var(--panel2); border:1px solid var(--line)}
+  .wzSnd label{display:flex; align-items:center; gap:7px; font-size:13px; white-space:nowrap; cursor:pointer}
+  .wzSnd input[type=range]{flex:1; min-width:60px}
+  .wzSnd em{font-style:normal; font-family:var(--mono); font-size:12px; color:var(--muted); min-width:36px; text-align:end}
+  .wzCheck{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink2); cursor:pointer}
+  .wzSum{display:grid; grid-template-columns:auto 1fr auto 1fr; gap:7px 14px; padding:12px 14px; border-radius:12px; background:var(--panel2); border:1px solid var(--line); font-size:13px}
+  .wzSum span{color:var(--muted)} .wzSum span.v{font-weight:500; color:var(--ink)}
+  .wzGoRow{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .wzGoRow button{padding:12px; font-size:14px}
+  .wzNav{display:flex; align-items:center; gap:8px; padding:12px 20px 16px; border-top:1px solid var(--line); margin-top:6px}
+  .wzNav span{flex:1}
+  .wzNav button{flex:0 0 auto; min-width:92px; padding:10px 16px; font-size:13.5px}
+  #wzChip{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:58; display:flex; align-items:center; gap:8px;
+    padding:7px 8px 7px 14px; border-radius:999px; background:var(--panel); border:1px solid rgba(255,176,32,.55); box-shadow:0 12px 34px rgba(0,0,0,.5);
+    font-size:13px; max-width:calc(100vw - 24px); animation:wzIn .35s ease-out}
+  html:not(.en) #wzChip{padding:7px 14px 7px 8px}
+  #wzChip[hidden]{display:none}
+  #wzChip span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+  #wzChip button{flex:0 0 auto; padding:6px 12px; border-radius:999px; font-size:12.5px}
+  #wzChip #wzChipX{background:transparent; border-color:transparent; color:var(--muted); padding:6px 8px}
+  @keyframes wzIn{from{opacity:0; transform:translate(-50%,10px)}}
+  .wcDots{display:flex; gap:6px; justify-content:center; margin-bottom:2px}
+  .wcDots i{width:8px; height:8px; border-radius:4px; background:var(--line2)} .wcDots i.on{width:24px; background:var(--accent)}
+  @media (max-width:520px){
+    #wizard{padding:8px}
+    .wzCard{max-height:calc(100dvh - 16px); border-radius:16px}
+    .wzTop{padding:14px 14px 0} .wzBody{padding:12px 14px 4px} .wzNav{padding:10px 14px 14px}
+    .wzSum{grid-template-columns:auto 1fr}
+    .wzEmo{grid-template-columns:repeat(6,minmax(0,1fr))} .wzSkin{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .wzOpts.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .wzHead>i{width:40px; height:40px; flex-basis:40px; font-size:24px} .wzHead h2{font-size:19px}
+    .wzOpt{padding:10px} .wzNav button{min-width:80px}
+    #wzChip span{font-size:12px}
+  }
+  /* ══ סוף v63 wiz (CSS) ══ */
 </style>
 
 <!-- ══════ חלון הגדרות המשחק ══════
@@ -1509,6 +1605,16 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   <button id="wcImp" class="wcLink">יש לי גיבוי מהדפדפן — לייבא אותו</button>
   <p class="wcSmall">בדפדפן: ״בדיקות״ ← ״מתקדם״ ← ״גיבוי ואיפוס״ ← ״ייצא לקובץ״.</p>
 </div></div>
+<!-- ══ v63 wiz — אשף הגדרה אישית (markup) ══ -->
+<div id="wizard" hidden role="dialog" aria-modal="true" aria-labelledby="wzT"><div class="wzCard">
+  <div class="wzTop"><div class="wzDots" id="wzDots" aria-hidden="true"></div><span class="wzN" id="wzN"></span><button id="wzSkip" class="wcLink" type="button" title="Esc">דלג</button></div>
+  <div class="wzBody" id="wzBody" aria-live="polite"></div>
+  <div class="wzNav"><button id="wzBack" type="button">הקודם</button><span></span><button id="wzNext" class="go" type="button">הבא</button></div>
+</div></div>
+<div id="wzChip" hidden role="status"><span>✨ חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך</span><button id="wzChipGo" class="go" type="button">להתחיל</button><button id="wzChipX" type="button" aria-label="סגור">✕</button></div>
+<script>/* v63 wiz: האם זה משתמש חדש — נבדק לפני שהסימולטור עצמו כותב משהו לזיכרון הדפדפן */
+try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason1","biobuzz_setup_v1","bbSkin1","bbKeyBind1","bbPadBind1","bbTeam1","bbNetName","biobuzz_params_v1","bbLang1","biobuzz_snd_v2","bbRealm9662","bbNew57","bbBackups1"].some(function(k){ return localStorage.getItem(k)!=null; }); }catch(e){ window.__bbWizFresh=false; }</script>
+<!-- ══ סוף v63 wiz (markup) ══ -->
 <div id="tour" hidden><div id="tourHole"></div><div id="tourCard" role="dialog" aria-live="polite">
   <div class="tourTop"><b id="tourT"></b><span id="tourN"></span></div><p id="tourP"></p>
   <div class="tourRow"><button id="tourSkip" class="wcLink">דלג</button><span class="tourSp"></span><button id="tourPrev">הקודם</button><button id="tourGo" hidden>⚡ מאץ׳ מהיר</button><button id="tourNext" class="go">הבא</button></div>
@@ -1535,7 +1641,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
         <p class="note">השם והמספר מופיעים על הרובוט, בשידור ובסרטונים.</p>
         
       </section>
-  <section class="setGrp"><h4>שפה ועזרה</h4><div class="row"><button class="langBtn" data-lang="1"></button><button data-tour="1">? סיור קצר</button><button data-bug="1">🐞 דיווח על באג</button><button data-find="1">🔍 חיפוש <kbd>Ctrl+K</kbd></button></div></section>
+  <section class="setGrp"><h4>שפה ועזרה</h4><div class="row"><button class="langBtn" data-lang="1"></button><button data-tour="1">? סיור קצר</button><button data-wiz="1">✨ הגדרה אישית מחדש</button><button data-bug="1">🐞 דיווח על באג</button><button data-find="1">🔍 חיפוש <kbd>Ctrl+K</kbd></button></div></section>
   <section class="setGrp" id="setAI"><h4>🧠 בינה מלאכותית — מפתח של גוגל</h4><div id="aiSet"></div></section>
   <section class="setGrp"><h4>קולות</h4>
         <div class="out" id="oSnd"></div>
@@ -2424,7 +2530,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
 <script type="application/json" id="i18nX_bld" data-i18n>{}</script>
 <script type="application/json" id="i18nX_core" data-i18n>{}</script>
 <script type="application/json" id="i18nX_ui" data-i18n>{}</script>
-<script type="application/json" id="i18nX_wiz" data-i18n>{}</script>
+<script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script>
 /* ══════ v56 — עברית / English ══════
    בלי לשנות את הסימולטור: כשבוחרים אנגלית, כל טקסט עברי שמופיע במסך מתורגם במקום —
@@ -13046,7 +13152,7 @@ function bkPut(a){
   while(true){ try{ localStorage.setItem(BKKEY,JSON.stringify(a)); return true; }
     catch(e){ if(a.length<=1) return false; a=a.slice(0,a.length-1); } } }
 function bkSize(b){ let n=0; for(const k in b.data) n+=(b.data[k]||"").length; return n; }
-const BKTRIV=BKKEEP.concat(["bbHud1","bbHelp1","bbQual1","bbPrefs1","bbTour1","bbNew57","bbLang1"]);   /* רק העדפות תצוגה — לא סיבה לגבות */
+const BKTRIV=BKKEEP.concat(["bbHud1","bbHelp1","bbQual1","bbPrefs1","bbTour1","bbNew57","bbLang1","bbWizard1"]);   /* רק העדפות תצוגה — לא סיבה לגבות (v63: גם ״האשף הושלם״) */
 function bkUseful(d){ return Object.keys(d).some(k=>BKTRIV.indexOf(k)<0); }
 /* היסטוריה (עונה, שיאים, רוח, תחקיר, זיכרון הבוטים) — גדולה; גיבוי אוטומטי שומר רק הגדרות ולא נוגע בה בשחזור */
 const BKHIST=/^(bbSeason1|biobuzz_records_v1|biobuzz_ghost_v1|biobuzz_debrief_v1|bbBotMem1)$/;
@@ -13661,7 +13767,7 @@ function shellWire(){
   const ps=$("ppStats"); if(ps) ps.addEventListener("click",e=>{ e.stopImmediatePropagation(); playModalClose(); shellGo("stats"); },true);
   addEventListener("keydown",e=>{
     if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&/^Digit[1-6]$/.test(e.code)){ e.preventDefault(); shellGo(["home","play","lab","stats","drivers","settings"][+e.code.slice(5)-1]); return; }
-    if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden])")){ e.preventDefault(); shellGo(UI.mode==="lab"?"lab":"play"); } },true);
+    if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden]),#wizard:not([hidden])")){ e.preventDefault(); shellGo(UI.mode==="lab"?"lab":"play"); } },true);
   /* בלי תחושת ״אתר״: בלי תפריט לחיצה ימנית (חוץ משדות טקסט) ובלי גרירת קישורים */
   document.addEventListener("contextmenu",e=>{ if(!e.target.closest("input,textarea,[contenteditable]")) e.preventDefault(); });
   document.addEventListener("dragstart",e=>{ if(e.target&&(e.target.tagName==="A"||e.target.tagName==="IMG")) e.preventDefault(); });
@@ -14177,7 +14283,7 @@ try{ if(!localStorage.getItem("bbNew57")){ const used=!!(localStorage.getItem("b
   localStorage.setItem("bbNew57","1");
   if(used&&!navigator.webdriver&&!(window.bbApp&&bbApp.test)) setTimeout(()=>refToast("✨ סידרנו את הממשק: הגדרות במקום אחד (⚙), ״מתקדם״ נקרא עכשיו ״הנדסה״, וכפתורי הקסם תחת ✨"),2500); } }catch(e){}
 /* פעם ראשונה: בדפדפן אחרי הטעינה, באפליקציה אחרי מסך הפתיחה. לא בבדיקות אוטומטיות */
-if(!navigator.webdriver&&!(window.bbApp&&bbApp.test)) setTimeout(()=>{ const w=$("welcome"); if(w&&!w.hidden){ const g=$("wcGo"); if(g) g.addEventListener("click",()=>setTimeout(()=>tourStart(false),500),{once:true}); } else tourStart(false); },1600);
+if(!navigator.webdriver&&!(window.bbApp&&bbApp.test)) setTimeout(()=>{ if(typeof wzHoldsTour==="function"&&wzHoldsTour()) return; /* v63 wiz: האשף מציע את הסיור בסוף */ const w=$("welcome"); if(w&&!w.hidden){ const g=$("wcGo"); if(g) g.addEventListener("click",()=>setTimeout(()=>tourStart(false),500),{once:true}); } else tourStart(false); },1600);
 
 /* ══════ v60 — מפתח גוגל, חיפוש יכולות (Ctrl+K), עוזר, ״נתח אותי״ ══════
    • החיפוש עובד תמיד, גם בדפדפן ובלי אינטרנט: אינדקס של כל היכולות (רשימה ידנית + כל הלוחות מהדף).
@@ -14266,6 +14372,7 @@ function cmdkCurated(){
     {id:"pause",i:"⏸",n:"השהיה / המשך (P)",k:"השהיה עצירה pause resume",run:()=>TOG.pause.set(!paused)},
     {id:"team",i:"🏷",n:"שם הקבוצה ומספר",k:"קבוצה שם מספר team name number",run:()=>settingsOpen("setTeam")},
     {id:"backup",i:"💾",n:"גיבוי, שחזור ואיפוס",k:"גיבוי שחזור איפוס backup restore reset",run:()=>bkOpen()},
+    {id:"wizard",i:"✨",n:"הגדרה אישית — אשף קצר",k:"אשף הגדרה אישית התחלה פתיחה העדפות גרפיקה שליטה setup wizard onboarding personal first run preferences",run:()=>wzOpen()},
     {id:"tour",i:"?",n:"סיור קצר באפליקציה",k:"סיור הדרכה מדריך tour tutorial",run:()=>tourStart(true)},
     {id:"bug",i:"🐞",n:"דיווח על באג",k:"באג תקלה דיווח bug report problem",run:()=>bugOpen()},
     {id:"auto-editor",i:"✏",n:"עורך אוטונומי — לצייר מסלול",k:"אוטונומי מסלול עורך ציור רודראנר ייצוא autonomous path editor roadrunner export java",run:()=>goLab("auto")},
@@ -15149,6 +15256,284 @@ function bldNetReset(){ if(!BLD) return; const had=BLD.remote||Object.keys(BLD.n
   bldDup,bldDel,bldEditSet,bldRandomBots,bldLiftGo,bldLiftFlower,bldDeposit,bldTurCmd,bldTurAuto,bldMouths,bldBotMouths,bldNet,bldFromGuest,bldFromHost,
   bldNetReset,bldIsClassic,bldGapBot,bldAimErr,shotFwd,bldStepMe,vdMe,flowerPoints,fire,shotPose,refreshAim,mouthFrame,aimHive,solveAvgHere,
   PADACT,PACTS,pathJava,aiCanEat,humSeat,humFree,bldFlowerInfo,bldEndgame,bldLiftTarget,bldLiftSeek,bldBotWantsLiftTest:bldBotWantsLift,bldHomeFlowerTest:bldHomeFlower,addBallTest:addBall});
+
+/* ══════ v63 wiz — אשף הגדרה אישית ══════
+   צעדים קצרים: שפה, גרפיקה, אתה, שליטה, חוויה, סיום. כל בחירה נשמרת מיד באותו מפתח שההגדרות כבר קוראות
+   (bbLang1, bbQual1, biobuzz_setup_v1, bbSkin1, bbNetName/bbMe1 או הנהג באפליקציה, biobuzz_snd_v2, bbUiMode1, bbRealm9662),
+   ובסוף bbWizard1 = {done:true, v:1, at}.
+   • משתמש חדש — האשף נפתח לבד (באפליקציה: מיד אחרי מסך הפתיחה, שהוא הצעד הראשון).
+   • מי שכבר השתמש — רק שבב קטן ״חדש״, פעם אחת. ״הגדרה אישית מחדש״ — בהגדרות ובחיפוש (Ctrl+K).
+   • החלפת שפה טוענת מחדש; האשף ממשיך מהצעד הבא (sessionStorage).
+   • בבדיקות אוטומטיות לא נפתח לבד (אלא אם ?wiz=1). Esc = דלג, בלי לשאול ובלי למחוק כלום. */
+const WZKEY="bbWizard1", WZRES="bbWizResume1";
+const WZ={on:false, i:0, steps:[], from:"", pend:false, away:false, meas:null, fps:null, rec:null, gfxPick:false, ctl:"kb", tour:true,
+  me:{name:"",emoji:"🐝",color:"#FFB020"}, meDirty:false, seen:{}, focus:null};
+const WZCOL=["#FFB020","#35D6A4","#4C9AF5","#F2545B","#B07CFF","#FF7AC6","#7FD1FF","#C6E26B"];
+const WZEMO=["🐝","🚀","🤖","⚡","🔥","🦅","🐺","🦊","🐉","🎯","🌟","🏆"];
+function wzGet(){ try{ return JSON.parse(localStorage.getItem(WZKEY)||"null"); }catch(e){ return null; } }
+function wzSave(o){ try{ localStorage.setItem(WZKEY,JSON.stringify(Object.assign({v:1,at:Date.now()},o||{}))); }catch(e){} }
+/* פתיחה לבד — לא בבדיקות אוטומטיות (אפשר לכפות עם ?wiz=1) */
+function wzAutoOK(){
+  if(/[?&]nowiz=1/.test(location.search)) return false;
+  if(/[?&]wiz=1/.test(location.search)) return true;
+  if(window.bbApp&&bbApp.test) return false;
+  return !navigator.webdriver; }
+function wzUsedBefore(){ return APP.on?!bbApp.firstRun:!window.__bbWizFresh; }
+function wzHoldsTour(){ return WZ.on||WZ.pend||WZ.away; }
+function wzSteps(from){ const s=["lang","gfx","you","ctl","exp","done"]; return from==="welcome"?s.slice(1):s; }
+function wzMeLoad(){
+  if(APP.on){ const p=APP.profile||{}; WZ.me={name:p.name||"",emoji:p.emoji||"🐝",color:p.color||"#FFB020"}; }
+  else { let o=null; try{ o=JSON.parse(localStorage.getItem("bbMe1")||"null"); }catch(e){}
+    WZ.me={name:(typeof NET!=="undefined"&&NET.name)||"",emoji:(o&&o.emoji)||"🐝",color:(o&&o.color)||"#FFB020"}; }
+  WZ.meDirty=false; }
+async function wzMeSave(){
+  if(!WZ.meDirty) return; WZ.meDirty=false;
+  const nm=String(WZ.me.name||"").trim().slice(0,24);
+  if(APP.on){ const patch={emoji:WZ.me.emoji,color:WZ.me.color}; if(nm) patch.name=nm;
+    try{ const p=await bbApp.profileUpdate(APP.profile.id,patch);
+      if(p){ APP.profile.name=p.name; APP.profile.emoji=p.emoji; APP.profile.color=p.color; } appChip(); if(typeof shellRefresh==="function") shellRefresh(); }catch(e){} }
+  else { try{ localStorage.setItem("bbMe1",JSON.stringify({emoji:WZ.me.emoji,color:WZ.me.color}));
+      if(nm){ NET.name=nm.slice(0,20); localStorage.setItem("bbNetName",NET.name); const n=$("netName"); if(n) n.value=NET.name; } }catch(e){} }
+}
+function wzOpen(o){
+  o=o||{}; const w=$("wizard"); if(!w) return;
+  if(TOUR.on){ TOUR.on=false; const t=$("tour"); if(t) t.hidden=true; }
+  WZ.from=o.from||""; WZ.steps=wzSteps(WZ.from);
+  WZ.i=Math.max(0,WZ.steps.indexOf(o.step||"")); WZ.seen={};
+  WZ.gfxPick=false; WZ.autoRec=!!o.auto; WZ.ctl=(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g))?"pad":"kb";
+  let t=false; try{ t=!localStorage.getItem("bbTour1"); }catch(e){} WZ.tour=o.tour!=null?!!o.tour:t;
+  wzMeLoad(); wzChipHide();
+  for(const k in keys) keys[k]=false;
+  WZ.focus=document.activeElement; WZ.on=true; WZ.pend=false; WZ.away=false; w.hidden=false;
+  wzDraw(true);
+}
+function wzClose(){
+  const w=$("wizard"); if(w){ w.hidden=true; w.classList.remove("peek"); }
+  WZ.on=false; WZ.pend=false; WZ.away=false; WZ.meas=null;
+  try{ sessionStorage.removeItem(WZRES); }catch(e){}
+  if(APP.on&&typeof shellRefresh==="function") try{ shellRefresh(); }catch(e){}
+  try{ if(WZ.focus&&WZ.focus.focus&&document.contains(WZ.focus)) WZ.focus.focus(); }catch(e){}
+}
+/* דלג (Esc) — מה שכבר נבחר נשאר, שום דבר לא נמחק, והאשף לא יקפוץ שוב */
+function wzSkip(){ if(!WZ.on) return; const st=WZ.steps[WZ.i]; wzLeave(st); wzSave({done:true,skipped:st}); wzClose(); }
+function wzFinish(act){
+  wzLeave(WZ.steps[WZ.i]); wzSave({done:true,ctl:WZ.ctl}); const tour=WZ.tour; wzClose();
+  if(act==="match"){ try{ clk("ppQuick")(); }catch(e){} }
+  else if(act==="tour"||(act!=="close"&&tour)){ setTimeout(()=>tourStart(true),350); return; }
+  if(!tour){ try{ localStorage.setItem("bbTour1","1"); }catch(e){} }
+}
+function wzGo(i){
+  i=Math.max(0,Math.min(WZ.steps.length-1,i)); if(i===WZ.i) return;
+  wzLeave(WZ.steps[WZ.i]); WZ.i=i; wzDraw(true); }
+/* יציאה מצעד — שומרים מה שעוד לא נשמר */
+function wzLeave(st){
+  if(st==="gfx"&&WZ.meas) wzMeasStop();
+  if(st==="you") wzMeSave();
+}
+function wzDraw(focus){
+  const w=$("wizard"), body=$("wzBody"); if(!w||!body) return;
+  const st=WZ.steps[WZ.i], n=WZ.steps.length, off=WZ.from==="welcome"?1:0;
+  $("wzDots").innerHTML=Array.from({length:n+off},(x,k)=>'<i class="'+(k===WZ.i+off?"on":k<WZ.i+off?"done":"")+'"></i>').join("");
+  $("wzN").textContent=(WZ.i+off+1)+" / "+(n+off);
+  $("wzBack").style.visibility=WZ.i?"visible":"hidden";
+  $("wzNext").textContent=st==="done"?"סיום":"הבא"; $("wzNext").classList.toggle("go",st!=="done");
+  $("wzSkip").style.visibility=st==="done"?"hidden":"visible";
+  w.classList.toggle("peek",st==="gfx");
+  body.innerHTML=wzHTML(st);
+  WZ.seen[st]=true;
+  if(st==="gfx"&&WZ.rec==null&&!WZ.meas) wzMeasure();
+  if(focus){ const f=body.querySelector(".wzOpt.on,.wzOpt,input,button")||$("wzNext"); try{ f.focus({preventScroll:true}); }catch(e){} }
+}
+const wzHead=(ic,t,p)=>'<div class="wzHead"><i aria-hidden="true">'+ic+'</i><div><h2 id="wzT">'+t+'</h2>'+(p?'<p>'+p+'</p>':'')+'</div></div>';
+const wzOpt=(k,on,ic,t,sub,badge)=>'<button type="button" class="wzOpt'+(on?" on":"")+'" data-wz="'+k+'" aria-pressed="'+(on?"true":"false")+'">'+(ic?'<i aria-hidden="true">'+ic+'</i>':'')+'<b>'+t+'</b>'+(sub?'<small>'+sub+'</small>':'')+(badge?'<em>'+badge+'</em>':'')+'</button>';
+function wzKeysHTML(){
+  const bind=a=>{ const b=KB.binds.find(x=>x.a===a); return b?kbName(b.k):"—"; };
+  const kb=c=>'<kbd>'+appEsc(kbName(c))+'</kbd>';
+  return '<div class="wzKeys">'+
+    '<span><u>נסיעה</u> '+kb(KB.move.fwd)+kb(KB.move.left)+kb(KB.move.back)+kb(KB.move.right)+'</span>'+
+    '<span><u>סיבוב</u> '+kb(KB.move.turnL)+kb(KB.move.turnR)+'</span>'+
+    '<span><u>ירי</u> <kbd>'+appEsc(bind("fire"))+'</kbd></span>'+
+    '<span><u>איסוף</u> <kbd>'+appEsc(bind("intake"))+'</kbd></span>'+
+    '<span><u>קסם</u> <kbd>'+appEsc(bind("best"))+'</kbd></span></div>';
+}
+function wzHTML(st){
+  if(st==="lang"){ const en=I18N.lang==="en";
+    return wzHead("🌐","באיזו שפה נוח לך?","אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.")+
+      '<div class="wzOpts">'+
+      '<button type="button" class="wzOpt big wzLangHe'+(en?"":" on")+'" data-wz="lang:he" aria-pressed="'+(!en)+'" lang="he"><i aria-hidden="true"></i><b></b></button>'+
+      '<button type="button" class="wzOpt big wzLangEn'+(en?" on":"")+'" data-wz="lang:en" aria-pressed="'+en+'" lang="en"><i aria-hidden="true"></i><b></b></button></div>'; }
+  if(st==="gfx"){
+    const cur=QUAL.mode, rec=WZ.rec;
+    let m;
+    if(WZ.meas) m='<div class="wzMeas"><span>בודק את המחשב…</span><div class="wzBar"><span></span></div></div>';
+    else if(WZ.fps!=null) m='<div class="wzMeas"><span>נמדד: <b>'+WZ.fps+'</b> פריימים לשנייה באיכות מלאה</span><span class="sp"></span><button type="button" data-wz="gfx:measure">מדוד שוב</button></div>';
+    else m='<div class="wzMeas"><span>לא הצלחנו למדוד — אוטומטי יבחר לבד</span><span class="sp"></span><button type="button" data-wz="gfx:measure">מדוד שוב</button></div>';
+    return wzHead("🖼","גרפיקה","בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.")+m+
+      '<div class="wzOpts">'+
+      wzOpt("q:high",cur==="high","✨","מלאה","המודל המלא עם צללים — הכי יפה",rec==="high"?"מומלץ":"")+
+      wzOpt("q:mid",cur==="mid","⚖","מאוזנת","אותו מודל, פחות צללים ופיקסלים",rec==="mid"?"מומלץ":"")+
+      wzOpt("q:fast",cur==="fast","⚡","מהירה","מודל פשוט בלי צללים — למחשב חלש",rec==="fast"?"מומלץ":"")+
+      wzOpt("q:auto",cur==="auto","🔄","אוטומטי","יורד ועולה לבד לפי הקצב","")+'</div>'; }
+  if(st==="you"){
+    const me=WZ.me, ally=SETUP.ally==="blue"?"blue":"red", sk=SKIN.me;
+    return wzHead("🙂","מי נוהג?",APP.on?"הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.":"השם מופיע במשחק ברשת. אפשר להשאיר ריק.")+
+      '<div class="wzMe" style="--pc:'+appEsc(me.color)+'"><i id="wzMeEmo" aria-hidden="true">'+appEsc(me.emoji)+'</i><div class="wzField"><label for="wzName" class="wzLbl">השם שלך</label><input id="wzName" maxlength="24" autocomplete="off" placeholder="למשל: נועה" value="'+appEsc(me.name)+'"></div></div>'+
+      '<div class="wzLbl">סמל</div><div class="wzRow wzEmo">'+WZEMO.map(e=>'<button type="button" data-wz="emo:'+e+'" class="'+(e===me.emoji?"on":"")+'" aria-pressed="'+(e===me.emoji)+'">'+e+'</button>').join("")+'</div>'+
+      (APP.on?'<div class="wzLbl">צבע</div><div class="wzRow wzCol">'+WZCOL.map(c=>'<button type="button" data-wz="col:'+c+'" class="'+(c.toLowerCase()===String(me.color).toLowerCase()?"on":"")+'" style="background:'+c+'" aria-label="צבע '+c+'" aria-pressed="'+(c.toLowerCase()===String(me.color).toLowerCase())+'"></button>').join("")+'</div>':'')+
+      '<div class="wzLbl">הברית שלך כברירת מחדל</div><div class="wzAlly"><button type="button" data-wz="ally:red" class="'+(ally==="red"?"on":"")+'" aria-pressed="'+(ally==="red")+'">🔴 אדום</button><button type="button" data-wz="ally:blue" class="'+(ally==="blue"?"on":"")+'" aria-pressed="'+(ally==="blue")+'">🔵 כחול</button></div>'+
+      '<div class="wzLbl">הסקין של הרובוט שלך</div><div class="wzRow wzSkin">'+SKINS.map(s=>'<button type="button" data-wz="skin:'+s.id+'" class="'+(s.id===sk?"on":"")+'" title="'+appEsc(s.n)+'" aria-label="'+appEsc(s.n)+'" aria-pressed="'+(s.id===sk)+'" style="background:'+skinSw(s)+'"></button>').join("")+'</div>'; }
+  if(st==="ctl"){
+    const pads=navigator.getGamepads?[...navigator.getGamepads()].filter(g=>g):[];
+    const c=WZ.ctl;
+    let h=wzHead("🎮","איך נוהגים?","אפשר גם את כולם יחד — כל מה שמחובר עובד.")+
+      '<div class="wzOpts three">'+wzOpt("ctl:kb",c==="kb","⌨","מקלדת","ועכבר למצלמה")+wzOpt("ctl:pad",c==="pad","🎮","שלט","של אקסבוקס או פלייסטיישן")+wzOpt("ctl:phone",c==="phone","📱","טלפון","סורקים קוד ונוהגים")+'</div>';
+    if(c==="kb") h+=wzKeysHTML()+'<div class="wzLinks"><button type="button" data-wz="go:keys">⌨ לשנות מקשים</button></div>';
+    else if(c==="pad") h+='<p class="wzNote'+(pads.length?' ok':'')+'">'+(pads.length?"✓ זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.":"עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.")+'</p><div class="wzLinks"><button type="button" data-wz="go:pad">🎮 סטודיו השלט — מה כל כפתור עושה</button></div>';
+    else h+='<p class="wzNote">הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.</p><div class="wzLinks"><button type="button" data-wz="go:phone">📱 להציג את הקוד</button></div>';
+    return h; }
+  if(st==="exp"){
+    const lab=UI.mode==="lab", open=realmOpen(), son=SND.on||SND.fx, vol=Math.round((SND.vol||0)*100);
+    return wzHead("🎛","איך נוח לך לעבוד?","הכול אפשר לשנות אחר כך בהגדרות.")+
+      '<div class="wzLbl">מצב</div><div class="wzOpts">'+wzOpt("ui:play",!lab,"🎮","משחק","פשוט — רק לשחק")+wzOpt("ui:lab",lab,"🧪","מעבדה","כל הכלים: רובוט, אוטונומי, ניתוח")+'</div>'+
+      '<div class="wzLbl">חוקים</div><div class="wzOpts">'+wzOpt("rm:comp",!open,"🏆","תחרות","בדיוק לפי המדריך הרשמי")+wzOpt("rm:open",open,"🔓","פתוח","אפשר לשנות הכול ולנסות")+'</div>'+
+      '<div class="wzLbl">קולות</div><div class="wzSnd"><label><input type="checkbox" id="wzSndOn"'+(son?" checked":"")+'>קולות ואפקטים</label><input type="range" id="wzVol" min="0" max="100" step="5" value="'+vol+'" aria-label="עוצמת הקולות"'+(son?"":" disabled")+'><em id="wzVolV">'+vol+'%</em></div>'+
+      '<label class="wzCheck"><input type="checkbox" id="wzTour"'+(WZ.tour?" checked":"")+'>להראות סיור קצר בסוף</label>'; }
+  if(st==="done"){
+    const qn=QUAL.mode==="auto"?"אוטומטי":(QLEVELS[QUAL.mode]||QLEVELS.high).name;
+    const row2=(l,v)=>'<span>'+l+'</span><span class="v">'+v+'</span>';
+    const me=WZ.me;
+    return wzHead("🎉","הכול מוכן!","אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.")+
+      '<div class="wzSum">'+
+      row2("שפה",I18N.lang==="en"?"English":"עברית")+
+      row2("גרפיקה",qn)+
+      row2("נהג",appEsc(me.emoji)+" "+(String(me.name||"").trim()?'<bdi>'+appEsc(String(me.name).trim())+'</bdi>':"—"))+
+      row2("ברית",SETUP.ally==="blue"?"🔵 כחול":"🔴 אדום")+
+      row2("סקין",appEsc((SKINBY[SKIN.me]||SKINS[0]).n))+
+      row2("שליטה",WZ.ctl==="pad"?"🎮 שלט":WZ.ctl==="phone"?"📱 טלפון":"⌨ מקלדת")+
+      row2("מצב",UI.mode==="lab"?"🧪 מעבדה":"🎮 משחק")+
+      row2("חוקים",realmOpen()?"🔓 פתוח":"🏆 תחרות")+
+      row2("קולות",(SND.on||SND.fx)?'<span dir="ltr">'+Math.round((SND.vol||0)*100)+'%</span>':"כבויים")+'</div>'+
+      '<div class="wzGoRow"><button type="button" class="go" data-wz="fin:match">⚡ להתחיל מאץ׳</button><button type="button" data-wz="fin:tour">🗺 לסיור קצר</button></div>'; }
+  return "";
+}
+/* מדידת קצב: שתי שניות באיכות מלאה, ואז חוזרים למה שהיה */
+function wzMeasure(){
+  if(WZ.meas) return;
+  const R=window.__raf0||requestAnimationFrame, prev=QUAL.level;
+  const M={n:0,t0:0,prev,dead:0};
+  WZ.meas=M; WZ.fps=null; WZ.rec=null;
+  try{ if(prev!=="high") applyQual("high"); }catch(e){}
+  const fin=fps=>{ if(WZ.meas!==M) return; clearTimeout(M.dead); WZ.meas=null;
+    try{ const lv=QUAL.mode==="auto"?M.prev:QUAL.mode; if(QUAL.level!==lv) applyQual(lv); }catch(e){}
+    if(fps&&isFinite(fps)){ WZ.fps=Math.round(fps); WZ.rec=fps>=50?"high":fps>=32?"mid":"fast"; } else { WZ.fps=null; WZ.rec="auto"; }
+    /* משתמש חדש שעוד לא בחר — ההמלצה מופעלת מיד (ורואים אותה מאחור) */
+    if(WZ.autoRec&&!WZ.gfxPick&&QLEVELS[WZ.rec]) qualSet(WZ.rec);
+    if(WZ.on&&WZ.steps[WZ.i]==="gfx") wzDraw(false); };
+  const tick=t=>{ if(WZ.meas!==M) return; if(!M.t0){ M.t0=t; } else M.n++;
+    if(t-M.t0<2000) R(tick); else fin(M.n/((t-M.t0)/1000)); };
+  M.dead=setTimeout(()=>fin(M.n>3&&M.t0?M.n/((performance.now()-M.t0)/1000):null),3500);
+  R(tick);
+  if(WZ.on) wzDraw(false);
+}
+function wzMeasStop(){ const M=WZ.meas; if(!M) return; clearTimeout(M.dead); WZ.meas=null;
+  try{ const lv=QUAL.mode==="auto"?M.prev:QUAL.mode; if(QUAL.level!==lv) applyQual(lv); }catch(e){} }
+/* כלי חיצוני (מקשים / שלט / טלפון) — האשף מתחבא, וחוזר כשסוגרים את הכלי */
+function wzAway(sel,open){
+  const w=$("wizard"); if(!w) return;
+  WZ.on=false; WZ.away=true; w.hidden=true;
+  try{ open(); }catch(e){ console.error(e); }
+  const back=()=>{ if(!WZ.away) return; const el=document.querySelector(sel);
+    if(el&&!el.hidden) { setTimeout(back,250); return; }
+    WZ.away=false; WZ.on=true; w.hidden=false; wzDraw(true); };
+  setTimeout(back,400);
+}
+function wzAct(k,v){
+  if(k==="lang"){ if(v===I18N.lang) return;
+    const nx=WZ.steps[Math.min(WZ.i+1,WZ.steps.length-1)];
+    try{ sessionStorage.setItem(WZRES,JSON.stringify({step:nx,from:WZ.from,tour:WZ.tour,auto:WZ.autoRec,at:Date.now()})); }catch(e){}
+    langSet(v); return; }
+  if(k==="q"){ WZ.gfxPick=true; if(WZ.meas) wzMeasStop(); qualSet(v); wzDraw(false); return; }
+  if(k==="gfx"&&v==="measure"){ WZ.gfxPick=false; wzMeasure(); return; }
+  if(k==="emo"){ WZ.me.emoji=v; WZ.meDirty=true; }
+  else if(k==="col"){ WZ.me.color=v; WZ.meDirty=true; }
+  else if(k==="ally"){ SETUP.ally=v==="blue"?"blue":"red"; setupSave(); try{ setupFill(); }catch(e){} try{ skinApplyAll(); }catch(e){} }
+  else if(k==="skin"){ skinSet(-1,v); }
+  else if(k==="ctl"){ WZ.ctl=v; }
+  else if(k==="go"){
+    if(v==="keys") wzAway("#playModal",()=>{ const d=$("kbBinds"); if(d) playModalOpen(d.closest("details"),"מקלדת — מה כל מקש עושה"); });
+    else if(v==="pad") wzAway("#padStudio",padStudioOpen);
+    else if(v==="phone") wzAway("#qrBox",phoneOpen);
+    return; }
+  else if(k==="ui"){ uiSetMode(v); }
+  else if(k==="rm"){ setRealm(v); }
+  else if(k==="fin"){ wzFinish(v); return; }
+  const body=$("wzBody"), a=document.activeElement, key=a&&a.dataset?a.dataset.wz:null;
+  wzDraw(false);
+  if(key&&body){ const b=body.querySelector('[data-wz="'+key+'"]'); if(b) try{ b.focus({preventScroll:true}); }catch(e){} }
+}
+/* באפליקציה, בפתיחה הראשונה: מסך הפתיחה הוא הצעד הראשון של אותו אשף */
+function wzWelcomeHook(){
+  const w=$("welcome"), g=$("wcGo"); if(!w||!g||w.hidden) return;
+  const card=w.querySelector(".wcCard"); const n=wzSteps("welcome").length+1;
+  if(card&&!card.querySelector(".wcDots")){ const d=document.createElement("div"); d.className="wcDots"; d.setAttribute("aria-hidden","true");
+    d.innerHTML=Array.from({length:n},(x,k)=>'<i class="'+(k?"":"on")+'"></i>').join(""); card.insertBefore(d,card.firstChild); }
+  g.textContent="המשך";
+  g.addEventListener("click",()=>{ const t0=Date.now();
+    (function wait(){ if(!w.hidden&&Date.now()-t0<5000){ setTimeout(wait,60); return; }
+      wzOpen({from:"welcome",auto:true}); })(); },{once:true});
+}
+/* שבב ״חדש״ למי שכבר השתמש — פעם אחת */
+function wzChipShow(){ const c=$("wzChip"); if(!c) return; c.hidden=false; wzSave({done:false,chip:true}); }
+function wzChipHide(){ const c=$("wzChip"); if(c) c.hidden=true; }
+(function wzWire(){
+  const w=$("wizard"); if(!w) return;
+  w.addEventListener("click",e=>{ const b=e.target.closest("[data-wz]"); if(!b||!w.contains(b)) return; e.preventDefault();
+    const s=b.dataset.wz, i=s.indexOf(":"); wzAct(s.slice(0,i),s.slice(i+1)); });
+  w.addEventListener("input",e=>{ const t=e.target;
+    if(t.id==="wzName"){ WZ.me.name=t.value; WZ.meDirty=true; }
+    else if(t.id==="wzVol"){ SND.vol=(+t.value||0)/100; sndSave(); const v=$("wzVolV"); if(v) v.textContent=t.value+"%"; try{ refreshSnd(); }catch(err){} } });
+  w.addEventListener("change",e=>{ const t=e.target;
+    if(t.id==="wzSndOn"){ SND.fx=t.checked; soundToggle(t.checked); const r=$("wzVol"); if(r) r.disabled=!t.checked; }
+    else if(t.id==="wzTour") WZ.tour=t.checked;
+    else if(t.id==="wzName") wzMeSave(); });
+  on($("wzNext"),()=>{ if(WZ.steps[WZ.i]==="done") wzFinish(""); else wzGo(WZ.i+1); });
+  on($("wzBack"),()=>wzGo(WZ.i-1));
+  on($("wzSkip"),wzSkip);
+  on($("wzChipGo"),()=>{ wzChipHide(); wzOpen(); });
+  on($("wzChipX"),()=>{ wzChipHide(); });
+  /* המקלדת שייכת לאשף כשהוא פתוח: Esc מדלג, Enter בשם ממשיך, Tab נשאר בתוך החלון, ושום מקש לא מזיז את הרובוט */
+  addEventListener("keydown",e=>{
+    if(!WZ.on||w.hidden) return;
+    const t=e.target;
+    /* חלון אחר שנפתח מעל האשף (חיפוש, סקינים, דיווח באג) מטפל במקלדת שלו */
+    if(t&&t.closest&&t.closest("#cmdk,#skinBox,#bugModal,#bldBox,#coachBox,#aiChat,#acctModal")) return;
+    if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); wzSkip(); return; }
+    if(e.key==="Enter"&&t&&t.id==="wzName"){ e.preventDefault(); e.stopImmediatePropagation(); wzGo(WZ.i+1); return; }
+    if(e.key==="Tab"){ const f=[...w.querySelectorAll("button,input,[tabindex]")].filter(x=>!x.disabled&&x.offsetParent!==null&&getComputedStyle(x).visibility!=="hidden");
+      if(f.length){ const a=f.indexOf(document.activeElement);
+        if(e.shiftKey&&a<=0){ e.preventDefault(); f[f.length-1].focus(); } else if(!e.shiftKey&&(a===f.length-1||a<0)){ e.preventDefault(); f[0].focus(); } } }
+    if((e.ctrlKey||e.metaKey)&&!/INPUT/.test(t.tagName||"")) return;   /* Ctrl+K וכדומה */
+    e.stopImmediatePropagation();
+  },true);
+  addEventListener("keyup",e=>{ if(WZ.on&&!w.hidden&&!(e.target&&e.target.closest&&e.target.closest("#cmdk"))) e.stopImmediatePropagation(); },true);
+  addEventListener("gamepadconnected",()=>{ if(WZ.on&&WZ.steps[WZ.i]==="ctl"){ WZ.ctl="pad"; wzDraw(false); } });
+  /* ״הגדרה אישית מחדש״ — מההגדרות (דפדפן: חלון צף; אפליקציה: דף) */
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-wiz]"); if(!b) return; e.preventDefault();
+    try{ if(!$("playModal").hidden) playModalClose(); }catch(err){} wzOpen(); });
+  /* הפעלה: קודם המשך אחרי החלפת שפה, אחר כך משתמש חדש, ואחרון — שבב ״חדש״ */
+  let res=null; try{ res=JSON.parse(sessionStorage.getItem(WZRES)||"null"); }catch(e){}
+  if(res&&Date.now()-(res.at||0)<120000){ WZ.pend=true;
+    const go=()=>{ const wc=$("welcome"); if(wc&&!wc.hidden&&res.from!=="welcome"){ setTimeout(go,300); return; } wzOpen({step:res.step,from:res.from,tour:res.tour,auto:res.auto}); };
+    setTimeout(go,300); return; }
+  try{ sessionStorage.removeItem(WZRES); }catch(e){}
+  if(wzGet()||!wzAutoOK()) return;
+  if(!wzUsedBefore()){ WZ.pend=true;
+    if(APP.on){ const wc=$("welcome"); if(wc&&!wc.hidden) wzWelcomeHook(); else setTimeout(()=>wzOpen({auto:true}),600); }
+    else setTimeout(()=>{ if(WZ.pend) wzOpen({auto:true}); },600); }
+  else setTimeout(()=>{ if(!WZ.on&&!wzGet()) wzChipShow(); },2500);
+})();
+Object.assign(window.__sim||{},{WZ,wzOpen,wzClose,wzSkip,wzGo,wzFinish,wzMeasure,wzGet,wzChipShow,wzHoldsTour,wzWelcomeHook});
+/* ══════ סוף v63 wiz ══════ */
 
 
 /* ── דיווח על באג ── */

@@ -7,8 +7,10 @@ export async function open(opts={}){
   if(opts.noraf) await page.addInitScript(()=>{ window.__raf0=window.requestAnimationFrame.bind(window); window.requestAnimationFrame=()=>0; });
   /* הבדיקות רצות במצב ״בדיקות״ (כל הלוחות), אלא אם ביקשו ״משחק״ */
   if(!opts.play) await page.addInitScript(()=>{ try{ if(!localStorage.getItem('bbUiMode1')) localStorage.setItem('bbUiMode1','lab'); }catch(e){} });
+  /* v63: אשף ההגדרה האישית לא נפתח בבדיקות, אלא אם ביקשו opts.wizard (אז גם ?wiz=1 — פתיחה לבד גם תחת webdriver) */
+  if(!opts.wizard) await page.addInitScript(()=>{ try{ if(!localStorage.getItem('bbWizard1')) localStorage.setItem('bbWizard1','{"done":true,"v":1,"test":1}'); }catch(e){} });
   const errs=[]; page.on('pageerror',e=>errs.push(String(e))); page.on('console',m=>{ if(m.type()==='error') errs.push(m.text()); });
-  await page.goto((opts.url||URL0)+(opts.q||''));
+  await page.goto((opts.url||URL0)+(opts.q||'')+(opts.wizard?'&wiz=1':''));
   await page.waitForFunction(()=>window.__sim&&window.__sim.botBody&&window.__sim.BOTS.length,null,{timeout:60000});
   return {browser,page,errs};
 }
