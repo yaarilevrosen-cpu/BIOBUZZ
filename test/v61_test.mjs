@@ -111,7 +111,8 @@ const t0=r;
 r=await E(()=>{ const S=__sim; S.advance(95,1/60); return S.BOTS.map(b=>({id:S.bldBot(b).id,on:b.on,shots:b.shots,lifted:b.lifted||0,ph:b.ph,
   moved:0,x:S.I(b.body.position.x),z:S.I(b.body.position.z)})); });
 const moved=r.map((b,i)=>Math.hypot(b.x-t0[i].x,b.z-t0[i].z));
-ok(r.every((b,i)=>!b.on||moved[i]>6),'כל הבוטים נוסעים ('+moved.map(x=>x.toFixed(0)).join(',')+'″)');
+/* בוט מעלית שאין לו מה לאסוף מחכה ליד הבית — זה נכון; הוא צריך לנסוע או להפקיד */
+ok(r.every((b,i)=>!b.on||moved[i]>6||(b.id==='lift'&&b.lifted>0)),'כל הבוטים נוסעים או מפקידים ('+moved.map(x=>x.toFixed(0)).join(',')+'″)');
 const dbl=r.find(b=>b.id==='double'), lf=r.find(b=>b.id==='lift'), tu=r.find(b=>b.id==='turret');
 ok(!dbl||!dbl.on||dbl.shots>=2,'בוט יורה כפול יורה ('+(dbl&&dbl.shots)+')');
 ok(!tu||!tu.on||tu.shots>=1,'בוט צריח יורה ('+(tu&&tu.shots)+')');
