@@ -5,7 +5,7 @@ const E=(f,a)=>page.evaluate(f,a);
 const rec=await E(()=>{ const S=__sim; S.stageMatch(); S.pathClear(); S.homeRobot(); S.teachStart();
   const hold=(k,sec)=>{ S.key(k,true); S.advance(sec,1/60); S.key(k,false); };
   hold('KeyW',1.4); S.advance(1.0,1/60);             // עצירה של שנייה
-  hold('KeyA',0.9); S.advance(0.4,1/60); hold('KeyQ',0.8);                 // הזזה הצידה וסיבוב במקום
+  hold('KeyA',0.6); S.advance(0.4,1/60); hold('KeyQ',0.8);                 // הזזה הצידה וסיבוב במקום (v63: 0.6 — סיבוב בשטח פתוח, לא נגד הכוורת)
   hold('KeyW',1.1); S.advance(0.3,1/60); S.fire(); S.advance(0.6,1/60);
   hold('KeyS',0.8); S.advance(0.3,1/60);
   S.teachStop();

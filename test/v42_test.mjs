@@ -68,8 +68,8 @@ ok(Math.abs(r.p1[0]-(r.s[0]+40))<0.5,'צירי RoadRunner → הסימולטור
 ok(r.st.planned&&r.st.max>1,'סטייה מהמסלול המתוכנן נמדדה ('+r.st.max.toFixed(1)+'″)');
 r=await E(()=>{ const a=S.odoParse('Pose2d(position=Vector2d(x=10.0, y=5.0), heading=Rotation2d(real=0.0, imag=1.0))\nPose2d(position=Vector2d(x=11.0, y=5.0), heading=Rotation2d(real=0.0, imag=1.0))','in');
   const b=S.odoParse('t,x,y,h\n0,0,0,90\n500,1,0,90\n1000,2,0,90','in'); return {a:a&&a[0], b:b&&b[2]}; });
-ok(r.a&&Math.abs(r.a.yaw+Math.PI/2)<1e-6&&r.a.x===-5,'קורא גם Pose2d.toString של RoadRunner');
-ok(r.b&&Math.abs(r.b.t-1)<1e-6&&Math.abs(r.b.yaw+Math.PI/2)<1e-6,'מזהה מילישניות ומעלות');
+ok(r.a&&Math.abs(r.a.yaw-Math.PI/2)<1e-6&&r.a.x===5&&r.a.z===10,'קורא גם Pose2d.toString של RoadRunner');   /* v63: סיבוב ולא שיקוף — sim.x = RR.y, yaw = θ */
+ok(r.b&&Math.abs(r.b.t-1)<1e-6&&Math.abs(r.b.yaw-Math.PI/2)<1e-6,'מזהה מילישניות ומעלות');
 await E(()=>S.odoClear());
 
 // ── מחולל ──
