@@ -136,6 +136,24 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(r.stored==='0','הבחירה נשמרת ב-bbRRrot1');
 }
 
+/* 24 · מסלול מיובא לא מזריק קוד לג׳אווה ולא HTML ללוח */
+{
+  const r=await E(()=>{ const S=__sim; window.__x=0;
+    const bad='1); Runtime.getRuntime().exec("rm -rf /sdcard"); //';
+    const txt=JSON.stringify({bb:"path",v:2,name:'<img src=x onerror="window.__x=1">',ally:S.SETUP.ally||"red",pts:[{x:-62,z:58,s:1},
+      {x:-40,z:58,a:"wait",sec:bad},{x:-30,z:50,a:"fire",n:bad,sec:"2\n}"},{x:-20,z:40,a:"intake",sec:"x/*",v:"9); evil(",dt:"1\nevil",tr:"3\nx"}]});
+    const okI=S.pathImportText(txt); const java=S.pathJava();
+    const info=document.getElementById('pathInfo')||document.getElementById('oPath');
+    return {okI, java, evil:/Runtime|evil|rm -rf/.test(java), lines:java.split('\n').filter(l=>l.trim()&&!/^\s*(\/\/|\.|Pose2d|Action)/.test(l)), html:document.body.innerHTML.indexOf('onerror="window.__x=1"')>=0};
+  });
+  await page.waitForTimeout(200);
+  ok(r.okI,'המסלול יובא');
+  ok(!r.evil,'אין קוד זר בג׳אווה המיוצא');
+  ok(r.lines.length===0,'כל שורה בקוד היא הערה או קריאה צפויה: '+r.lines.slice(0,2).join(' | '));
+  ok(!r.html&&(await E(()=>window.__x))===0,'שם המסלול המיובא לא נכנס כ-HTML');
+  await E(()=>{ __sim.pathClear&&__sim.pathClear(); });
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');

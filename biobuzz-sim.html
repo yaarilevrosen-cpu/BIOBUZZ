@@ -6615,8 +6615,8 @@ function pathInfo(){
     (PATH.teachT&&R&&R.done?row("הוקלט · שוחזר",PATH.teachT.toFixed(1)+" · "+fmt(R.t,1)+" שנ׳",Math.abs(R.t-PATH.teachT)<=PATH.teachT*0.15+0.5?"ok":"hl"):"")+
     (R?row("תוצאה",R.done?"הושלם"+(R.shots?" · "+R.hits+"/"+R.shots+" פגיעות":""):(R.why||"לא הושלם"),R.done?"ok":"bad"):"")+
     (PATH.bad?row("אזהרה","המסלול נכנס למבנה (בקו האדום) — הרובוט ייתקע שם","bad"):"")+
-    (PATH.warn?row("הערה",PATH.warn,"hl"):"")+
-    (PATH.cur?row("מסלול",pathCurName()):"")+
+    (PATH.warn?row("הערה",pathEsc(PATH.warn),"hl"):"")+
+    (PATH.cur?row("מסלול",pathEsc(pathCurName())):"")+
     row("במאץ׳",MYAUTO.lvl==="path"?"ירוץ באוטונומי שלי":"לא נבחר — ״השתמש במאץ׳״",MYAUTO.lvl==="path"?"ok":"")+
     row("מצב סימון",PATH.mode?"לחיצה מוסיפה נקודה · לחיצה על נקודה מחליפה פעולה":"כבוי",PATH.mode?"ok":"");
   pathList();
@@ -6703,7 +6703,10 @@ function pathJava(pts,title){
     return Math.atan2(b.x-a.x,b.z-a.z); };
   const st=pts[0].h!=null?pts[0].h:tan(0);
   const hv=myAlly()==="red"?hiveRed:hiveBlue, mf=hv?mouthFrame(hv):null;
-  let out="// ── נוצר ממעבדת זירת BIOBUZZ"+(title?" · "+title:"")+" ──\n";
+  /* v63: כל ערך שנכתב לקוד — מספר סופי בטווח; טקסט בהערה — שורה אחת */
+  const jn=(v,lo,hi,def)=>{ v=+v; return isFinite(v)?Math.max(lo,Math.min(hi,v)):def; };
+  const jc=t=>String(t).replace(/[\r\n\u2028\u2029]+/g," ").slice(0,80);
+  let out="// ── נוצר ממעבדת זירת BIOBUZZ"+(title?" · "+jc(title):"")+" ──\n";
   out+="// מיפוי צירים (סיבוב "+RR_ROT+"°): "+rrMapText()+"  · אינץ׳ · sim: x לכיוון הכחול, z לכיוון הקהל, yaw נגד כיוון השעון\n";
   out+="// הזירה אצלכם מסובבת? משנים את ״כיוון הזירה״ בסימולטור — סיבוב בלבד, פנייה שמאלה נשארת שמאלה\n";
   out+="// ShootAction / IntakeAction — המחלקות של הרובוט שלכם. הרצה: Actions.runBlocking(auto);\n";
@@ -6718,12 +6721,12 @@ function pathJava(pts,title){
       /* סיבוב אחד ארוך שהוקלט כמה נקודות — רק היעד הסופי */
       const nx=pts[i+1];
       if(nx&&(!p.act||p.act==="none")&&turnInPlace(p,nx)&&Math.hypot(p.x-prevP.x,p.z-prevP.z)<0.5){ head=p.h; continue; }
-      head=p.h; out+="        .turnTo("+rad(p.h)+")"+(p.tRec!=null?"   // t="+(+p.tRec).toFixed(2)+"s":"")+"\n";
+      head=p.h; out+="        .turnTo("+rad(p.h)+")"+(p.tRec!=null&&isFinite(+p.tRec)?"   // t="+(+p.tRec).toFixed(2)+"s":"")+"\n";
       if(Math.hypot(p.x-prevP.x,p.z-prevP.z)>=0.5) out+="        .strafeTo(new Vector2d("+X(p)+", "+Y(p)+"))\n";
     } else if(Math.hypot(p.x-prevP.x,p.z-prevP.z)<0.5){   /* אותו מקום, אותו כיוון — רק הפעולה */
     } else {
-      const vc=p.v?", new TranslationalVelConstraint("+(+p.v).toFixed(1)+")":"";
-      const tc=p.tRec!=null?"   // t="+(+p.tRec).toFixed(2)+"s"+(p.dt?" (+"+(+p.dt).toFixed(2)+")":""):"";
+      const vc=p.v&&isFinite(+p.v)?", new TranslationalVelConstraint("+jn(p.v,0.1,300,30).toFixed(1)+")":"";
+      const tc=p.tRec!=null&&isFinite(+p.tRec)?"   // t="+(+p.tRec).toFixed(2)+"s"+(p.dt&&isFinite(+p.dt)?" (+"+(+p.dt).toFixed(2)+")":""):"";
       if(p.h!=null){ head=p.h; out+="        .splineToLinearHeading(new Pose2d("+X(p)+", "+Y(p)+", "+rad(p.h)+"), "+rad(tan(i))+vc+")"+tc+"\n"; }
       else out+="        .splineTo(new Vector2d("+X(p)+", "+Y(p)+"), "+rad(tan(i))+vc+")"+tc+"\n";
     }
@@ -6731,12 +6734,12 @@ function pathJava(pts,title){
       if(p.act==="shootspot") dyn=true;
       if(mf) out+=turnTo(Math.atan2(I(mf.c.x)-p.x,I(mf.c.z)-p.z));
       out+="        .stopAndAdd(new ShootAction())"+(p.act==="shootspot"?"   // עמדת ירי — בסימולטור מחושבת לפי הפתח של עכשיו":"")+"\n"; }
-    if(p.act==="fire"){ out+="        .stopAndAdd(new ShootAction("+(p.n||1)+"))   // כמו בהקלטה, בלי לפנות לכוורת\n";
-      const rest=(p.sec||0)-(p.n||1)*0.3; if(rest>0.2) out+="        .waitSeconds("+rest.toFixed(2)+")   // המשך העצירה מההקלטה\n"; }
-    if(p.act==="intake") out+="        .stopAndAdd(new IntakeAction("+(p.sec||1.2)+"))\n";
+    if(p.act==="fire"){ const nf=Math.round(jn(p.n||1,1,20,1)); out+="        .stopAndAdd(new ShootAction("+nf+"))   // כמו בהקלטה, בלי לפנות לכוורת\n";
+      const rest=jn(p.sec||0,0,60,0)-nf*0.3; if(rest>0.2) out+="        .waitSeconds("+rest.toFixed(2)+")   // המשך העצירה מההקלטה\n"; }
+    if(p.act==="intake") out+="        .stopAndAdd(new IntakeAction("+(+jn(p.sec||1.2,0.1,60,1.2).toFixed(2))+"))\n";
     if(p.act==="flower") out+="        .stopAndAdd(new IntakeAction(1.5))   // איסוף מהפרח הקרוב\n";
     if(p.act==="lift")   out+="        .stopAndAdd(new LiftAction())   // מעלית: מרימים מעל הפרח ומשחררים ברמפה\n";
-    if(p.act==="wait")   out+="        .waitSeconds("+(p.sec||1)+")\n";
+    if(p.act==="wait")   out+="        .waitSeconds("+(+jn(p.sec||1,0,60,1).toFixed(2))+")\n";
     if(p.act==="park")   out+="        // חניה: הנקודה הזאת באזור הטעינה (5 נקודות)\n";
   }
   out+="        .build();\n\n";
@@ -6762,9 +6765,12 @@ function pathPack(){
     if(p.act&&p.act!=="none") o.a=p.act; if(p.h!=null) o.h=+(+p.h).toFixed(3);
     if(p.start) o.s=1; if(p.sec) o.sec=p.sec; if(p.v) o.v=p.v; if(p.dt) o.dt=p.dt; if(p.n) o.n=p.n; if(p.tRec!=null) o.tr=p.tRec; return o; });
 }
+/* v63: מספר מטקסט מיובא — סופי ובטווח, אחרת ברירת המחדל (הערכים נכנסים לקוד ג׳אווה המיוצא) */
+function pathNum(v,lo,hi,def){ v=+v; return isFinite(v)&&v>=lo&&v<=hi?v:def; }
 function pathUnpack(arr){
-  return arr.map((o,i)=>({x:+o.x,z:+o.z,act:PACTS.indexOf(o.a)>=0?o.a:"none",h:o.h!=null?+o.h:null,
-                          start:i===0,sec:o.sec,n:o.n||undefined,v:o.v||null,dt:o.dt||null,tRec:o.tr!=null?+o.tr:undefined}));
+  return arr.map((o,i)=>({x:+o.x,z:+o.z,act:PACTS.indexOf(o.a)>=0?o.a:"none",h:o.h!=null&&isFinite(+o.h)?+o.h:null,
+                          start:i===0,sec:pathNum(o.sec,0,60,undefined),n:pathNum(o.n,1,20,undefined)!==undefined?Math.round(+o.n):undefined,
+                          v:pathNum(o.v,0.1,300,null),dt:pathNum(o.dt,0,120,null),tRec:o.tr!=null?pathNum(o.tr,0,3600,undefined):undefined}));
 }
 function pathValid(arr){
   return Array.isArray(arr)&&arr.length>=2&&arr.length<=200&&
