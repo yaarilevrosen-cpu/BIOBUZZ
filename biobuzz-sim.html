@@ -4270,6 +4270,7 @@ function nearestLooseBall(){
     let inFlower=false;
     for(const f of flowers) if(Math.hypot(x-f.x,z-f.z)<f.r+0.8){inFlower=true;break;}
     if(inFlower||!autoOwnSide(myAlly(),x)) continue;
+    if(b.kind!=="pollen"&&b.kind!==myAlly()) continue;       /* v63: נקטר של היריב — G408 */
     const d=Math.hypot(I(botBody.position.x)-x,I(botBody.position.z)-z);
     if(d<bd){bd=d;best={x:x,z:z,loose:true};}
   }
@@ -5499,7 +5500,7 @@ function aiIntake(b,dt){
     if(d>Rr) continue;
     if(BALLSETS[bb.kind].bd>gap+0.02) continue;   // נקטר לא נכנס בגרון צר
     if(noOpp&&bb.kind!=="pollen"&&bb.kind!==b.ally) continue;
-    if(d<M(mo.cap)&&(!mo.center||Math.abs(q.lat)<M(3.2))){ const kk=bb.kind; removeBall(bb); b.clip.push(kk);
+    if(d<M(mo.cap)&&(!mo.center||Math.abs(q.lat)<M(3.2))){ const kk=bb.kind; if(b.hum) refIntake(bb,b); removeBall(bb); b.clip.push(kk);
       if(b.clip.length>=AIC.magCap) break; continue; }
     const k=mo.F*(1-d/Rr)/Math.max(d,1e-4);
     bb.body.force.x+=k*dx; bb.body.force.y+=k*dy*0.5; bb.body.force.z+=k*dz;
@@ -7875,7 +7876,7 @@ function refReset(){
   REF.log=[]; REF.pts={red:0,blue:0}; REF.warn={}; REF.once={}; REF.pins={}; REF.back=[];
   REF.cards={}; for(const t in REF.carry) if(REF.carry[t]) REF.cards[t]="yellow";
   for(const a of ["red","blue"]) REF.hp[a]={bank:5,byTip:0,entered:0,next:0,fouls:0};
-  REF.legT=0; REF.legArmed=true; REF.g404=false;
+  REF.legT=0; REF.legArmed=true; REF.legSt={}; REF.g404=false;
   MATCH.autoPark=false; MATCH.autoParkDone=false; MATCH.dq=false; MATCH.rp=null; MATCH.endT=0;
   if(typeof refreshRef==="function") refreshRef();
 }
@@ -8021,14 +8022,17 @@ function frameLegs(){
     const x=sx*49.46/2, z=sz*17.7; out.push({x:x*c+z*s, z:-x*s+z*c}); }
   return out;
 }
-function legContact(){
-  const f=botForward(), rx=-f.z, rz=f.x;
-  const cx=I(botBody.position.x), cz=I(botBody.position.z);
+function legContact(b){
+  /* v63: לכל רובוט — בלי ארגומנט הרובוט שלי, עם בוט: הבוט (אותה מסגרת AIC לכולם) */
+  const f=b?aiForward(b):botForward(), rx=-f.z, rz=f.x;
+  const body=b?b.body:botBody, hl=b?AIC.L/2:P.botL/2, hw=b?AIC.W/2:P.botW/2;
+  const cx=I(body.position.x), cz=I(body.position.z);
   for(const L of frameLegs()){
     const px=L.x-cx, pz=L.z-cz;
     const u=px*f.x+pz*f.z, v=px*rx+pz*rz;
-    const du=Math.max(0,Math.abs(u)-P.botL/2), dv=Math.max(0,Math.abs(v)-P.botW/2);
-    if(Math.hypot(du,dv)<1.3) return true;
+    const du=Math.max(0,Math.abs(u)-hl), dv=Math.max(0,Math.abs(v)-hw);
+    /* בוט (17″) נעצר במסגרת מעט רחוק יותר מהנקודה שנמדדת — מרווח קצת גדול יותר */
+    if(Math.hypot(du,dv)<(b?2.0:1.3)) return true;
   }
   return false;
 }
@@ -8047,17 +8051,17 @@ function cellBalls(h){
   return out;
 }
 
-/* ── G408, G409, G418: מה שהחרטום שלי בולע ── */
-function refIntake(b){
+/* ── G408, G409, G418: מה שהחרטום בולע — שלי, או של בוט/נהג אנושי (v63: who) ── */
+function refIntake(b,who){
   if(!refActive()) return;
-  const my=myAlly(), op=refOther(my);
-  if(b.kind===op) refRepeat("G408","me",my,"החרטום שולט בנקטר של היריב",["yellow"]);
-  if(b.fromTip) refRepeat("G409","me",my,"כדור שנשפך מהכוורת נתפס לפני שנגע ברצפה",["yellow"]);
+  const my=who?who.ally:myAlly(), op=refOther(my), tm=who?who.name:"me";
+  if(b.kind===op) refRepeat("G408",tm,my,"החרטום שולט בנקטר של היריב",["yellow"]);
+  if(b.fromTip) refRepeat("G409",tm,my,"כדור שנשפך מהכוורת נתפס לפני שנגע ברצפה",["yellow"]);
   const x=I(b.body.position.x), y=I(b.body.position.y), z=I(b.body.position.z);
   for(const f of flowers){
     if(Math.hypot(x-f.x,z-f.z)<P.flowBore/2+0.8&&y<P.flowTop+1){
       const nect=b.kind!=="pollen", high=(y-(b.bd||2.8)/2)>P.flowGapTop;
-      if(nect||high) refRepeat("G418","me",my,
+      if(nect||high) refRepeat("G418",tm,my,
         nect?"נקטר הוצא מהפרח — מותר להוציא רק פולן":"פולן הוצא לא דרך פתח השליפה בתחתית",
         ["major","yellow"]);
       break;
@@ -8148,6 +8152,14 @@ function refLegs(dt){
     refRepeat("G417","me",myAlly(),"פגיעה במהירות גבוהה במסגרת הכוורת",["major","yellow"]);
   }
   if(!lc){ REF.legT+=dt; if(REF.legT>1.5) REF.legArmed=true; }
+  /* v63: גם לכל רובוט אחר בזירה */
+  const LS=REF.legSt||(REF.legSt={});
+  for(const b of BOTS){ if(!b.on||!b.body) continue;
+    const st=LS[b.name]||(LS[b.name]={armed:true,t:0});
+    const bl=legContact(b), bs=Math.hypot(b.body.velocity.x,b.body.velocity.z);
+    if(bl&&st.armed&&bs>1.2){ st.armed=false; st.t=0;
+      refRepeat("G417",b.name,b.ally,"פגיעה במהירות גבוהה במסגרת הכוורת",["major","yellow"]); }
+    if(!bl){ st.t+=dt; if(st.t>1.5) st.armed=true; } }
 }
 /* ── נקודות דירוג: טבלה 10-2 ו-10-3 ── */
 function refRP(){

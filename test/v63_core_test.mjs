@@ -197,6 +197,24 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(!(Math.abs(r.bz)>62&&Math.abs(r.bx)>40)&&Math.abs(r.bx)<=60.5&&Math.abs(r.bz)<=60.5, `פולן חוזר לא לגינה (${r.bx.toFixed(0)}, ${r.bz.toFixed(0)})`);
 }
 
+/* 22b · G408 (חרטום) ו-G417 (מסגרת) גם לרובוט של נהג אנושי */
+{
+  const r=await E(()=>{ const S=__sim, I=S.I, M=S.M; S.MT.cd=0; S.gameStart(true); S.REF.on=true; S.matchStart(); S.advance(40,1/60);
+    const b=S.BOTS[0]; S.humSeat(b,'net','g'); b.hum.id='gI'; b.clip.length=0;
+    const op=b.ally==='red'?'blue':'red';
+    b.body.position.set(M(-30),0,M(40)); b.yaw=0; b.vx=b.vz=0;
+    for(let k=0;k<2;k++){ S.addBall(op,-30,0.4,40+12); for(let i=0;i<60;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:true,aim:false,fc:false}); b.body.position.set(M(-30),0,M(40)); b.yaw=0; S.advance(1/60,1/60); } }
+    const g408=S.REF.log.filter(e=>e.rule==='G408'&&e.team===b.name).length;
+    /* נסיעה מהירה אל רגל המסגרת */
+    const L=S.frameLegs()[0]; b.clip.length=0;
+    b.body.position.set(M(L.x-20),0,M(L.z)); b.yaw=Math.PI/2;
+    for(let i=0;i<90;i++){ S.humFeed(b,{x:0,y:1,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); }
+    const g417=S.REF.log.filter(e=>e.rule==='G417'&&e.team===b.name).length;
+    S.humFree(b); S.matchStop(); return {g408,g417,clip:b.clip.length}; });
+  ok(r.g408>=1, `G408 לנהג ברשת שבלע נקטר של היריב (${r.g408})`);
+  ok(r.g417>=1, `G417 לנהג ברשת שנכנס במהירות במסגרת (${r.g417})`);
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');
