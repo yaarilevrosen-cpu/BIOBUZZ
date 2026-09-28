@@ -1537,7 +1537,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
       </section>
   <section class="setGrp"><h4>שפה ועזרה</h4><div class="row"><button class="langBtn" data-lang="1"></button><button data-tour="1">? סיור קצר</button><button data-bug="1">🐞 דיווח על באג</button><button data-find="1">🔍 חיפוש <kbd>Ctrl+K</kbd></button></div></section>
   <section class="setGrp" id="setAI"><h4>🧠 בינה מלאכותית — מפתח של גוגל</h4><div id="aiSet"></div></section>
-  <section class="setGrp"><h4>קולות</h4>
+  <section class="setGrp" data-kw="volume audio mute sound effects"><h4>קולות</h4>
         <div class="out" id="oSnd"></div>
         <label class="check" for="kSndOn"><input type="checkbox" id="kSndOn" checked>קולות המגרש — צופרים, ספירה, ״Drivers, pick up your controllers״</label>
         <label class="check" for="kSndFx"><input type="checkbox" id="kSndFx" checked>אפקטים — ירייה, איסוף, היפוך כוורת, שריקת שופט</label>
@@ -1923,7 +1923,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
         <p class="note">גובה עיניים 64 אינץ׳, שתים־עשרה אינץ׳ מאחורי הקיר, שדה ראייה 70 מעלות. ימין ושמאל הם של הנהג כפי שהוא עומד, לא של המסך. <b>העמדה הנבחרת היא גם מה ש״ציר המגרש״ מודד ממנה.</b></p>
       </div></details>
 
-      <details data-ws="drive"><summary>מקלדת — מה כל מקש עושה</summary><div class="body">
+      <details data-ws="drive" data-kw="shortcuts hotkeys keybindings keymap"><summary>מקלדת — מה כל מקש עושה</summary><div class="body">
         <div id="kbBinds"></div>
         <div class="row"><button id="bKbReset">החזר מיפוי ברירת מחדל</button></div>
         <p class="note"><b>איך מחליפים מקש:</b> לוחצים על הכפתור של המקש, ואז על המקש במקלדת (<kbd>Esc</kbd> מבטל). מקש שכבר עושה משהו אחר עובר לתפקיד החדש, ומקשי נסיעה מתחלפים ביניהם. הפעולות והמצבים — אותם של השלט: <b>לחיצה</b> פעם אחת, <b>מתג</b> נדלק ונכבה, <b>החזקה</b> פעיל כל עוד מחזיקים. ״מצב דיוק״ בהחזקה מאט את הנסיעה.</p>
@@ -2185,7 +2185,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
         <p class="note">הנסיעה מחושבת מכוחות: כל גלגל מקבל מומנט לפי עקומת המנוע במתח הרגעי, מוגבל באחיזה, והשלדה מואצת לפי המסה ומומנט ההתמד. <b>המהירות והתאוצה כבר לא נקבעות ביד — הן יוצאות מהבחירות.</b></p>
       </div></details>
 
-      <details data-ws="robot"><summary>נהיגה וחרטום — מגבלות ומידות</summary><div class="body">
+      <details data-ws="robot" data-kw="robot size width length footprint"><summary>נהיגה וחרטום — מגבלות ומידות</summary><div class="body">
         <div id="pDrive"></div>
         <p class="note">תקרות המהירות והסיבוב הן מה שאתה כותב בקוד; המהירות בפועל יוצאת מהמנועים ומהאחיזה. גיאומטריית החרטום ומידות הרובוט הן בחירות תכן — עד 18 אינץ׳ בעמדת הפתיחה (R102).</p>
       </div></details>
@@ -2252,7 +2252,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
         <p class="note"><b>איך:</b> מחברים את המחשב לרשת האלחוטית של ה-Control Hub, מריצים אופמוד, ולוחצים ״התחבר״. הרובוט האמיתי (בתכלת) זז על הזירה ליד הסימולציה. המיקום נלקח מהטלמטריה — מפתחות <code>x</code>, <code>y</code>, <code>heading</code> (כמו ב-LocalizationTest של RoadRunner) — או מציור הרובוט של RoadRunner בדשבורד. ״הקלט ריצה״ ← ״עצור והשווה״ מעביר את הריצה ליומן למטה, מול המסלול שבעורך.</p>
       </div></details>
 
-      <details data-ws="auto"><summary>יומן מהרובוט האמיתי — מה באמת קרה</summary><div class="body">
+      <details data-ws="auto" data-kw="odometry log real robot csv"><summary>יומן מהרובוט האמיתי — מה באמת קרה</summary><div class="body">
         <div class="out" id="oOdo"></div>
         <textarea id="odoText" rows="4" dir="ltr" placeholder="t,x,y,heading&#10;0.00,0,0,0&#10;0.05,0.8,0.0,0.00" style="width:100%;font-family:var(--mono);font-size:11.5px"></textarea>
         <div class="row"><input type="file" id="odoFile" accept=".csv,.txt,.log"></div>
@@ -14354,14 +14354,15 @@ function cmdkCurated(){
     {id:"bcast",i:"📺",n:"מצב שידור",k:"שידור קהל מסך broadcast",run:clk("ppBcast")},
     {id:"rec",i:"⏺",n:"הקלטת וידאו",k:"וידאו הקלטה סרטון video record",run:clk("ppRec")},
     {id:"cast",i:"🖥",n:"מסך שני",k:"מסך שני מקרן second screen projector",run:clk("ppCast")},
-    {id:"pad",i:"🎮",n:"שלט ומקשים — לשנות מה כל כפתור עושה",k:"שלט מקלדת מקשים מיפוי כפתורים gamepad keyboard keys mapping bindings controller",run:clk("ppPadStudio")},
+    {id:"pad",i:"🎮",n:"שלט ומקשים — לשנות מה כל כפתור עושה",k:"שלט מקלדת מקשים מיפוי כפתורים gamepad keyboard keys mapping bindings controller shortcuts hotkeys",run:clk("ppPadStudio")},
     {id:"builder",i:"🛠",n:"בונה רובוטים — צריח, יורה כפול, מעלית",k:"בונה רובוט מערכות צריח יורה כפול מעלית פרח איסוף מכאנום טנק starterbot gobilda builder turret lift double shooter intake drive",run:()=>bldOpen()},
     {id:"skins",i:"🎨",n:"סקינים לרובוטים",k:"סקין צבע מראה עיצוב רובוט skin skins look color robot",run:()=>skinOpen()},
-    {id:"settings",i:"⚙",n:"הגדרות",k:"הגדרות settings preferences",run:()=>settingsOpen()},
+    {id:"settings",i:"⚙",n:"הגדרות",k:"הגדרות settings preferences options volume sound",run:()=>settingsOpen()},
     {id:"ai-key",i:"🔑",n:"מפתח של גוגל לבינה מלאכותית",k:"מפתח גוגל ג׳מיני בינה מלאכותית google gemini api key ai",run:()=>{ settingsOpen("setAI"); setTimeout(()=>{ const i=$("aiKeyIn"); if(i) i.focus(); },250); }},
     {id:"lang",i:"🌐",n:"שפה — English / עברית",k:"שפה אנגלית עברית language english hebrew",run:()=>{ const b=$("bLang"); if(b) b.click(); }},
     {id:"quality",i:"🖼",n:"איכות גרפיקה",k:"גרפיקה איכות צללים מהירות graphics quality fps shadows performance",run:()=>settingsOpen("setQual")},
     {id:"hud",i:"👁",n:"מה מוצג על המסך",k:"תצוגה טלמטריה מסך נקי hud display overlay",run:()=>hudMenuOpen()},
+    {id:"fullscreen",i:"⛶",n:"מסך מלא (F11)",k:"מסך מלא fullscreen full screen f11",run:()=>{ try{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); }catch(e){} }},
     {id:"clean",i:"🧹",n:"מסך נקי (H)",k:"מסך נקי להסתיר clean screen hide",run:()=>hudClean()},
     {id:"pause",i:"⏸",n:"השהיה / המשך (P)",k:"השהיה עצירה pause resume",run:()=>TOG.pause.set(!paused)},
     {id:"team",i:"🏷",n:"שם הקבוצה ומספר",k:"קבוצה שם מספר team name number",run:()=>settingsOpen("setTeam")},
@@ -14384,15 +14385,20 @@ function cmdkCurated(){
 function cmdkAuto(){
   const L=[];
   for(const k in WSDEF) L.push({id:"tab-"+k,i:"🧪",n:"לשונית: "+WSDEF[k][0],k:WSDEF[k][1],run:()=>goLab(k)});
+  const used=new Set();
   document.querySelectorAll("#rail details>summary").forEach((s,i)=>{
     const d=s.parentElement, ws=(d.closest("details[data-ws]")||d).dataset.ws; if(!ws) return;
     const n=(s.textContent||"").trim(); if(!n) return;
-    L.push({id:"panel-"+i,i:"▸",n,k:WSDEF[ws]?WSDEF[ws][0]:"",sub:(WSDEF[ws]||[""])[0],run:()=>cmdkReveal(d,ws)}); });
+    /* מזהה יציב מהשם (לא מהמיקום) — קישור מהעוזר לא זז כשמוסיפים לוח */
+    let id="panel-"+(d.id||ws+"-"+(cmdkNorm(n).replace(/ /g,"-").slice(0,40)||i)); if(used.has(id)) id+="-"+i; used.add(id);
+    L.push({id,i:"▸",n,k:(WSDEF[ws]?WSDEF[ws][0]:"")+" "+(d.dataset.kw||"")+" "+cmdkWords(d),sub:(WSDEF[ws]||[""])[0],run:()=>cmdkReveal(d,ws)}); });
   document.querySelectorAll("#setBody .setGrp>h4").forEach((h,i)=>{ const n=(h.textContent||"").trim(); if(!n) return;
     const sec=h.parentElement; if(!sec.id) sec.id="setGrp"+i;
-    L.push({id:"set-"+i,i:"⚙",n:"הגדרות: "+n,k:"הגדרות settings",run:()=>settingsOpen(sec.id)}); });
+    L.push({id:"set-"+(/^setGrp\d+$/.test(sec.id)?cmdkNorm(n).replace(/ /g,"-").slice(0,40)||i:sec.id),i:"⚙",n:"הגדרות: "+n,k:"הגדרות settings "+(sec.dataset.kw||"")+" "+cmdkWords(sec),run:()=>settingsOpen(sec.id)}); });
   return L;
 }
+/* מילות חיפוש מתוך הלוח עצמו (תוויות וכפתורים) — בשפת הממשק, כך ש-magnus/odometry נמצאים באנגלית */
+function cmdkWords(el){ return [...el.querySelectorAll("label,.lbl,button,.grp,b,h4")].map(x=>x.textContent).join(" ").slice(0,700); }
 function cmdkReveal(d,ws){
   goLab(ws);
   let p=d; while(p){ if(p.tagName==="DETAILS") p.open=true; p=p.parentElement; }
@@ -14451,7 +14457,11 @@ function cmdkKey(e){
   else if(e.key==="ArrowDown"){ e.preventDefault(); CMDK.sel=(CMDK.sel+1)%Math.max(1,n); cmdkDraw(); }
   else if(e.key==="ArrowUp"){ e.preventDefault(); CMDK.sel=(CMDK.sel-1+Math.max(1,n))%Math.max(1,n); cmdkDraw(); }
   else if(e.key==="Tab"&&aiOn()){ e.preventDefault(); if(($("cmdkIn").value||"").trim().length>1) cmdkRun("ask"); }
-  else if(e.key==="Enter"){ e.preventDefault(); cmdkRun(CMDK.sel>=CMDK.res.length?"ask":CMDK.sel); }
+  else if(e.key==="Enter"){ e.preventDefault();
+    /* אין תוצאה מסומנת: לעוזר רק כשהוא דלוק ויש שאלה — אחרת לא עושים כלום (לא פותחים הגדרות) */
+    if(CMDK.sel<CMDK.res.length) cmdkRun(CMDK.sel);
+    else if(aiOn()&&($("cmdkIn").value||"").trim().length>1) cmdkRun("ask");
+    else { const l=$("cmdkList"); if(l){ l.classList.remove("cmdkNo"); void l.offsetWidth; l.classList.add("cmdkNo"); } } }
 }
 
 /* ── העוזר ── */
@@ -14463,9 +14473,12 @@ function chatOpen(q){
 }
 function chatClose(){ const p=$("aiChat"); if(p) p.hidden=true; AICHAT.open=false; }
 function chatMd(t){
-  const ids=new Set(CMDK.list.map(c=>c.id));
   let h=appEsc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,'<code>$1</code>');
-  h=h.replace(/\[\[f:([\w\-]+)\]\]/g,(m,id)=>{ const c=CMDK.list.find(x=>x.id===id); return ids.has(id)&&c?'<button class="aiF" data-f="'+id+'">'+appEsc(c.i||"▸")+' '+appEsc(T(c.n))+'</button>':""; });
+  /* קישור ליכולת: רק אם היא קיימת ופעילה עכשיו. מוסתרת — השם בלי כפתור; לא קיימת — המזהה כטקסט, בלי חור במשפט */
+  h=h.replace(/\[\[f:([\p{L}\p{N}_\-]+)\]\]/gu,(m,id)=>{ const c=CMDK.list.find(x=>x.id===id);
+    if(!c) return appEsc(id.replace(/^(panel|set|tab)-/,"").replace(/-/g," "));
+    if(c.when&&!c.when()) return appEsc(T(c.n));
+    return '<button class="aiF" data-f="'+id+'">'+appEsc(c.i||"▸")+' '+appEsc(T(c.n))+'</button>'; });
   return h.split(/\n/).map(l=>/^\s*[-*•]\s+/.test(l)?'<div class="aiLi">• '+l.replace(/^\s*[-*•]\s+/,"")+'</div>':l?'<div>'+l+'</div>':'').join("");
 }
 function chatDraw(){
@@ -14479,7 +14492,7 @@ async function chatSend(){
   const i=$("aiChatIn"), q=(i.value||"").trim(); if(!q||AICHAT.busy) return;
   i.value=""; AICHAT.msgs.push({role:"user",text:q}); AICHAT.busy=true; chatDraw();
   if(!CMDK.list.length) CMDK.list=cmdkIndex();
-  const features=CMDK.list.map(c=>({id:c.id,n:c.n}));
+  const features=CMDK.list.filter(c=>!c.when||c.when()).map(c=>({id:c.id,n:T(c.n)}));
   let r; try{ r=await bbApp.aiAsk("helper",{messages:AICHAT.msgs.slice(-12),lang:I18N.lang,features}); }catch(e){ r={ok:false,why:String(e.message||e)}; }
   AICHAT.busy=false;
   AICHAT.msgs.push(r.ok?{role:"model",text:r.text}:{role:"model",text:"⚠ "+(r.why||"לא הצלחתי לענות"),err:1});
