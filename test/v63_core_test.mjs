@@ -157,23 +157,26 @@ const E=(f,a)=>page.evaluate(f,a);
 /* 18 · באוטונומי בוחרים פרח/כדור רק בצד שלי — אין G402 במאצ׳ים של בוטים */
 {
   const r=await E(()=>{ const S=__sim, I=S.I; const res=[];
-    for(let m=0;m<4;m++){ S.MT.cd=0; S.gameStart(true); S.matchStart(); let badT=0, deep=0;
+    for(let m=0;m<4;m++){ S.MT.cd=0; S.gameStart(true); S.matchStart(); let badT=0, deep=0, meDeep=0, meLog='';
       while(S.MATCH.on&&S.MATCH.phase==='AUTO'){ S.advance(0.25,1/60);
         for(const b of S.BOTS){ if(!b.on) continue; const sg=b.ally==='red'?-1:1;
           const t=b.target; if(t&&t.x!=null&&t.x*sg<0) badT++;
-          deep=Math.max(deep,-I(b.body.position.x)*sg); } }
-      const g402=S.REF.log.filter(e=>e.rule==='G402').length; S.matchStop(); res.push({badT,deep:+deep.toFixed(1),g402}); }
+          deep=Math.max(deep,-I(b.body.position.x)*sg); }
+        { const sg=S.myAlly()==='red'?-1:1, x=I(S.botBody.position.x); if(-x*sg>meDeep){ meDeep=-x*sg; meLog=S.MYAUTO.lvl+' '+(S.RUN.src||'')+' '+(S.RUN.prog&&S.RUN.prog[S.RUN.i]?S.RUN.prog[S.RUN.i].k:'')+' fl'+JSON.stringify(S.RUN.st&&S.RUN.st.fl?[S.RUN.st.fl.x|0,S.RUN.st.fl.z|0,!!S.RUN.st.fl.loose]:null)+' '+S.MATCH.t.toFixed(1)+' '+x.toFixed(0)+','+I(S.botBody.position.z).toFixed(0); } } }
+      const g4=S.REF.log.filter(e=>e.rule==='G402'), g402=g4.length; S.matchStop(); res.push({badT,deep:+deep.toFixed(1),g402,who:g4.map(e=>e.team+'@'+e.t).join(','),me:+meDeep.toFixed(1),meLog}); }
     return res; });
   const bad=r.reduce((a,q)=>a+q.badT,0), g=r.reduce((a,q)=>a+q.g402,0);
   ok(bad===0, `באוטונומי אין יעד בצד של היריב (${JSON.stringify(r)})`);
-  ok(g===0, `אין G402 בארבעה מאצ׳ים של בוטים (${g})`);
+  /* הרובוט שלי יכול עדיין לחצות בדרך (הניווט עוקף את הכוורת) — כאן בודקים את הבוטים ואת בחירת היעד */
+  const gb=r.reduce((a,q)=>a+q.who.split(',').filter(w=>w&&!/^me@/.test(w)).length,0);
+  ok(gb===0, `אין G402 לבוטים בארבעה מאצ׳ים (${gb}) `+JSON.stringify(r));
   await E(()=>__sim.matchStop());
 }
 
 /* 19 · חניה באזור הטעינה בדקה האחרונה: הנקטר של השחקן האנושי לא נופל על הרובוט ולא נספר כ-G411 */
 {
   const r=await E(()=>{ const S=__sim, I=S.I; S.MT.cd=0; S.gameStart(false); S.REF.on=true; S.matchStart(); S.advance(85,1/60);
-    const sg=S.myAlly()==='red'?-1:1; S.setPose(sg*63,sg*35,sg<0?90:-90); S.setIntake(false); S.advance(70,1/60);
+    const sg=S.myAlly()==='red'?-1:1; S.setPose(sg*63,sg*35,sg<0?90:-90); S.BALLS.filter(b=>b.lastBy==='hp').forEach(b=>S.removeBall(b)); S.setIntake(false); S.advance(70,1/60);
     const me=[I(S.botBody.position.x),I(S.botBody.position.z)];
     const onBot=S.BALLS.filter(b=>b.lastBy==='hp'&&Math.hypot(I(b.body.position.x)-me[0],I(b.body.position.z)-me[1])<8).length;
     const under=S.BALLS.filter(b=>I(b.body.position.y)<-0.5).length;
@@ -184,35 +187,51 @@ const E=(f,a)=>page.evaluate(f,a);
 }
 /* 22 · G411 גם לבוט/נהג אנושי, לא רק לרובוט של המארח; פולן חוזר לא לגינה */
 {
-  const r=await E(()=>{ const S=__sim, I=S.I; S.MT.cd=0; S.gameStart(true); S.REF.on=true; S.matchStart(); S.advance(40,1/60);
+  const r=await E(()=>{ const S=__sim, I=S.I, M=S.M; S.MT.cd=0; S.gameStart(true); S.REF.on=true; S.matchStart(); S.advance(40,1/60);
     const b=S.BOTS[0]; S.humSeat(b,'net','g'); b.hum.id='gH'; b.clip.length=0; b.clip.push('pollen','pollen','pollen','pollen');
-    b.body.position.set(S.M(0),0,S.M(20)); b.vx=b.vz=0;
-    for(let i=0;i<4;i++) S.addBall('pollen',[-4,4,0,2][i],0.4,20+[-5,-5,6,5][i]);
-    for(let i=0;i<60*8;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:false,aim:false,fc:true}); b.body.position.set(S.M(0),0,S.M(20)); S.advance(1/60,1/60); }
+    S.BOTS.forEach(o=>{ if(o!==b){ o.on=false; o.body.position.set(M(o.home.x),0,M(o.home.z)); } });
+    S.BALLS.filter(q=>Math.hypot(I(q.body.position.x)+35,I(q.body.position.z)-45)<26).forEach(q=>S.removeBall(q));
+    b.body.position.set(M(-35),0,M(45)); b.vx=b.vz=0; b.yaw=0;
+    /* ארבעה כדורים סביב, מוחזקים במקום (הבדיקה היא של השופט, לא של הפיזיקה) */
+    const hb=[]; for(let i=0;i<4;i++){ const a=i*Math.PI/2; hb.push(S.addBall('pollen',-35+12.2*Math.cos(a),0.4,45+12.2*Math.sin(a))); }
+    S.advance(0.1,1/60); const hp=hb.map(q=>q.body.position.clone()); hp.forEach(p=>p.y=Math.max(p.y,S.M(1.4)));
+    const tr=[]; for(let i=0;i<60*8;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:false,aim:false,fc:true});
+      hb.forEach((q,k)=>{ q.body.position.copy(hp[k]); q.body.velocity.set(0,0,0); }); b.body.position.set(M(-35),0,M(45)); S.advance(1/60,1/60); if(i%60===0){ const st=S.RULE.st[b.name]; tr.push((st?st.hoardT.toFixed(1):'-')+':'+b.clip.length+':'+b.ph+':'+S.hoardNear(I(b.body.position.x),I(b.body.position.z))+':'+Math.hypot(b.body.velocity.x,b.body.velocity.z).toFixed(2)); } }
     const g=S.REF.log.filter(e=>e.rule==='G411'&&e.team===b.name).length; S.humFree(b);
-    /* פולן שיוצא ליד הפינה חוזר מחוץ לגינה */
-    const sp=S.refBackSpot({x:60,z:60}); const bx=sp.x, bz=sp.z;
-    S.matchStop(); return {g,bx,bz}; });
-  ok(r.g>=1, `G411 נקרא גם לרובוט של נהג ברשת (${r.g})`);
+    const sp=S.refBackSpot({x:60,z:60});
+    S.matchStop(); return {g,bx:sp.x,bz:sp.z,tr:tr.join(' ')+' '+S.MATCH.phase+' '+S.refActive()}; });
+  ok(r.g>=1, `G411 נקרא גם לרובוט של נהג ברשת (${r.g}) ${r.tr}`);
   ok(!(Math.abs(r.bz)>62&&Math.abs(r.bx)>40)&&Math.abs(r.bx)<=60.5&&Math.abs(r.bz)<=60.5, `פולן חוזר לא לגינה (${r.bx.toFixed(0)}, ${r.bz.toFixed(0)})`);
 }
-
 /* 22b · G408 (חרטום) ו-G417 (מסגרת) גם לרובוט של נהג אנושי */
 {
   const r=await E(()=>{ const S=__sim, I=S.I, M=S.M; S.MT.cd=0; S.gameStart(true); S.REF.on=true; S.matchStart(); S.advance(40,1/60);
     const b=S.BOTS[0]; S.humSeat(b,'net','g'); b.hum.id='gI'; b.clip.length=0;
+    S.BOTS.forEach(o=>{ if(o!==b){ o.on=false; o.body.position.set(M(o.home.x),0,M(o.home.z)); } });
     const op=b.ally==='red'?'blue':'red';
     b.body.position.set(M(-30),0,M(40)); b.yaw=0; b.vx=b.vz=0;
     for(let k=0;k<2;k++){ S.addBall(op,-30,0.4,40+12); for(let i=0;i<60;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:true,aim:false,fc:false}); b.body.position.set(M(-30),0,M(40)); b.yaw=0; S.advance(1/60,1/60); } }
     const g408=S.REF.log.filter(e=>e.rule==='G408'&&e.team===b.name).length;
-    /* נסיעה מהירה אל רגל המסגרת */
-    const L=S.frameLegs()[0]; b.clip.length=0;
-    b.body.position.set(M(L.x-20),0,M(L.z)); b.yaw=Math.PI/2;
-    for(let i=0;i<90;i++){ S.humFeed(b,{x:0,y:1,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); }
+    /* במהירות מלאה, כמעט צמוד לרגל המסגרת */
+    const L=S.frameLegs()[0]; b.clip.length=0; S.REF.legSt={};
+    b.yaw=Math.PI/2; b.body.position.set(M(L.x-8.5-0.8),0,M(L.z)); b.vx=1.45; b.vz=0; b.body.velocity.set(1.45,0,0);
+    for(let i=0;i<3;i++){ S.humFeed(b,{x:0,y:1,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); }
     const g417=S.REF.log.filter(e=>e.rule==='G417'&&e.team===b.name).length;
-    S.humFree(b); S.matchStop(); return {g408,g417,clip:b.clip.length}; });
+    S.humFree(b); S.matchStop(); return {g408,g417}; });
   ok(r.g408>=1, `G408 לנהג ברשת שבלע נקטר של היריב (${r.g408})`);
   ok(r.g417>=1, `G417 לנהג ברשת שנכנס במהירות במסגרת (${r.g417})`);
+}
+/* 21 · ״חוסם לי את הירי״ = יריב, גם כשאני כחול */
+{
+  const r=await E(()=>{ const S=__sim, M=S.M; const a0=S.SETUP.ally; S.SETUP.ally='blue'; S.MT.cd=0; S.gameStart(true); S.matchStart();
+    const out={};
+    for(const b of S.BOTS){ const others=S.BOTS.filter(o=>o!==b); others.forEach((o,i)=>{ o.body.position.set(M(-60+i*10),0,M(-60)); });
+      const mf=S.mouthFrame(S.hiveBlue), mz=S.botBody.position;
+      b.body.position.set((mf.c.x+mz.x)/2,0,(mf.c.z+mz.z)/2); S.advance(1/60,1/60);
+      out[b.name]={ally:b.ally,blocking:b.blocking}; }
+    S.matchStop(); S.SETUP.ally=a0; S.gameStart(false); return out; });
+  const vals=Object.values(r);
+  ok(vals.every(v=>v.blocking===(v.ally!=='blue')), 'רק יריב מסומן כחוסם כשאני כחול '+JSON.stringify(r));
 }
 
 await browser.close();

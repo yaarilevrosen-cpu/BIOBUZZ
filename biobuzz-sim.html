@@ -4513,7 +4513,10 @@ const RUNSTEP={
   },
   shootpos(s,st,dt){
     /* הפתח יכול לעבור צד באמצע הדרך (הכוורת מתהפכת) — מחשבים מחדש כל חצי שנייה */
-    if(!st.p||st.t-(st.pt||0)>0.5){ const np=runShotPose(); if(np){ if(st.p&&Math.hypot(np.x-st.p.x,np.z-st.p.z)>6) st.nav=null; st.p=np; } st.pt=st.t; }
+    if(!st.p||st.t-(st.pt||0)>0.5){ const np=runShotPose();
+      /* v63: באוטונומי עמדת הירי לא חוצה את קו האמצע (G402) — לפחות 10″ בצד שלי */
+      if(np&&MATCH.on&&MATCH.phase==="AUTO"){ const sg=myAlly()==="red"?-1:1; if(np.x*sg<10) np.x=sg*10; }
+      if(np){ if(st.p&&Math.hypot(np.x-st.p.x,np.z-st.p.z)>6) st.nav=null; st.p=np; } st.pt=st.t; }
     if(!st.p) return {done:true};
     const face=Math.atan2(M(st.p.mx)-botBody.position.x,M(st.p.mz)-botBody.position.z);
     const g=runGoto(st,dt,st.p.x,st.p.z,face,3,1);
@@ -5865,7 +5868,7 @@ function aiStep(b,dt){
     const rx=b.body.position.x-pp.x, rz=b.body.position.z-pp.z;
     const proj=(rx*ax+rz*az)/Math.max(1e-6,len*len);
     const perp=Math.abs(rx*az-rz*ax)/Math.max(1e-6,len);
-    b.blocking=b.ally==="blue"&&proj>0.05&&proj<0.95&&perp<M(11);
+    b.blocking=b.ally!==myAlly()&&proj>0.05&&proj<0.95&&perp<M(11);
     if(b.blocking) b.blockT+=dt;
   } else b.blocking=false;
 }
@@ -5881,7 +5884,7 @@ function gameRoleStep(dt){
   if(!GAME.nextSwap) GAME.nextSwap=16+Math.random()*18;
   if(GAME.t<GAME.nextSwap) return;
   GAME.nextSwap=GAME.t+16+Math.random()*18;
-  const blue=BOTS.filter(b=>b.ally==="blue"&&b.on);
+  const blue=BOTS.filter(b=>b.ally!==myAlly()&&b.on);     /* v63: שני היריבים (לא ״כחול״ קבוע) */
   if(blue.length<2) return;
   if(Math.random()>0.6) return;
   /* מי שיכול להחליף: בולם תמיד יכול לחזור לנקד, ומנקד יכול לעבור לבלימה
@@ -6206,7 +6209,7 @@ const OPP={get on(){return B_BLUE1?B_BLUE1.on:false},
            get mode(){ return B_BLUE1?(B_BLUE1.role==="defend"?"defend":"cycle"):"defend"; },
            set mode(v){ if(B_BLUE1) setAIRole(B_BLUE1, v==="defend"?"defend":"score"); },
            get blocking(){ return BOTS.some(b=>b.on&&b.blocking); },
-           get block(){ return BOTS.reduce((a,b)=>a+(b.ally==="blue"?b.blockT:0),0); },
+           get block(){ return BOTS.reduce((a,b)=>a+(b.ally!==myAlly()?b.blockT:0),0); },
            set block(v){ for(const b of BOTS) b.blockT=v; },
            get body(){ return B_BLUE1?B_BLUE1.body:null; },
            get group(){ return B_BLUE1?B_BLUE1.group:null; }};
@@ -9213,8 +9216,8 @@ function refreshGameOut(){
           :(b.foe?" · "+(b.foe==="me"?"עליי":"על "+b.foe):"")+" · מגע "+fmt(b.contact,1)+" שנ׳"),
         b.ph==="backoff"?"bad":b.contact>3?"bad":"")).join("")
       :row("רובוטי בינה","אין בזירה"))+
-    (live.some(b=>b.ally==="blue")
-      ? row("חסימת קו הירי שלי",fmt(BOTS.reduce((a,b)=>a+(b.ally==="blue"?b.blockT:0),0),1)+" שנ׳")
+    (live.some(b=>b.ally!==myAlly())
+      ? row("חסימת קו הירי שלי",fmt(BOTS.reduce((a,b)=>a+(b.ally!==myAlly()?b.blockT:0),0),1)+" שנ׳")
       : "");
 }
 (function(){ const host=$("botRows"); const par=host&&host.parentNode; if(!par) return;
@@ -9557,7 +9560,7 @@ function setupApply(){
   MYAUTO.lvl=SETUP.autoOn?(SETUP.autos[0]||"cycle"):"none";
   if(SETUP.randRole){
     for(const b of BOTS) setAIRole(b,rollRole());
-    const bl=BOTS.filter(b=>b.ally==="blue"&&b.on);
+    const bl=BOTS.filter(b=>b.ally!==myAlly()&&b.on);
     if(bl.length===2&&bl[0].role==="defend"&&bl[1].role==="defend")
       setAIRole(Math.random()<0.5?bl[0]:bl[1],"score");
   }
