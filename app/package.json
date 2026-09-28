@@ -1,7 +1,7 @@
 {
   "name": "biobuzz",
   "productName": "BIOBUZZ",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "description": "BIOBUZZ — FTC field simulator",
   "author": {
     "name": "BIOBUZZ",
@@ -41,7 +41,7 @@
     "electronFuses": {
       "runAsNode": false,
       "enableNodeOptionsEnvironmentVariable": false,
-      "enableNodeCliInspectArguments": false,
+      "enableNodeCliInspectArguments": true,
       "onlyLoadAppFromAsar": true,
       "resetAdHocDarwinSignature": true
     },
