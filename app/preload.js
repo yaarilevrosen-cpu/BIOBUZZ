@@ -6,6 +6,8 @@ const { contextBridge, ipcRenderer } = require("electron");
 if (!/^file:/.test(String(window.location.href))) return;
 const KEYRE = /^(bb|biobuzz)/i;
 const boot = ipcRenderer.sendSync("bb:boot");
+/* v63: התהליך הראשי עונה רק לדף של הסימולטור */
+if (!boot || typeof boot !== "object") return;
 try {
   const ls = window.localStorage, rm = [];
   for (let i = 0; i < ls.length; i++) { const k = ls.key(i); if (k && KEYRE.test(k)) rm.push(k); }
@@ -15,6 +17,8 @@ try {
 
 contextBridge.exposeInMainWorld("bbApp", {
   version: boot.version, dataDir: boot.dataDir, firstRun: boot.firstRun, test: !!boot.test,
+  /* v63: האסימון לגשר המובנה (חיבור ״sim״/״host״) — חדש בכל הפעלה */
+  bridgeTok: String(boot.bridgeTok || ""),
   profile: boot.profile, profilesAtBoot: boot.profiles, backupsAtBoot: boot.backups,
   kvSet: (k, v) => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvSet", String(k), String(v)); },
   kvRemove: k => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvRemove", String(k)); },

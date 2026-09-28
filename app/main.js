@@ -9,6 +9,8 @@ const { Bridge, findAdb } = require("./bridge");
 const { AI } = require("./ai");
 const { execFile } = require("child_process");
 const os = require("os");
+const crypto = require("crypto");
+const { pathToFileURL } = require("url");
 const REPO = { owner: "yaarilevrosen-cpu", repo: "BIOBUZZ" };
 const MAC = process.platform === "darwin", LINUX = process.platform === "linux";
 
@@ -26,11 +28,20 @@ const DATA = process.env.BIOBUZZ_DATA ||
   (process.env.PORTABLE_EXECUTABLE_DIR ? path.join(process.env.PORTABLE_EXECUTABLE_DIR, "BIOBUZZ-data") : path.join(app.getPath("userData"), "data"));
 const SIM = process.env.BIOBUZZ_SIM || path.join(__dirname, "sim", "index.html");
 let store = null, win = null, sync = null, bridge = null, ai = null;
+/* v63: F12 / כלי מפתחים — רק בפיתוח (או BIOBUZZ_DEV=1) */
+const DEVTOOLS = !app.isPackaged || process.env.BIOBUZZ_DEV === "1";
+/* v63: אסימון סודי לגשר, חדש בכל הפעלה. הדף מקבל אותו ב-preload, ורק איתו מתחברים לגשר כ״sim״/״host״ */
+const BRIDGE_TOK = crypto.randomBytes(24).toString("base64url");
+const SIM_URL = pathToFileURL(SIM).href;
+/* v63: אחרי החלפת נהג / ייבוא גיבוי הדף נטען מחדש — עד שהדף החדש עולה, כתיבות מהדף הישן לא נכנסות לנהג החדש */
+let kvFrozen = false;
+/* v63: יציאה לצורך עדכון — בלי סנכרון אחרון (המתקין מחכה) */
+let updQuit = false;
 /* v57: חשבון אחד לכל אדם; הקבוצה — קוד הצטרפות */
 function acctStatus() { return sync ? sync.status() : { loggedIn: false }; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
-if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); }
+if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); process.exit(0); return; }
 app.on("second-instance", () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
 function boundsFile() { return path.join(DATA, "window.json"); }
@@ -84,7 +95,7 @@ function createWindow() {
     ...(MAC ? { trafficLightPosition: { x: 20, y: 27 } } : {}),
     icon: path.join(__dirname, "build", "icon.png"),
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true, nodeIntegration: false,
-      sandbox: true, backgroundThrottling: false, spellcheck: false }
+      sandbox: true, backgroundThrottling: false, spellcheck: false, devTools: DEVTOOLS, webviewTag: false }
   });
   win.setMenu(null);
   if (b.max) win.maximize();
@@ -105,46 +116,65 @@ function createWindow() {
       return { action: "allow", overrideBrowserWindowOptions: {
         x: ext ? a.x : undefined, y: ext ? a.y : undefined, width: ext ? a.width : 1280, height: ext ? a.height : 720,
         fullscreen: !!ext, autoHideMenuBar: true, backgroundColor: "#05070a", title: "BIOBUZZ — שידור",
-        icon: path.join(__dirname, "build", "icon.png"), webPreferences: { backgroundThrottling: false } } };
+        icon: path.join(__dirname, "build", "icon.png"), webPreferences: { backgroundThrottling: false, sandbox: true, contextIsolation: true, nodeIntegration: false, devTools: DEVTOOLS } } };
     }
-    if (/^https?:/.test(url)) shell.openExternal(url); return { action: "deny" };
+    if (/^https:\/\//.test(url)) shell.openExternal(url); return { action: "deny" };
   });
-  win.webContents.on("did-create-window", w => { try { w.setMenu(null); w.webContents.on("before-input-event", (e, i) => {
+  win.webContents.on("did-create-window", w => { try { w.setMenu(null);
+    /* חלון השידור: לא מנווט לשום מקום ולא פותח חלונות */
+    w.webContents.on("will-navigate", e => e.preventDefault());
+    w.webContents.on("will-redirect", e => e.preventDefault());
+    w.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+    w.webContents.on("before-input-event", (e, i) => {
     if (i.type === "keyDown" && i.key === "F11") { w.setFullScreen(!w.isFullScreen()); e.preventDefault(); }
     if (i.type === "keyDown" && i.key === "Escape" && w.isFullScreen()) { w.setFullScreen(false); e.preventDefault(); } }); } catch (e) {} });
-  win.webContents.on("will-navigate", (e, url) => { if (!url.startsWith("file:")) { e.preventDefault(); if (/^https?:/.test(url)) shell.openExternal(url); } });
+  /* v63: ניווט רק לדף הסימולטור עצמו (טעינה מחדש) — לא לקובץ אחר במחשב ולא לאתר */
+  win.webContents.on("will-navigate", (e, url) => { if (String(url).split(/[?#]/)[0] !== SIM_URL) { e.preventDefault(); if (/^https:\/\//.test(url)) shell.openExternal(url); } });
+  win.webContents.on("will-redirect", (e, url) => { if (String(url).split(/[?#]/)[0] !== SIM_URL) e.preventDefault(); });
   win.webContents.on("before-input-event", (e, i) => {
     if (i.type !== "keyDown") return;
     if (i.key === "F11") { win.setFullScreen(!win.isFullScreen()); e.preventDefault(); }
-    else if (i.key === "F12" || ((i.control || i.meta) && (i.shift || i.alt) && i.key.toLowerCase() === "i")) { win.webContents.toggleDevTools(); e.preventDefault(); }
+    else if (i.key === "F12" || ((i.control || i.meta) && (i.shift || i.alt) && i.key.toLowerCase() === "i")) { if (DEVTOOLS) win.webContents.toggleDevTools(); e.preventDefault(); }
     else if ((i.control || i.meta) && i.key.toLowerCase() === "r") { store.flushKv(); win.webContents.reload(); e.preventDefault(); }
   });
   win.loadFile(SIM);
 }
 
+/* v63: כל ערוץ נבדק — רק הדף של הסימולטור בחלון הראשי (לא חלון השידור, לא דף אחר) */
+function okSender(e) {
+  try {
+    if (!win || win.isDestroyed() || e.sender !== win.webContents) return false;
+    const f = e.senderFrame; if (!f || f.parent) return false;
+    return String(f.url || "").split(/[?#]/)[0] === SIM_URL;
+  } catch (err) { return false; }
+}
 function reg() {
+  const on = (ch, fn) => ipcMain.on(ch, (e, ...a) => { if (!okSender(e)) { e.returnValue = null; return; } fn(e, ...a); });
+  const handle = (ch, fn) => ipcMain.handle(ch, (e, ...a) => { if (!okSender(e)) throw new Error("denied"); return fn(e, ...a); });
   /* סינכרוני — לפני שהסימולטור עולה, הוא צריך את הנתונים של הנהג */
-  ipcMain.on("bb:boot", e => {
+  on("bb:boot", e => {
+    kvFrozen = false;
     e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun,
-      version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST };
+      version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST,
+      bridgeTok: bridge ? BRIDGE_TOK : "" };
   });
-  ipcMain.on("bb:kvSet", (e, k, v) => store.kvSet(k, v));
-  ipcMain.on("bb:kvRemove", (e, k) => store.kvSet(k, null));
-  ipcMain.on("bb:kvClear", () => store.kvClear());
-  ipcMain.on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
-  ipcMain.on("bb:ready", () => showMain());
-  ipcMain.handle("bb:profiles", () => store.profiles());
-  ipcMain.handle("bb:profileAdd", (e, name, emoji, color, local) => { const p = store.addProfile(name, { emoji, color, local: !!local }); soonSync(); return p; });
-  ipcMain.handle("bb:profileUpdate", (e, id, patch) => { const p = store.updateProfile(id, patch || {}); soonSync(); return p; });
-  ipcMain.handle("bb:profileRemove", (e, id) => { const r = store.removeProfile(id); soonSync(); return r; });
-  ipcMain.handle("bb:profileSwitch", (e, id) => { const ok = store.switchTo(id); if (ok) setTimeout(() => win && win.webContents.reload(), 30); return ok; });
-  ipcMain.handle("bb:firstRunDone", () => { store.firstRun = false; return true; });
-  ipcMain.handle("bb:matchAdd", (e, m) => { const r = store.addMatch(m); soonSync(); return r; });
-  ipcMain.handle("bb:matches", (e, id) => store.matches(id, { lite: true }));
-  ipcMain.handle("bb:team", () => store.team(sync && sync.status().loggedIn ? sync.team : null));
-  ipcMain.handle("bb:openData", () => shell.openPath(DATA));
-  ipcMain.handle("bb:backupNow", () => { const t = store.dailyBackup(); return { tag: t, list: store.backupsList() }; });
-  ipcMain.handle("bb:teamExport", async () => {
+  on("bb:kvSet", (e, k, v) => { if (!kvFrozen) store.kvSet(String(k), v); });
+  on("bb:kvRemove", (e, k) => { if (!kvFrozen) store.kvSet(String(k), null); });
+  on("bb:kvClear", () => { if (!kvFrozen) store.kvClear(); });
+  on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
+  on("bb:ready", () => showMain());
+  handle("bb:profiles", () => store.profiles());
+  handle("bb:profileAdd", (e, name, emoji, color, local) => { const p = store.addProfile(name, { emoji, color, local: !!local }); soonSync(); return p; });
+  handle("bb:profileUpdate", (e, id, patch) => { const p = store.updateProfile(id, patch || {}); soonSync(); return p; });
+  handle("bb:profileRemove", (e, id) => { const r = store.removeProfile(id); soonSync(); return r; });
+  handle("bb:profileSwitch", (e, id) => { const ok = store.switchTo(String(id || "")); if (ok) { kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } return ok; });
+  handle("bb:firstRunDone", () => { store.firstRun = false; return true; });
+  handle("bb:matchAdd", (e, m) => { const r = store.addMatch(m); soonSync(); return r; });
+  handle("bb:matches", (e, id) => store.matches(id, { lite: true }));
+  handle("bb:team", () => store.team(sync && sync.status().loggedIn ? sync.team : null));
+  handle("bb:openData", () => shell.openPath(DATA));
+  handle("bb:backupNow", () => { const t = store.dailyBackup(); return { tag: t, list: store.backupsList() }; });
+  handle("bb:teamExport", async () => {
     const d = new Date(), pad = x => String(x).padStart(2, "0");
     const r = await dialog.showSaveDialog(win, { title: "ייצוא הקבוצה", defaultPath: "BIOBUZZ-team-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + ".json",
       filters: [{ name: "BIOBUZZ", extensions: ["json"] }] });
@@ -156,46 +186,52 @@ function reg() {
     if (r.canceled || !r.filePaths[0]) return null;
     return fs.readFileSync(r.filePaths[0], "utf8");
   };
-  ipcMain.handle("bb:teamImport", async (e, txt) => { txt = txt || await pick("ייבוא קבוצה"); if (txt == null) return { ok: false, canceled: true }; return store.teamImport(txt); });
+  handle("bb:teamImport", async (e, txt) => { txt = txt || await pick("ייבוא קבוצה"); if (txt == null) return { ok: false, canceled: true }; return store.teamImport(txt); });
   /* ── חשבון וסנכרון ── */
   /* ── סרטונים ── */
   const vdir = () => process.env.BIOBUZZ_VIDEOS || path.join(app.getPath("videos"), "BIOBUZZ");
-  ipcMain.handle("bb:saveVideo", (e, buf, name) => {
+  handle("bb:saveVideo", (e, buf, name) => {
     const safe = String(name || "BIOBUZZ.mp4").replace(/[^\w.\-]/g, "_").slice(0, 80);
     fs.mkdirSync(vdir(), { recursive: true }); const f = path.join(vdir(), safe);
     fs.writeFileSync(f, Buffer.from(buf)); return { ok: true, path: f };
   });
-  ipcMain.handle("bb:showFile", (e, f) => { if (typeof f === "string" && f.startsWith(vdir())) shell.showItemInFolder(f); });
-  ipcMain.handle("bb:openVideos", () => { fs.mkdirSync(vdir(), { recursive: true }); return shell.openPath(vdir()); });
+  handle("bb:showFile", (e, f) => {
+    if (typeof f !== "string" || !f) return;
+    const base = path.resolve(vdir()), p = path.resolve(f);
+    if (p.startsWith(base + path.sep) && fs.existsSync(p)) shell.showItemInFolder(p);
+  });
+  handle("bb:openVideos", () => { fs.mkdirSync(vdir(), { recursive: true }); return shell.openPath(vdir()); });
   /* ── יומן אודומטריה מהרובוט (adb) ── */
-  ipcMain.handle("bb:adbPull", (e, ip) => adbPull(String(ip || "").trim()));
-  ipcMain.handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
-  ipcMain.handle("bb:acctStatus", () => acctStatus());
-  ipcMain.handle("bb:acctSignIn", async (e, em, pw) => { const r = await sync.signIn(em, pw); if (r.ok) runSync("login"); return r; });
-  ipcMain.handle("bb:acctSignUp", async (e, em, pw) => { const r = await sync.signUp(em, pw); if (r.ok && !r.confirm) runSync("login"); return r; });
-  ipcMain.handle("bb:acctRecover", (e, em) => sync.recover(em));
-  ipcMain.handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
-  ipcMain.handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
-  ipcMain.handle("bb:syncNow", () => runSync("manual"));
+  handle("bb:adbPull", (e, ip) => adbPull(String(ip || "").trim()));
+  handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
+  handle("bb:acctStatus", () => acctStatus());
+  /* התחברות לחשבון אחר במחשב הזה — הנהגים של החשבון הקודם ״חונים״; אם הנהג הפעיל היה שלו, הדף נטען מחדש */
+  const afterLogin = r => { if (r.ok) { if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); } return r; };
+  handle("bb:acctSignIn", async (e, em, pw) => afterLogin(await sync.signIn(em, pw)));
+  handle("bb:acctSignUp", async (e, em, pw) => { const r = await sync.signUp(em, pw); return r.ok && !r.confirm ? afterLogin(r) : r; });
+  handle("bb:acctRecover", (e, em) => sync.recover(em));
+  handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
+  handle("bb:syncNow", () => runSync("manual"));
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
-  ipcMain.handle("bb:aiStatus", () => ai.status());
-  ipcMain.handle("bb:aiSetKey", async (e, k) => { const r = await ai.setKey(String(k || "")); return Object.assign({ status: ai.status() }, r, { status: ai.status() }); });
-  ipcMain.handle("bb:aiClear", () => ai.clear());
-  ipcMain.handle("bb:aiCheck", async () => { const r = await ai.check(); return Object.assign({}, r, { status: ai.status() }); });
-  ipcMain.handle("bb:aiDrills", () => ai.drills());
-  ipcMain.handle("bb:aiAsk", (e, kind, o) => ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
-  ipcMain.handle("bb:acctName", async (e, n) => { const r = await sync.nameSet(String(n || "")); send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:aiStatus", () => ai.status());
+  handle("bb:aiSetKey", async (e, k) => { const r = await ai.setKey(String(k || "")); return Object.assign({ status: ai.status() }, r, { status: ai.status() }); });
+  handle("bb:aiClear", () => ai.clear());
+  handle("bb:aiCheck", async () => { const r = await ai.check(); return Object.assign({}, r, { status: ai.status() }); });
+  handle("bb:aiDrills", () => ai.drills());
+  handle("bb:aiAsk", (e, kind, o) => ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
+  handle("bb:acctName", async (e, n) => { const r = await sync.nameSet(String(n || "")); send("bb:sync", { status: acctStatus() }); return r; });
   /* ── עדכונים ── */
-  ipcMain.handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
-  ipcMain.handle("bb:shot", async () => { try { let img = await win.webContents.capturePage(); const sz = img.getSize();
+  handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
+  handle("bb:shot", async () => { try { let img = await win.webContents.capturePage(); const sz = img.getSize();
     if (sz.width > 1280) img = img.resize({ width: 1280 }); return "data:image/jpeg;base64," + img.toJPEG(72).toString("base64"); } catch (e) { return ""; } });
-  ipcMain.handle("bb:updCheck", () => updCheck(true));
-  ipcMain.handle("bb:updInstall", () => { if (AU && UPD.state === "ready") { setImmediate(() => AU.quitAndInstall(false, true)); return true; } return false; });
-  ipcMain.handle("bb:updState", () => UPD);
-  ipcMain.handle("bb:openUrl", (e, url) => { if (/^https:\/\/github\.com\//.test(url)) shell.openExternal(url); });
-  ipcMain.handle("bb:importBackup", async (e, txt) => {
+  handle("bb:updCheck", () => updCheck(true));
+  handle("bb:updInstall", () => { if (AU && UPD.state === "ready") { updQuit = true; try { store.flushKv(); } catch (err) {} setImmediate(() => AU.quitAndInstall(false, true)); return true; } return false; });
+  handle("bb:updState", () => UPD);
+  handle("bb:openUrl", (e, url) => { if (/^https:\/\/github\.com\//.test(url)) shell.openExternal(url); });
+  handle("bb:importBackup", async (e, txt) => {
     txt = txt || await pick("ייבוא גיבוי מהדפדפן"); if (txt == null) return { ok: false, canceled: true };
-    const r = store.importBrowserBackup(txt); if (r.ok) setTimeout(() => win && win.webContents.reload(), 30); return r;
+    const r = store.importBrowserBackup(txt); if (r.ok) { kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } return r;
   });
 }
 
@@ -303,16 +339,18 @@ app.whenReady().then(() => {
   macMenu();
   store = new Store(DATA);
   try { store.dailyBackup(14); } catch (e) { console.error(e); }
-  const enc = s => (safeStorage && safeStorage.isEncryptionAvailable()) ? "e:" + safeStorage.encryptString(s).toString("base64") : "p:" + Buffer.from(s, "utf8").toString("base64");
+  /* v63: אסימון ההתחברות נשמר רק מוצפן (safeStorage). בלי הצפנה — רק בזיכרון עד היציאה (מתחברים שוב בפעם הבאה) */
+  const canEnc = () => { try { return !!(safeStorage && safeStorage.isEncryptionAvailable()); } catch (e) { return false; } };
+  const enc = s => canEnc() ? "e:" + safeStorage.encryptString(s).toString("base64") : null;
   const dec = s => s.startsWith("e:") ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : Buffer.from(s.replace(/^p:/, ""), "base64").toString("utf8");
-  sync = new Sync(store, DATA, { enc, dec });
+  sync = new Sync(store, DATA, { enc, dec, canEnc: () => canEnc() || process.env.BIOBUZZ_PLAIN_SESS === "1" });
   /* מפתח גוגל: רק מוצפן באמת (safeStorage). בלי הצפנה — נשמר בזיכרון עד היציאה */
   ai = new AI(DATA, { enc: s => "e:" + safeStorage.encryptString(s).toString("base64"),
     dec: s => s.startsWith("e:") && safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : "",
     canEnc: () => !!(safeStorage && safeStorage.isEncryptionAvailable()) || !!process.env.BIOBUZZ_AI_PLAIN });
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
-    bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html") });
+    bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html"), token: BRIDGE_TOK });
     bridge.start().then(ok => { if (ok && !process.env.BIOBUZZ_NOADB) bridge.adbWatch(); });
   }
   reg();
@@ -322,7 +360,9 @@ app.whenReady().then(() => {
   updInit();
   win.webContents.once("did-finish-load", () => {
     if (anyIn()) setTimeout(() => runSync("start"), 1500);
+    /* v63: גם במק ובגרסה הניידת (בלי עדכון אוטומטי) — בודקים לבד ורק מודיעים */
     if (AU) setTimeout(() => updCheck(false), 8000);
+    else if (app.isPackaged && !process.env.BIOBUZZ_TEST) setTimeout(() => updCheck(false), 8000);
   });
   setInterval(() => runSync("timer"), 120000);
 });
@@ -330,7 +370,7 @@ let quitting = false;
 app.on("before-quit", e => {
   try { store && store.flushKv(); } catch (err) {}
   /* לפני יציאה — עוד סנכרון אחד (עד 6 שניות), כדי שהמחשב הבא יקבל הכול */
-  if (!quitting && anyIn() && !process.env.BIOBUZZ_TEST) {
+  if (!quitting && !updQuit && anyIn() && !process.env.BIOBUZZ_TEST) {
     e.preventDefault(); quitting = true;
     Promise.race([runSync("quit"), new Promise(r => setTimeout(r, 6000))]).finally(() => app.quit());
   }
