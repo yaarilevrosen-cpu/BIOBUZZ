@@ -16,7 +16,7 @@ const E=(f,a)=>page.evaluate(f,a);
 /* 17 · השהיה עוצרת את השעון, הבוטים והשופט */
 {
   const r=await E(()=>{ const S=__sim; S.MT.cd=0; S.gameStart(true); S.matchStart(); S.advance(2,1/60);
-    const t0=S.MATCH.t, s0=S.simT, bp=S.BOTS.map(b=>b.body.position.x+','+b.body.position.z).join('|');
+    const t0=S.MATCH.t, bp=S.BOTS.map(b=>b.body.position.x+','+b.body.position.z).join('|');
     S.paused=true; S.advance(40,1/60);
     const t1=S.MATCH.t, bp1=S.BOTS.map(b=>b.body.position.x+','+b.body.position.z).join('|');
     S.paused=false; S.advance(0.5,1/60); const t2=S.MATCH.t; const ph=S.MATCH.phase; S.matchStop();
