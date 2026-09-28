@@ -10723,7 +10723,8 @@ function stepSim(dt){
       }
     }
     const vPre={x:botBody.velocity.x,z:botBody.velocity.z};
-    world.step(1/120,dt*(slow?.22:1),4);
+    /* v63: מספיק תת־צעדים לכל אורך הצעד — בצעד של 0.05 (מחשב איטי) ארבעה תת־צעדים איבדו שליש מהזמן */
+    { const dts=dt*(slow?.22:1); world.step(1/120,dts,Math.ceil(dts*120)+1); }
     botBody.position.y=0; botBody.velocity.y=0;   // נעילת גובה אחרי הצעד
     /* שלדת מקנום עם מנועים עצורים לא מחליקה מדחיפה של מכשול —
        בלי זה דחיפת שחרור מהפיזיקה מעיפה את הרובוט חצי מטר אחורה */
