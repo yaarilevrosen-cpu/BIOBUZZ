@@ -2496,6 +2496,106 @@ function langSet(l){
 }
 </script>
 <script>
+/* v63 — מקלדת ומיקוד: רק שדה הקלדה (טקסט, רשימה, עורך) בולע מקשים. תיבת סימון, מחוון או כפתור
+   שנלחצו בעכבר לא עוצרים את הנהיגה, ורווח/חיצים הולכים לרובוט ולא לפקד. מיקוד מהמקלדת (Tab) נשאר רגיל. */
+function typingIn(el){
+  if(!el||el.nodeType!==1) return false;
+  if(el.isContentEditable) return true;
+  const tg=el.tagName;
+  if(tg==="TEXTAREA"||tg==="SELECT") return true;
+  if(tg!=="INPUT") return false;
+  return !/^(checkbox|radio|range|button|submit|reset|color|file|image)$/i.test(el.type||"");
+}
+let ptrAt=0;
+addEventListener("pointerdown",()=>{ ptrAt=performance.now(); },true);
+addEventListener("focusin",e=>{ const t=e.target; if(t&&t.nodeType===1) t._bbPtr=performance.now()-ptrAt<800; },true);
+function ctrlNative(el,code){
+  /* פקד (לא שדה טקסט) שהגיעו אליו במקלדת (Tab): רווח/אנטר/חיצים עושים את הפעולה הרגילה שלו.
+     אם הגיעו אליו בעכבר — המקשים האלה הולכים לרובוט */
+  if(!el||el.nodeType!==1||el===document.body||!/^(INPUT|BUTTON|A|SUMMARY)$/.test(el.tagName)) return false;
+  return !el._bbPtr&&/^(Space|Enter|NumpadEnter|Arrow|Home|End|Page)/.test(code);
+}
+addEventListener("keyup",e=>{ const el=e.target;
+  if(e.code==="Space"&&!typingIn(el)&&!ctrlNative(el,e.code)&&el&&el.nodeType===1&&/^(INPUT|BUTTON|SUMMARY)$/.test(el.tagName)) e.preventDefault(); },true);
+/* v63 — Esc אחד וחלונות: Esc סוגר את החלון העליון שפתוח (לפי הסדר מלמעלה למטה).
+   הסיור לא ברשימה: הוא מלווה את המסך, ו-Esc שלו פועל רק כשאין חלון פתוח.
+   בחלונות דו־שיח: בפתיחה המיקוד עובר לפקד הראשון, Tab נשאר בתוך החלון, ובסגירה המיקוד חוזר למקום. */
+/* הסגירה דרך כפתור הסגירה של החלון או הפונקציה המיוצאת — הקוד הזה רץ לפני שאר הסימולטור ולא רואה את הפונקציות שלו */
+const OVL=[
+  {id:"bugModal", btn:"bugClose", trap:1},
+  {id:"bldBox",   sim:"bldClose", btn:"bldBg", trap:1},
+  {id:"skinBox",  sim:"skinClose", btn:"skinBg", trap:1},
+  {id:"cmdk",     sim:"cmdkClose", trap:1},
+  {id:"coachBox", btn:"coachX", trap:1},
+  {id:"aiChat",   sim:"chatClose", btn:"aiChatX"},
+  {id:"acctModal",btn:"acClose", trap:1},
+  {id:"profMenu"},
+  {id:"padStudio",btn:"psX", trap:1},
+  {id:"qrBox",    btn:"qrX", trap:1},
+  {id:"playModal",btn:"pmX", trap:1},
+  {id:"setup",    open:()=>document.body.classList.contains("setup"), btn:"setupX", trap:1},
+  {id:"hudMenu"},
+  {id:"magicMenu"}
+];
+function ovlClose(o,m){
+  const S=window.__sim;
+  if(o.sim&&S&&typeof S[o.sim]==="function"){ S[o.sim](); return; }
+  const b=o.btn&&document.getElementById(o.btn);
+  if(b) b.click();
+  /* כפתור שלא חובר (למשל חלון של האפליקציה בדפדפן) — פשוט מסתירים */
+  if(o.id!=="setup"&&ovlOpen(o)) m.hidden=true;
+}
+function ovlOpen(o){ const m=document.getElementById(o.id); if(!m) return false;
+  if(o.open) return o.open(); if(m.hidden) return false;
+  return getComputedStyle(m).display!=="none"; }
+function ovlTop(){ for(const o of OVL) if(ovlOpen(o)) return o; return null; }
+function ovlFocusables(m){
+  return [...m.querySelectorAll('button:not([disabled]),[href],input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')]
+    .filter(x=>x.getClientRects().length&&getComputedStyle(x).visibility!=="hidden"&&!x.closest("[hidden],[inert]"));
+}
+addEventListener("keydown",e=>{
+  if(e.key!=="Escape"&&e.key!=="Tab") return;
+  { const S=window.__sim, kb=S&&S.KB; if(kb&&kb.cap) return; }  /* בחירת מקש למיפוי — Esc הולך לשם */
+  const o=ovlTop(); if(!o) return;
+  const m=document.getElementById(o.id), t=e.target, inside=t&&t.nodeType===1&&m.contains(t);
+  if(e.key==="Tab"){
+    if(!o.trap) return;
+    const f=ovlFocusables(m); if(!f.length) return;
+    const a=f[0], z=f[f.length-1];
+    if(!inside){ e.preventDefault(); (e.shiftKey?z:a).focus(); }
+    else if(e.shiftKey&&t===a){ e.preventDefault(); z.focus(); }
+    else if(!e.shiftKey&&t===z){ e.preventDefault(); a.focus(); }
+    return; }
+  /* שדה הקלדה מחוץ לחלון העליון (למשל עריכת שם בדף) מטפל ב-Esc בעצמו */
+  if(typingIn(t)&&!inside) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  try{ ovlClose(o,m); }catch(err){ console.warn(err); if(o.id!=="setup") m.hidden=true; }
+},true);
+/* מיקוד: פתיחה ← הפקד הראשון; סגירה ← חזרה לאן שהיה — רק כשפתחו מהמקלדת
+   (אחרי לחיצת עכבר המיקוד לא חוזר לכפתור, כדי שרווח ימשיך לירות ולא יפתח שוב את החלון) */
+(function ovlFocusWire(){
+  const prev={}; let kbAt=0, blurEl=null, blurAt=0;
+  addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "||e.key==="Tab") kbAt=performance.now(); },true);
+  addEventListener("pointerdown",()=>{ kbAt=0; },true);
+  addEventListener("focusout",e=>{ blurEl=e.target; blurAt=performance.now(); },true);
+  const onOpen=o=>{ const m=document.getElementById(o.id); if(!m) return;
+    let a=document.activeElement; const now=performance.now();
+    /* הכפתור שפתח מוריד מעצמו את המיקוד (on) — לוקחים אותו אם זה קרה אחרי לחיצת המקלדת */
+    if((!a||a===document.body)&&blurEl&&blurAt>=kbAt) a=blurEl;
+    prev[o.id]=kbAt&&now-kbAt<5000&&a&&a!==document.body&&!m.contains(a)?a:null;
+    setTimeout(()=>{ if(!ovlOpen(o)) return; const b=document.activeElement; if(b&&m.contains(b)) return;
+      const f=ovlFocusables(m); const first=m.querySelector("[autofocus]")||f[0]; if(first) try{ first.focus({preventScroll:true}); }catch(e){} },40); };
+  const onClose=o=>{ const m=document.getElementById(o.id), p=prev[o.id]; prev[o.id]=null; if(!m) return;
+    const a=document.activeElement; if(a&&a!==document.body&&!m.contains(a)) return;
+    if(a&&m.contains(a)) try{ a.blur(); }catch(e){}
+    if(p&&p.isConnected&&p.getClientRects().length) try{ p.focus({preventScroll:true}); }catch(e){} };
+  const state={};
+  const check=()=>{ for(const o of OVL){ if(!o.trap) continue; const v=ovlOpen(o); if(v===!!state[o.id]) continue; state[o.id]=v; v?onOpen(o):onClose(o); } };
+  const go=()=>{ const mo=new MutationObserver(check);
+    for(const o of OVL){ const m=document.getElementById(o.id); if(m) mo.observe(m,{attributes:true,attributeFilter:["hidden"]}); }
+    mo.observe(document.body,{attributes:true,attributeFilter:["class"]}); check(); };
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",go); else go();
+})();
 /* באפליקציה: כל מה שהסימולטור שומר נשמר גם בדיסק, בפרופיל של הנהג */
 if(window.bbApp){ (function(){ const S=Storage.prototype, si=S.setItem, ri=S.removeItem, cl=S.clear;
   S.setItem=function(k,v){ si.call(this,k,v); if(this===window.localStorage) window.bbApp.kvSet(k,v); };
@@ -7497,7 +7597,7 @@ function hudWire(){
     if(m&&!m.hidden&&!e.target.closest("#hudMenu")&&!e.target.closest("#tbHud")) m.hidden=true; },true);
   on($("bannerX"),()=>{ HUD.endGone=true; showBanner(); });
   addEventListener("keydown",e=>{
-    if(/INPUT|TEXTAREA|SELECT/.test((e.target&&e.target.tagName)||"")||e.ctrlKey||e.metaKey||e.altKey) return;
+    if(typingIn(e.target)||e.ctrlKey||e.metaKey||e.altKey) return;
     if(e.code==="KeyH"&&!e.repeat){ hudClean(); }
     /* P — השהיה והמשך (לא במשחק ברשת, שם כולם באותו שעון) */
     if(e.code==="KeyP"&&!e.repeat&&NET.mode==="solo"&&!KB.binds.some(b=>b.k==="KeyP")){ TOG.pause.set(!paused); syncBar(); }
@@ -10443,8 +10543,7 @@ kbLoad();
 addEventListener("keydown",e=>{
   /* בחירת מקש למיפוי: המקש הבא הולך לשם ולא לרובוט */
   if(KB.cap){ e.preventDefault(); kbTake(e.code); return; }
-  const tg=e.target.tagName;
-  if(tg==="INPUT"||tg==="TEXTAREA"||tg==="SELECT") return;
+  if(typingIn(e.target)||ctrlNative(e.target,e.code)) return;
   keys[e.code]=true;
   if(NET.mode==="guest"){ if(/^(Space|Arrow)/.test(e.code)) e.preventDefault(); return; }
   if(SPLIT.on&&KB_P2.test(e.code)){ e.preventDefault(); return; }
