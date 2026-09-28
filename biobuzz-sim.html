@@ -3159,8 +3159,23 @@ const tagMats=[0,1,2,3].map(i=>new THREE.MeshStandardMaterial({map:tagCluster(i+
 const logoTex=logoPanel();
 let fieldRoot=null, fieldBodies=[], hiveRed=null, hiveBlue=null, flowers=[], volGhosts=[], tagPanels=[];
 
+/* v63: מה שנבנה לזירה הקודמת משתחרר מהכרטיס הגרפי — חוץ מגאומטריות במטמון ומחומרים משותפים */
+function fieldDisposeTree(root){
+  const keepG=new Set(Object.values(GEO)), keepM=new Set(Object.values(MAT).concat(tagMats));
+  root.traverse(o=>{
+    if(o.geometry&&!keepG.has(o.geometry)) o.geometry.dispose();
+    const ms=Array.isArray(o.material)?o.material:o.material?[o.material]:[];
+    for(const m of ms) if(!keepM.has(m)) m.dispose();
+  });
+}
+/* מטמון הגאומטריות גדל עם כל מידה חדשה (מחוון שזז) — מה שכבר לא בשימוש בסצנה משתחרר */
+function geoPrune(){
+  const keys=Object.keys(GEO); if(keys.length<40) return;
+  const used=new Set(); scene.traverse(o=>{ if(o.geometry) used.add(o.geometry); });
+  for(const k of keys){ const g=GEO[k]; if(!used.has(g)){ g.dispose(); delete GEO[k]; } }
+}
 function disposeField(){
-  if(fieldRoot) scene.remove(fieldRoot);
+  if(fieldRoot){ scene.remove(fieldRoot); try{ fieldDisposeTree(fieldRoot); }catch(e){} }
   for(const b of fieldBodies) world.removeBody(b);
   fieldBodies=[]; flowers=[]; volGhosts=[]; tagPanels=[];
   outlines.length=0;
@@ -3358,6 +3373,7 @@ function rebuildField(){
     row("פריסה אנכית",fmt(lipY(1)-lipY(-1),2)+"″")+
     row("מרכז הפרח מהמרכז",fmt(Math.hypot(P.flowOff,71.75-P.flowIn),2)+"″")+
     row("פתח שליפה מהפרח",fmt(P.flowGapTop-P.flowGapBot,2)+"″");
+  try{ geoPrune(); }catch(e){}
 }
 function hiveSet(h,a){
   h.group.rotation.x=a;
@@ -4329,7 +4345,9 @@ function runLive(){
   if(PATH.trailLine){ scene.remove(PATH.trailLine); PATH.trailLine.geometry.dispose(); PATH.trailLine=null; }
   if(RUN.trail&&RUN.trail.length>1){
     const g=new THREE.BufferGeometry().setFromPoints(RUN.trail.map(q=>new THREE.Vector3(M(q[0]),M(1.4),M(q[1]))));
-    PATH.trailLine=new THREE.Line(g,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthTest:false}));
+    /* v63: חומר אחד לכל ההרצות — קודם נוצר חומר חדש ארבע פעמים בשנייה ואף אחד לא שוחרר */
+    const lm=runLive.mat||(runLive.mat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthTest:false}));
+    PATH.trailLine=new THREE.Line(g,lm);
     PATH.trailLine.renderOrder=1003; scene.add(PATH.trailLine);
   }
   pathInfo();
@@ -6650,12 +6668,14 @@ function pathInfo(){
 }
 function pathList(){
   const el=$("pathList"); if(!el) return;
-  if(!PATH.pts.length){ el.innerHTML='<p class="note">אין נקודות. מדליקים ״מצב סימון״ ולוחצים על הרצפה — הנקודה הראשונה תהיה איפה שהרובוט עומד.</p>'; return; }
+  /* v63: בונים מחדש רק כשמשהו השתנה (בזמן הרצה pathInfo נקרא ארבע פעמים בשנייה, ובחירה פתוחה נסגרה) */
+  if(!PATH.pts.length){ const h0='<p class="note">אין נקודות. מדליקים ״מצב סימון״ ולוחצים על הרצפה — הנקודה הראשונה תהיה איפה שהרובוט עומד.</p>'; if(el._h!==h0){ el._h=h0; el.innerHTML=h0; } return; }
   let num=0;
-  el.innerHTML=PATH.pts.map((p,i)=>p.auto?"":'<div class="prow"><b>'+(p.start?"S":++num)+'</b><span class="pxy">'+
+  const h=PATH.pts.map((p,i)=>p.auto?"":'<div class="prow"><b>'+(p.start?"S":++num)+'</b><span class="pxy">'+
     fmt(p.x,0)+", "+fmt(p.z,0)+(p.dt?' <small>+'+(+p.dt).toFixed(1)+'s</small>':'')+(p.act==="wait"&&p.sec?' <small>⏸'+(+p.sec).toFixed(1)+'s</small>':'')+'</span><select data-pa="'+i+'">'+PACTS.map(a=>'<option value="'+a+'"'+
     (a===(p.act||"none")?" selected":"")+'>'+PACTN[a]+'</option>').join("")+'</select>'+
     (p.start?'<span class="pdel"></span>':'<button class="pdel" data-pd="'+i+'" title="מחק נקודה">✕</button>')+'</div>').join("");
+  if(el._h===h) return; el._h=h; el.innerHTML=h;
   el.querySelectorAll("select[data-pa]").forEach(x=>x.addEventListener("change",()=>pathSetAct(+x.dataset.pa,x.value)));
   el.querySelectorAll("button[data-pd]").forEach(x=>on(x,()=>pathDel(+x.dataset.pd)));
 }

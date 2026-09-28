@@ -234,6 +234,22 @@ const E=(f,a)=>page.evaluate(f,a);
   ok(vals.every(v=>v.blocking===(v.ally!=='blue')), 'רק יריב מסומן כחוסם כשאני כחול '+JSON.stringify(r));
 }
 
+/* 23 · זיכרון גרפי: בנייה מחדש של הזירה לא מצטברת; מחוון לא מנפח את המטמון; רשימת הנקודות לא נבנית מחדש סתם */
+{
+  const r=await E(()=>{ const S=__sim; const rd=S.renderer, c=S.camera; rd.render(S.scene,c); const g0=rd.info.memory.geometries;
+    for(let i=0;i<10;i++){ S.rebuildField(); rd.render(S.scene,c); }
+    const g1=rd.info.memory.geometries;
+    const w0=S.P.cellW; for(let i=0;i<60;i++){ S.setP('cellW', w0+0.01*(i+1)); S.apply('build'); rd.render(S.scene,c); }
+    S.setP('cellW',w0); S.apply('build'); rd.render(S.scene,c); const g2=rd.info.memory.geometries;
+    /* רשימת הנקודות */
+    S.pathClear(); S.pathAdd(-60,40); S.pathAdd(-40,40); S.pathInfo(); const sel=document.querySelector('#pathList select');
+    S.pathInfo(); S.pathInfo(); const same=sel&&document.querySelector('#pathList select')===sel; S.pathClear();
+    return {g0,g1,g2,same}; });
+  ok(r.g1<=r.g0+2, `עשר בניות של הזירה בלי דליפה (${r.g0} → ${r.g1})`);
+  ok(r.g2<=r.g0+40, `שישים תזוזות מחוון — המטמון חסום (${r.g0} → ${r.g2})`);
+  ok(r.same, 'רשימת הנקודות לא נבנית מחדש כשלא השתנה כלום');
+}
+
 await browser.close();
 ok(realErrs(errs).length===0,'אין שגיאות בדף: '+realErrs(errs).slice(0,3).join(' | '));
 done('v63_core');
