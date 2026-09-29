@@ -115,9 +115,12 @@ await E(()=>{ const S=__sim; S.bldSet(0,'double'); });
 r=await E(()=>{ const S=__sim; S.GAME.randomRoles=false; S.gameStart(true); S.BOTS.forEach(b=>{ b.role='score'; b.ph='seek'; }); S.advance(3,1/60);
   const bs=S.BOTS.map(b=>({id:S.bldBot(b).id,on:b.on,x:S.I(b.body.position.x),z:S.I(b.body.position.z)})); return bs; });
 const t0=r;
-r=await E(()=>{ const S=__sim; S.advance(95,1/60); return S.BOTS.map(b=>({id:S.bldBot(b).id,on:b.on,shots:b.shots,lifted:b.lifted||0,ph:b.ph,
-  moved:0,x:S.I(b.body.position.x),z:S.I(b.body.position.z)})); });
-const moved=r.map((b,i)=>Math.hypot(b.x-t0[i].x,b.z-t0[i].z));
+/* v64: דרך שנסעו (דגימה כל שנייה), לא המרחק בין ההתחלה לסוף — בוט שחזר לאותה עמדת ירי נסע, גם אם עומד באותו מקום */
+r=await E(()=>{ const S=__sim; const path=S.BOTS.map(()=>0); let last=S.BOTS.map(b=>[S.I(b.body.position.x),S.I(b.body.position.z)]);
+  for(let k=0;k<95;k++){ S.advance(1,1/60); S.BOTS.forEach((b,i)=>{ const p=[S.I(b.body.position.x),S.I(b.body.position.z)]; path[i]+=Math.hypot(p[0]-last[i][0],p[1]-last[i][1]); last[i]=p; }); }
+  return S.BOTS.map((b,i)=>({id:S.bldBot(b).id,on:b.on,shots:b.shots,lifted:b.lifted||0,ph:b.ph,
+  moved:path[i],x:S.I(b.body.position.x),z:S.I(b.body.position.z)})); });
+const moved=r.map(b=>b.moved);
 /* בוט מעלית שאין לו מה לאסוף מחכה ליד הבית — זה נכון; הוא צריך לנסוע או להפקיד */
 ok(r.every((b,i)=>!b.on||moved[i]>6||(b.id==='lift'&&b.lifted>0)),'כל הבוטים נוסעים או מפקידים ('+moved.map(x=>x.toFixed(0)).join(',')+'″)');
 const dbl=r.find(b=>b.id==='double'), lf=r.find(b=>b.id==='lift'), tu=r.find(b=>b.id==='turret');

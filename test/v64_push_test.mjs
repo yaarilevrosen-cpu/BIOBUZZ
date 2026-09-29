@@ -1,0 +1,20 @@
+// v64 — דחיפה הוגנת: בוט הוא גוף עם אחיזה (לא קיר), וכוח ההנעה שלנו פועל בכל תת־צעד
+import {open,ok,done,realErrs} from './h.mjs';
+const {browser,page,errs}=await open({noraf:true});
+const r=await page.evaluate(()=>{ const S=__sim, M=S.M, I=S.I, out={};
+  S.MT.cd=0; S.MT.auto=0; S.MT.trans=0; S.MT.tele=120; S.MYAUTO.lvl='none'; S.gameStart(true); S.REF.on=false; S.matchStart(); S.advance(0.5,1/60);
+  const b=S.BOTS[0]; S.BOTS.forEach(o=>{ if(o!==b) o.on=false; });
+  S.humSeat(b,'net','g'); b.hum.id='gP';
+  const place=()=>{ S.botBody.position.set(M(0),0,M(-10)); S.botBody.velocity.set(0,0,0); S.bot.yaw=0;
+    b.body.position.set(M(0),0,M(8.5)); b.body.velocity.set(0,0,0); b.vx=b.vz=0; b.yaw=Math.PI; };
+  const run=(me,botY)=>{ if(me) S.key('KeyW',true); for(let i=0;i<120;i++){ S.humFeed(b,{x:0,y:botY,t:0,fire:false,intake:false,aim:false,fc:false}); S.advance(1/60,1/60); } if(me) S.key('KeyW',false); };
+  place(); let b0=I(b.body.position.z); run(true,0); out.push=I(b.body.position.z)-b0;
+  place(); let m0=I(S.botBody.position.z); run(false,1); out.pushed=I(S.botBody.position.z)-m0;
+  place(); m0=I(S.botBody.position.z); run(true,1); out.headon=I(S.botBody.position.z)-m0;
+  S.humFree(b); S.matchStop(); return out; });
+console.log('   ',JSON.stringify(r));
+ok(r.push>10, `אני דוחף בוט שבולם (${r.push.toFixed(1)}″ ב-2 שנ׳; לפני v64 — 5″)`);
+ok(Math.abs(r.pushed)<25, `בוט שדוחף אותי כשאני בולם לא מעיף אותי (${r.pushed.toFixed(1)}″; לפני v64 — 51″)`);
+ok(Math.abs(r.headon)<25, `ראש בראש, שניהם במלוא הכוח — בערך תיקו (${r.headon.toFixed(1)}″; לפני v64 — הפסדתי 53″)`);
+ok(realErrs(errs).length===0,'בלי שגיאות בדף');
+await browser.close(); done('v64_push');

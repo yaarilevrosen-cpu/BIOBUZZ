@@ -3200,7 +3200,7 @@ function teamSet(name,num){
 }
 function teamBadge(){ const b=document.getElementById("verBadge"); if(!b) return;
   const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:""); }
-const BUILD_VER="v63";
+const BUILD_VER="v64";
 function logoPanel(){
   const[c,g]=cv2d(1024,256);
   g.fillStyle="#12171c";g.fillRect(0,0,1024,256);
@@ -5255,7 +5255,7 @@ function calSolveRest(){
 const AIC={
   W:17, L:17, H:15,
   vMax:1.45,        /* מ׳/ש׳ — שלדת מקנום טיפוסית של 312 */
-  aMax:6.0,         /* מ׳/ש׳² — מוגבל אחיזה, לא מנוע */
+  aMax:8.3,         /* מ׳/ש׳² — מוגבל אחיזה, לא מנוע: μ≈0.85 כפול g, כמו השלדה שלנו (v64; היה 6 — והשלדה שלנו דחפה בחצי כוח) */
   wMax:3.4,         /* רד׳/ש׳ */
   mass:13,
   magCap:4,
@@ -5723,6 +5723,7 @@ function aiDrive(b,tx,tz,dt,speedCap){
   /* האטה לקראת היעד — שורש של שתיים כפול תאוצה כפול מרחק */
   const vWant=d<1e-4?0:Math.min(cap,Math.sqrt(2*AIC.aMax*d));
   const wx=d<1e-4?0:dx/d*vWant, wz=d<1e-4?0:dz/d*vWant;
+  b.ivx=wx; b.ivz=wz; b.ivSet=true;   /* v64: הכוונה — לשופט ולמוח */
   /* תקרת תאוצה — הרובוט לא מחליף כיוון בפריים אחד */
   const ax=wx-b.vx, az=wz-b.vz, am=Math.hypot(ax,az), aCap=AIC.aMax*dt;
   if(am>aCap){ b.vx+=ax/am*aCap; b.vz+=az/am*aCap; } else { b.vx=wx; b.vz=wz; }
@@ -6123,13 +6124,27 @@ function aiStep(b,dt){
   if(!b.on){ b.body.position.set(M(300),0,M(300)); b.vx=b.vz=0; return; }
   b.t+=dt;
   /* v63: המהירות שהבוט באמת משיג כשהוא נוסע (אחרי מגעים ובלימות) — לתכנון זמן החניה */
-  { const cmd=Math.hypot(b.vx||0,b.vz||0);
+  { const cmd=Math.hypot((b.ivx!=null?b.ivx:b.vx)||0,(b.ivz!=null?b.ivz:b.vz)||0);
     if(cmd>0.6*AIC.vMax*skill().v){ const sp=Math.hypot(b.body.velocity.x,b.body.velocity.z);
       b.vMeas=b.vMeas==null?sp:b.vMeas*0.98+sp*0.02; } }
   if(MATCH.on&&MATCH.phase==="AUTO"&&!b.leaveDone){
     const gp=Math.min(HALF-Math.abs(I(b.body.position.x)),HALF-Math.abs(I(b.body.position.z)));
     if(gp>Math.hypot(AIC.W/2,AIC.L/2)+3.25) b.leaveDone=true;     /* LEAVE לפי ההגדרה */
   }
+  /* v64: הבוט הוא גוף עם אחיזה, לא קיר. מתחילים מהמהירות האמיתית (אחרי מגעים — מי שדוחף אותו
+     באמת מזיז אותו), ובסוף הצעד השינוי שהבוט עצמו מבקש מוגבל לגבול האחיזה — אותו גבול שיש לשלדה שלנו (μ·g) */
+  const v0x=b.body.velocity.x, v0z=b.body.velocity.z; b.vx=v0x; b.vz=v0z;
+  b.ivSet=false; aiStepDrive(b,dt);
+  if(!b.ivSet){ b.ivx=b.vx; b.ivz=b.vz; }   /* הכוונה (מה שהבוט רצה) — לשופט: הצמדה נמדדת לפי כוונה, לא לפי מה שהמגע השאיר */
+  { const dx=b.vx-v0x, dz=b.vz-v0z, dm=Math.hypot(dx,dz), cap=AIC.aMax*dt;
+    if(dm>cap){ b.vx=v0x+dx/dm*cap; b.vz=v0z+dz/dm*cap; }
+    b.body.velocity.x=b.vx; b.body.velocity.z=b.vz; }
+  b.body.position.y=0; b.body.velocity.y=0; b.body.wakeUp();
+  b.body.quaternion.setFromAxisAngle(_cUpY,b.yaw);
+  b.group.position.copy(b.body.position); b.group.rotation.y=b.yaw;
+  aiBlockCheck(b,dt);
+}
+function aiStepDrive(b,dt){
   /* G403 ו-G404: בין השלבים ואחרי הסוף אין תנועה בכוח */
   if(MATCH.cd>0||MATCH.locked||MATCH.phase==="סיום"){ b.vx=b.vz=0;
     b.body.velocity.x=0; b.body.velocity.z=0; b.ph="ממתין"; }
@@ -6137,9 +6152,8 @@ function aiStep(b,dt){
   else if(b.hum&&(humLive(b)||b.hum.src!=="net")) humStep(b,dt);
   else if(brainParkNow(b,dt)) aiParkStep(b,dt);
   else if(b.role==="score") aiScoreStep(b,dt); else aiDefendStep(b,dt);
-  b.body.position.y=0; b.body.velocity.y=0; b.body.wakeUp();
-  b.body.quaternion.setFromAxisAngle(_cUpY,b.yaw);
-  b.group.position.copy(b.body.position); b.group.rotation.y=b.yaw;
+}
+function aiBlockCheck(b,dt){
   /* חוסם את קו הירי שלנו? */
   if(aimHive()&&bot.muzzleMark){
     const f2=mouthFrame(aimHive()), pp=muzzleWorld();
@@ -6208,7 +6222,7 @@ function brainRobots(){
             human:true, ref:null, ix:w.x||0, iz:w.z||0}); }
   for(const b of BOTS){ if(!b.on||!b.body) continue;
     R.push({id:b.name, ally:b.ally, body:b.body, clip:b.clip.length, human:brainHuman(b), ref:b,
-            ix:(b.vx||0)/AIC.vMax, iz:(b.vz||0)/AIC.vMax}); }
+            ix:((b.ivx!=null?b.ivx:b.vx)||0)/AIC.vMax, iz:((b.ivz!=null?b.ivz:b.vz)||0)/AIC.vMax}); }
   return R;
 }
 function brainTick(dt){
@@ -8291,7 +8305,7 @@ function refRobots(){
     half:Math.max(P.botW,P.botL)/2});
   for(const b of BOTS){ if(!b.on||!b.body) continue;
     out.push({id:b.name,team:b.name,ally:b.ally,x:I(b.body.position.x),z:I(b.body.position.z),
-      vx:b.body.velocity.x,vz:b.body.velocity.z, ix:b.vx||0, iz:b.vz||0,
+      vx:b.body.velocity.x,vz:b.body.velocity.z, ix:(b.ivx!=null?b.ivx:b.vx)||0, iz:(b.ivz!=null?b.ivz:b.vz)||0,
       half:Math.max(AIC.W,AIC.L)/2, bot:b}); }
   return out;
 }
@@ -8487,7 +8501,7 @@ function refLegs(dt){
   const LS=REF.legSt||(REF.legSt={});
   for(const b of BOTS){ if(!b.on||!b.body) continue;
     const st=LS[b.name]||(LS[b.name]={armed:true,t:0});
-    const bl=legContact(b), bs=Math.hypot(b.body.velocity.x,b.body.velocity.z);
+    const bl=legContact(b), bs=Math.max(Math.hypot(b.body.velocity.x,b.body.velocity.z),b.spPre||0);   /* v64: מהירות הגישה (לפני שהמגע עצר אותו) */
     if(bl&&st.armed&&bs>1.2){ st.armed=false; st.t=0;
       refRepeat("G417",b.name,b.ally,"פגיעה במהירות גבוהה במסגרת הכוורת",["major","yellow"]); }
     if(!bl){ st.t+=dt; if(st.t>1.5) st.armed=true; } }
@@ -11187,12 +11201,16 @@ function stepSim(dt){
       }
     }
     const vPre={x:botBody.velocity.x,z:botBody.velocity.z};
+    for(const ob of BOTS) if(ob.body) ob.spPre=Math.hypot(ob.body.velocity.x,ob.body.velocity.z);   /* v64: מהירות לפני המגע — לשופט (G417) */
     /* v63: מספיק תת־צעדים לכל אורך הצעד — בצעד של 0.05 (מחשב איטי) ארבעה תת־צעדים איבדו שליש מהזמן.
        ולא world.step: הוא גם מפסיק באמצע אם התת־צעדים לקחו יותר מ-8 מ״ש של זמן אמיתי,
        כלומר דווקא במחשב איטי הפיזיקה מפגרת אחרי השעון. כאן סופרים צעדים לפי זמן הסימולציה בלבד. */
     { const h=1/120; physAcc+=dt*(slow?.22:1);
       const n=Math.min(Math.ceil(dt*120)+1,Math.floor(physAcc/h+1e-9));
-      for(let i=0;i<n;i++) world.internalStep(h);
+      /* v64: cannon מאפס כוחות אחרי כל תת־צעד — כוח ההנעה שלנו פעל רק בתת־הצעד הראשון (חצי כוח),
+         ולכן כל בוט דחף אותנו. מחזירים אותו לכל תת־צעד (הכדורים נשארים כמו שכוילו) */
+      const bfx=botBody?botBody.force.x:0, bfz=botBody?botBody.force.z:0;
+      for(let i=0;i<n;i++){ if(i>0&&botBody){ botBody.force.x+=bfx; botBody.force.z+=bfz; } world.internalStep(h); }
       physAcc=Math.max(0,Math.min(h,physAcc-n*h)); }
     botBody.position.y=0; botBody.velocity.y=0;   // נעילת גובה אחרי הצעד
     /* שלדת מקנום עם מנועים עצורים לא מחליקה מדחיפה של מכשול —
@@ -11431,6 +11449,7 @@ function humStep(b,dt){
   let wx=(f.x*y+r.x*x), wz=(f.z*y+r.z*x);
   const m=Math.hypot(wx,wz); if(m>1){ wx/=m; wz/=m; }
   wx*=AIC.vMax; wz*=AIC.vMax;
+  b.ivx=wx; b.ivz=wz; b.ivSet=true;   /* v64: הכוונה של הנהג — לשופט */
   const ax=wx-b.vx, az=wz-b.vz, am=Math.hypot(ax,az), aCap=AIC.aMax*dt;
   if(am>aCap){ b.vx+=ax/am*aCap; b.vz+=az/am*aCap; } else { b.vx=wx; b.vz=wz; }
   /* v63: שלדת טנק / 6 גלגלים גם בנהיגה אנושית — בלי תנועה הצידה (אותו כלל כמו aiDrive).
@@ -15699,7 +15718,8 @@ function bldHumLift(b,dt){
   let fl=null,bd=1e9; for(const x of flowers){ const d=Math.hypot(x.x-fx,x.z-fz); if(d<bd){ bd=d; fl=x; } }
   /* v63: אותם תנאים כמו אצלי — צמוד לפרח ועומד, לא בהפסקה, לא נקטר של היריב, ויש מקום בפרח */
   const k=bldLiftPick(b.clip,b.ally);
-  if(!fl||bd>7||Math.hypot(b.vx||0,b.vz||0)>0.45||MATCH.locked||k<0) return bldHumLiftReset(b);
+  const cmdM=b.hum&&b.hum.cmd?Math.hypot(b.hum.cmd.x||0,b.hum.cmd.y||0):0;   /* v64: גם נהג שדוחף אל הפרח (עומד, אבל נוסע) — לא מפקיד */
+  if(!fl||bd>7||Math.hypot(b.vx||0,b.vz||0)>0.45||cmdM>0.15||MATCH.locked||k<0) return bldHumLiftReset(b);
   if(b.hum.liftFl&&b.hum.liftFl!==fl) bldHumLiftReset(b);
   b.hum.liftFl=fl;
   const T=bldLiftTime(B), N=bldLiftN(B);
