@@ -118,8 +118,11 @@ const get = (port, p, headers) => new Promise(res => {
   // adb: לא מתיקייה יחסית ב-PATH ולא מ-C:\platform-tools
   const AD = tmp('bb63adb-'); fs.writeFileSync(path.join(AD, 'adb'), '#!/bin/sh\n'); fs.chmodSync(path.join(AD, 'adb'), 0o755);
   const oldP = process.env.PATH, oldCwd = process.cwd(), oldH = process.env.HOME;
+  /* מכונות ה-CI מגדירות ANDROID_HOME עם adb אמיתי — מנקים כדי לבדוק רק את התיקייה היחסית */
+  const oldAH = process.env.ANDROID_HOME, oldAS = process.env.ANDROID_SDK_ROOT; delete process.env.ANDROID_HOME; delete process.env.ANDROID_SDK_ROOT;
   process.chdir(AD); process.env.PATH = '.:' + path.basename(AD); process.env.HOME = AD;
   const fa = findAdb(); process.env.PATH = oldP; process.chdir(oldCwd); process.env.HOME = oldH;
+  if (oldAH !== undefined) process.env.ANDROID_HOME = oldAH; if (oldAS !== undefined) process.env.ANDROID_SDK_ROOT = oldAS;
   ok(fa === null, 'adb לא נלקח מתיקייה יחסית ב-PATH (' + fa + ')');
   ok(!/C:\\\\platform-tools|C:\\\\Android/.test(fs.readFileSync(APPDIR + '/bridge.js', 'utf8')), 'אין חיפוש adb ב-C:\\platform-tools');
   fs.rmSync(D, { recursive: true, force: true }); fs.rmSync(AD, { recursive: true, force: true });
@@ -393,7 +396,8 @@ if (!process.env.BB_NO_ELECTRON) {
 {
   const pj = JSON.parse(fs.readFileSync(APPDIR + '/package.json', 'utf8'));
   const f = pj.build.electronFuses || {};
-  ok(f.runAsNode === false && f.enableNodeOptionsEnvironmentVariable === false && f.enableNodeCliInspectArguments === false && f.onlyLoadAppFromAsar === true, 'Electron fuses בבנייה (runAsNode, NODE_OPTIONS, --inspect כבויים)');
+  /* --inspect נשאר פתוח בכוונה: בלעדיו אי אפשר לבדוק את האפליקציה הארוזה (linux_pkg_test) */
+  ok(f.runAsNode === false && f.enableNodeOptionsEnvironmentVariable === false && f.enableNodeCliInspectArguments === true && f.onlyLoadAppFromAsar === true, 'Electron fuses בבנייה (runAsNode ו-NODE_OPTIONS כבויים, --inspect פתוח לבדיקות)');
   const main = fs.readFileSync(APPDIR + '/main.js', 'utf8');
   ok(/requestSingleInstanceLock\(\)\) \{ app\.quit\(\); process\.exit\(0\); return; \}/.test(main), 'מופע יחיד: יוצאים באמת (return)');
   ok(/DEVTOOLS = !app\.isPackaged \|\| process\.env\.BIOBUZZ_DEV === "1"/.test(main) && /devTools: DEVTOOLS/.test(main), 'F12 / כלי מפתחים — רק בפיתוח או עם BIOBUZZ_DEV=1');
