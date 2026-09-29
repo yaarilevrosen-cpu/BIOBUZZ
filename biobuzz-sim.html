@@ -6465,8 +6465,9 @@ function brainParkDue(b,tLeft,dt){
   let d=navDist(px,pz,s.x,s.z,navClrBot(),navDyn(b.body));
   if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
   /* v63: לפי המהירות הנמדדת (לא הנומינלית), ועם מרווח — בוט שנתקע בדרך עדיין מגיע */
-  const vNom=AIC.vMax*skill().v, vm=b.vMeas==null?vNom:Math.max(0.4*vNom,Math.min(vNom,b.vMeas));
-  return tLeft<d/(vm/IN*0.45)+7.5+skill().think;
+  /* v63: מהירות נמדדת רק כשהבוט באמת איטי מהנומינלי ביותר מ-15% (נתקע/נדחף) — אחרת כמו קודם */
+  const vNom=AIC.vMax*skill().v, vm=(b.vMeas!=null&&b.vMeas<0.85*vNom)?Math.max(0.5*vNom,b.vMeas):vNom;
+  return tLeft<d/(vm/IN*0.45)+6+skill().think;
 }
 function brainParkNow(b,dt){
   if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2) return false;
