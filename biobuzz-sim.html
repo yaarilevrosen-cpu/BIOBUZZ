@@ -688,7 +688,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   .hmHero i{font-style:normal; font-size:44px; width:78px; height:78px; border-radius:22px; display:flex; align-items:center; justify-content:center;
     background:var(--panel); border:2px solid var(--pc); box-shadow:0 10px 30px rgba(0,0,0,.35)}
   .hmHero h1{font-family:var(--display); font-weight:400; font-size:32px; margin:0} .hmHero p{margin:4px 0 0; color:var(--muted); font-size:14px}
-  .hmGo{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px}
+  .hmGo{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px}
   .hmGo button{display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:18px 16px; min-height:118px; border-radius:16px; text-align:start;
     background:var(--panel); border:1px solid var(--line); transition:transform .12s, border-color .12s}
   .hmGo button:hover{box-shadow:0 0 0 2px rgba(255,176,32,.35); border-color:var(--accent)}
@@ -1250,6 +1250,24 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   .skSw{display:flex; flex-wrap:wrap; gap:6px} .skSw button{width:36px; height:28px; border-radius:8px; border:2px solid var(--line2); padding:0; cursor:pointer}
   .skSw button.on{border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,176,32,.35)} .skSw button:disabled{cursor:default}
   .skAct{padding:0 16px 14px; justify-content:flex-end; display:flex; gap:8px} .skAct button{flex:0 0 auto; width:auto}
+  /* v65 — תרגול מול בוטים */
+  #pracBox{position:fixed; inset:0; z-index:95} #pracBox[hidden]{display:none}
+  #pracBg{position:absolute; inset:0; background:rgba(5,7,10,.35)}
+  .pracWin{width:min(460px,calc(100vw - 32px))}
+  #pracRows{display:flex; flex-direction:column; gap:8px; padding:12px 16px 4px}
+  .pracRow{display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:12px; background:var(--bg)}
+  .pracRow .check{flex:1 1 auto; margin:0; min-width:0; display:flex; align-items:center; gap:8px}
+  .pracRow .check b{font-weight:600; font-size:13.5px; color:var(--ink)} .pracRow .check small{font-size:11px; color:var(--muted)}
+  .pracRow .seg{flex:0 0 150px} .pracRow.off .seg{opacity:.4; pointer-events:none} .pracRow.off .check b{color:var(--muted)}
+  .pracOpt{display:flex; flex-direction:column; gap:8px; padding:8px 16px 4px}
+  .pracLbl{font-size:11.5px; font-weight:600; color:var(--muted)}
+  .pracWarn{margin:4px 16px 0!important; color:#ffb020!important}
+  .skAct .pracSp{flex:1 1 auto}
+  .ppCard.dis{opacity:.45; cursor:not-allowed} .ppCard.dis:hover{border-color:var(--line)}
+  #clkPrac{display:none; align-self:center; padding:4px 11px; font-size:12px; border-radius:999px; border:1px solid var(--accent); background:rgba(255,176,32,.1); color:var(--accent)}
+  body.pracon #clkPrac{display:inline-block}
+  /* בטלפון אין מקום בכותרת — ההגדרות והעצירה דרך ״תפריט״ ← הכרטיס */
+  body.ph.pracon #clkPrac{display:none}
   .coachTop button{flex:0 0 auto!important; width:auto!important; padding:4px 11px}
   #bldBox{position:fixed; inset:0; z-index:95} #bldBox[hidden]{display:none}
   #bldBg{position:absolute; inset:0; background:rgba(5,7,10,.35)}
@@ -1711,6 +1729,18 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   <div id="skinRows"></div>
   <div class="row skAct"><button data-skact="rand">🎲 אקראי לבוטים</button><button data-skact="reset">הכול מקורי</button><button data-skact="close" class="primary">סיום</button></div>
 </div></div>
+<div id="pracBox" hidden role="dialog" aria-modal="true" aria-labelledby="pracTtl"><div id="pracBg"></div><div class="skWin pracWin">
+  <div class="coachTop"><b id="pracTtl">🤖 תרגול מול בוטים</b><button data-pact="close" aria-label="סגור">✕</button></div>
+  <p class="note skNote">בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.</p>
+  <div id="pracRows"></div>
+  <div class="pracOpt">
+    <div class="pracLbl" id="pracLvlL">רמת הבוטים</div>
+    <div class="seg" id="pracLvl" role="group" aria-labelledby="pracLvlL"></div>
+    <label class="check" for="pracRef"><input type="checkbox" id="pracRef">שופט — קורא הצמדה, אגירה ומגע גם בתרגול</label>
+  </div>
+  <p class="note pracWarn" id="pracWarn" hidden>בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.</p>
+  <div class="row skAct"><button data-pact="stop" id="pracStop" hidden>⏹ עצור תרגול</button><span class="pracSp"></span><button data-pact="close">ביטול</button><button data-pact="go" class="primary" id="pracGo">▶ התחל תרגול</button></div>
+</div></div>
 <div id="bldBox" hidden role="dialog" aria-label="בונה רובוטים"><div id="bldBg"></div><div class="skWin bldWin">
   <div class="coachTop"><b>🛠 בונה רובוטים</b><button data-bact="close" aria-label="סגור">✕</button></div>
   <p class="note skNote">בונים רובוט ממערכות — הנעה, איסוף, ירי, צריח ומעלית לפרח — ובוחרים לכל רובוט בזירה, גם לכל בוט, באיזו בנייה הוא משחק. הבדיקה לפי חוקי המדריך: 8 מנועים, 8 סרוו, 18 אינץ׳, 4 כדורים.</p>
@@ -1769,6 +1799,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <b id="clkTime">—</b>
         <span id="clkNote">אין מאץ׳ פעיל</span>
         <button id="clkStop" title="עוצר את המשחק שרץ עכשיו (לחיצה שנייה מאשרת)">⏹ עצור משחק</button>
+        <button id="clkPrac" title="הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור">⚙ בוטים</button>
       </div>
       <div id="clkBar"><i id="clkAuto"></i><i id="clkTrans"></i><i id="clkTele"></i></div>
       <div class="cends"><span id="clkL">0:00</span><span id="clkMid"></span><span id="clkR">2:38</span></div>
@@ -1975,6 +2006,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <button class="ppCard" id="ppMatch"><i>🏆</i><div><b>מאץ׳ מול בוטים</b><span>2 מול 2, שעון, שופט וניקוד — כמו בתחרות</span></div></button>
         <button class="ppCard" id="ppQuick"><i>⚡</i><div><b>מאץ׳ מהיר</b><span>מתחיל מיד, עם ההגדרות האחרונות</span></div></button>
         <button class="ppCard" id="ppFree"><i>🚗</i><div><b>נסיעה חופשית</b><span>לתרגל נהיגה וירי, בלי שעון ובלי יריבים</span></div></button>
+        <button class="ppCard" id="ppPractice" aria-haspopup="dialog"><i>🤖</i><div><b>תרגול מול בוטים</b><span>בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה</span></div></button>
         <button class="ppCard" id="ppFriendsBtn"><i>👥</i><div><b>עם חברים</b><span>מסך מפוצל, רשת מקומית או טלפון עם קוד QR</span></div></button>
         <button class="ppCard" id="ppDrillBtn"><i>🎯</i><div><b>תרגילים</b><span>תשעה תרגילים — מחזורים, דיוק, חניה, מול בולם ועוד — עם שיא אישי</span></div></button>
         <div id="ppDrills" hidden><div class="ppDrillGrid"><button data-drill="cycle">⏱ מחזורים · 60 שנ׳</button><button data-drill="end">🏁 סוף משחק · 30 שנ׳</button><button data-drill="acc">🎯 דיוק · 10 יריות</button>
@@ -2546,7 +2578,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_app" data-i18n>{"📄 מה נשלח לגוגל (מספרים ושמות הנהגים)": "📄 What was sent to Google (numbers and driver names)"}</script>
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
 <script type="application/json" id="i18nX_core" data-i18n>{"כיוון הזירה":"Field orientation","0° (ברירת מחדל)":"0° (default)","כיוון הזירה בקוד שלכם: סיבוב של הצירים סביב מרכז הזירה. פנייה שמאלה נשארת פנייה שמאלה בכל בחירה. אותו כיוון משמש גם ביומן מהרובוט וברובוט החי, והמיפוי המדויק כתוב בראש הקוד.":"Field orientation in your code: a rotation of the axes about the field centre. A left turn stays a left turn with every choice. The same orientation is used for the robot log and the live robot, and the exact mapping is written at the top of the code."}</script>
-<script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park"}</script>
+<script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script>
 /* ══════ v56 — עברית / English ══════
@@ -2654,6 +2686,7 @@ addEventListener("keyup",e=>{ const el=e.target;
 /* הסגירה דרך כפתור הסגירה של החלון או הפונקציה המיוצאת — הקוד הזה רץ לפני שאר הסימולטור ולא רואה את הפונקציות שלו */
 const OVL=[
   {id:"bugModal", btn:"bugClose", trap:1},
+  {id:"pracBox",  sim:"pracClose", btn:"pracBg", trap:1},
   {id:"bldBox",   sim:"bldClose", btn:"bldBg", trap:1},
   {id:"skinBox",  sim:"skinClose", btn:"skinBg", trap:1},
   {id:"cmdk",     sim:"cmdkClose", trap:1},
@@ -6535,6 +6568,11 @@ function botsAlign(){
 
 /* ── מצב משחק מלא ── */
 function rollRole(){ return Math.random()<0.5?"defend":"score"; }
+/* בוט לעמדת הבית שלו, מאופס — גם למשחק מלא וגם לתרגול מול בוטים (v65) */
+function gameBotSet(b,on,role){ b.on=on; if(role) setAIRole(b,role);
+  b.body.position.set(M(b.home.x),0,M(b.home.z));
+  b.vx=b.vz=0; b.body.velocity.set(0,0,0); b.clip.length=0; b.shots=0; b.hits=0; b.blockT=0; b.contact=0; b.vMeas=null;
+  b.ph=b.role==="score"?"seek":"guard"; b.t=0; b.target=null; }
 function gameStart(full){
   GAME.full=!!full; GAME.t=0;
   /* הכפייה של השופט תלויה במשחק המלא — המתג בלוח מתעדכן מיד */
@@ -6543,10 +6581,7 @@ function gameStart(full){
     refreshRef(); }catch(e){} GAME.nextSwap=18+Math.random()*20; GAME.lastSwap="";
   if(!B_BLUE1) buildOpp();
   brainReset();
-  const set=(b,on,role)=>{ b.on=on; if(role) setAIRole(b,role);
-    b.body.position.set(M(b.home.x),0,M(b.home.z));
-    b.vx=b.vz=0; b.clip.length=0; b.shots=0; b.hits=0; b.blockT=0; b.contact=0; b.vMeas=null;
-    b.ph=b.role==="score"?"seek":"guard"; b.t=0; b.target=null; };
+  const set=gameBotSet;
   if(full){
     set(B_BLUE1,true, GAME.randomRoles?rollRole():B_BLUE1.role);
     set(B_BLUE2,true, GAME.randomRoles?rollRole():B_BLUE2.role);
@@ -10064,6 +10099,7 @@ function refreshClock(){
   const total=Math.max(1,tEnd());
   const live=MATCH.on||MATCH.cd>0;
   document.body.classList.toggle("nomatch",!live);
+  document.body.classList.toggle("pracon",!live&&pracActive());
   { const sb=$("clkStop"); if(sb){ let arm=false; try{ arm=live&&performance.now()-stopArmT<3000; }catch(e){}
       sb.classList.toggle("arm",arm); const sm=document.body.classList.contains("ph"); const tx=arm?(sm?"שוב לעצירה":"לחצו שוב לעצירה"):(sm?"⏹ עצור":"⏹ עצור משחק"); if(sb.textContent!==tx) sb.textContent=tx; } }
   if(MATCH.cd>0){
@@ -10074,6 +10110,9 @@ function refreshClock(){
     ph.textContent=({AUTO:"אוטונומי",TELEOP:"טלאופ"})[PH[i][0]]||PH[i][0];
     tm.textContent=fmtClock(phaseEnd(i)-MATCH.t);
     nt.textContent="נשאר בשלב";
+  } else if(pracActive()){
+    ph.textContent=document.body.classList.contains("ph")?"🤖":"תרגול מול בוטים"; tm.textContent="—";
+    nt.textContent="בלי שעון · לא נשמר לעונה";
   } else {
     ph.textContent=MATCH.phase==="סיום"?"המאץ׳ נגמר":"נסיעה חופשית";
     tm.textContent=MATCH.phase==="סיום"?fmtClock(0):"—";
@@ -13349,21 +13388,25 @@ const PP={last:"match"};
 function ppActive(){
   if((typeof SPLIT!=="undefined"&&SPLIT.on)||(typeof NET!=="undefined"&&NET.mode!=="solo")) return "friends";
   if(MATCH.on||MATCH.cd>0||MATCH.phase==="סיום") return PP.last==="quick"?"quick":"match";
+  if(PP.last==="practice"&&pracActive()) return "practice";
   return (PP.last==="free"||!GAME.full)?"free":PP.last;
 }
 function ppRefresh(){
   const st=$("ppStatus"); if(!st) return;
   const my=myAlly();
-  { const act=(!MATCH.on&&MATCH.cd<=0&&MATCH.phase==="סיום"&&!(typeof SPLIT!=="undefined"&&SPLIT.on))?"":ppActive(), map={match:"ppMatch",quick:"ppQuick",free:"ppFree",friends:"ppFriendsBtn"};
+  { const act=(!MATCH.on&&MATCH.cd<=0&&MATCH.phase==="סיום"&&!(typeof SPLIT!=="undefined"&&SPLIT.on))?"":ppActive(), map={match:"ppMatch",quick:"ppQuick",free:"ppFree",practice:"ppPractice",friends:"ppFriendsBtn"};
     for(const k in map){ const b=$(map[k]); if(!b) continue; const on=k===act; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false"); }
     const sp=$("ppSplit"); if(sp) sp.classList.toggle("on",typeof SPLIT!=="undefined"&&SPLIT.on);
     { const fm=$("ppFriendsMatch"); if(fm){ const fr=(typeof SPLIT!=="undefined"&&SPLIT.on)||(typeof NET!=="undefined"&&NET.mode==="host"&&BOTS.some(q=>q.hum&&q.hum.src==="net"));
       fm.hidden=!fr; if(fr){ const f=$("ppFriends"); if(f) f.hidden=false; } } }
     const nt=$("ppNet"); if(nt) nt.classList.toggle("on",typeof NET!=="undefined"&&NET.mode!=="solo");
     const ph=$("ppPhone"); if(ph) ph.classList.toggle("on",typeof VPAD!=="undefined"&&VPAD.on);
-    const bc=$("ppBcast"); if(bc) bc.classList.toggle("on",BC.on); }
+    const bc=$("ppBcast"); if(bc) bc.classList.toggle("on",BC.on);
+    /* v65: תרגול מול בוטים — רק לבד. במסך מפוצל, ברשת או עם שלט של חבר: הכרטיס כבוי, ולחיצה מסבירה למה */
+    { const pc=$("ppPractice"); if(pc){ const why=pracBlocked(); pc.classList.toggle("dis",!!why); pc.setAttribute("aria-disabled",why?"true":"false");
+        if(why) pc.title=why; else pc.removeAttribute("title"); } } }
   const live=MATCH.on||MATCH.cd>0, ended=!live&&MATCH.phase==="סיום";
-  const phase=MATCH.cd>0?"ספירה":MATCH.on?({AUTO:"אוטונומי — הרובוט נוסע לבד","מעבר":"מעבר — עוד רגע תורכם",TELEOP:"טלאופ — אתם נוהגים"}[MATCH.phase]||MATCH.phase):ended?"הסתיים":"אין משחק — נסיעה חופשית";
+  const phase=MATCH.cd>0?"ספירה":MATCH.on?({AUTO:"אוטונומי — הרובוט נוסע לבד","מעבר":"מעבר — עוד רגע תורכם",TELEOP:"טלאופ — אתם נוהגים"}[MATCH.phase]||MATCH.phase):ended?"הסתיים":pracActive()?"תרגול מול בוטים — בלי שעון":"אין משחק — נסיעה חופשית";
   const r=(l,v,c)=>'<div><span>'+l+'</span><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>';
   let h=r("שלב",phase,live?"hl":"");
   if(MATCH.on){ const i=matchPhase(MATCH.t);
@@ -13395,6 +13438,7 @@ function ppRefresh(){
   else if(am) am.textContent="🤖 הרובוט נוסע לבד עכשיו — עוד רגע תורכם לנהוג";
   /* בזמן משחק הכרטיסים מתקפלים — אי אפשר לזרוק משחק בטעות */
   document.body.classList.toggle("pplive",live);
+  document.body.classList.toggle("pracon",!live&&pracActive());
   document.body.classList.toggle("ppidle",!live&&!ended);
   document.body.classList.toggle("pphasreplay",!live&&!ended&&!!REPLAY.frames.length);
   { const tbOn=k=>{ const t=document.querySelector('#toolbar [data-tog="'+k+'"]'); return !!(t&&t.classList.contains("on")); };
@@ -13437,6 +13481,8 @@ function ppWire(){
   const quick=()=>{ if(REPLAY.on) replayClose(); PP.last="quick"; { const k=$("sKeepSplit"); if(k) k.checked=typeof SPLIT!=="undefined"&&SPLIT.on; } setupApply(); ppRefresh(); };
   on($("ppQuick"),quick);
   on($("ppFree"),()=>{ if(REPLAY.on) replayClose(); if(MATCH.on||MATCH.cd>0){ if(!matchStopSafe()) return; } PP.last="free"; soloSplit(); if(MATCH.phase==="סיום") matchStop(); ACT.solo(); stageMatch(); homeRobot(); ppRefresh(); });
+  on($("ppPractice"),()=>pracOpen());
+  on($("clkPrac"),()=>pracOpen());
   on($("ppFriendsBtn"),()=>{ const f=$("ppFriends"); if(f) f.hidden=!f.hidden; });
   on($("ppSplit"),()=>{ splitSet(!SPLIT.on); ppRefresh(); });
   on($("ppFriendsMatch"),()=>{ if(REPLAY.on) replayClose(); PP.last="match"; setupOpen(); });
@@ -14160,6 +14206,7 @@ async function shellRender(){
       '<button data-hm="quick" class="main"><i>⚡</i><b>מאץ׳ מהיר</b><span>מתחיל מיד</span></button>'+
       '<button data-hm="match"><i>🏆</i><b>מאץ׳ מול בוטים</b><span>2 מול 2, עם שופט</span></button>'+
       '<button data-hm="free"><i>🚗</i><b>נסיעה חופשית</b><span>לתרגל בלי שעון</span></button>'+
+      '<button data-hm="practice"><i>🤖</i><b>תרגול מול בוטים</b><span>בלי שעון, בוחרים בוטים</span></button>'+
       '<button data-hm="lab"><i>🔧</i><b>מעבדה</b><span>רובוט, אוטונומי, ניתוח</span></button></div>';
     if(st) h+='<div class="hmTiles">'+tile("משחקים",st.n)+tile("ניצחונות",pct(st.W/st.n),st.W+"-"+st.L+"-"+st.T)+tile("שיא",st.best.my,"ממוצע "+st.avg.toFixed(1))+'</div><p class="hmMore"><a href="#" data-hmgo="stats">לכל הסטטיסטיקות ›</a></p>';
     { const a=ACC.st||{}; h+='<p class="hmSync" id="hmSync"><span>'+(a.loggedIn?(a.lastError?"⚠ "+appEsc(a.lastError):"☁️ "+accAgo(a.lastSync))+(a.team?" · 👥 "+appEsc(a.team.name||"הקבוצה"):""):"💾 שמור רק במחשב הזה")+'</span> · <a href="#" data-hm="settings">חשבון וקבוצה ›</a></p>'; }
@@ -14211,7 +14258,7 @@ async function shellSetClick(e){
     if(a==="lab"){ shellGo("lab"); return; }
     if(a==="settings"){ shellGo("settings"); return; }
     shellGo("play");
-    if(a==="quick") $("ppQuick")&&$("ppQuick").click(); else if(a==="match") $("ppMatch")&&$("ppMatch").click(); else if(a==="free") $("ppFree")&&$("ppFree").click();
+    if(a==="quick") $("ppQuick")&&$("ppQuick").click(); else if(a==="match") $("ppMatch")&&$("ppMatch").click(); else if(a==="free") $("ppFree")&&$("ppFree").click(); else if(a==="practice") $("ppPractice")&&$("ppPractice").click();
     return; }
   if(!s) return; const a=s.dataset.set, note=t=>{ const n=$("spNote"); if(n) n.textContent=t||""; };
   if(a==="phone"){ shellGo("play"); phoneOpen(); }
@@ -14741,6 +14788,81 @@ on($("ppDrillBtn"),()=>{ const d=$("ppDrills"); if(d){ d.hidden=!d.hidden; drill
 document.querySelectorAll("[data-drill]").forEach(b=>on(b,()=>drillStart(b.dataset.drill)));
 setInterval(drillTick,250); drillBestUI();
 Object.assign(window.__sim||{},{DRILL,drillStart,drillEnd});
+/* ══ v65 — תרגול מול בוטים: בלי שעון ובלי מאץ׳ ══
+   לכל בוט (שותף, יריב 1, יריב 2) — בזירה או לא, ומנקד או בולם; רמה אחת לכולם (SKILL); שופט לפי הבחירה (REF).
+   אין מאץ׳, ולכן שום דבר לא נכנס לעונה, לסטטיסטיקות, לשיאים או לשידור החוזר.
+   הבוטים משחקים גם בלי מאץ׳: aiStepDrive בלי MATCH.on הולך ישר לניקוד/בלימה, וחניה (brainParkNow) רק במאץ׳.
+   GAME.full נשאר false — אין החלפות תפקיד, והשופט לא נכפה. הבנייה והסקין של כל בוט נשארים. */
+const PRAC={KEY:"bbPractice1", cfg:null, ORDER:[2,0,1]};
+function pracDef(){ return {bots:[{on:true,role:"defend"},{on:false,role:"score"},{on:false,role:"score"}], skill:1}; }
+function pracLoad(){ const d=pracDef(); let o=null; try{ o=JSON.parse(localStorage.getItem(PRAC.KEY)||"null"); }catch(e){}
+  if(o&&typeof o==="object"){
+    if(Array.isArray(o.bots)) for(let i=0;i<3;i++){ const b=o.bots[i]; if(b&&typeof b==="object"){ d.bots[i].on=!!b.on; if(b.role==="score"||b.role==="defend") d.bots[i].role=b.role; } }
+    if(o.skill===0||o.skill===1||o.skill===2) d.skill=o.skill; }
+  PRAC.cfg=d; return d; }
+function pracSave(){ try{ localStorage.setItem(PRAC.KEY,JSON.stringify(PRAC.cfg)); }catch(e){} }
+function pracBlocked(){
+  try{
+    if(typeof NET!=="undefined"&&NET.mode!=="solo") return "ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד";
+    if(typeof SPLIT!=="undefined"&&SPLIT.on) return "במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב";
+    if(BOTS.some(b=>b.hum)) return "שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד";
+  }catch(e){}
+  return ""; }
+function pracActive(){ try{ return PP.last==="practice"&&!MATCH.on&&MATCH.cd<=0&&MATCH.phase!=="סיום"&&!pracBlocked()&&BOTS.some(b=>b.on); }catch(e){ return false; } }
+function pracUI(){
+  const c=PRAC.cfg||pracLoad(), host=$("pracRows"); if(!host) return;
+  const my=myAlly(), op=my==="red"?"blue":"red";
+  const N={2:["שותף",my],0:["יריב 1",op],1:["יריב 2",op]};
+  host.innerHTML=PRAC.ORDER.map(i=>'<div class="pracRow" data-pi="'+i+'">'+
+    '<label class="check"><input type="checkbox" data-pon="'+i+'"><i class="skA '+N[i][1]+'"></i><b>'+N[i][0]+'</b></label>'+
+    '<div class="seg" role="group" aria-label="תפקיד"><button data-prole="'+i+'|score" data-en="Scorer">מנקד</button><button data-prole="'+i+'|defend" data-en="Defender">בולם</button></div></div>').join("");
+  const lv=$("pracLvl"), EN=["First year","Average","Champion"];
+  if(lv) lv.innerHTML=SKILL.map(k=>'<button data-plvl="'+k.k+'" data-en="'+EN[k.k]+'">'+k.name+'</button>').join("");
+  const rf=$("pracRef"); if(rf) rf.checked=!!REF.on;
+  pracSync(); }
+function pracSync(){
+  const c=PRAC.cfg||pracLoad(), m=$("pracBox"); if(!m) return;
+  m.querySelectorAll(".pracRow").forEach(r=>{ const i=+r.dataset.pi, b=c.bots[i]; r.classList.toggle("off",!b.on);
+    const cb=r.querySelector("[data-pon]"); if(cb) cb.checked=b.on;
+    r.querySelectorAll("[data-prole]").forEach(x=>{ const on=x.dataset.prole.split("|")[1]===b.role; x.classList.toggle("on",on); x.setAttribute("aria-pressed",on?"true":"false"); x.disabled=!b.on; }); });
+  m.querySelectorAll("[data-plvl]").forEach(x=>{ const on=+x.dataset.plvl===c.skill; x.classList.toggle("on",on); x.setAttribute("aria-pressed",on?"true":"false"); });
+  const any=c.bots.some(b=>b.on), w=$("pracWarn"), g=$("pracGo"), st=$("pracStop");
+  if(w) w.hidden=any; if(g) g.disabled=!any;
+  const act=pracActive(); if(st) st.hidden=!act; if(g) g.textContent=T(act?"↻ התחל מחדש":"▶ התחל תרגול"); }
+function pracOpen(){ const why=pracBlocked(); if(why){ refToast(why,"block"); return false; }
+  pracLoad(); pracUI(); const m=$("pracBox"); if(m) m.hidden=false; return true; }
+function pracClose(){ const m=$("pracBox"); if(m) m.hidden=true; }
+function pracSkillUI(){ document.querySelectorAll("[data-skill]").forEach(x=>x.classList.toggle("on",+x.dataset.skill===GAME.skill)); }
+function pracStart(){
+  const why=pracBlocked(); if(why){ refToast(why,"block"); return false; }
+  const c=PRAC.cfg||pracLoad(); if(!c.bots.some(b=>b.on)) return false;
+  if(REPLAY.on) replayClose();
+  if(MATCH.on||MATCH.cd>0){ if(!matchStopSafe()) return false; }
+  DRILL.on=null; pracSave();
+  PP.last="practice";
+  if(MATCH.phase==="סיום") matchStop();
+  ACT.solo(); stageMatch(); homeRobot();
+  GAME.skill=c.skill; pracSkillUI();
+  if(!B_BLUE1) buildOpp();
+  BOTS.forEach((b,i)=>{ if(i<3) gameBotSet(b,!!c.bots[i].on,c.bots[i].role); });
+  { const m=$("pracBox"), rf=$("pracRef"); if(rf&&m&&!m.hidden&&!!rf.checked!==!!REF.on) refSetUser(rf.checked); }
+  refreshAim(); refreshGamePanel(); refreshClock(); ppRefresh();
+  refToast("🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר","ok");
+  return true; }
+(function pracWire(){
+  const m=$("pracBox"); if(!m) return;
+  m.addEventListener("change",e=>{ const cb=e.target.closest("[data-pon]"); if(!cb) return;
+    const c=PRAC.cfg||pracLoad(); c.bots[+cb.dataset.pon].on=cb.checked; pracSave(); pracSync(); });
+  m.addEventListener("click",e=>{
+    const r=e.target.closest("[data-prole]"); if(r){ const [i,role]=r.dataset.prole.split("|"); const c=PRAC.cfg||pracLoad(); c.bots[+i].role=role; pracSave(); pracSync(); return; }
+    const l=e.target.closest("[data-plvl]"); if(l){ const c=PRAC.cfg||pracLoad(); c.skill=+l.dataset.plvl; pracSave(); pracSync(); return; }
+    const a=e.target.closest("[data-pact]"); if(!a) return; const k=a.dataset.pact;
+    if(k==="go"){ if(pracStart()) pracClose(); }
+    else if(k==="stop"){ pracClose(); const f=$("ppFree"); if(f) f.click(); }
+    else if(k==="close") pracClose(); });
+  on($("pracBg"),pracClose);
+})();
+Object.assign(window.__sim||{},{PRAC,pracOpen,pracClose,pracStart,pracActive,pracBlocked,ppLast:()=>PP.last});
 /* ״לא מגיע לפתח״ וכדומה — רק אחרי שהתחילו לנהוג/לירות, לא כקבלת פנים */
 document.body.classList.add("fresh");
 { const unfresh=()=>{ document.body.classList.remove("fresh"); removeEventListener("keydown",unfresh,true); };
@@ -14814,6 +14936,7 @@ function cmdkCurated(){
     {id:"match",i:"🏆",n:"מאץ׳ מול בוטים — משחק מלא",k:"משחק מלא בוטים יריבים שותף תחרות match full game bots",run:clk("ppMatch")},
     {id:"quick",i:"⚡",n:"מאץ׳ מהיר",k:"מהיר משחק קצר quick match",run:clk("ppQuick")},
     {id:"free",i:"🚗",n:"נסיעה חופשית",k:"לנהוג חופשי אימון free drive practice",run:clk("ppFree")},
+    {id:"practice",i:"🤖",n:"תרגול מול בוטים",k:"תרגול אימון בוטים יריב בולם בלי שעון practice bots opponents defender no clock training",run:clk("ppPractice")},
     {id:"split",i:"👥",n:"מסך מפוצל — שני שחקנים במחשב אחד",k:"חבר חברים שני שחקנים split screen friend two players",run:clk("ppSplit")},
     {id:"net",i:"🌐",n:"משחק ברשת עם חברים",k:"רשת מחשב אחר חדר קוד network lan online friends room code",run:clk("ppNet")},
     {id:"phone",i:"📱",n:"הטלפון כשלט",k:"טלפון שלט ברקוד phone controller gamepad qr",run:clk("ppPhone")},
@@ -16178,7 +16301,7 @@ function wzChipHide(){ const c=$("wzChip"); if(c) c.hidden=true; }
     if(!WZ.on||w.hidden) return;
     const t=e.target;
     /* חלון אחר שנפתח מעל האשף (חיפוש, סקינים, דיווח באג) מטפל במקלדת שלו */
-    if(t&&t.closest&&t.closest("#cmdk,#skinBox,#bugModal,#bldBox,#coachBox,#aiChat,#acctModal")) return;
+    if(t&&t.closest&&t.closest("#cmdk,#skinBox,#pracBox,#bugModal,#bldBox,#coachBox,#aiChat,#acctModal")) return;
     if(e.key==="Escape"){ e.preventDefault(); e.stopImmediatePropagation(); wzSkip(); return; }
     if(e.key==="Enter"&&t&&t.id==="wzName"){ e.preventDefault(); e.stopImmediatePropagation(); wzGo(WZ.i+1); return; }
     if(e.key==="Tab"){ const f=[...w.querySelectorAll("button,input,[tabindex]")].filter(x=>!x.disabled&&x.offsetParent!==null&&getComputedStyle(x).visibility!=="hidden");
