@@ -3407,7 +3407,9 @@ const cmBC=new CANNON.ContactMaterial(matBall,matCell,{friction:.55,restitution:
 const cmBG=new CANNON.ContactMaterial(matBall,matGlass,{friction:.14,restitution:.55});
 const cmRC=new CANNON.ContactMaterial(matBot,matGlass,{friction:.02,restitution:0});
 const cmRK=new CANNON.ContactMaterial(matBot,matCell,{friction:.02,restitution:0});
-[cmBF,cmBB,cmBR,cmRF,cmBC,cmBG,cmRC,cmRK].forEach(c=>world.addContactMaterial(c));
+/* v65: פגוש מול פגוש מחליק (בלי זה — חיכוך ברירת המחדל 0.3, ושני רובוטים שנוגעים בפינה ננעלים זה על זה) */
+const cmRR=new CANNON.ContactMaterial(matBot,matBot,{friction:.05,restitution:0});
+[cmBF,cmBB,cmBR,cmRF,cmBC,cmBG,cmRC,cmRK,cmRR].forEach(c=>world.addContactMaterial(c));
 const ground=new CANNON.Body({mass:0,shape:new CANNON.Plane(),material:matField});
 ground.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2); world.addBody(ground);
 function colBox(body,cx,cy,cz,sx,sy,sz,q){
@@ -6529,7 +6531,7 @@ function brainParkDue(b,tLeft,dt){
   /* v63: לפי המהירות הנמדדת (לא הנומינלית), ועם מרווח — בוט שנתקע בדרך עדיין מגיע */
   /* כמו ב-v62 (המהירות הנומינלית). ניסיון לפי מהירות נמדדת ב-v63 הקדים יציאה לחניה במחשבים מהירים */
   const vIn=AIC.vMax*skill().v/IN;
-  return tLeft<d/(vIn*0.45)+6+skill().think;
+  return tLeft<d/(vIn*0.45)+8.5+skill().think;   /* v65: מרווח 8.5 (היה 6) — מאז שבוטים נדחפים באמת (v64) הם מתעכבים זה על זה בדרך לחניה */
 }
 function brainParkNow(b,dt){
   if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2) return false;
