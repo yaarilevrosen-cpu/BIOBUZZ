@@ -196,7 +196,9 @@ const E=(f,a)=>page.evaluate(f,a);
     b.body.position.set(M(-35),0,M(45)); b.vx=b.vz=0; b.yaw=0;
     /* ארבעה כדורים סביב, מוחזקים במקום (הבדיקה היא של השופט, לא של הפיזיקה) */
     const hb=[]; for(let i=0;i<4;i++){ const a=i*Math.PI/2; hb.push(S.addBall('pollen',-35+12.2*Math.cos(a),0.4,45+12.2*Math.sin(a))); }
-    S.advance(0.1,1/60); const hp=hb.map(q=>q.body.position.clone()); hp.forEach(p=>p.y=Math.max(p.y,S.M(1.4)));
+    /* מיקומים קבועים מראש (לא אחרי צעד פיזיקה — אז כדור יכול להידחף מעבר ל-14″ ולא להיספר) */
+    const hp=hb.map((q,i)=>{ const a=i*Math.PI/2, v=q.body.position.clone(); v.set(M(-35+12.2*Math.cos(a)),M(1.4),M(45+12.2*Math.sin(a))); return v; });
+    hb.forEach((q,k)=>{ q.body.position.copy(hp[k]); q.body.velocity.set(0,0,0); });
     const tr=[]; for(let i=0;i<60*8;i++){ S.humFeed(b,{x:0,y:0,t:0,fire:false,intake:false,aim:false,fc:true});
       hb.forEach((q,k)=>{ q.body.position.copy(hp[k]); q.body.velocity.set(0,0,0); }); b.body.position.set(M(-35),0,M(45)); S.advance(1/60,1/60); if(i%60===0){ const st=S.RULE.st[b.name]; tr.push((st?st.hoardT.toFixed(1):'-')+':'+b.clip.length+':'+b.ph+':'+S.hoardNear(I(b.body.position.x),I(b.body.position.z))+':'+Math.hypot(b.body.velocity.x,b.body.velocity.z).toFixed(2)); } }
     const g=S.REF.log.filter(e=>e.rule==='G411'&&e.team===b.name).length; S.humFree(b);
