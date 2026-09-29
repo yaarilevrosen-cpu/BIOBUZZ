@@ -73,15 +73,15 @@ r=await E(()=>{ S.MT.cd=0; S.MT.auto=12; S.MT.trans=2; S.MT.tele=34;
   S.advance(12.4,1/60);
   return S.BOTS.map(b=>b.name+':'+(b.autoPark?1:0)); });
 ok(r.filter(x=>/:1$/.test(x)).length>=2,'חניה של האוטונומי: '+r.join(' '));
-r=await E(()=>{ S.advance(15,1/60); const mid=S.BOTS.map(b=>b.parkGo?1:0);
+r=await E(()=>{ S.advance(15,1/60); const mid=S.BOTS.map(b=>b.parkGo?1:0), midDet=S.BOTS.map(b=>b.ph+'@'+S.I(b.body.position.x).toFixed(0)+','+S.I(b.body.position.z).toFixed(0)).join(' ');
   S.advance(22,1/60);
-  return {mid, lz:S.BOTS.map(b=>b.name+':'+(S.botInLZ(b)?1:0)), det:S.BOTS.map(b=>b.ph+'@'+S.I(b.body.position.x).toFixed(0)+','+S.I(b.body.position.z).toFixed(0)+(b.parkS?'→'+b.parkS.x+','+b.parkS.z:'')).join(' '), phase:S.MATCH.phase,
+  return {mid, midDet, lz:S.BOTS.map(b=>b.name+':'+(S.botInLZ(b)?1:0)), det:S.BOTS.map(b=>b.ph+'@'+S.I(b.body.position.x).toFixed(0)+','+S.I(b.body.position.z).toFixed(0)+(b.parkS?'→'+b.parkS.x+','+b.parkS.z:'')).join(' '), phase:S.MATCH.phase,
     red:S.scoreAlly('red').park, blue:S.scoreAlly('blue').park}; });
 ok(r.phase==='סיום','המאץ׳ הקצר נגמר');
 /* לפעמים בוט נתקע כמה שניות ליד רגלי הכוורת (חולשה ידועה של הניווט) — דורשים רוב */
 ok(r.lz.filter(x=>/:1$/.test(x)).length>=2,'רוב הבוטים חונים בסוף: '+r.lz.join(' ')+' | '+r.det);
 ok(r.blue>=10&&r.red>=5,'נקודות חניה נספרות (אדום '+r.red+', כחול '+r.blue+')');
-ok(r.mid.reduce((a,b)=>a+b,0)===0,'לא יוצאים לחנות מוקדם מדי ('+r.mid.join(',')+')');
+ok(r.mid.reduce((a,b)=>a+b,0)===0,'לא יוצאים לחנות מוקדם מדי ('+r.mid.join(',')+')'+(r.mid.some(x=>x)?' '+r.midDet:''));
 
 // 9. שחקן אנושי בברית — הבוט לא לוקח לו את הפרח
 r=await E(()=>{ S.MT.cd=3; S.MT.auto=30; S.MT.trans=8; S.MT.tele=120; S.matchStop(); S.stageMatch();
