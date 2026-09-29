@@ -6183,7 +6183,10 @@ function aiStep(b,dt){
   }
   /* v64: הבוט הוא גוף עם אחיזה, לא קיר. מתחילים מהמהירות האמיתית (אחרי מגעים — מי שדוחף אותו
      באמת מזיז אותו), ובסוף הצעד השינוי שהבוט עצמו מבקש מוגבל לגבול האחיזה — אותו גבול שיש לשלדה שלנו (μ·g) */
-  const v0x=b.body.velocity.x, v0z=b.body.velocity.z; b.vx=v0x; b.vz=v0z;
+  /* v65: רק מגע עם רובוט שנהג אנושי נוהג בו (אני, או בוט בשליטת אדם) מזיז את הבוט. מול מבנים ובוטים אחרים
+     נשארת המהירות המבוקשת כמו עד v63 — אחרת בוטים נתקעים על רגלי הכוורת ועל שותף בדרך לחניה */
+  let v0x=b.vx||0, v0z=b.vz||0;
+  if(botPushedByHuman(b)){ v0x=b.body.velocity.x; v0z=b.body.velocity.z; b.vx=v0x; b.vz=v0z; }
   b.ivSet=false; aiStepDrive(b,dt);
   if(!b.ivSet){ b.ivx=b.vx; b.ivz=b.vz; }   /* הכוונה (מה שהבוט רצה) — לשופט: הצמדה נמדדת לפי כוונה, לא לפי מה שהמגע השאיר */
   { const dx=b.vx-v0x, dz=b.vz-v0z, dm=Math.hypot(dx,dz), cap=AIC.aMax*dt;
@@ -6193,6 +6196,12 @@ function aiStep(b,dt){
   b.body.quaternion.setFromAxisAngle(_cUpY,b.yaw);
   b.group.position.copy(b.body.position); b.group.rotation.y=b.yaw;
   aiBlockCheck(b,dt);
+}
+function botPushedByHuman(b){
+  for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o) continue;
+    if(o===botBody) return true;
+    for(const q of BOTS) if(q!==b&&q.body===o&&q.hum) return true; }
+  return false;
 }
 function aiStepDrive(b,dt){
   /* G403 ו-G404: בין השלבים ואחרי הסוף אין תנועה בכוח */
