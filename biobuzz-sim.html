@@ -1268,6 +1268,13 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   body.pracon #clkPrac{display:inline-block}
   /* בטלפון אין מקום בכותרת — ההגדרות והעצירה דרך ״תפריט״ ← הכרטיס */
   body.ph.pracon #clkPrac{display:none}
+  .ppAutoV{margin-top:6px}
+  #ppManV{display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px 8px; margin-top:2px; font-size:12px; color:var(--ink2)} #ppManV[hidden]{display:none}
+  #ppManV em{font-style:normal; font-family:var(--mono); color:var(--ink)} #ppManV input{grid-column:1/-1; width:100%; margin:0}
+  #mhShot{font-size:11.5px; margin-top:5px; color:var(--muted); font-variant-numeric:tabular-nums} #mhShot b{color:var(--ink,#e8eef3); font-weight:600}
+  #mhShot .warn{color:#ffb020} #mhShot:empty{display:none}
+  body.ph #mhShot{font-size:10px; max-width:150px}
+  label.flash{animation:bbFlash 1.6s ease-out} @keyframes bbFlash{0%,40%{background:rgba(255,176,32,.25); box-shadow:0 0 0 2px var(--accent)} 100%{background:transparent; box-shadow:none}}
   .coachTop button{flex:0 0 auto!important; width:auto!important; padding:4px 11px}
   #bldBox{position:fixed; inset:0; z-index:95} #bldBox[hidden]{display:none}
   #bldBg{position:absolute; inset:0; background:rgba(5,7,10,.35)}
@@ -1684,6 +1691,10 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="row"><button id="bSndTest">בדיקת שמע</button></div>
         <p class="note"><b>למה לפעמים שקט:</b> הדפדפן לא מרשה להשמיע כלום לפני שנגעת בדף. מהנגיעה הראשונה — בכל מקום — השמע נפתח, וכל צליל שחיכה בינתיים מושמע. אם עדיין שקט, בדוק שהלשונית לא מושתקת ושהעוצמה של המערכת פתוחה.</p>
       </section>
+  <section class="setGrp" id="setShot" data-kw="auto speed shot speed distance flywheel shooter"><h4 data-en="Shooting">ירי</h4>
+        <label class="check" for="setAutoV"><input type="checkbox" id="setAutoV" checked>מהירות ירי אוטומטית לפי המרחק</label>
+        <p class="note">הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.</p>
+      </section>
   <section class="setGrp setHud" id="setQual"><h4>מה מוצג ואיכות התצוגה</h4><div class="row"><button id="bSetHud">👁 מה מוצג על המסך…</button></div>
         <div class="seg" id="qualSeg" role="group" aria-label="איכות תצוגה">
           <button data-q="high" class="on">מלאה</button>
@@ -1871,6 +1882,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div id="mhSlots"></div>
         <div id="mhMsg"></div>
         <div id="mhSys" hidden></div>
+        <div id="mhShot"></div>
       </div>
       <div id="rpBar" hidden>
         <div class="rpTop"><b id="rpTitle">שידור חוזר</b><span id="rpClock"></span><span id="rpScore"></span><button id="rpX">✕ סגור</button></div>
@@ -2018,6 +2030,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         </div>
         <div class="ppH ppMineH">הרובוט שלי</div>
         <div class="ppRow ppMine"><button data-bldopen="1" id="ppBuild" title="בונה רובוטים — צריח, יורה כפול, מעלית, StarterBot, ולכל בוט רובוט משלו">🛠 <span id="ppBuildName">BIOBUZZ קלאסי</span></button><button data-skinopen="1" id="ppSkins" title="מראה לרובוט שלך ולבוטים — אותה פיזיקה">🎨 סקינים</button></div>
+        <label class="check ppAutoV" for="ppAutoV" title="הרובוט בוחר לבד את מהירות גלגל התנופה לפי המרחק לפתח הכוורת"><input type="checkbox" id="ppAutoV" checked>מהירות ירי אוטומטית לפי המרחק</label>
+        <div id="ppManV" hidden><span>מהירות ידנית</span><em id="ppManVv">—</em><input type="range" id="ppManVs" min="1.5" max="14" step="0.05" value="5.27" aria-label="מהירות ירי ידנית"></div>
         <details id="ppHowD" class="ppFold"><summary class="ppH" id="ppHowH">איך מנצחים</summary>
         <ol id="ppHow">
           <li>יורים כדורים לתוך <b>הכוורת בצבע שלכם</b> — כל כדור שנכנס שווה נקודות, ומילוי שלה הופך אותה — עוד 20 נקודות.</li>
@@ -2578,7 +2592,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_app" data-i18n>{"📄 מה נשלח לגוגל (מספרים ושמות הנהגים)": "📄 What was sent to Google (numbers and driver names)"}</script>
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
 <script type="application/json" id="i18nX_core" data-i18n>{"כיוון הזירה":"Field orientation","0° (ברירת מחדל)":"0° (default)","כיוון הזירה בקוד שלכם: סיבוב של הצירים סביב מרכז הזירה. פנייה שמאלה נשארת פנייה שמאלה בכל בחירה. אותו כיוון משמש גם ביומן מהרובוט וברובוט החי, והמיפוי המדויק כתוב בראש הקוד.":"Field orientation in your code: a rotation of the axes about the field centre. A left turn stays a left turn with every choice. The same orientation is used for the robot log and the live robot, and the exact mapping is written at the top of the code."}</script>
-<script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
+<script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הרובוט בוחר לבד את מהירות גלגל התנופה לפי המרחק לפתח הכוורת": "The robot picks the flywheel speed by itself from the distance to the hive opening","מהירות ירי אוטומטית לפי המרחק": "Automatic shot speed by distance","מהירות ירי אוטומטית": "Automatic shot speed","מהירות ידנית": "Manual speed","מהירות ירי ידנית": "Manual shot speed","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.": "The robot computes the flywheel speed that puts the ball into the opening from where it stands — like a real robot that measures distance. Off — the speed stays fixed, and you change it in the Play panel or in the Lab.","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","מרחק": "Distance","לא מגיע לפתח מכאן": "Can't reach the opening from here","רחוק מדי — התקרבו": "Too far — move closer","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script>
 /* ══════ v56 — עברית / English ══════
@@ -2984,7 +2998,7 @@ let fieldUnlocked=false;
       inputs[sp.k]=ip; sliders[sp.k]=sl;
       const push=x=>{ if(!isFinite(x)) return;
         P[sp.k]=uiTo(sp,x);
-        if(sp.k==="vAvg"&&lock){ lock=false; $("kLock").checked=false; }
+        if(sp.k==="vAvg"&&lock){ if(typeof autoVSet==="function") autoVSet(false); else { lock=false; $("kLock").checked=false; } }
         apply(sp.act); saveParams(); };
       ip.addEventListener("input",()=>{ const v=parseFloat(ip.value);
         if(isFinite(v)) sl.value=v; push(v); });
@@ -4389,6 +4403,7 @@ function refreshAim(){
   yawErr=Math.atan2(Math.sin(yawErr),Math.cos(yawErr))*180/Math.PI;
 
   const need=solveAvg(p,dir,f,vdMe());
+  AIMST.need=need; AIMST.needT=simT;          /* v65: לשורת הירי בכרטיס המחסנית — בלי לפתור פעם שנייה */
   if(lock&&need){ setP("vAvg",need); }
 
   const pts=integrate(P.vAvg,vdMe(),p,fwd,3.2,.003);
@@ -9021,7 +9036,45 @@ kindBtns.forEach((b,i)=>on(b,()=>setKind(["pollen","red","blue"][i])));
 const aimBtns=[$("bAimRed"),$("bAimBlue")];
 aimBtns.forEach((b,i)=>on(b,()=>{ aim=["red","blue"][i];
   aimBtns.forEach(x=>x.classList.toggle("on",x===b)); refreshAim(); }));
-chk($("kLock"),v=>{lock=v;refreshAim();});
+/* ══ v65 — מהירות ירי אוטומטית לפי המרחק ══
+   זה המתג lock (״נעילה״ בלוח המשגר במעבדה): refreshAim פותר כל 0.12 שנ׳ את מהירות הגלגל שמכניסה
+   את הכדור לפתח מהמקום הנוכחי — גם במשחק, גם במאץ׳, גם ביורה הוד ובצריח (vdMe, muzzleWorld).
+   עכשיו הוא בחירה גלויה: בלוח ״משחק״, בהגדרות ובמעבדה — שלושתם מסונכרנים. נשמר לכל נהג (bbAutoV1
+   נכנס לפרופיל באפליקציה), ברירת מחדל: דלוק. כבוי — המהירות נשארת במה שנקבע (המחוון בלוח ״משחק״). */
+const AUTOV={KEY:"bbAutoV1", t:9, sig:""};
+try{ const r=localStorage.getItem(AUTOV.KEY); if(r==="0"||r==="1") lock=r==="1"; }catch(e){}
+function autoVSet(v){ lock=!!v;
+  for(const id of ["kLock","ppAutoV","setAutoV"]){ const k=$(id); if(k) k.checked=lock; }
+  try{ localStorage.setItem(AUTOV.KEY,lock?"1":"0"); }catch(e){}
+  refreshAim(); autoVManUI(); AUTOV.t=9; shotHud(0); }
+function autoVManUI(){
+  const w=$("ppManV"); if(w) w.hidden=lock;
+  const s=$("ppManVs"); if(s&&document.activeElement!==s) s.value=String(Math.round(P.vAvg*100)/100);
+  const e=$("ppManVv"); if(e){ const t=fmt(P.vAvg,1)+" "+T("מ׳/ש׳"); if(e.textContent!==t) e.textContent=t; } }
+/* שורה בכרטיס המחסנית: המרחק לפתח והמהירות שבה יורים — עד חמש פעמים בשנייה */
+function shotHud(dt){
+  AUTOV.t+=dt; if(AUTOV.t<0.2) return; AUTOV.t=0;
+  const el=$("mhShot"); if(!el) return;
+  let h="";
+  try{ if(hiveRed&&bot.muzzleMark&&aimHive()&&!(typeof bldCanFire==="function"&&!bldCanFire())){
+    const f=mouthFrame(aimHive()), p=muzzleWorld(), ft=I(Math.hypot(f.c.x-p.x,f.c.z-p.z))/12;
+    const sol=(AIMST.needT===simT||Math.abs(simT-AIMST.needT)<0.25)?AIMST.need:solveAvgHere(), reach=sol!=null&&sol<=wheelCap()*1.002;
+    const mode=T(lock?"אוטומטי":"ידני");
+    const sm=document.body.classList.contains("ph");      /* בטלפון — בלי המילים, שורה אחת */
+    h='<span>'+(sm?"":T("מרחק")+' ')+'<b>'+fmt(ft,1)+'</b> '+T("רגל")+'</span> · ';
+    if(!reach&&lock) h+='<span class="warn">'+T(sol==null?"לא מגיע לפתח מכאן":"רחוק מדי — התקרבו")+'</span>'+(sm?"":' · '+mode);
+    else h+=(sm?"":T("מהירות")+' ')+'<b>'+fmt(P.vAvg,1)+'</b> '+T("מ׳/ש׳")+' · '+mode+(reach?"":' · <span class="warn">'+T("לא מגיע")+'</span>');
+  } }catch(e){ h=""; }
+  if(h!==AUTOV.sig){ AUTOV.sig=h; el.innerHTML=h; el.dataset.mode=lock?"auto":"manual"; }
+  if(!lock) autoVManUI();
+}
+chk($("kLock"),v=>autoVSet(v));
+chk($("ppAutoV"),v=>autoVSet(v));
+chk($("setAutoV"),v=>autoVSet(v));
+{ const s=$("ppManVs"); if(s) s.addEventListener("input",()=>{ const v=parseFloat(s.value); if(!isFinite(v)) return;
+    if(lock) autoVSet(false); setP("vAvg",v); refreshAim(); try{ refreshMotor(); }catch(e){} saveParams(); autoVManUI(); AUTOV.t=9; shotHud(0); }); }
+for(const id of ["kLock","ppAutoV","setAutoV"]){ const k=$(id); if(k) k.checked=lock; }
+autoVManUI();
 on($("bFire"),fire);
 on($("bSolveDiff"),()=>{
   // סורק הפרשים ובוחר את זה שנותן את המרווח הגדול ביותר מהשפתיים
@@ -11326,6 +11379,7 @@ function stepSim(dt){
                  if(hiveBlue&&!hiveBlue.tipping&&cb.mass*1000>=P.tipMass) tip(hiveBlue); }
   }
   if(aimT>(fastMode?1.0:0.12)){aimT=0;refreshAim();}
+  shotHud(dt);
 }
 /* ══════════════ איכות וקצב פריימים ══════════════
    המודל התלת־ממדי של הזירה הוא 1.35 מיליון משולשים מול 48 אלף של המודל
@@ -14862,7 +14916,7 @@ function pracStart(){
     else if(k==="close") pracClose(); });
   on($("pracBg"),pracClose);
 })();
-Object.assign(window.__sim||{},{PRAC,pracOpen,pracClose,pracStart,pracActive,pracBlocked,ppLast:()=>PP.last});
+Object.assign(window.__sim||{},{PRAC,pracOpen,pracClose,pracStart,pracActive,pracBlocked,autoVSet,AUTOV,shotHud,autoVOn:()=>lock,ppLast:()=>PP.last});
 /* ״לא מגיע לפתח״ וכדומה — רק אחרי שהתחילו לנהוג/לירות, לא כקבלת פנים */
 document.body.classList.add("fresh");
 { const unfresh=()=>{ document.body.classList.remove("fresh"); removeEventListener("keydown",unfresh,true); };
@@ -14937,6 +14991,7 @@ function cmdkCurated(){
     {id:"quick",i:"⚡",n:"מאץ׳ מהיר",k:"מהיר משחק קצר quick match",run:clk("ppQuick")},
     {id:"free",i:"🚗",n:"נסיעה חופשית",k:"לנהוג חופשי אימון free drive practice",run:clk("ppFree")},
     {id:"practice",i:"🤖",n:"תרגול מול בוטים",k:"תרגול אימון בוטים יריב בולם בלי שעון practice bots opponents defender no clock training",run:clk("ppPractice")},
+    {id:"autov",i:"🎯",n:"מהירות ירי אוטומטית",k:"מהירות ירי מרחק אוטומטי גלגל תנופה auto speed shot speed distance flywheel",run:()=>{ goPlay(); const c=$("ppAutoV"); if(c){ try{ c.scrollIntoView({block:"center"}); c.focus({preventScroll:true}); }catch(e){} const l=c.closest("label"); if(l){ l.classList.add("flash"); setTimeout(()=>l.classList.remove("flash"),1600); } } }},
     {id:"split",i:"👥",n:"מסך מפוצל — שני שחקנים במחשב אחד",k:"חבר חברים שני שחקנים split screen friend two players",run:clk("ppSplit")},
     {id:"net",i:"🌐",n:"משחק ברשת עם חברים",k:"רשת מחשב אחר חדר קוד network lan online friends room code",run:clk("ppNet")},
     {id:"phone",i:"📱",n:"הטלפון כשלט",k:"טלפון שלט ברקוד phone controller gamepad qr",run:clk("ppPhone")},
