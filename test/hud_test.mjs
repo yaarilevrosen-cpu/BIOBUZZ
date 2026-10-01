@@ -12,7 +12,10 @@ let r=await E(()=>({ph:S.MATCH.phase, show:document.getElementById('banner').cla
 ok(r.ph==='סיום'&&r.show&&/ניצחון|הפסד|תיקו/.test(r.txt),'בסוף המשחק מופיעה התוצאה ״'+r.txt+'״');
 await E(()=>S.advance(9,1/60));
 r=await E(()=>document.getElementById('banner').classList.contains('show'));
-ok(!r,'ההודעה נעלמת לבד אחרי 6 שניות — בלי רענון');
+/* v66: ההודעה נשארת עד שסוגרים אותה — עד אז השלט מנותק (דיווח של חבר קבוצה) */
+ok(r,'ההודעה נשארת גם אחרי 9 שניות — עד שסוגרים אותה');
+r=await E(()=>{ document.getElementById('bannerX').click(); return document.getElementById('banner').classList.contains('show'); });
+ok(!r,'✕ סוגר את הודעת הסיום');
 await E(()=>{ S.matchStart(); }); await E(()=>S.advance(5.5,1/60));
 r=await E(()=>{ const a=document.getElementById('banner').classList.contains('show'); document.getElementById('bannerX').click(); return {a, b:document.getElementById('banner').classList.contains('show')}; });
 ok(r.a&&!r.b,'כפתור ✕ סוגר אותה מיד');
