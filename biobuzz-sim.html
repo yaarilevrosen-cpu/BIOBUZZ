@@ -13001,6 +13001,7 @@ function faultReset(){
   if(FAULT.batt0!=null){ P.battV=FAULT.batt0; FAULT.batt0=null; }
   FAULT.cur=null; FAULT.t=0; FAULT.freeze=0; FAULT.jam=0; FAULT.launch=1; FAULT.n=0;
   FAULT.next=12+Math.random()*14;
+  if(typeof BOTS!=="undefined") for(const b of BOTS) b.flt=null;   /* v67: גם התקלות של הבוטים */
   if(typeof refreshChassis==="function") refreshChassis();
   faultBadge();
 }

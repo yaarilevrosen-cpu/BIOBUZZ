@@ -22,7 +22,7 @@ const f=await page.evaluate(()=>{ const S=__sim; const o={};
   S.matchStart(); const seen=new Set(); let radioStill=true;
   for(let i=0;i<90*4;i++){ S.advance(0.25,1/60); for(const b of S.BOTS){ if(b.flt&&b.flt.k){ seen.add(b.flt.k);
       if(b.flt.k==='radio'&&Math.hypot(b.body.velocity.x,b.body.velocity.z)>0.5&&b.flt.t<0.8) radioStill=false; } } }
-  o.kinds=[...seen]; o.radioStill=radioStill; S.matchStop();
+  o.kinds=[...seen]; o.radioStill=radioStill; S.matchStop(); S.advance(0.1,1/60);
   o.cleared=S.BOTS.every(b=>!b.flt||!b.flt.k);
   kb.checked=false; kb.dispatchEvent(new Event('change')); o.off=S.BOTS.every(b=>!b.flt); return o; });
 ok(f.ui,'מתג ״תקלות גם לבוטים״ בהגדרות המאץ׳ ובמעבדה');
