@@ -3249,7 +3249,7 @@ function teamSet(name,num){
 }
 function teamBadge(){ const b=document.getElementById("verBadge"); if(!b) return;
   const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:""); }
-const BUILD_VER="v66";
+const BUILD_VER="v67";
 function logoPanel(){
   const[c,g]=cv2d(1024,256);
   g.fillStyle="#12171c";g.fillRect(0,0,1024,256);
@@ -4909,7 +4909,16 @@ const RUNSTEP={
   park(s,st,dt){
     /* המקום נבחר מחדש כל שנייה עד שמגיעים — שותף שחנה בינתיים לא יחסום */
     if(!st.p||(st.t-(st.pt||0)>1&&!myInLZ())){ const np=runParkSpot();
-      if(st.p&&(np.x!==st.p.x||np.z!==st.p.z)){ st.nav=null; st.re=0; } st.p=np; st.pt=st.t; RUN.parkS=np; }
+      if(st.p&&(np.x!==st.p.x||np.z!==st.p.z)){ st.nav=null; st.re=0; st.stg=false; } st.p=np; st.pt=st.t; RUN.parkS=np; }
+    /* v67: גישה בשני שלבים — קודם לנקודה 16 אינץ׳ לפני הקיר מול המקום, ואז ישר פנימה לאורך x.
+       בגישה באלכסון הפינה שלי נתפסה בפינה של שותף שכבר חונה באזור (ה-autosel_test נכשל ~1/3) */
+    const px=I(botBody.position.x), pz=I(botBody.position.z), sx=Math.sign(st.p.x)||-1;
+    const sg={x:st.p.x-sx*16, z:st.p.z};
+    if(!st.stg&&(myInLZ()||pathBlocked(sg.x,sg.z)||(Math.abs(pz-sg.z)<4&&px*sx>=sg.x*sx-3))){ st.stg=true; st.nav=null; st.re=0; }
+    if(!st.stg){ const g0=runGoto(st,dt,sg.x,sg.z,null,3,1);
+      if(g0.arrived){ st.stg=true; st.nav=null; st.re=0; }
+      else if(g0.stuck) return {fail:"הדרך לאזור הטעינה חסומה"};
+      return {cmd:g0.cmd}; }
     const g=runGoto(st,dt,st.p.x,st.p.z,null,2.5,1);
     if(g.arrived&&myInLZ()) return (MATCH.on&&MATCH.phase==="AUTO")?{cmd:{f:0,r:0,turn:0}}:{done:true};
     if(g.stuck) return {fail:"הדרך לאזור הטעינה חסומה"};
