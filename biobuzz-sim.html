@@ -2418,6 +2418,10 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div id="genProg" hidden><i></i></div>
         <label class="check" for="kGenBots"><input type="checkbox" id="kGenBots">עם הבוטים בזירה (איטי יותר, פחות צפוי)</label>
         <div class="row"><button id="bGenRun">הרץ את המחולל</button></div>
+        <div class="grp">🔍 מתכנן — חיפוש מסלול טוב יותר</div>
+        <div class="row"><select id="sOptN"><option value="16">מהיר · 16 ניסיונות</option><option value="40" selected>רגיל · 40 ניסיונות</option><option value="100">יסודי · 100 ניסיונות</option></select><button id="bOptRun">🔍 חפש מסלול טוב יותר</button></div>
+        <div class="out" id="oOpt"></div>
+        <p class="note">מתחיל משני הרצפים הכי טובים של המחולל ומזיז את עמדות הירי ואת הנקודות בדרך. כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.</p>
         <div id="genList"></div>
         <p class="note">בונה 12 וריאציות מאבני הבניין — ירי, פרח קרוב, פרח שני, חניה — ומריץ כל אחת כאוטונומי אמיתי, מעמדת הפתיחה. <b>טען</b> מעביר לעורך, <b>שמור</b> מוסיף לרשימה (וגם לחלון המשחק).</p>
               <div class="row"><button id="bAuto">▶ אוטונומי לדוגמה</button></div>
@@ -2614,7 +2618,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_core" data-i18n>{"כיוון הזירה": "Field orientation", "0° (ברירת מחדל)": "0° (default)", "כיוון הזירה בקוד שלכם: סיבוב של הצירים סביב מרכז הזירה. פנייה שמאלה נשארת פנייה שמאלה בכל בחירה. אותו כיוון משמש גם ביומן מהרובוט וברובוט החי, והמיפוי המדויק כתוב בראש הקוד.": "Field orientation in your code: a rotation of the axes about the field centre. A left turn stays a left turn with every choice. The same orientation is used for the robot log and the live robot, and the exact mapping is written at the top of the code.", "המאץ׳ נגמר — סגרו את ההודעה כדי לנהוג": "The match is over — close the message to drive", "תקלות אקראיות גם לבוטים ולנהגים האחרים": "Random faults for the bots and other drivers too", " · תקלה: ": " · fault: "}</script>
 <script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הרובוט בוחר לבד את מהירות גלגל התנופה לפי המרחק לפתח הכוורת": "The robot picks the flywheel speed by itself from the distance to the hive opening","מהירות ירי אוטומטית לפי המרחק": "Automatic shot speed by distance","מהירות ירי אוטומטית": "Automatic shot speed","מהירות ידנית": "Manual speed","מהירות ירי ידנית": "Manual shot speed","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.": "The robot computes the flywheel speed that puts the ball into the opening from where it stands — like a real robot that measures distance. Off — the speed stays fixed, and you change it in the Play panel or in the Lab.","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","מרחק": "Distance","לא מגיע לפתח מכאן": "Can't reach the opening from here","רחוק מדי — התקרבו": "Too far — move closer","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
-<script type="application/json" id="i18nX_v68" data-i18n>{"נהיגה על הרובוט האמיתי — פותר מהירות, אחיזה, סטרייף וסיבוב": "Driving on the real robot — solves speed, grip, strafe and turning", "מהירות מרבית שנמדדה": "Measured top speed", "מרחק המדידה": "Measured distance", "זמן קדימה מעמידה": "Forward time from a standstill", "זמן הצידה מעמידה": "Sideways time from a standstill", "זמן סיבוב שלם במקום": "Time for a full turn in place", "פתור נהיגה": "Solve driving", "מלא מיומן האודומטריה": "Fill from the odometry log", "מה הסימולטור נותן היום": "What the simulator gives now", "מודדים על הרובוט האמיתי בסטופר: עומדים, נותנים סטיק מלא ועוצרים את השעון במרחק שבחרתם. שדה ריק — לא משתנה. אפשר גם למלא מיומן אודומטריה שנטען בלשונית ״אוטונומי״.": "Measure on the real robot with a stopwatch: start still, give full stick and stop the clock at the distance you chose. An empty field is left unchanged. You can also fill it from an odometry log loaded in the Autonomous tab.", "תקרת מהירות": "Speed cap", "אחיזה שנפתרה": "Solved grip", "נצילות סטרייף": "Strafe efficiency", "תקרת סיבוב": "Turn cap", "סיבוב שלם": "Full turn", "מהירות מרבית": "Top speed", "כיול נהיגה": "Driving calibration", "מלאו לפחות שדה אחד": "Fill in at least one field", "אחיזה וסטרייף": "Grip and strafe", "נעולים במצב ״תחרות״ — עוברים ל״פתוח״ כדי לכייל אותם": "Locked in Competition mode — switch to Open to calibrate them", "מהיומן": "From the log", "הבא": "Next", "בודקים את השדות ולוחצים ״פתור נהיגה״": "Check the fields and press “Solve driving”", "מחזור אחרי מחזור": "Cycle by cycle", "המחזור האיטי": "Slowest cycle", "השיא שלך": "Your best", "🏅 שיא חדש": "🏅 New best", "לעומת השיא": "Compared with your best", "📅 תוכנית אימון": "📅 Training plan", "תוכנית האימון": "Training plan", "יום": "Day", "אודומטריה": "Odometry", "אין יומן טעון — טוענים קובץ בלשונית ״אוטונומי״ ← אודומטריה": "No log loaded — load a file in Autonomous → Odometry", "מכוון ויורה": "Aiming and shooting", "טעינה מהפרח": "Loading at a flower", "חסום על ידי בולם": "Blocked by a defender", "עומד ללא מטרה": "Standing with nothing to do", "משימות בשבילי — לתרגל את מה שחלש": "Missions for me — practice what's weak", "🎯 משימות בשבילי": "🎯 Missions for me", "משימות בשבילך": "Missions for you", "המשימות שלך — לפי מה שהכי עולה לך בנקודות": "Your missions — by what costs you the most points", "עוד אין מספיק משחקים — מתחילים מהבסיס": "Not enough matches yet — starting with the basics", "פעם ראשונה — רושמים תוצאה": "First time — note your result", "מתחת ל-": "Under ", "לפחות": "At least", "מחושב במחשב שלך מהמספרים שלך — בלי בינה מלאכותית. ״🎯 משימות בשבילי״ שוב — אחרי עוד משחקים ותרגילים": "Computed on your computer from your numbers — no AI. Press “🎯 Missions for me” again after more matches and drills.", "לעצור לגמרי ולחכות שהמשגר מוכן — ואז לירות": "Stop completely and wait for the launcher to be ready — then shoot", "לבחור עמדה קבועה ולחזור אליה": "Pick one fixed spot and keep going back to it", "מסלול קבוע בין הפרח לעמדת הירי, בלי עצירות באמצע": "A fixed route between the flower and the shooting spot, no stops on the way", "תמיד לדעת לאן נוסעים עכשיו — פרח או עמדה": "Always know where you're going next — flower or shooting spot", "להיכנס לפרח ישר ובמהירות, החרטום כבר דולק": "Drive straight into the flower fast, intake already on", "לא לדחוף את הבולם — לעקוף לצד השני של הכוורת": "Don't push the defender — go around to the other side of the hive", "לשמור מרחק ולא להצמיד אף רובוט": "Keep your distance and don't pin any robot", "לצאת לחניה ב-10 השניות האחרונות, לא ב-3": "Head to park with 10 seconds left, not 3", "להחליט מראש: ירייה אחרונה ואז ישר לחניה": "Decide in advance: last shot, then straight to park", "לפתוח את העורך ולהוסיף ירייה או חניה": "Open the editor and add a shot or parking", "לחזור לקצב של השיא": "Get back to your record pace", "60 שניות בכל הכוח": "60 seconds flat out", "שומרים על הקצב": "Keep up the pace", "עוד אין מספיק משחקים": "Not enough matches yet", "שומרים על הדיוק": "Keep your accuracy", "סוף המשחק — לנקד ולחנות בזמן": "Endgame — score and park in time"}</script>
+<script type="application/json" id="i18nX_v68" data-i18n>{"נהיגה על הרובוט האמיתי — פותר מהירות, אחיזה, סטרייף וסיבוב": "Driving on the real robot — solves speed, grip, strafe and turning", "מהירות מרבית שנמדדה": "Measured top speed", "מרחק המדידה": "Measured distance", "זמן קדימה מעמידה": "Forward time from a standstill", "זמן הצידה מעמידה": "Sideways time from a standstill", "זמן סיבוב שלם במקום": "Time for a full turn in place", "פתור נהיגה": "Solve driving", "מלא מיומן האודומטריה": "Fill from the odometry log", "מה הסימולטור נותן היום": "What the simulator gives now", "מודדים על הרובוט האמיתי בסטופר: עומדים, נותנים סטיק מלא ועוצרים את השעון במרחק שבחרתם. שדה ריק — לא משתנה. אפשר גם למלא מיומן אודומטריה שנטען בלשונית ״אוטונומי״.": "Measure on the real robot with a stopwatch: start still, give full stick and stop the clock at the distance you chose. An empty field is left unchanged. You can also fill it from an odometry log loaded in the Autonomous tab.", "תקרת מהירות": "Speed cap", "אחיזה שנפתרה": "Solved grip", "נצילות סטרייף": "Strafe efficiency", "תקרת סיבוב": "Turn cap", "סיבוב שלם": "Full turn", "מהירות מרבית": "Top speed", "כיול נהיגה": "Driving calibration", "מלאו לפחות שדה אחד": "Fill in at least one field", "אחיזה וסטרייף": "Grip and strafe", "נעולים במצב ״תחרות״ — עוברים ל״פתוח״ כדי לכייל אותם": "Locked in Competition mode — switch to Open to calibrate them", "מהיומן": "From the log", "הבא": "Next", "בודקים את השדות ולוחצים ״פתור נהיגה״": "Check the fields and press “Solve driving”", "מחזור אחרי מחזור": "Cycle by cycle", "המחזור האיטי": "Slowest cycle", "השיא שלך": "Your best", "🏅 שיא חדש": "🏅 New best", "לעומת השיא": "Compared with your best", "📅 תוכנית אימון": "📅 Training plan", "תוכנית האימון": "Training plan", "יום": "Day", "אודומטריה": "Odometry", "אין יומן טעון — טוענים קובץ בלשונית ״אוטונומי״ ← אודומטריה": "No log loaded — load a file in Autonomous → Odometry", "מכוון ויורה": "Aiming and shooting", "טעינה מהפרח": "Loading at a flower", "חסום על ידי בולם": "Blocked by a defender", "עומד ללא מטרה": "Standing with nothing to do", "משימות בשבילי — לתרגל את מה שחלש": "Missions for me — practice what's weak", "🎯 משימות בשבילי": "🎯 Missions for me", "משימות בשבילך": "Missions for you", "המשימות שלך — לפי מה שהכי עולה לך בנקודות": "Your missions — by what costs you the most points", "עוד אין מספיק משחקים — מתחילים מהבסיס": "Not enough matches yet — starting with the basics", "פעם ראשונה — רושמים תוצאה": "First time — note your result", "מתחת ל-": "Under ", "לפחות": "At least", "מחושב במחשב שלך מהמספרים שלך — בלי בינה מלאכותית. ״🎯 משימות בשבילי״ שוב — אחרי עוד משחקים ותרגילים": "Computed on your computer from your numbers — no AI. Press “🎯 Missions for me” again after more matches and drills.", "לעצור לגמרי ולחכות שהמשגר מוכן — ואז לירות": "Stop completely and wait for the launcher to be ready — then shoot", "לבחור עמדה קבועה ולחזור אליה": "Pick one fixed spot and keep going back to it", "מסלול קבוע בין הפרח לעמדת הירי, בלי עצירות באמצע": "A fixed route between the flower and the shooting spot, no stops on the way", "תמיד לדעת לאן נוסעים עכשיו — פרח או עמדה": "Always know where you're going next — flower or shooting spot", "להיכנס לפרח ישר ובמהירות, החרטום כבר דולק": "Drive straight into the flower fast, intake already on", "לא לדחוף את הבולם — לעקוף לצד השני של הכוורת": "Don't push the defender — go around to the other side of the hive", "לשמור מרחק ולא להצמיד אף רובוט": "Keep your distance and don't pin any robot", "לצאת לחניה ב-10 השניות האחרונות, לא ב-3": "Head to park with 10 seconds left, not 3", "להחליט מראש: ירייה אחרונה ואז ישר לחניה": "Decide in advance: last shot, then straight to park", "לפתוח את העורך ולהוסיף ירייה או חניה": "Open the editor and add a shot or parking", "לחזור לקצב של השיא": "Get back to your record pace", "60 שניות בכל הכוח": "60 seconds flat out", "שומרים על הקצב": "Keep up the pace", "עוד אין מספיק משחקים": "Not enough matches yet", "שומרים על הדיוק": "Keep your accuracy", "סוף המשחק — לנקד ולחנות בזמן": "Endgame — score and park in time", "🔍 מתכנן — חיפוש מסלול טוב יותר": "🔍 Planner — search for a better path", "מהיר · 16 ניסיונות": "Quick · 16 tries", "רגיל · 40 ניסיונות": "Normal · 40 tries", "יסודי · 100 ניסיונות": "Thorough · 100 tries", "🔍 חפש מסלול טוב יותר": "🔍 Search for a better path", "מתחיל משני הרצפים הכי טובים של המחולל ומזיז את עמדות הירי ואת הנקודות בדרך. כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences and moves the shooting spots and the points on the way. Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "מתכנן": "Planner", "הכי טוב": "Best", "זמן פנוי בסוף": "Time left at the end", "ריצות": "Runs", "הסתיים": "Done", "עצור": "Stop", "מריץ את המחולל לנקודת התחלה…": "Running the generator as a starting point…", "בודק את נקודת ההתחלה": "Checking the starting point"}</script>
 <script>
 /* ══════ v56 — עברית / English ══════
    בלי לשנות את הסימולטור: כשבוחרים אנגלית, כל טקסט עברי שמופיע במסך מתורגם במקום —
@@ -3268,7 +3272,7 @@ function teamSet(name,num){
 }
 function teamBadge(){ const b=document.getElementById("verBadge"); if(!b) return;
   const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:""); }
-const BUILD_VER="v68";
+const BUILD_VER="v69";
 function logoPanel(){
   const[c,g]=cv2d(1024,256);
   g.fillStyle="#12171c";g.fillRect(0,0,1024,256);
@@ -13429,22 +13433,26 @@ function genEvalBegin(pts,park){
   if(!GEN.withBots) BOTS.forEach(b=>b.on=false);
   MT.cd=0; GAME.randAuto=false; FAULT.on=false;
   PATH.pts=pts.map(p=>Object.assign({},p)); pathRedetour(); PATH.autoPark=!!park; MYAUTO.lvl="path";
-  GEN.running=true; GEN.inEval=true;
+  GEN.running=true; GEN.inEval=true; GEN.tDone=null;
   matchStart(); GEN.inEval=false;
   return sv;
 }
 function genEvalEnd(sv){
   const my=myAlly(), S=scoreAlly(my);
-  const r={total:S.total|0, leave:!!MATCH.leave, park:!!MATCH.autoPark, hits:hits|0, shots:shots|0, tip:S.tip|0, cell:S.cell|0};
+  const r={total:S.total|0, leave:!!MATCH.leave, park:!!MATCH.autoPark, hits:hits|0, shots:shots|0, tip:S.tip|0, cell:S.cell|0,
+    /* v68: כמה זמן נשאר כשהמסלול סיים (חונה או מחכה) — מרווח ביטחון לרובוט האמיתי */
+    slack:GEN.tDone!=null?+Math.max(0,tAuto()-GEN.tDone).toFixed(1):0};
   matchStop(); GEN.running=false;
   BOTS.forEach((b,i)=>b.on=sv.bots[i]); MT.cd=sv.cd; GAME.randAuto=sv.ra; FAULT.on=sv.fault;
   PATH.pts=sv.pts; PATH.cur=sv.cur; PATH.autoPark=sv.ap; MYAUTO.lvl=sv.lvl; PATH.run=sv.run;
   stageMatch(); homeRobot(); pathDraw(); pathInfo();
   return r;
 }
+function genDoneTick(){ if(GEN.tDone!=null||!RUN.on||MATCH.phase!=="AUTO") return; const st=RUN.prog[RUN.i];
+  if(st&&(st.k==="hold"||(st.k==="park"&&myInLZ()&&Math.hypot(botBody.velocity.x,botBody.velocity.z)<0.05))) GEN.tDone=MATCH.t; }
 function genEvalSync(pts,park){
   const sv=genEvalBegin(pts,park);
-  let g=0; while(MATCH.on&&MATCH.t<tAuto()+0.05&&g++<60*40) advance(1/60,1/60);
+  let g=0; while(MATCH.on&&MATCH.t<tAuto()+0.05&&g++<60*40){ advance(1/60,1/60); genDoneTick(); }
   return genEvalEnd(sv);
 }
 function genEvalAsync(pts,park,onProg){
@@ -13452,7 +13460,7 @@ function genEvalAsync(pts,park,onProg){
     const sv=genEvalBegin(pts,park);
     const step=()=>{ if(GEN.stop){ res(Object.assign(genEvalEnd(sv),{stopped:true})); return; }
       const t0=performance.now();
-      while(MATCH.on&&MATCH.t<tAuto()+0.05&&performance.now()-t0<40) advance(1/60,1/60);
+      while(MATCH.on&&MATCH.t<tAuto()+0.05&&performance.now()-t0<40){ advance(1/60,1/60); genDoneTick(); }
       if(onProg) onProg(Math.min(1,MATCH.t/tAuto()));
       if(MATCH.on&&MATCH.t<tAuto()+0.05) setTimeout(step,0); else res(genEvalEnd(sv)); };
     step();
@@ -13483,7 +13491,7 @@ function genUI(p){
   o.innerHTML=(busy?row("מריץ",(GEN.i+1)+" מתוך "+GEN.n,"hl"):GEN.res.length?row("נבדקו",GEN.res.length+" וריאציות · 30 שנ׳ כל אחת"):row("מחולל","עוד לא הורץ"));
   const t=$("genList"); if(!t) return;
   t.innerHTML=GEN.res.slice(0,6).map((r,i)=>'<div class="genRow'+(i<3?" top":"")+'"><b>'+(i+1)+'</b><div><span>'+pathEsc(r.name)+'</span><small>'+
-    r.total+' נק׳ · '+r.hits+'/'+r.shots+' פגיעות'+(r.leave?' · יציאה':'')+(r.park?' · חניה':'')+(r.tip?' · היפוך':'')+'</small></div>'+
+    r.total+' נק׳ · '+r.hits+'/'+r.shots+' פגיעות'+(r.leave?' · יציאה':'')+(r.park?' · חניה':'')+(r.tip?' · היפוך':'')+(r.opt&&r.base!=null?' · '+(r.total>=r.base?'+':'')+(r.total-r.base)+' מול המחולל':'')+(r.slack!=null?' · '+r.slack+' שנ׳ פנויות':'')+'</small></div>'+
     '<button data-gl="'+i+'">טען</button><button data-gs="'+i+'">שמור</button></div>').join("");
   const b=$("bGenRun"); if(b){ b.textContent=GEN.running?"עצור":"הרץ את המחולל"; b.classList.toggle("on",GEN.running); }
 }
@@ -13492,7 +13500,7 @@ function genLoad(i,save){
   PATH.pts=r.pts.map(p=>Object.assign({},p)); pathRedetour(); PATH.autoPark=r.seq.includes("P");
   pathCurSet(""); PATH.run=null;
   PATH.warn="נטען מהמחולל: "+r.name+" · "+r.total+" נק׳ בבדיקה";
-  if(save){ let nm="מחולל · "+r.seq.map(k=>GEN_N[k]).join(", ");
+  if(save){ let nm=(r.opt?"מתכנן · ":"מחולל · ")+r.seq.map(k=>GEN_N[k]).join(", ");
     if(nm.length>30){ nm=nm.slice(0,30); nm=nm.slice(0,nm.lastIndexOf(",")>10?nm.lastIndexOf(","):30); }
     pathSave(nm); }
   pathDraw(); pathInfo(); return true;
@@ -13504,7 +13512,97 @@ function genWire(){
   const k=$("kGenBots"); if(k) k.addEventListener("change",()=>{ GEN.withBots=k.checked; });
   const l=$("genList"); if(l) l.addEventListener("click",e=>{ const a=e.target.closest("[data-gl]"), s=e.target.closest("[data-gs]");
     if(a) genLoad(+a.dataset.gl,false); if(s) genLoad(+s.dataset.gs,true); });
-  genUI(0);
+  genUI(0); optWire();
+}
+
+/* ══════ v68: מתכנן אוטונומי — חיפוש מעל המחולל ══════
+   לא בינה מלאכותית: מנסים שינוי קטן במסלול (עמדת ירי, נקודה בדרך לפרח), מריצים
+   30 שניות אוטונומי אמיתיות, ושומרים רק אם הניקוד לא ירד. הצעד קטן ככל שמתקדמים. */
+const OPT={running:false, it:0, n:0, stop:false, best:null, start:null, seeds:0, tries:0, kept:0, msg:""};
+function optScore(r){ return r.total*100+r.hits*3+(r.park?5:0)+(r.leave?1:0)+(r.slack||0)*2; }
+/* מספרים אקראיים עם זרע — אותו חיפוש נותן אותה תוצאה (בלי בוטים) */
+function optRng(seed){ let x=(seed>>>0)||1; return ()=>{ x^=x<<13; x>>>=0; x^=x>>>17; x^=x<<5; x>>>=0; return x/4294967296; }; }
+function optGauss(r){ let u=0,v=0; while(!u) u=r(); while(!v) v=r(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+/* נקודה חוקית לאוטונומי: בתוך הזירה, לא במבנה, ובצד שלי (G402 — לפחות 10″ מהאמצע) */
+function optOk(x,z){ const sg=myAlly()==="red"?-1:1; return Math.abs(x)<=62&&Math.abs(z)<=62&&x*sg>=10&&!pathBlocked(x,z); }
+function optMutate(pts,sig,r){
+  const q=pts.filter(p=>!p.auto).map(p=>Object.assign({},p));
+  const idx=[]; q.forEach((p,i)=>{ if(i>0&&!p.start&&(p.act==="shoot"||p.act==="shootspot"||p.act==="flower")) idx.push(i); });
+  if(!idx.length) return null;
+  const k=1+(r()<0.35?1:0);
+  for(let m=0;m<k;m++){
+    const i=idx[Math.floor(r()*idx.length)], p=q[i];
+    /* עמדת ירי מחושבת בזמן הריצה → לפעמים חוזרים אליה (אולי היא בעצם הכי טובה) */
+    if(p.act==="shoot"&&p.wasSpot&&r()<0.12){ p.act="shootspot"; continue; }
+    const s=p.act==="flower"?sig*0.5:sig;
+    for(let t=0;t<8;t++){ const x=+(p.x+optGauss(r)*s).toFixed(1), z=+(p.z+optGauss(r)*s).toFixed(1);
+      if(optOk(x,z)||(p.act==="flower"&&Math.abs(x)<=64&&Math.abs(z)<=64&&!pathBlocked(x,z))){
+        if(p.act==="shootspot"){ p.act="shoot"; p.wasSpot=true; } p.x=x; p.z=z; if(p.act==="shoot") p.h=null; break; } }
+  }
+  return q;
+}
+async function optEval(pts,park){
+  const K=GEN.withBots?3:1; let sc=0, tot=0, hit=0, sh=0, pk=0, lv=0, sl=0;
+  for(let k=0;k<K;k++){ const r=await genEvalAsync(pts,park,p=>optUI(p)); if(r.stopped) return null;
+    sc+=optScore(r); tot+=r.total; hit+=r.hits; sh+=r.shots; pk+=r.park?1:0; lv+=r.leave?1:0; sl+=r.slack||0; OPT.tries++; }
+  return {score:sc/K, total:+(tot/K).toFixed(1), hits:+(hit/K).toFixed(1), shots:+(sh/K).toFixed(1), park:pk/K>=0.5, leave:lv/K>=0.5, slack:+(sl/K).toFixed(1)};
+}
+async function optRun(o){
+  o=o||{};
+  if(GEN.running||OPT.running||MATCH.on||MATCH.cd>0) return false;
+  Object.assign(OPT,{running:true, stop:false, it:0, n:Math.max(4,o.n||40), best:null, start:null, tries:0, kept:0, msg:"מריץ את המחולל לנקודת התחלה…"});
+  GEN.stop=false; optUI(0);
+  if(!GEN.res.length||GEN.res.every(x=>x.opt)) await genRun();
+  if(GEN.stop){ OPT.running=false; OPT.msg="נעצר"; optUI(0); return null; }
+  const seeds=GEN.res.filter(x=>!x.opt).slice(0,2);
+  if(!seeds.length){ OPT.running=false; OPT.msg="המחולל לא החזיר מסלול"; optUI(0); return null; }
+  const r=optRng(o.seed||9662);
+  const cur=[];
+  for(const sd of seeds){ const pts=sd.pts.filter(p=>!p.auto).map(p=>Object.assign({},p)), park=sd.seq.includes("P");
+    OPT.msg="בודק את נקודת ההתחלה"; const ev=await optEval(pts,park); if(!ev) break;
+    cur.push({pts,park,seq:sd.seq,name:sd.name,ev,start:ev,genTotal:sd.total}); }
+  if(!cur.length){ OPT.running=false; OPT.msg="נעצר"; optUI(0); return null; }
+  const pick=()=>cur.reduce((a,b)=>b.ev.score>a.ev.score?b:a);
+  OPT.start=pick().ev; OPT.best=pick();
+  for(OPT.it=0;OPT.it<OPT.n&&!GEN.stop;OPT.it++){
+    /* רוב הניסיונות על המוביל, חלק על השני — אולי הוא יעקוף */
+    const c=cur.length>1&&r()<0.3?cur.reduce((a,b)=>b.ev.score<a.ev.score?b:a):pick();
+    const sig=Math.max(3,14*(1-OPT.it/OPT.n));
+    const cand=optMutate(c.pts,sig,r); if(!cand) break;
+    OPT.msg="ניסיון "+(OPT.it+1)+" מתוך "+OPT.n;
+    let ev=await optEval(cand,c.park); if(!ev) break;
+    /* הסימולציה לא דטרמיניסטית לגמרי (כדורים, היפוך הכוורת) — שיפור נבדק פעם שנייה וממוצע */
+    if(ev.score>c.ev.score){ const e2=await optEval(cand,c.park); if(!e2) break;
+      ev={score:(ev.score+e2.score)/2, total:+((ev.total+e2.total)/2).toFixed(1), hits:+((ev.hits+e2.hits)/2).toFixed(1), shots:+((ev.shots+e2.shots)/2).toFixed(1),
+          park:ev.park&&e2.park, leave:ev.leave&&e2.leave, slack:+((ev.slack+e2.slack)/2).toFixed(1)}; }
+    if(ev.score>=c.ev.score){ if(ev.score>c.ev.score) OPT.kept++; c.pts=cand; c.ev=ev; }
+    OPT.best=pick(); optUI(1);
+  }
+  const b=pick();
+  if(b){ const shoot=b.pts.filter(p=>p.act==="shoot").length;
+    GEN.res=GEN.res.filter(x=>!x.opt);
+    GEN.res.unshift({opt:true, seq:b.seq, name:"🔍 משופר: "+b.name, pts:b.pts.map(p=>Object.assign({},p)),
+      total:Math.round(b.ev.total), hits:Math.round(b.ev.hits), shots:Math.round(b.ev.shots), park:b.ev.park, leave:b.ev.leave, tip:0, base:b.genTotal!=null?b.genTotal:b.start.total, fixed:shoot,
+      slack:b.ev.slack, baseSlack:b.start.slack});
+    GEN.done=true; }
+  OPT.running=false; OPT.msg=GEN.stop?"נעצר — מה שנמצא עד עכשיו בראש הרשימה":"הסתיים"; GEN.stop=false;
+  optUI(1); genUI(1);
+  return GEN.res[0];
+}
+function optUI(p){
+  const o=$("oOpt"); if(!o) return;
+  const b=OPT.best&&OPT.best.ev, s0=OPT.start;
+  o.innerHTML=(OPT.msg?row(OPT.running?"מריץ":"מתכנן",T(OPT.msg),OPT.running?"hl":""):"")+
+    (s0&&b?row("הכי טוב",b.total+" נק׳ · "+b.hits+"/"+b.shots+" פגיעות"+(b.park?" · חניה":"")+" (התחלה "+s0.total+")",b.total>s0.total?"ok":""):"")+
+    (s0&&b?row("זמן פנוי בסוף",b.slack+" שנ׳ (התחלה "+s0.slack+")",b.slack>s0.slack+0.4?"ok":""):"")+
+    (OPT.tries?row("ריצות",OPT.tries+" × 30 שנ׳ · "+OPT.kept+" שיפורים"):"");
+  const bt=$("bOptRun"); if(bt){ bt.textContent=OPT.running?T("עצור"):T("🔍 חפש מסלול טוב יותר"); bt.classList.toggle("on",OPT.running); }
+}
+function optWire(){
+  on($("bOptRun"),()=>{ if(OPT.running||GEN.running){ GEN.stop=true; return; }
+    if(MATCH.on||MATCH.cd>0){ refToast("המתכנן רץ בין מאצ׳ים — עצור קודם את המאץ׳","block"); return; }
+    const n=+(($("sOptN")||{}).value||40); optRun({n}); });
+  optUI(0);
 }
 
 /* ══════ 10. עורך רובוט — מה השינוי עושה לניקוד ══════
@@ -15585,7 +15683,7 @@ function coachClose(){ const m=$("coachBox"); if(m) m.hidden=true; }
   if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 /* v68: מה שהבדיקות של כיול הנהיגה, פירוק המחזורים ותוכנית האימון צריכות */
 { const X={calDrive1D,calTurn1D,calSolveDrive,calDriveFromOdo,calDriveSim,DEB,debriefReset,debriefShot,debriefFinish,renderDebrief,
-    planGet,planMark,planToggle,missionsBuild,missionsOpen,planSrc,coachSummary,coachShow,coachLast,drillRecord,DRILL,ODO,seasonEnd,SEASON,setRealm,realmOpen:()=>realmOpen(),P,
+    planGet,planMark,planToggle,missionsBuild,optRun,optMutate,optRng,OPT,GEN,genLoad,missionsOpen,planSrc,coachSummary,coachShow,coachLast,drillRecord,DRILL,ODO,seasonEnd,SEASON,setRealm,realmOpen:()=>realmOpen(),P,
     setMatchOn:v=>{ MATCH.on=!!v; }, setMatchT:t=>{ MATCH.t=t; }, seasonAll:()=>seasonAll()};
   if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 Object.assign(window.__sim||{},{AIST,aiOn,aiRefresh,aiRender,CMDK,cmdkOpen,cmdkClose,cmdkSearch,cmdkIndex,cmdkRun,AICHAT,chatOpen,chatSend,chatClose,COACH,coachSummary,coachTeamSummary,coachRun,coachShow,coachBarUI,drillStart,drillFire,DRILL});

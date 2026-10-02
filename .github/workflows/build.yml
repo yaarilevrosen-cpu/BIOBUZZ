@@ -50,7 +50,7 @@ jobs:
           FAILED=""
           for t in smoke name_test v60_test v61_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test \
                    auto_test brain_test g304_test regress_test review_test teach_test v42_test dist_test mp2_test \
-                   v63_bld_test v63_core_test v63_ui_test v63_wiz_test v64_push_test v65_practice_test v66_test v68_test; do
+                   v63_bld_test v63_core_test v63_ui_test v63_wiz_test v64_push_test v65_practice_test v66_test v68_test v69_test; do
             echo "::group::$t"
             if node $t.mjs > "/tmp/$t.log" 2>&1; then cat "/tmp/$t.log"; else
               rc=$?; cat "/tmp/$t.log"; FAILED="$FAILED $t"
