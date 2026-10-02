@@ -126,6 +126,10 @@ ok(r.src==='local'&&r.done===1,'המשימות הן התוכנית הפעילה,
 r=await E(()=>{ const S=__sim; const L=S.planSrc(); localStorage.setItem('bbCoach1',JSON.stringify({kind:'me',at:L.at+1000,ok:true,model:'mock',sum:{},json:{plan:[{day:1,drill:'end',goal:'x'}]}}));
   return S.planSrc().model; });
 ok(r==='mock','ניתוח חדש של המאמן מחליף את המשימות כתוכנית הפעילה (החדש מנצח)');
+r=await E(()=>{ const S=__sim; const base={ally:'red',opp:20,win:1,auto:'x',leave:true,park:true,faults:0,sh:[],bl:[],kind:'match',skill:1,my:80,shots:20,hits:17,avgCycle:7,autoPts:20,fouls:1.5,pts:{park:5}};
+  const a=[]; for(let i=0;i<8;i++) a.push(Object.assign({},base,{at:i})); localStorage.setItem('bbSeason1',JSON.stringify(a)); S.DRILL.hist={};
+  return S.missionsBuild().json.plan.map(x=>x.drill); });
+ok(new Set(r).size===3&&r[0]==='defense','חולשה אחת בלבד — השבוע משלים בבסיס ולא חוזר על אותו תרגיל ('+r.join(',')+')');
 await E(()=>{ document.getElementById('coachBox').hidden=true; localStorage.removeItem('bbSeason1'); });
 
 ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
