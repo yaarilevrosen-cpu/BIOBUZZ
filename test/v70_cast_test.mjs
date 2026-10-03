@@ -85,7 +85,7 @@ ok(r.old===false,'השידור החוזר הרגיל עדיין חסום באמ�
 ok(!!r.split&&!!r.net,'השידור המיידי חסום במסך מפוצל וברשת');
 
 const snap=`(()=>{ const S=window.S, I=S.I, P=b=>[+I(b.position.x).toFixed(4),+I(b.position.z).toFixed(4)], V=b=>[+b.velocity.x.toFixed(5),+b.velocity.z.toFixed(5)];
-  return JSON.stringify({t:S.MATCH.t, sim:S.simT, pose:P(S.botBody), v:V(S.botBody), yaw:+S.bot.yaw.toFixed(5), mag:S.bot.mag,
+  return JSON.stringify({t:S.MATCH.t, sim:S.simT(), pose:P(S.botBody), v:V(S.botBody), yaw:+S.bot.yaw.toFixed(5), mag:S.bot.mag,
     red:S.allianceScore("red"), blue:S.allianceScore("blue"),
     bots:S.BOTS.map(b=>b.body?P(b.body).concat([+b.yaw.toFixed(5), b.clip.length]):null),
     balls:S.balls.length, bsum:+S.balls.reduce((s,b)=>s+b.body.position.x+b.body.position.y*3+b.body.position.z*7,0).toFixed(5)}); })()`;

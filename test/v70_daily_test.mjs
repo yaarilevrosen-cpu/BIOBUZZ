@@ -83,7 +83,7 @@ ok(r.acc10.ok&&r.far7.v===5&&!r.far7.ok,'10/10 בדיוק נפתח; דיוק מ�
 ok(r.clean5.ok&&r.clean===5,'5 משחקים ברצף בלי עבירות (התרגיל לא נספר): רצף '+r.clean);
 ok(r.park10.v===r.park&&r.park===6&&!r.park10.ok,'חניה ברצף: '+r.park10.v+'/'+r.park10.max);
 ok(r.cycle7.ok&&r.auto30.ok&&r.auto===31,'מחזור 6.4 שנ׳ ← ״מחזור מהיר״; אוטונומי '+r.auto+' ← ״אוטונומי חזק״');
-ok(r.beat&&r.tried===4&&r.drills9.v===4,'שבירת שיא (45 > 40, ו-55 < 60 שנ׳); תרגילים שנוסו: '+r.drills9.v+'/9');
+ok(r.beat&&r.tried===4&&r.drills9.v===4,'שבירת שיא (45 > 40, ו-55 < 60 שנ׳); תרגילים שנוסו: '+r.drills9.v+'/15');
 ok(r.daily1.ok&&r.streak3.v===2&&!r.streak3.ok&&r.plan.v===3&&r.plan.max===5&&!r.planner.ok,'אתגר ראשון נפתח · רצף '+r.streak3.v+'/3 · תוכנית '+r.plan.v+'/'+r.plan.max+' · מתכנן '+r.planner.v+'/1');
 
 // 5. הודעה כשהישג נפתח — פעם אחת בלבד
