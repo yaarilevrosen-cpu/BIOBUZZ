@@ -2035,6 +2035,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div id="ppDrills" hidden><div class="ppDrillGrid"><button data-drill="cycle">⏱ מחזורים · 60 שנ׳</button><button data-drill="end">🏁 סוף משחק · 30 שנ׳</button><button data-drill="acc">🎯 דיוק · 10 יריות</button>
           <button data-drill="far">🏹 דיוק מרחוק</button><button data-drill="speed">⚡ 3 מחזורים על זמן</button><button data-drill="park">🅿 חניה על זמן</button>
           <button data-drill="defense">🛡 מול בולם · 60 שנ׳</button><button data-drill="pressure">🔥 שני יריבים · 60 שנ׳</button><button data-drill="auto">🤖 אוטונומי בלבד</button></div><div id="ppDrillBest" class="ppAuto"></div></div>
+        <div id="ppDaily" class="dlyHost"></div>
         <div class="ppRow" id="ppFriends" hidden>
           <button id="ppSplit">מסך מפוצל</button><button id="ppNet">ברשת</button><button id="ppPhone">📱 טלפון</button>
           <button id="ppFriendsMatch" class="primary" hidden title="החברים נשארים בעמדות שלהם, בוטים ממלאים רק את הפנויות">🏆 משחק מלא עם החברים</button>
@@ -2236,6 +2237,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="seg" role="group" aria-label="טווח"><button data-stf="all" class="on">הכול</button><button data-stf="20">20 אחרונים</button><button data-stf="today">היום</button></div>
         <div id="coachBar" class="coachBar" hidden></div>
         <div id="stOut"></div>
+        <div id="achBox" class="achBox"></div>
               <details class="sub" id="seasonBox"><summary>העונה שלי — איפה יריתי</summary><div class="body">
         <div class="out" id="oSeason"></div>
         <div class="seg" role="group" aria-label="מה במפה"><button data-sv="shots" class="on">ירי · דיוק</button><button data-sv="blocks">איפה נחסמתי</button></div>
@@ -2619,6 +2621,38 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הרובוט בוחר לבד את מהירות גלגל התנופה לפי המרחק לפתח הכוורת": "The robot picks the flywheel speed by itself from the distance to the hive opening","מהירות ירי אוטומטית לפי המרחק": "Automatic shot speed by distance","מהירות ירי אוטומטית": "Automatic shot speed","מהירות ידנית": "Manual speed","מהירות ירי ידנית": "Manual shot speed","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.": "The robot computes the flywheel speed that puts the ball into the opening from where it stands — like a real robot that measures distance. Off — the speed stays fixed, and you change it in the Play panel or in the Lab.","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","מרחק": "Distance","לא מגיע לפתח מכאן": "Can't reach the opening from here","רחוק מדי — התקרבו": "Too far — move closer","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script type="application/json" id="i18nX_v68" data-i18n>{"נהיגה על הרובוט האמיתי — פותר מהירות, אחיזה, סטרייף וסיבוב": "Driving on the real robot — solves speed, grip, strafe and turning", "מהירות מרבית שנמדדה": "Measured top speed", "מרחק המדידה": "Measured distance", "זמן קדימה מעמידה": "Forward time from a standstill", "זמן הצידה מעמידה": "Sideways time from a standstill", "זמן סיבוב שלם במקום": "Time for a full turn in place", "פתור נהיגה": "Solve driving", "מלא מיומן האודומטריה": "Fill from the odometry log", "מה הסימולטור נותן היום": "What the simulator gives now", "מודדים על הרובוט האמיתי בסטופר: עומדים, נותנים סטיק מלא ועוצרים את השעון במרחק שבחרתם. שדה ריק — לא משתנה. אפשר גם למלא מיומן אודומטריה שנטען בלשונית ״אוטונומי״.": "Measure on the real robot with a stopwatch: start still, give full stick and stop the clock at the distance you chose. An empty field is left unchanged. You can also fill it from an odometry log loaded in the Autonomous tab.", "תקרת מהירות": "Speed cap", "אחיזה שנפתרה": "Solved grip", "נצילות סטרייף": "Strafe efficiency", "תקרת סיבוב": "Turn cap", "סיבוב שלם": "Full turn", "מהירות מרבית": "Top speed", "כיול נהיגה": "Driving calibration", "מלאו לפחות שדה אחד": "Fill in at least one field", "אחיזה וסטרייף": "Grip and strafe", "נעולים במצב ״תחרות״ — עוברים ל״פתוח״ כדי לכייל אותם": "Locked in Competition mode — switch to Open to calibrate them", "מהיומן": "From the log", "הבא": "Next", "בודקים את השדות ולוחצים ״פתור נהיגה״": "Check the fields and press “Solve driving”", "מחזור אחרי מחזור": "Cycle by cycle", "המחזור האיטי": "Slowest cycle", "השיא שלך": "Your best", "🏅 שיא חדש": "🏅 New best", "לעומת השיא": "Compared with your best", "📅 תוכנית אימון": "📅 Training plan", "תוכנית האימון": "Training plan", "יום": "Day", "אודומטריה": "Odometry", "אין יומן טעון — טוענים קובץ בלשונית ״אוטונומי״ ← אודומטריה": "No log loaded — load a file in Autonomous → Odometry", "מכוון ויורה": "Aiming and shooting", "טעינה מהפרח": "Loading at a flower", "חסום על ידי בולם": "Blocked by a defender", "עומד ללא מטרה": "Standing with nothing to do", "משימות בשבילי — לתרגל את מה שחלש": "Missions for me — practice what's weak", "🎯 משימות בשבילי": "🎯 Missions for me", "משימות בשבילך": "Missions for you", "המשימות שלך — לפי מה שהכי עולה לך בנקודות": "Your missions — by what costs you the most points", "עוד אין מספיק משחקים — מתחילים מהבסיס": "Not enough matches yet — starting with the basics", "פעם ראשונה — רושמים תוצאה": "First time — note your result", "מתחת ל-": "Under ", "לפחות": "At least", "מחושב במחשב שלך מהמספרים שלך — בלי בינה מלאכותית. ״🎯 משימות בשבילי״ שוב — אחרי עוד משחקים ותרגילים": "Computed on your computer from your numbers — no AI. Press “🎯 Missions for me” again after more matches and drills.", "לעצור לגמרי ולחכות שהמשגר מוכן — ואז לירות": "Stop completely and wait for the launcher to be ready — then shoot", "לבחור עמדה קבועה ולחזור אליה": "Pick one fixed spot and keep going back to it", "מסלול קבוע בין הפרח לעמדת הירי, בלי עצירות באמצע": "A fixed route between the flower and the shooting spot, no stops on the way", "תמיד לדעת לאן נוסעים עכשיו — פרח או עמדה": "Always know where you're going next — flower or shooting spot", "להיכנס לפרח ישר ובמהירות, החרטום כבר דולק": "Drive straight into the flower fast, intake already on", "לא לדחוף את הבולם — לעקוף לצד השני של הכוורת": "Don't push the defender — go around to the other side of the hive", "לשמור מרחק ולא להצמיד אף רובוט": "Keep your distance and don't pin any robot", "לצאת לחניה ב-10 השניות האחרונות, לא ב-3": "Head to park with 10 seconds left, not 3", "להחליט מראש: ירייה אחרונה ואז ישר לחניה": "Decide in advance: last shot, then straight to park", "לפתוח את העורך ולהוסיף ירייה או חניה": "Open the editor and add a shot or parking", "לחזור לקצב של השיא": "Get back to your record pace", "60 שניות בכל הכוח": "60 seconds flat out", "שומרים על הקצב": "Keep up the pace", "עוד אין מספיק משחקים": "Not enough matches yet", "שומרים על הדיוק": "Keep your accuracy", "סוף המשחק — לנקד ולחנות בזמן": "Endgame — score and park in time", "🔍 מתכנן — חיפוש מסלול טוב יותר": "🔍 Planner — search for a better path", "מהיר · 16 ניסיונות": "Quick · 16 tries", "רגיל · 40 ניסיונות": "Normal · 40 tries", "יסודי · 100 ניסיונות": "Thorough · 100 tries", "🔍 חפש מסלול טוב יותר": "🔍 Search for a better path", "מתחיל משני הרצפים הכי טובים של המחולל ומזיז את עמדות הירי ואת הנקודות בדרך. כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences and moves the shooting spots and the points on the way. Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "מתכנן": "Planner", "הכי טוב": "Best", "זמן פנוי בסוף": "Time left at the end", "ריצות": "Runs", "הסתיים": "Done", "עצור": "Stop", "מריץ את המחולל לנקודת התחלה…": "Running the generator as a starting point…", "בודק את נקודת ההתחלה": "Checking the starting point"}</script>
+<script type="application/json" id="i18nX_v70daily" data-i18n>{"אתגר יומי": "Daily challenge", "בולם ברמה": "Defender level", "יריבים ברמה": "Opponents level", "עם תקלות": "With faults", "בלי תקלות": "No faults", "לכל היותר": "at most", "היעד": "Target", "הכי טוב היום": "Best today", "עוד ניסיון": "Another try", "התחל את האתגר": "Start the challenge", "אותו אתגר לכל הנהגים היום. רצף — ימים רצופים עם ניסיון.": "Same challenge for every driver today. Streak — days in a row with an attempt.", "✓ עמדת ביעד!": "✓ Target reached!", "🏅 הישג חדש": "🏅 New achievement", "הישגים": "Achievements", "ניצחון ראשון": "First win", "לנצח במאץ׳ (לא בתרגיל)": "Win a match (not a drill)", "עשרה ניצחונות": "Ten wins", "לנצח בעשרה משחקים": "Win ten matches", "עונה מלאה": "Full season", "לסיים 25 משחקים": "Finish 25 matches", "קליעה מושלמת": "Perfect shooting", "10 מתוך 10 בתרגיל הדיוק": "10 out of 10 in the accuracy drill", "צלף": "Sniper", "7 מתוך 10 בתרגיל הדיוק מרחוק": "7 out of 10 in the long-shots drill", "משחק נקי": "Clean play", "5 משחקים ברצף בלי עבירות": "5 matches in a row without fouls", "מחזור מהיר": "Fast cycle", "זמן מחזור ממוצע מתחת ל-7 שנ׳ במאץ׳ (3 מחזורים לפחות)": "Average cycle under 7 s in a match (at least 3 cycles)", "חונה קבוע": "Always parked", "לחנות בסוף 10 משחקים ברצף": "Park at the end of 10 matches in a row", "אוטונומי חזק": "Strong autonomous", "30 נקודות ומעלה באוטונומי": "30 points or more in autonomous", "שובר שיאים": "Record breaker", "לשבור שיא קודם — במאץ׳ או בתרגיל": "Beat a previous best — in a match or a drill", "כל התרגילים": "Every drill", "לנסות את כל תשעת התרגילים": "Try all nine drills", "אתגר ראשון": "First challenge", "לעמוד ביעד של אתגר יומי": "Reach the target of a daily challenge", "שלושה ימים ברצף": "Three days in a row", "אתגר יומי שלושה ימים ברצף": "Daily challenge three days in a row", "שבוע שלם": "A whole week", "אתגר יומי שבעה ימים ברצף": "Daily challenge seven days in a row", "תוכנית שלמה": "Complete plan", "לסמן את כל הימים בתוכנית אימון": "Check off every day of a training plan", "מתכנן": "Planner", "להריץ את המתכנן האוטונומי עד הסוף": "Run the autonomous planner to the end"}</script>
+<style id="css_v70daily">
+  /* v70: אתגר יומי והישגים */
+  .dlyHost:empty{display:none}
+  #ppDaily{margin:8px 0}
+  .dlyCard{border:1px solid var(--line2); border-radius:12px; padding:10px 12px; background:linear-gradient(135deg,rgba(255,176,32,.10),rgba(20,26,33,.6)); display:grid; gap:7px}
+  .dlyCard.hit{border-color:var(--good); background:linear-gradient(135deg,rgba(53,214,164,.12),rgba(20,26,33,.6))}
+  .dlyTop{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .dlyTop b{color:var(--accent2); font-size:13px} .dlyTop span{color:var(--muted); font-size:11px; font-family:var(--mono)}
+  .dlyWhat{display:flex; align-items:center; gap:8px} .dlyWhat i{font-style:normal; font-size:20px} .dlyWhat b{font-size:14px; color:var(--ink)}
+  .dlyTags{display:flex; flex-wrap:wrap; gap:4px} .dlyTags span{font-size:11px; color:var(--ink2); border:1px solid var(--line2); border-radius:99px; padding:1px 8px}
+  .dlyStats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px}
+  .dlyStats div{background:rgba(0,0,0,.18); border-radius:8px; padding:5px 7px; min-width:0}
+  .dlyStats span{display:block; font-size:10.5px; color:var(--muted)} .dlyStats b{font-size:13px; color:var(--ink); font-family:var(--mono); font-weight:500; overflow-wrap:anywhere}
+  .dlyCard.hit .dlyBest{color:var(--good)}
+  .dlyGo{justify-self:start; border-color:var(--accent); color:var(--accent2)}
+  .dlyNote{margin:0; font-size:10.5px; color:var(--dim)}
+  #hmDaily{margin:12px 0}
+  .achBox:empty{display:none}
+  .achN{color:var(--muted); font-family:var(--mono); font-weight:400; font-size:11px}
+  .achGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:6px; margin:4px 0 10px}
+  .achC{display:flex; gap:8px; align-items:flex-start; border:1px solid var(--line); border-radius:10px; padding:7px 9px; opacity:.72}
+  .achC i{font-style:normal; font-size:20px; filter:grayscale(1); line-height:1.2}
+  .achC.on{opacity:1; border-color:rgba(53,214,164,.55); background:rgba(53,214,164,.06)} .achC.on i{filter:none}
+  .achC div{min-width:0; flex:1} .achC b{display:block; font-size:12.5px; color:var(--ink)} .achC span{display:block; font-size:10.5px; color:var(--muted); line-height:1.5}
+  .achC small{font-size:10.5px; color:var(--dim); font-family:var(--mono)} .achC.on small{color:var(--good)}
+  .achBar{height:4px; border-radius:2px; background:var(--line); margin:4px 0 2px; overflow:hidden} .achBar em{display:block; height:100%; background:var(--accent)} .achC.on .achBar em{background:var(--good)}
+  #achToast{position:fixed; top:70px; left:50%; transform:translate(-50%,-10px); z-index:200; display:flex; gap:10px; align-items:center; pointer-events:none;
+    background:rgba(20,26,33,.97); border:1px solid var(--accent); border-radius:12px; padding:9px 16px; opacity:0; transition:opacity .25s, transform .25s; box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  #achToast.show{opacity:1; transform:translate(-50%,0)} #achToast i{font-style:normal; font-size:26px}
+  #achToast small{display:block; font-size:11px; color:var(--accent2)} #achToast b{font-size:14px; color:var(--ink)}
+</style>
 <script>
 /* ══════ v56 — עברית / English ══════
    בלי לשנות את הסימולטור: כשבוחרים אנגלית, כל טקסט עברי שמופיע במסך מתורגם במקום —
@@ -13008,7 +13042,7 @@ function seasonEnd(){
     auto:c.autoName, autoPts:c.autoPts==null?null:c.autoPts|0, shots:shots|0, hits:hits|0,
     fouls:REF.log.filter(e=>e.team==="me"&&(e.pts||e.card)).length, leave:!!MATCH.leave, park:!!MATCH.autoPark,
     faults:c.faults, sh:c.sh.map(q=>[q.p[0],q.p[1],q.e&&q.e.hit?1:0]), bl:c.bl,
-    kind:(typeof DRILL!=="undefined"&&DRILL.on)?"drill":SPLIT.on?"split":NET.mode==="host"?"net":(typeof PP!=="undefined"&&PP.last==="quick")?"quick":"match", skill:GAME.skill|0};
+    kind:(typeof DAILY!=="undefined"&&DAILY.on)?"daily":(typeof DRILL!=="undefined"&&DRILL.on)?"drill":SPLIT.on?"split":NET.mode==="host"?"net":(typeof PP!=="undefined"&&PP.last==="quick")?"quick":"match", skill:GAME.skill|0};
   /* זמן מחזור (איסוף → ירי) — כדי לראות שיפור לאורך העונה */
   { const cyc=(DEB.cyc||[]).filter(v=>v>0.35&&v<45); if(cyc.length){ m.cycles=cyc.length; m.avgCycle=+(cyc.reduce((x,y)=>x+y,0)/cyc.length).toFixed(2); } }
   /* v68: לאן הלך הזמן במאץ׳ — לסטטיסטיקות ולמאמן */
@@ -13019,7 +13053,7 @@ function seasonEnd(){
   memLearn(m);
   try{ vrecMatchEnd(); }catch(e){}
   if(APP.on){ try{ bbApp.matchAdd(m).then(()=>Promise.all([appLoadMatches(),appLoadTeam()])).then(()=>{ try{ statUI(); }catch(e){} }); }catch(e){} }
-  seasonUI(); try{ statUI(); }catch(e){} return m;
+  seasonUI(); try{ statUI(); }catch(e){} try{ if(typeof achCheck==="function") achCheck(); }catch(e){} /* v70 */ return m;
 }
 function seasonStats(list){
   const n=list.length; if(!n) return null;
@@ -13584,7 +13618,7 @@ async function optRun(o){
     GEN.res.unshift({opt:true, seq:b.seq, name:"🔍 משופר: "+b.name, pts:b.pts.map(p=>Object.assign({},p)),
       total:Math.round(b.ev.total), hits:Math.round(b.ev.hits), shots:Math.round(b.ev.shots), park:b.ev.park, leave:b.ev.leave, tip:0, base:b.genTotal!=null?b.genTotal:b.start.total, fixed:shoot,
       slack:b.ev.slack, baseSlack:b.start.slack});
-    GEN.done=true; }
+    GEN.done=true; try{ if(typeof achFlag==="function") achFlag("planner"); }catch(e){} /* v70 */ }
   OPT.running=false; OPT.msg=GEN.stop?"נעצר — מה שנמצא עד עכשיו בראש הרשימה":"הסתיים"; GEN.stop=false;
   optUI(1); genUI(1);
   return GEN.res[0];
@@ -13793,7 +13827,7 @@ function ppRefresh(){
     if(ended){ const mine=my==="red"?R:B, opp=my==="red"?B:R;
       /* כרטיס סוף מאץ׳: מאיפה הגיעו הנקודות, דיוק, קצב, ומול השיא */
       const all=seasonAll(), m=all[all.length-1];
-      if(m&&m.kind==="drill") h+=r("תרגיל",mine+" נק׳","hl");
+      if(m&&(m.kind==="drill"||m.kind==="daily")) h+=r(m.kind==="daily"?"אתגר יומי":"תרגיל",mine+" נק׳","hl");
       else h+=r("תוצאה",mine>opp?"ניצחון! 🏆":mine<opp?"הפסד":"תיקו",mine>opp?"ok":mine<opp?"bad":"");
       if(m&&Date.now()-m.at<10*60e3){
         const p=m.pts||{}, parts=[["היפוכים",p.tip],["בתא",p.cell],["פרחים",p.flower],["גינה",p.garden],["יציאה",p.leave],["חניה",p.park]].filter(x=>x[1]>0);
@@ -14159,7 +14193,7 @@ function bkWire(){
 /* ══════ v52 — סטטיסטיקות מכל המשחקים ══════
    מאותם רשומות של העונה (bbSeason1). מחושב כאן, בלי שרת. */
 const STAT={filt:"all"};
-const STKIND={match:"מול בוטים",quick:"מאץ׳ מהיר",split:"מסך מפוצל",net:"ברשת",drill:"תרגיל"};
+const STKIND={match:"מול בוטים",quick:"מאץ׳ מהיר",split:"מסך מפוצל",net:"ברשת",drill:"תרגיל",daily:"אתגר יומי"};
 function statList(){
   /* באפליקציה — כל המשחקים אי פעם, מהארכיון בדיסק */
   let l=(APP.on&&Array.isArray(APP.all))?APP.all.slice():seasonAll();
@@ -14211,6 +14245,7 @@ function statChart(l){
 }
 function statUI(){
   const o=$("stOut"); if(!o) return;
+  try{ if(typeof achUI==="function") achUI(); }catch(e){} /* v70 */
   document.querySelectorAll("[data-stf]").forEach(b=>b.classList.toggle("on",b.dataset.stf===STAT.filt));
   const l=statList(), s=statCalc(l);
   if(!s){ o.innerHTML='<div class="stEmpty">'+((APP.on&&APP.all?APP.all.length:seasonAll().length)?"אין משחקים בטווח הזה.":"עוד אין משחקים.<br>כל מאץ׳ שמסתיים — מול בוטים, מהיר, במסך מפוצל או ברשת — נכנס לכאן לבד.")+'</div>'+appTeamHTML(); return; }
@@ -14584,6 +14619,7 @@ async function shellRender(){
       '<button data-hm="free"><i>🚗</i><b>נסיעה חופשית</b><span>לתרגל בלי שעון</span></button>'+
       '<button data-hm="practice"><i>🤖</i><b>תרגול מול בוטים</b><span>בלי שעון, בוחרים בוטים</span></button>'+
       '<button data-hm="lab"><i>🔧</i><b>מעבדה</b><span>רובוט, אוטונומי, ניתוח</span></button></div>';
+    try{ if(typeof dailyCardHTML==="function") h+='<div id="hmDaily" class="dlyHost">'+dailyCardHTML()+'</div>'; }catch(e){} /* v70 */
     if(st) h+='<div class="hmTiles">'+tile("משחקים",st.n)+tile("ניצחונות",pct(st.W/st.n),st.W+"-"+st.L+"-"+st.T)+tile("שיא",st.best.my,"ממוצע "+st.avg.toFixed(1))+'</div><p class="hmMore"><a href="#" data-hmgo="stats">לכל הסטטיסטיקות ›</a></p>';
     { const a=ACC.st||{}; h+='<p class="hmSync" id="hmSync"><span>'+(a.loggedIn?(a.lastError?"⚠ "+appEsc(a.lastError):"☁️ "+accAgo(a.lastSync))+(a.team?" · 👥 "+appEsc(a.team.name||"הקבוצה"):""):"💾 שמור רק במחשב הזה")+'</span> · <a href="#" data-hm="settings">חשבון וקבוצה ›</a></p>'; }
     h+='<div class="apCard"><h2>הקבוצה</h2>'+(appTeamHTML()||'<p class="apNote">עוד אין משחקים בקבוצה.</p>')+'</div>';
@@ -15108,16 +15144,19 @@ try{ DRILL.hist=JSON.parse(localStorage.getItem(DRILL.HKEY)||"{}")||{}; }catch(e
 function drillBestUI(){ const b=$("ppDrillBest"); if(!b) return; const B=DRILL.best;
   const parts=Object.keys(DRILL.N).filter(k=>B[k]!=null).map(k=>T(DRILL.N[k])+" "+B[k]+T(DRILL.U[k]));
   b.textContent=parts.length?T("שיאים:")+" "+parts.join(" · "):T("בכל תרגיל נשמר השיא שלך."); }
-function drillRecord(k,v,unit){ const prev=DRILL.best[k]; const lo=!!DRILL.lower[k]; const nb=prev==null||(lo?v<prev:v>prev);
+function drillRecord(k,v,unit){ if(typeof dailyCatch==="function"&&dailyCatch(k,v)) return; /* v70: אתגר יומי */
+  const prev=DRILL.best[k]; const lo=!!DRILL.lower[k]; const nb=prev==null||(lo?v<prev:v>prev);
   if(nb){ DRILL.best[k]=v; try{ localStorage.setItem(DRILL.KEY,JSON.stringify(DRILL.best)); }catch(e){} }
   { const h=DRILL.hist[k]||(DRILL.hist[k]=[]); h.push([Date.now(),v]); while(h.length>30) h.shift();
     try{ localStorage.setItem(DRILL.HKEY,JSON.stringify(DRILL.hist)); }catch(e){} }
   try{ planMark(k,v); }catch(e){}
-  const u=unit?T(unit):""; refToast("🎯 "+T(DRILL.N[k])+": "+v+u+(nb?" — "+T("🏅 שיא חדש!"):" · "+T("השיא")+" "+prev+u)); drillBestUI(); }
+  const u=unit?T(unit):""; refToast("🎯 "+T(DRILL.N[k])+": "+v+u+(nb?" — "+T("🏅 שיא חדש!"):" · "+T("השיא")+" "+prev+u)); drillBestUI();
+  try{ if(typeof achCheck==="function") achCheck(); }catch(e){} /* v70 */ }
 /* תרגילים בלי שעון מאץ׳: דיוק, דיוק מרחוק, חניה */
 function drillFree(){ PP.last="free"; if(MATCH.phase==="סיום") matchStop(); ACT.solo(); stageMatch(); homeRobot(); }
-function drillStart(k){
+function drillStart(k,ov){
   if(!DRILL.N[k]) return;
+  try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} /* v70: האתגר היומי מסמן את עצמו אחרי */
   if(MATCH.on||MATCH.cd>0){ if(!matchStopSafe()) return; }
   if(REPLAY.on) replayClose(); if(SPLIT.on) splitSet(false);
   DRILL.far=null; DRILL.cycles=0; DRILL.t0=null;
@@ -15134,7 +15173,7 @@ function drillStart(k){
     defense:{blue1:true,randRole:false,roles:["defend","score","score"]},
     pressure:{blue1:true,blue2:true,randRole:true},
     auto:{autoOn:true,auto:30,trans:0,tele:0}}[k]||{};
-  Object.assign(SETUP,base,X);
+  Object.assign(SETUP,base,X,(ov&&ov.setup)||{});
   PP.last="quick"; DRILL.on=k;
   try{ setupApply(); } finally { Object.assign(SETUP,JSON.parse(keep)); setupSave(); }
   if(k==="speed"){ bot.clip.length=0; syncClip(); updateHUD(); }
@@ -15144,7 +15183,7 @@ function drillStart(k){
     pressure:"🔥 60 שניות לבד מול שני יריבים", auto:"🤖 רק האוטונומי שלך — 30 שניות"}[k]); ppRefresh();
 }
 function drillEnd(){ const k=DRILL.on; if(!k||k==="acc"||k==="far"||k==="park") return; DRILL.on=null;
-  if(k==="speed"){ refToast("⏱ "+T("3 מחזורים על זמן")+": "+T("לא הושלם")+" ("+(DRILL.cycles|0)+"/3)"); return; }
+  if(k==="speed"){ if(typeof dailyCatch==="function"&&dailyCatch(k,null)) return; refToast("⏱ "+T("3 מחזורים על זמן")+": "+T("לא הושלם")+" ("+(DRILL.cycles|0)+"/3)"); return; }
   drillRecord(k,allianceScore(myAlly())|0," נק׳"); }
 /* נקרא מ-fire() — יריה של הרובוט שלי */
 function drillFire(rec){
@@ -15245,6 +15284,171 @@ function pracStart(){
   on($("pracBg"),pracClose);
 })();
 Object.assign(window.__sim||{},{PRAC,pracOpen,pracClose,pracStart,pracActive,pracBlocked,autoVSet,AUTOV,shotHud,autoVOn:()=>lock,ppLast:()=>PP.last});
+/* ══════ v70: 🗓 אתגר יומי + 🏅 הישגים ══════
+   אתגר יומי: אחד לכל יום בלוח השנה, זהה לכל המשתמשים — הכול נגזר מהתאריך (YYYYMMDD) עם מחולל אקראי קטן וזרע קבוע.
+   משתמש רק בתשעת התרגילים הקיימים (DRILL) ובמכניקה שלהם — בלי פיזיקה חדשה. מאץ׳ של תרגיל מקבל הגדרות נוספות
+   (צד, רמת בוטים, תקלות) דרך הפרמטר השני של drillStart. התוצאה נשמרת מקומית (bbDaily1) ולא נכנסת לשיא הרגיל של התרגיל
+   (התנאים שונים); מאץ׳ של אתגר נכנס לעונה כסוג ״daily״ ומסתנכרן בטבלת המשחקים הקיימת — בלי שינוי בשרת.
+   הישגים: ~16, מחושבים רק ממה שכבר נשמר (עונה, שיאי ותולדות תרגילים, תוכנית אימון, אתגר יומי). מה שנפתח נשמר עם התאריך (bbAch1). */
+const DAILY={KEY:"bbDaily1", on:null, ch:null, st:null, fake:null,
+  DRILLS:["cycle","end","acc","far","speed","park","defense","pressure","auto"],
+  IC:{cycle:"⏱",end:"🏁",acc:"🎯",far:"🏹",speed:"⚡",park:"🅿",defense:"🛡",pressure:"🔥",auto:"🤖"}};
+function dailyKey(d){ d=d||new Date(); return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); }
+function dailyToday(){ return DAILY.fake||dailyKey(); }
+/* מספר היום מאז 1.1.2000 — כדי לדעת מה ״אתמול״ גם במעבר חודש ושנה */
+function dailyDayNo(key){ const y=Math.floor(key/10000), m=Math.floor(key/100)%100, d=key%100; return Math.round((Date.UTC(y,m-1,d)-Date.UTC(2000,0,1))/864e5); }
+function dailyFromNo(n){ const t=new Date(Date.UTC(2000,0,1)+n*864e5); return t.getUTCFullYear()*10000+(t.getUTCMonth()+1)*100+t.getUTCDate(); }
+function dailyPrev(key){ return dailyFromNo(dailyDayNo(key)-1); }
+function dailyRng(seed){ let a=seed>>>0; return ()=>{ a=(a+0x6D2B79F5)>>>0; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }; }
+/* סדר התרגילים: בכל בלוק של תשעה ימים כל תרגיל פעם אחת, בסדר שנגזר מהבלוק — ולכן שני ימים רצופים אף פעם לא אותו תרגיל */
+function dailyPerm(block){ const r=dailyRng(Math.imul(block+1,2654435761)^9662), a=DAILY.DRILLS.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function dailyDrillOf(key){ const n=dailyDayNo(key), b=Math.floor(n/9), i=n-b*9, p=dailyPerm(b);
+  if(p[0]===dailyPerm(b-1)[8]) [p[0],p[1]]=[p[1],p[0]];
+  return p[i]; }
+function dailyFor(key){
+  key=key|0; const k=dailyDrillOf(key), r=dailyRng(Math.imul(key,2246822519)^0x9662);
+  const o={key, drill:k, lower:!!DRILL.lower[k], setup:{}, ally:null, skill:null, faults:null, target:0};
+  if(k==="cycle"||k==="end"||k==="speed"||k==="defense"||k==="pressure"||k==="auto"){ o.ally=r()<0.5?"red":"blue"; o.setup.ally=o.ally; }
+  if(k==="defense"||k==="pressure"){ o.skill=[0,1,1,2][Math.floor(r()*4)]; o.setup.skill=o.skill; }
+  if(k==="cycle"||k==="end"||k==="defense"){ o.faults=r()<0.35; o.setup.faults=o.faults; }
+  const s5=n=>5*Math.floor(r()*n);
+  o.target={cycle:()=>35+s5(6)-(o.faults?5:0), end:()=>15+s5(4), speed:()=>40+s5(5), park:()=>5+Math.floor(r()*4),
+    defense:()=>[40,32,25][o.skill]+s5(3)-(o.faults?5:0), pressure:()=>[30,22,15][o.skill]+s5(3), auto:()=>15+s5(5),
+    acc:()=>6+Math.floor(r()*4), far:()=>4+Math.floor(r()*4)}[k]();
+  return o; }
+function dailySig(c){ return [c.drill,c.ally,c.skill,c.faults,c.target].join("|"); }
+function dailyHit(c,v){ return v!=null&&(c.lower?v<=c.target:v>=c.target); }
+function dailyLoad(){ let o=null; try{ o=JSON.parse(localStorage.getItem(DAILY.KEY)||"null"); }catch(e){}
+  if(!o||typeof o!=="object"||!o.days||typeof o.days!=="object") o={days:{}, bestStreak:0, hits:0};
+  o.bestStreak=o.bestStreak|0; o.hits=o.hits|0; DAILY.st=o; return o; }
+function dailySave(){ try{ localStorage.setItem(DAILY.KEY,JSON.stringify(DAILY.st)); }catch(e){} }
+/* רצף: ימים רצופים עם ניסיון, שנגמרים היום — או אתמול (היום עוד לא נגמר, הרצף עדיין חי) */
+function dailyStreak(days,today){ days=days||{}; let k=today, c=0;
+  if(!(days[k]&&days[k].n>0)) k=dailyPrev(k);
+  while(days[k]&&days[k].n>0){ c++; k=dailyPrev(k); }
+  return c; }
+function dailyResult(key,v,c){ const st=DAILY.st||dailyLoad(); c=c||dailyFor(key);
+  const d=st.days[key]||(st.days[key]={n:0,best:null,hit:false});
+  d.n++; d.at=Date.now(); let nb=false;
+  if(v!=null&&isFinite(v)){ nb=d.best==null||(c.lower?v<d.best:v>d.best); if(nb) d.best=v; }
+  const hit=dailyHit(c,v); if(hit&&!d.hit){ d.hit=true; st.hits++; }
+  /* שומרים רק 120 ימים אחרונים; הרצף הכי ארוך נשמר לחוד */
+  const ks=Object.keys(st.days).map(Number).sort((a,b)=>a-b); while(ks.length>120) delete st.days[ks.shift()];
+  st.bestStreak=Math.max(st.bestStreak|0,dailyStreak(st.days,Math.max(key,dailyToday())),dailyStreak(st.days,key));
+  dailySave(); return {d,nb,hit}; }
+function dailyUnit(k){ return T(DRILL.U[k]||""); }
+function dailyTags(c){ const t=[];
+  if(c.ally) t.push(T(c.ally==="red"?"ברית אדומה":"ברית כחולה"));
+  if(c.skill!=null) t.push(T(c.drill==="defense"?"בולם ברמה":"יריבים ברמה")+" "+T(SKILL[c.skill].name));
+  if(c.faults!=null) t.push(T(c.faults?"עם תקלות":"בלי תקלות"));
+  return t; }
+function dailyTargetTxt(c){ return (c.lower?T("לכל היותר")+" ":"")+c.target+dailyUnit(c.drill); }
+function dailyCardHTML(){
+  const st=DAILY.st||dailyLoad(), key=dailyToday(), c=dailyFor(key), d=st.days[key], u=dailyUnit(c.drill);
+  const sk=dailyStreak(st.days,key), E=x=>appEsc(String(x));
+  const best=d&&d.best!=null?d.best+u+(d.hit?" ✓":""):d&&d.n?T("לא הושלם"):"—";
+  const dd=(key%100)+"."+(Math.floor(key/100)%100);
+  return '<div class="dlyCard'+(d&&d.hit?' hit':'')+'" data-daily-key="'+key+'">'+
+    '<div class="dlyTop"><b>🗓 '+E(T("אתגר יומי"))+'</b><span>'+E(dd)+'</span></div>'+
+    '<div class="dlyWhat"><i>'+DAILY.IC[c.drill]+'</i><b>'+E(T(DRILL.N[c.drill]))+'</b></div>'+
+    (dailyTags(c).length?'<div class="dlyTags">'+dailyTags(c).map(x=>'<span>'+E(x)+'</span>').join("")+'</div>':'')+
+    '<div class="dlyStats"><div><span>'+E(T("היעד"))+'</span><b>'+E(dailyTargetTxt(c))+'</b></div>'+
+    '<div><span>'+E(T("הכי טוב היום"))+'</span><b class="dlyBest">'+E(best)+'</b></div>'+
+    '<div><span>'+E(T("רצף"))+'</span><b class="dlyStreak">'+sk+(sk?" 🔥":"")+'</b></div></div>'+
+    '<button class="dlyGo" data-daily-go="1">▶ '+E(T(d&&d.n?"עוד ניסיון":"התחל את האתגר"))+'</button>'+
+    '<p class="dlyNote">'+E(T("אותו אתגר לכל הנהגים היום. רצף — ימים רצופים עם ניסיון."))+'</p></div>'; }
+function dailyUI(){ DAILY._k=dailyToday();
+  const p=$("ppDaily"); if(p) p.innerHTML=dailyCardHTML();
+  const h=$("hmDaily"); if(h) h.innerHTML=dailyCardHTML(); }
+function dailyStart(){
+  const c=dailyFor(dailyToday());
+  drillStart(c.drill,{setup:c.setup});
+  if(DRILL.on!==c.drill) return false;
+  DAILY.on=c.key; DAILY.ch=c;
+  refToast("🗓 "+T("אתגר יומי")+": "+T(DRILL.N[c.drill])+" · "+T("היעד")+" "+dailyTargetTxt(c),"ok");
+  return true; }
+/* נקרא מ-drillRecord (ומסוף ״3 מחזורים״ שלא הושלם): אם זה האתגר — נרשם כאן, לא בשיא הרגיל */
+function dailyCatch(k,v){
+  if(!DAILY.on||!DAILY.ch||DAILY.ch.drill!==k) return false;
+  const c=DAILY.ch, key=DAILY.on; DAILY.on=null;
+  const r=dailyResult(key,v,c), u=dailyUnit(k);
+  refToast("🗓 "+T("אתגר יומי")+": "+(v==null?T("לא הושלם"):v+u+(r.hit?" — "+T("✓ עמדת ביעד!"):" · "+T("היעד")+" "+dailyTargetTxt(c))),r.hit?"ok":"");
+  dailyUI(); try{ achCheck(); }catch(e){}
+  return true; }
+setInterval(()=>{ if(DAILY.on&&!DRILL.on) DAILY.on=null; if(DAILY._k&&DAILY._k!==dailyToday()) dailyUI(); },500);
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-daily-go]"); if(!b) return; e.preventDefault();
+  if(typeof goPlay==="function") goPlay(); dailyStart(); });
+
+/* ── 🏅 הישגים ── */
+const ACH={KEY:"bbAch1", st:null, q:[], log:[], busy:false};
+const ACH_DEFS=[
+  {id:"win1",    i:"🏆", n:"ניצחון ראשון",       h:"לנצח במאץ׳ (לא בתרגיל)",                          f:D=>[D.wins,1]},
+  {id:"win10",   i:"🥇", n:"עשרה ניצחונות",      h:"לנצח בעשרה משחקים",                              f:D=>[D.wins,10]},
+  {id:"games25", i:"🎮", n:"עונה מלאה",          h:"לסיים 25 משחקים",                                f:D=>[D.games.length,25]},
+  {id:"acc10",   i:"🎯", n:"קליעה מושלמת",       h:"10 מתוך 10 בתרגיל הדיוק",                        f:D=>[D.best.acc|0,10]},
+  {id:"far7",    i:"🏹", n:"צלף",                h:"7 מתוך 10 בתרגיל הדיוק מרחוק",                   f:D=>[D.best.far|0,7]},
+  {id:"clean5",  i:"🧼", n:"משחק נקי",           h:"5 משחקים ברצף בלי עבירות",                       f:D=>[D.cleanRun,5]},
+  {id:"cycle7",  i:"⚡", n:"מחזור מהיר",         h:"זמן מחזור ממוצע מתחת ל-7 שנ׳ במאץ׳ (3 מחזורים לפחות)", f:D=>[D.fastCycle?1:0,1]},
+  {id:"park10",  i:"🅿", n:"חונה קבוע",          h:"לחנות בסוף 10 משחקים ברצף",                      f:D=>[D.parkRun,10]},
+  {id:"auto30",  i:"🤖", n:"אוטונומי חזק",       h:"30 נקודות ומעלה באוטונומי",                      f:D=>[D.autoBest,30]},
+  {id:"beat",    i:"📈", n:"שובר שיאים",         h:"לשבור שיא קודם — במאץ׳ או בתרגיל",               f:D=>[D.beat?1:0,1]},
+  {id:"drills9", i:"🧭", n:"כל התרגילים",        h:"לנסות את כל תשעת התרגילים",                      f:D=>[D.drillsTried,9]},
+  {id:"daily1",  i:"🗓", n:"אתגר ראשון",         h:"לעמוד ביעד של אתגר יומי",                        f:D=>[D.dailyHits,1]},
+  {id:"streak3", i:"🔥", n:"שלושה ימים ברצף",    h:"אתגר יומי שלושה ימים ברצף",                      f:D=>[D.streak,3]},
+  {id:"streak7", i:"🌟", n:"שבוע שלם",           h:"אתגר יומי שבעה ימים ברצף",                       f:D=>[D.streak,7]},
+  {id:"plan",    i:"📅", n:"תוכנית שלמה",        h:"לסמן את כל הימים בתוכנית אימון",                 f:D=>[D.planDone,D.planTotal||5]},
+  {id:"planner", i:"🔍", n:"מתכנן",              h:"להריץ את המתכנן האוטונומי עד הסוף",              f:D=>[D.planner?1:0,1]}];
+function achLoad(){ let o=null; try{ o=JSON.parse(localStorage.getItem(ACH.KEY)||"null"); }catch(e){}
+  if(!o||typeof o!=="object") o={}; if(!o.un||typeof o.un!=="object") o.un={}; if(!o.flags||typeof o.flags!=="object") o.flags={};
+  o.planMax=o.planMax|0; ACH.st=o; return o; }
+function achSave(){ try{ localStorage.setItem(ACH.KEY,JSON.stringify(ACH.st)); }catch(e){} }
+function achFlag(k){ const s=ACH.st||achLoad(); if(!s.flags[k]){ s.flags[k]=Date.now(); achSave(); } achCheck(); }
+/* הנתונים לחישוב — טהור מבחינת הקלט: אפשר לתת לו עונה סינתטית בבדיקה */
+function achData(o){ o=o||{};
+  const all=(o.all||[]).filter(m=>m&&typeof m==="object").slice().sort((a,b)=>(a.at||0)-(b.at||0));
+  const games=all.filter(m=>m.kind!=="drill"&&m.kind!=="daily");
+  const run=(l,p)=>{ let c=0,b=0; for(const m of l){ if(p(m)){ c++; if(c>b) b=c; } else c=0; } return b; };
+  let beat=false, mx=null; for(const m of games){ if(mx!=null&&(+m.my||0)>mx) beat=true; mx=Math.max(mx==null?-1e9:mx,+m.my||0); }
+  const best=o.best||{}, hist=o.hist||{}, lower=o.lower||{};
+  for(const k in hist){ const h=hist[k]; if(!Array.isArray(h)) continue; let b=null;
+    for(const e of h){ const v=Array.isArray(e)?+e[1]:NaN; if(!isFinite(v)) continue; if(b!=null&&(lower[k]?v<b:v>b)) beat=true; b=b==null?v:(lower[k]?Math.min(b,v):Math.max(b,v)); } }
+  const auto=all.map(m=>+m.autoPts).filter(isFinite);
+  return {all, games, wins:games.filter(m=>m.win>0).length, best,
+    cleanRun:run(games,m=>(m.fouls|0)===0), parkRun:run(games,m=>!!(m.pts&&m.pts.park>0)),
+    fastCycle:all.some(m=>m.avgCycle>0&&m.avgCycle<7&&(m.cycles|0)>=3),
+    autoBest:Math.max(0,best.auto|0,...auto), beat,
+    drillsTried:DAILY.DRILLS.filter(k=>best[k]!=null||(Array.isArray(hist[k])&&hist[k].length)).length,
+    dailyHits:o.dailyHits|0, streak:o.streak|0, planDone:o.planDone|0, planTotal:o.planTotal|0, planner:!!o.planner}; }
+function achEval(D){ return ACH_DEFS.map(a=>{ const [v,max]=a.f(D); const m=Math.max(1,max|0); return {id:a.id,i:a.i,n:a.n,h:a.h,v:Math.min(m,Math.max(0,Math.floor(+v||0))),max:m,ok:(+v||0)>=m}; }); }
+function achLive(){ const s=ACH.st||achLoad(), st=DAILY.st||dailyLoad();
+  let pd=0,pt=0; try{ const p=planGet(); if(p){ pt=p.items.length; pd=p.st.done.filter(Boolean).length; } }catch(e){}
+  if(pt&&pd>=pt) s.planMax=Math.max(s.planMax|0,pt);
+  const all=(APP.on&&Array.isArray(APP.all)&&APP.all.length)?APP.all:seasonAll();
+  return achData({all, best:DRILL.best, hist:DRILL.hist, lower:DRILL.lower, dailyHits:st.hits,
+    streak:Math.max(st.bestStreak|0,dailyStreak(st.days,dailyToday())), planDone:Math.max(pd,s.planMax|0), planTotal:Math.max(pt,s.planMax|0)||5, planner:!!s.flags.planner}); }
+/* בודק מה נפתח עכשיו. silent — בטעינה: נועלים מה שכבר הושג, בלי הודעות */
+function achCheck(silent,D){ const s=ACH.st||achLoad(); const L=achEval(D||achLive()), now=Date.now(), fresh=[];
+  for(const a of L) if(a.ok&&!s.un[a.id]){ s.un[a.id]=now; fresh.push(a); }
+  if(fresh.length){ achSave(); if(!silent) for(const a of fresh){ ACH.log.push(a.id); ACH.q.push(a); } achPump(); }
+  try{ achUI(); }catch(e){}
+  return fresh.map(a=>a.id); }
+function achToastEl(){ let el=$("achToast"); if(!el){ el=document.createElement("div"); el.id="achToast"; el.setAttribute("role","status"); document.body.appendChild(el); } return el; }
+function achPump(){ if(ACH.busy||!ACH.q.length) return; const a=ACH.q.shift(); ACH.busy=true;
+  const el=achToastEl(); el.innerHTML='<i>'+a.i+'</i><div><small>'+appEsc(T("🏅 הישג חדש"))+'</small><b>'+appEsc(T(a.n))+'</b></div>'; el.className="show";
+  setTimeout(()=>{ el.className=""; setTimeout(()=>{ ACH.busy=false; achPump(); },350); },3600); }
+function achDate(t){ const d=new Date(t); return d.getDate()+"."+(d.getMonth()+1)+"."+d.getFullYear(); }
+function achUI(){ const box=$("achBox"); if(!box) return; const s=ACH.st||achLoad(); const L=achEval(achLive());
+  const n=L.filter(a=>s.un[a.id]).length, E=x=>appEsc(String(x));
+  box.innerHTML='<div class="stH">🏅 '+E(T("הישגים"))+' <span class="achN">'+n+'/'+L.length+'</span></div><div class="achGrid">'+
+    L.map(a=>{ const at=s.un[a.id], v=at?a.max:a.v;
+      return '<div class="achC'+(at?' on':'')+'" data-ach="'+a.id+'"><i>'+a.i+'</i><div><b>'+E(T(a.n))+'</b><span>'+E(T(a.h))+'</span>'+
+        '<div class="achBar"><em style="width:'+Math.round(100*v/a.max)+'%"></em></div>'+
+        '<small>'+(at?'✓ '+E(achDate(at)):v+'/'+a.max)+'</small></div></div>'; }).join("")+'</div>'; }
+setTimeout(()=>{ try{ dailyLoad(); achLoad(); achCheck(true); dailyUI(); }catch(e){} },0);
+{ const X={DAILY,ACH,ACH_DEFS,dailyKey,dailyFor,dailySig,dailyDrillOf,dailyStreak,dailyResult,dailyLoad,dailyStart,dailyCatch,dailyUI,dailyCardHTML,dailyPrev,
+    achData,achEval,achCheck,achUI,achLoad,achLive,achFlag, tEndNow:()=>tEnd(), dailyFaultOn:()=>FAULT.on, statUI:()=>statUI()};
+  if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 /* ״לא מגיע לפתח״ וכדומה — רק אחרי שהתחילו לנהוג/לירות, לא כקבלת פנים */
 document.body.classList.add("fresh");
 { const unfresh=()=>{ document.body.classList.remove("fresh"); removeEventListener("keydown",unfresh,true); };
@@ -15531,7 +15735,7 @@ function planMark(k,v){ const p=planGet(); if(!p) return false;
   const n=p.st.done.filter(Boolean).length;
   refToast("📅 "+T("תוכנית האימון")+": "+n+"/"+p.items.length+" ✓"); try{ coachBarUI(); }catch(e){} return true; }
 function planToggle(i){ const p=planGet(); if(!p||i<0||i>=p.items.length) return;
-  p.st.done[i]=p.st.done[i]?null:{t:Date.now(),v:null}; planSave(p.st); }
+  p.st.done[i]=p.st.done[i]?null:{t:Date.now(),v:null}; planSave(p.st); try{ if(typeof achCheck==="function") achCheck(); }catch(e){} /* v70 */ }
 function planHTML(){ const p=planGet(); if(!p) return "";
   const S=x=>appEsc(String(x==null?"":x)), n=p.st.done.filter(Boolean).length;
   let h='<div class="coH">📅 תוכנית אימון <span class="note">'+n+'/'+p.items.length+'</span></div><div class="coPlan">';
@@ -15603,7 +15807,7 @@ function coachShow(r){
 function missionsLast(){ try{ return JSON.parse(localStorage.getItem("bbMissions1")||"null"); }catch(e){ return null; } }
 function missionsBuild(){
   const all=(APP.on&&Array.isArray(APP.all))?APP.all.slice():seasonAll();
-  const l=all.filter(m=>m.kind!=="drill").slice(-20), n=l.length;
+  const l=all.filter(m=>m.kind!=="drill"&&m.kind!=="daily").slice(-20), n=l.length;
   const avg=(k,a)=>{ const v=(a||l).filter(m=>isFinite(+m[k])&&m[k]!=null); return v.length?v.reduce((x,m)=>x+(+m[k]),0)/v.length:null; };
   const acc=coachAcc(l), cyc=avg("avgCycle"), bins=coachBins(l), fouls=avg("fouls"), autoPts=avg("autoPts");
   const parkPts=(()=>{ const v=l.filter(m=>m.pts&&isFinite(m.pts.park)); return v.length?v.reduce((x,m)=>x+m.pts.park,0)/v.length:null; })();
