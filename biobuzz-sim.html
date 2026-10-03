@@ -1763,6 +1763,20 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   <p class="note pracWarn" id="pracWarn" hidden>בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.</p>
   <div class="row skAct"><button data-pact="stop" id="pracStop" hidden>⏹ עצור תרגול</button><span class="pracSp"></span><button data-pact="close">ביטול</button><button data-pact="go" class="primary" id="pracGo">▶ התחל תרגול</button></div>
 </div></div>
+<!-- v70: לוח אסטרטגיה -->
+<div id="brdBox" hidden role="dialog" aria-modal="true" aria-labelledby="brdTtl"><div id="brdBg"></div><div class="skWin brdWin">
+  <div class="coachTop"><b id="brdTtl">📋 לוח אסטרטגיה</b><button data-brd="close" aria-label="סגור">✕</button></div>
+  <p class="note skNote" id="brdNet" hidden></p>
+  <div class="brdBar">
+    <div class="seg" role="group" aria-label="כלי ציור"><button data-brdt="move">✋ הזזה</button><button data-brdt="arrow">➜ חץ</button><button data-brdt="pen">✎ עט</button><button data-brdt="erase">⌫ מחק קו</button></div>
+    <div class="seg brdCol" role="group" aria-label="צבע הקו"><button data-brdc="0">אדום</button><button data-brdc="1">כחול</button></div>
+    <button data-brd="undo" title="ביטול הפעולה האחרונה (Ctrl+Z)">↶ בטל</button><button data-brd="clear">נקה קווים</button><button data-brd="reset">↺ רובוטים למקום</button>
+  </div>
+  <canvas id="brdCv" aria-label="הזירה מלמעלה — גוררים רובוטים ומציירים חצים"></canvas>
+  <p class="note skNote" id="brdMsg" aria-live="polite">בכלי ״הזזה״ גוררים רובוטים. מציירים חצים שיוצאים מהרובוט שלי — ״העבר לעורך״ הופך אותם למסלול אוטונומי.</p>
+  <div class="row brdLib"><input id="brdName" maxlength="30" placeholder="שם ללוח" aria-label="שם ללוח"><button data-brd="save">💾 שמור</button><select id="brdSel" aria-label="לוחות שמורים"></select><button data-brd="load">טען</button><button data-brd="del">מחק</button></div>
+  <div class="row skAct"><span class="pracSp"></span><button data-brd="close">סגור</button><button data-brd="editor" class="primary" title="החצים שיוצאים מהרובוט שלי הופכים למסלול אוטונומי בעורך">✏ העבר לעורך</button></div>
+</div></div>
 <div id="bldBox" hidden role="dialog" aria-label="בונה רובוטים"><div id="bldBg"></div><div class="skWin bldWin">
   <div class="coachTop"><b>🛠 בונה רובוטים</b><button data-bact="close" aria-label="סגור">✕</button></div>
   <p class="note skNote">בונים רובוט ממערכות — הנעה, איסוף, ירי, צריח ומעלית לפרח — ובוחרים לכל רובוט בזירה, גם לכל בוט, באיזו בנייה הוא משחק. הבדיקה לפי חוקי המדריך: 8 מנועים, 8 סרוו, 18 אינץ׳, 4 כדורים.</p>
@@ -2030,6 +2044,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <button class="ppCard" id="ppQuick"><i>⚡</i><div><b>מאץ׳ מהיר</b><span>מתחיל מיד, עם ההגדרות האחרונות</span></div></button>
         <button class="ppCard" id="ppFree"><i>🚗</i><div><b>נסיעה חופשית</b><span>לתרגל נהיגה וירי, בלי שעון ובלי יריבים</span></div></button>
         <button class="ppCard" id="ppPractice" aria-haspopup="dialog"><i>🤖</i><div><b>תרגול מול בוטים</b><span>בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה</span></div></button>
+        <button class="ppCard" id="ppBoard" aria-haspopup="dialog"><i>📋</i><div><b>לוח אסטרטגיה</b><span>מתכננים על הזירה מלמעלה — חצים ורובוטים, גם עם החברים ברשת</span></div></button>
         <button class="ppCard" id="ppFriendsBtn"><i>👥</i><div><b>עם חברים</b><span>מסך מפוצל, רשת מקומית או טלפון עם קוד QR</span></div></button>
         <button class="ppCard" id="ppDrillBtn"><i>🎯</i><div><b>תרגילים</b><span>תשעה תרגילים — מחזורים, דיוק, חניה, מול בולם ועוד — עם שיא אישי</span></div></button>
         <div id="ppDrills" hidden><div class="ppDrillGrid"><button data-drill="cycle">⏱ מחזורים · 60 שנ׳</button><button data-drill="end">🏁 סוף משחק · 30 שנ׳</button><button data-drill="acc">🎯 דיוק · 10 יריות</button>
@@ -2617,6 +2632,23 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
 <script type="application/json" id="i18nX_core" data-i18n>{"כיוון הזירה": "Field orientation", "0° (ברירת מחדל)": "0° (default)", "כיוון הזירה בקוד שלכם: סיבוב של הצירים סביב מרכז הזירה. פנייה שמאלה נשארת פנייה שמאלה בכל בחירה. אותו כיוון משמש גם ביומן מהרובוט וברובוט החי, והמיפוי המדויק כתוב בראש הקוד.": "Field orientation in your code: a rotation of the axes about the field centre. A left turn stays a left turn with every choice. The same orientation is used for the robot log and the live robot, and the exact mapping is written at the top of the code.", "המאץ׳ נגמר — סגרו את ההודעה כדי לנהוג": "The match is over — close the message to drive", "תקלות אקראיות גם לבוטים ולנהגים האחרים": "Random faults for the bots and other drivers too", " · תקלה: ": " · fault: "}</script>
 <script type="application/json" id="i18nX_ui" data-i18n>{"לא הועתק": "Not copied","ההעתקה נכשלה — מסמנים את הטקסט ומעתיקים ידנית (Ctrl+C)": "Copy failed — select the text and copy it yourself (Ctrl+C)","שאלו משהו… (Enter לשלוח)": "Ask anything… (Enter to send)","הנהג שלך": "Your driver","— ירי": "— fire","מקבלים מפתח חינמי ב-": "Get a free key at",", ומדביקים כאן. המפתח נשמר": ", then paste it here. The key is stored",": לא עובר בסנכרון, לא נכנס לגיבוי ולא לדיווח באג. ״בדוק״ מושך מגוגל את רשימת המודלים, מנסה כל אחד בבקשה קטנה ובוחר לבד: מהיר לעוזר, חזק למאמן.": ": it is never synced and never goes into a backup or a bug report. “Check” gets the model list from Google, tries each model with a small request and picks on its own: a fast one for the helper, a strong one for the coach.","F11 מסך מלא · Ctrl+1–6 מעבר בין הדפים · H מסך נקי.": "F11 full screen · Ctrl+1–6 switch pages · H clean screen.","🧠 למאמן:": "🧠 coach:","מסך מלא (F11)": "Full screen (F11)","גלגלים": "wheels","גלגלים גמישים": "flex wheels","שלי": "mine","· סיבוב": "· Turn","· ירי": "· Shoot","· איסוף": "· Intake","· סיוע כיוון": "· Aim assist","· עמדת פתיחה": "· Starting position","· היפוך": "· Flip","· אוטונומי": "· Autonomous","· דיוק": "· Precision","· ✨ לעמדה": "· ✨ To position","· ✨ לפרח": "· ✨ To flower","· ✨ ירי אוטו׳": "· ✨ Auto shot","· ✨ חניה": "· ✨ Park","תרגול מול בוטים": "Practice vs. bots","🤖 תרגול מול בוטים": "🤖 Practice vs. bots","בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה": "Pick opponents and a partner — no clock, nothing counts for the season","הרובוט בוחר לבד את מהירות גלגל התנופה לפי המרחק לפתח הכוורת": "The robot picks the flywheel speed by itself from the distance to the hive opening","מהירות ירי אוטומטית לפי המרחק": "Automatic shot speed by distance","מהירות ירי אוטומטית": "Automatic shot speed","מהירות ידנית": "Manual speed","מהירות ירי ידנית": "Manual shot speed","הגדרות התרגול — אילו בוטים ובאיזה תפקיד, או לעצור": "Practice settings — which bots and in which role, or stop","⚙ בוטים": "⚙ Bots","הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.": "The robot computes the flywheel speed that puts the ball into the opening from where it stands — like a real robot that measures distance. Off — the speed stays fixed, and you change it in the Play panel or in the Lab.","בלי שעון, ושום דבר לא נשמר לעונה או לשיאים. בוחרים מי בזירה ומה הוא עושה.": "No clock, and nothing is saved to the season or to records. Choose who is on the field and what they do.","רמת הבוטים": "Bot level","שופט — קורא הצמדה, אגירה ומגע גם בתרגול": "Referee — calls pinning, hoarding and contact in practice too","בחרו לפחות בוט אחד — בלי בוטים זו נסיעה חופשית.": "Pick at least one bot — without bots it's free drive.","⏹ עצור תרגול": "⏹ Stop practice","▶ התחל תרגול": "▶ Start practice","↻ התחל מחדש": "↻ Restart","יריב 1": "Opponent 1","יריב 2": "Opponent 2","תפקיד": "Role","ברשת הבוטים ממלאים רק עמדות פנויות — תרגול מול בוטים רק כשמשחקים לבד": "On the network bots only fill empty seats — practice vs. bots is only for playing alone","במסך מפוצל אין תרגול מול בוטים — סוגרים את המסך המפוצל ומנסים שוב": "No practice vs. bots in split screen — close split screen and try again","שלט או טלפון של חבר נוהג באחת העמדות — תרגול מול בוטים רק כשמשחקים לבד": "A friend's gamepad or phone is driving one of the seats — practice vs. bots is only for playing alone","🤖 תרגול מול בוטים — בלי שעון. ״⚙ בוטים״ למעלה משנה או עוצר": "🤖 Practice vs. bots — no clock. “⚙ Bots” at the top changes or stops it","תרגול מול בוטים — בלי שעון": "Practice vs. bots — no clock","בלי שעון · לא נשמר לעונה": "No clock · not saved to the season","בלי שעון, בוחרים בוטים": "No clock, pick the bots","מרחק": "Distance","לא מגיע לפתח מכאן": "Can't reach the opening from here","רחוק מדי — התקרבו": "Too far — move closer","בוטים": "Bots","תרגול": "Practice","הגדרות התרגול": "Practice settings"}</script>
+<script type="application/json" id="i18nX_v70board" data-i18n>{"📋 לוח אסטרטגיה": "📋 Strategy board", "לוח אסטרטגיה": "Strategy board", "סגור": "Close", "כלי ציור": "Drawing tool", "➜ חץ": "➜ Arrow", "✎ עט": "✎ Pen", "⌫ מחק קו": "⌫ Erase line", "צבע הקו": "Line color", "אדום": "Red", "כחול": "Blue", "ביטול הפעולה האחרונה (Ctrl+Z)": "Undo the last action (Ctrl+Z)", "↶ בטל": "↶ Undo", "נקה קווים": "Clear lines", "↺ רובוטים למקום": "↺ Robots to start", "הזירה מלמעלה — גוררים רובוטים ומציירים חצים": "The field from above — drag robots and draw arrows", "בכלי ״הזזה״ גוררים רובוטים. מציירים חצים שיוצאים מהרובוט שלי — ״העבר לעורך״ הופך אותם למסלול אוטונומי.": "With the “Move” tool you drag robots. Draw arrows that leave my robot — “Send to editor” turns them into an autonomous path.", "✋ הזזה": "✋ Move", "שם ללוח": "Board name", "💾 שמור": "💾 Save", "לוחות שמורים": "Saved boards", "טען": "Load", "מחק": "Delete", "החצים שיוצאים מהרובוט שלי הופכים למסלול אוטונומי בעורך": "The arrows that leave my robot become an autonomous path in the editor", "✏ העבר לעורך": "✏ Send to editor", "מתכננים על הזירה מלמעלה — חצים ורובוטים, גם עם החברים ברשת": "Plan on the field from above — arrows and robots, with friends on the network too", "תוכנית על הזירה": "A plan on the field", "לוח אסטרטגיה — לתכנן על הזירה מלמעלה": "Strategy board — plan on the field from above", "אני": "Me", "שותף": "Partner", "יריב 1": "Opponent 1", "יריב 2": "Opponent 2", "קהל": "Audience", "אפשר עד": "Up to", "קווים בלוח — מוחקים כמה": "lines on a board — erase some", "צריך שם ללוח": "The board needs a name", "הלוח גדול מדי לשמירה — מוחקים כמה קווים": "The board is too big to save — erase some lines", "אפשר לשמור עד": "You can save up to", "לוחות — מוחקים אחד קודם": "boards — delete one first", "נשמר בשם": "Saved as", "הדפדפן לא מאפשר לשמור כאן": "The browser doesn't allow saving here", "אין לוח בשם הזה": "No board with that name", "נטען": "Loaded", "נשלח לכל מי שבחדר": "sent to everyone in the room", "נמחק": "Deleted", "אין לוחות שמורים": "No saved boards", "אין חץ שיוצא מהרובוט שלי — מציירים חץ שמתחיל ברובוט ״אני״": "No arrow leaves my robot — draw an arrow that starts at the “Me” robot", "הועבר מלוח האסטרטגיה": "Sent from the strategy board", "נקודות": "points", "הוזזו מתוך מבנה": "moved out of a structure", "דולגו": "skipped", "🌐 מארחים חדר — כל שינוי בלוח עובר לכל מי שבחדר": "🌐 Hosting a room — every change to the board goes to everyone in the room", "🌐 מחוברים לחדר — הלוח משותף עם כולם": "🌐 Connected to a room — the board is shared with everyone", "אין מה לבטל": "Nothing to undo", "הקווים נמחקו — ״בטל״ מחזיר": "Lines cleared — “Undo” brings them back"}</script>
+<style id="css_v70board">
+  /* v70 — לוח אסטרטגיה */
+  #brdBox{position:fixed; inset:0; z-index:95} #brdBox[hidden]{display:none}
+  #brdBg{position:absolute; inset:0; background:rgba(5,7,10,.45)}
+  .brdWin{width:min(720px,calc(100vw - 32px)); max-height:calc(100vh - 32px)}
+  .brdBar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 16px 0}
+  .brdBar .seg{flex:0 0 auto} .brdBar .seg button{flex:0 0 auto; padding:7px 10px}
+  .brdBar>button{width:auto; flex:0 0 auto}
+  .brdCol button[data-brdc="0"].on{background:rgba(255,77,77,.24)} .brdCol button[data-brdc="1"].on{background:rgba(61,155,255,.24)}
+  #brdCv{display:block; width:min(calc(100% - 32px),calc(100vh - 300px)); min-width:200px; aspect-ratio:1/1; margin:10px auto 0; border-radius:10px; touch-action:none; cursor:crosshair; background:#141a21}
+  .brdLib{padding:6px 16px 4px; align-items:center}
+  #brdName{flex:1 1 120px; min-width:0; background:var(--bg); color:var(--ink); border:1px solid var(--line2); border-radius:6px; padding:6px 8px; font:inherit; font-size:13px}
+  #brdSel{flex:1 1 120px; min-width:0; background:var(--panel); color:var(--ink); border:1px solid var(--line2); border-radius:6px; padding:5px}
+  .brdLib button{width:auto; flex:0 0 auto}
+  #ppBoard.brdNew i{position:relative} #ppBoard.brdNew i::after{content:""; position:absolute; top:-2px; inset-inline-end:-4px; width:9px; height:9px; border-radius:50%; background:var(--accent)}
+</style>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script type="application/json" id="i18nX_v68" data-i18n>{"נהיגה על הרובוט האמיתי — פותר מהירות, אחיזה, סטרייף וסיבוב": "Driving on the real robot — solves speed, grip, strafe and turning", "מהירות מרבית שנמדדה": "Measured top speed", "מרחק המדידה": "Measured distance", "זמן קדימה מעמידה": "Forward time from a standstill", "זמן הצידה מעמידה": "Sideways time from a standstill", "זמן סיבוב שלם במקום": "Time for a full turn in place", "פתור נהיגה": "Solve driving", "מלא מיומן האודומטריה": "Fill from the odometry log", "מה הסימולטור נותן היום": "What the simulator gives now", "מודדים על הרובוט האמיתי בסטופר: עומדים, נותנים סטיק מלא ועוצרים את השעון במרחק שבחרתם. שדה ריק — לא משתנה. אפשר גם למלא מיומן אודומטריה שנטען בלשונית ״אוטונומי״.": "Measure on the real robot with a stopwatch: start still, give full stick and stop the clock at the distance you chose. An empty field is left unchanged. You can also fill it from an odometry log loaded in the Autonomous tab.", "תקרת מהירות": "Speed cap", "אחיזה שנפתרה": "Solved grip", "נצילות סטרייף": "Strafe efficiency", "תקרת סיבוב": "Turn cap", "סיבוב שלם": "Full turn", "מהירות מרבית": "Top speed", "כיול נהיגה": "Driving calibration", "מלאו לפחות שדה אחד": "Fill in at least one field", "אחיזה וסטרייף": "Grip and strafe", "נעולים במצב ״תחרות״ — עוברים ל״פתוח״ כדי לכייל אותם": "Locked in Competition mode — switch to Open to calibrate them", "מהיומן": "From the log", "הבא": "Next", "בודקים את השדות ולוחצים ״פתור נהיגה״": "Check the fields and press “Solve driving”", "מחזור אחרי מחזור": "Cycle by cycle", "המחזור האיטי": "Slowest cycle", "השיא שלך": "Your best", "🏅 שיא חדש": "🏅 New best", "לעומת השיא": "Compared with your best", "📅 תוכנית אימון": "📅 Training plan", "תוכנית האימון": "Training plan", "יום": "Day", "אודומטריה": "Odometry", "אין יומן טעון — טוענים קובץ בלשונית ״אוטונומי״ ← אודומטריה": "No log loaded — load a file in Autonomous → Odometry", "מכוון ויורה": "Aiming and shooting", "טעינה מהפרח": "Loading at a flower", "חסום על ידי בולם": "Blocked by a defender", "עומד ללא מטרה": "Standing with nothing to do", "משימות בשבילי — לתרגל את מה שחלש": "Missions for me — practice what's weak", "🎯 משימות בשבילי": "🎯 Missions for me", "משימות בשבילך": "Missions for you", "המשימות שלך — לפי מה שהכי עולה לך בנקודות": "Your missions — by what costs you the most points", "עוד אין מספיק משחקים — מתחילים מהבסיס": "Not enough matches yet — starting with the basics", "פעם ראשונה — רושמים תוצאה": "First time — note your result", "מתחת ל-": "Under ", "לפחות": "At least", "מחושב במחשב שלך מהמספרים שלך — בלי בינה מלאכותית. ״🎯 משימות בשבילי״ שוב — אחרי עוד משחקים ותרגילים": "Computed on your computer from your numbers — no AI. Press “🎯 Missions for me” again after more matches and drills.", "לעצור לגמרי ולחכות שהמשגר מוכן — ואז לירות": "Stop completely and wait for the launcher to be ready — then shoot", "לבחור עמדה קבועה ולחזור אליה": "Pick one fixed spot and keep going back to it", "מסלול קבוע בין הפרח לעמדת הירי, בלי עצירות באמצע": "A fixed route between the flower and the shooting spot, no stops on the way", "תמיד לדעת לאן נוסעים עכשיו — פרח או עמדה": "Always know where you're going next — flower or shooting spot", "להיכנס לפרח ישר ובמהירות, החרטום כבר דולק": "Drive straight into the flower fast, intake already on", "לא לדחוף את הבולם — לעקוף לצד השני של הכוורת": "Don't push the defender — go around to the other side of the hive", "לשמור מרחק ולא להצמיד אף רובוט": "Keep your distance and don't pin any robot", "לצאת לחניה ב-10 השניות האחרונות, לא ב-3": "Head to park with 10 seconds left, not 3", "להחליט מראש: ירייה אחרונה ואז ישר לחניה": "Decide in advance: last shot, then straight to park", "לפתוח את העורך ולהוסיף ירייה או חניה": "Open the editor and add a shot or parking", "לחזור לקצב של השיא": "Get back to your record pace", "60 שניות בכל הכוח": "60 seconds flat out", "שומרים על הקצב": "Keep up the pace", "עוד אין מספיק משחקים": "Not enough matches yet", "שומרים על הדיוק": "Keep your accuracy", "סוף המשחק — לנקד ולחנות בזמן": "Endgame — score and park in time", "🔍 מתכנן — חיפוש מסלול טוב יותר": "🔍 Planner — search for a better path", "מהיר · 16 ניסיונות": "Quick · 16 tries", "רגיל · 40 ניסיונות": "Normal · 40 tries", "יסודי · 100 ניסיונות": "Thorough · 100 tries", "🔍 חפש מסלול טוב יותר": "🔍 Search for a better path", "מתחיל משני הרצפים הכי טובים של המחולל ומזיז את עמדות הירי ואת הנקודות בדרך. כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences and moves the shooting spots and the points on the way. Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "מתכנן": "Planner", "הכי טוב": "Best", "זמן פנוי בסוף": "Time left at the end", "ריצות": "Runs", "הסתיים": "Done", "עצור": "Stop", "מריץ את המחולל לנקודת התחלה…": "Running the generator as a starting point…", "בודק את נקודת ההתחלה": "Checking the starting point"}</script>
 <script>
@@ -2728,6 +2760,7 @@ const OVL=[
   {id:"pracBox",  sim:"pracClose", btn:"pracBg", trap:1},
   {id:"bldBox",   sim:"bldClose", btn:"bldBg", trap:1},
   {id:"skinBox",  sim:"skinClose", btn:"skinBg", trap:1},
+  {id:"brdBox",   sim:"brdClose", btn:"brdBg", trap:1},
   {id:"cmdk",     sim:"cmdkClose", trap:1},
   {id:"coachBox", btn:"coachX", trap:1},
   {id:"aiChat",   sim:"chatClose", btn:"aiChatX"},
@@ -12340,7 +12373,7 @@ function netOnMsg(data){
     if(m.t==="info"){ NET.lan=(Array.isArray(m.lan)?m.lan:[]).map(String).filter(x=>/^[0-9A-Za-z.:\-]{1,64}$/.test(x)).slice(0,8);
       NET.key=(+m.key>>>0)||0; NET.code=netStr(m.code,24);
       NET.port=(+m.port>0&&+m.port<65536)?+m.port|0:NET.port; }
-    else if(m.t==="gj"){ NET.guests[m.id]={name:netStr(m.name,20)||"אורח"}; netAutoSeat(m.id); }
+    else if(m.t==="gj"){ NET.guests[m.id]={name:netStr(m.name,20)||"אורח"}; netAutoSeat(m.id); try{ brdNetJoin(m.id); }catch(e){} }
     else if(m.t==="gl"){ netUnseat(m.id); delete NET.guests[m.id]; }
     else if(m.t==="g"&&m.m) netFromGuest(m.id,m.m);
     netRefresh();
@@ -12361,6 +12394,7 @@ function netOnMsg(data){
       const g=netGuestPad(); if(g) padRumble(g,0.7,0.4,260);
       (HUM.log||(HUM.log=[])).push({t:simT,who:"net",txt:m.txt,kind:m.k==="foul"?"foul":"coach"}); }
     else if(m.t==="sum"){ mpSumShow(m); }
+    else if(m.t==="brd"){ try{ brdNetIn(m,null); }catch(e){} }
   }
 }
 /* v63: כל מחרוזת שמגיעה מהרשת — טקסט קצר בלי תווי בקרה; סוג וברית רק מתוך רשימה */
@@ -12395,6 +12429,7 @@ function netFromGuest(id,m){
   else if(m.t==="ping"){ if(NET.guests[id]) NET.guests[id].rtt=+m.rtt||0; netSend({to:id,t:"pong",c:m.c}); }
   else if(m.t==="skin") skinFromGuest(id,String(m.s||""));
   else if(m.t==="build") try{ bldFromGuest(id,m.b); }catch(e){}
+  else if(m.t==="brd") try{ brdNetIn(m,id); }catch(e){}
 }
 function netRoom(){
   if(NET.mode!=="host") return;
@@ -13031,10 +13066,9 @@ function seasonStats(list){
   return {n, wins:list.filter(m=>m.win>0).length, avg:sum("my")/n, acc:sum("shots")?sum("hits")/sum("shots"):0,
           shots:sum("shots"), fouls:sum("fouls")/n, best:Math.max(...list.map(m=>m.my)), autos};
 }
-function seasonDraw(){
-  const cv=$("seasonMap"); if(!cv) return;
-  const g=cv.getContext("2d"), W=cv.width, H=cv.height, S=W/144;
-  const X=x=>(x+72)*S, Z=z=>(z+72)*S;
+/* v70: הזירה מלמעלה — משותף למפת העונה וללוח האסטרטגיה (אדום משמאל, הקהל למטה) */
+function fieldDraw2D(g,W,H){
+  const S=W/144, X=x=>(x+72)*S, Z=z=>(z+72)*S;
   g.clearRect(0,0,W,H); g.fillStyle="#141a21"; g.fillRect(0,0,W,H);
   g.strokeStyle="#38434e"; g.lineWidth=1;
   for(let k=-72;k<=72;k+=24){ g.beginPath(); g.moveTo(X(k),0); g.lineTo(X(k),H); g.stroke(); g.beginPath(); g.moveTo(0,Z(k)); g.lineTo(W,Z(k)); g.stroke(); }
@@ -13044,6 +13078,11 @@ function seasonDraw(){
   for(const f of flowers){ g.fillStyle="#3fb47e"; g.beginPath(); g.arc(X(f.x),Z(f.z),S*3,0,7); g.fill(); }
   for(const h of [hiveRed,hiveBlue]) if(h&&h.group){ g.fillStyle=h===hiveRed?"#8a2b30":"#23507f";
     g.fillRect(X(I(h.group.position.x))-S*10,Z(I(h.group.position.z))-S*10,S*20,S*20); }
+  return {S,X,Z};
+}
+function seasonDraw(){
+  const cv=$("seasonMap"); if(!cv) return;
+  const g=cv.getContext("2d"), W=cv.width, H=cv.height, S=fieldDraw2D(g,W,H).S;
   let list=seasonAll(); if(SEASON.filt==="10") list=list.slice(-10);
   const C=8, n=144/C, cells={};
   const add=(x,z,v)=>{ const i=Math.max(0,Math.min(n-1,Math.floor((x+72)/C))), j=Math.max(0,Math.min(n-1,Math.floor((z+72)/C)));
@@ -14583,6 +14622,7 @@ async function shellRender(){
       '<button data-hm="match"><i>🏆</i><b>מאץ׳ מול בוטים</b><span>2 מול 2, עם שופט</span></button>'+
       '<button data-hm="free"><i>🚗</i><b>נסיעה חופשית</b><span>לתרגל בלי שעון</span></button>'+
       '<button data-hm="practice"><i>🤖</i><b>תרגול מול בוטים</b><span>בלי שעון, בוחרים בוטים</span></button>'+
+      '<button data-hm="board"><i>📋</i><b>לוח אסטרטגיה</b><span>תוכנית על הזירה</span></button>'+
       '<button data-hm="lab"><i>🔧</i><b>מעבדה</b><span>רובוט, אוטונומי, ניתוח</span></button></div>';
     if(st) h+='<div class="hmTiles">'+tile("משחקים",st.n)+tile("ניצחונות",pct(st.W/st.n),st.W+"-"+st.L+"-"+st.T)+tile("שיא",st.best.my,"ממוצע "+st.avg.toFixed(1))+'</div><p class="hmMore"><a href="#" data-hmgo="stats">לכל הסטטיסטיקות ›</a></p>';
     { const a=ACC.st||{}; h+='<p class="hmSync" id="hmSync"><span>'+(a.loggedIn?(a.lastError?"⚠ "+appEsc(a.lastError):"☁️ "+accAgo(a.lastSync))+(a.team?" · 👥 "+appEsc(a.team.name||"הקבוצה"):""):"💾 שמור רק במחשב הזה")+'</span> · <a href="#" data-hm="settings">חשבון וקבוצה ›</a></p>'; }
@@ -15245,6 +15285,296 @@ function pracStart(){
   on($("pracBg"),pracClose);
 })();
 Object.assign(window.__sim||{},{PRAC,pracOpen,pracClose,pracStart,pracActive,pracBlocked,autoVSet,AUTOV,shotHud,autoVOn:()=>lock,ppLast:()=>PP.last});
+/* ══════ v70: 📋 לוח אסטרטגיה ══════
+   הזירה מלמעלה, ארבעה רובוטים (אדום 1/2, כחול 1/2 — לפי עמדות הפתיחה), חצים וקו חופשי.
+   כל הקואורדינטות באינצ׳ים של הזירה (±72), כמו בעורך האוטונומי — לא תלוי ברזולוציה.
+   ״אני״ = הרובוט בעמדת הפתיחה הראשונה של הברית שלי (אותה נקודה של autoStartPose).
+   ברשת: כל שינוי הוא הודעה קטנה ״brd״ (tok / add / del / clr, והמארח שולח גם all).
+   אורח שולח למארח, המארח בודק, מחיל ומעביר לכולם. הודעות חוזרות לא משנות כלום (אותו מזהה קו). */
+const BRD_MAXS=40, BRD_PTS=60, BRD_LIBN=12, BRD_LIBB=32000, BRD_KEY="bbBoards1", BRD_CUR="bbBoardCur1";
+const BRD_RGB=["#ff4d4d","#3d9bff"];
+const BRD={open:false, tool:"move", col:null, tok:null, s:[], hist:[], sid:Math.random().toString(36).slice(2,6).replace(/[^a-z0-9]/g,"x")||"b",
+  seq:0, drag:null, draft:null, ptr:null, tokSentT:0, rate:{}, bad:0, saveT:0, rx:0, tx:0};
+function brdTokDef(){ const S=startSpots(); return [S.red1,S.red2,S.blue1,S.blue2].map(p=>[+(+p.x).toFixed(1),+(+p.z).toFixed(1)]); }
+function brdEnsure(){ if(BRD.tok) return;
+  try{ const u=brdUnpack(JSON.parse(localStorage.getItem(BRD_CUR)||"null")); if(u){ BRD.tok=u.tok; BRD.s=u.s; } }catch(e){}
+  if(!BRD.tok) BRD.tok=brdTokDef(); }
+/* האינדקס של ״אני״: 0 = אדום 1, 2 = כחול 1 */
+function brdMine(){ return myAlly()==="red"?0:2; }
+function brdLabel(i){ const my=brdMine(); if((i>>1)===(my>>1)) return i===my?"אני":"שותף"; return (i&1)?"יריב 2":"יריב 1"; }
+function brdCol(){ return BRD.col===0||BRD.col===1?BRD.col:(myAlly()==="red"?0:1); }
+const brdN=v=>Math.round(Math.max(-HALF,Math.min(HALF,v))*10)/10;
+
+/* ── בדיקת נתונים (מהרשת ומהאחסון): רק מספרים סופיים בתוך הזירה, מזהה קצר, תקרות ── */
+function brdNumOk(v){ return typeof v==="number"&&isFinite(v)&&Math.abs(v)<=HALF+0.5; }
+function brdIdOk(v){ if(typeof v!=="string") return null; const s=netStr(v,16); return s===v&&/^[A-Za-z0-9_-]{1,16}$/.test(s)?s:null; }
+function brdStroke(o){
+  if(!o||typeof o!=="object"||Array.isArray(o)) return null;
+  const id=brdIdOk(o.id); if(!id) return null;
+  const k=o.k==="a"?"a":o.k==="p"?"p":null; if(!k) return null;
+  const c=o.c===0||o.c===1?o.c:null; if(c===null) return null;
+  const p=o.p; if(!Array.isArray(p)||p.length%2) return null;
+  if(k==="a"?p.length!==4:(p.length<4||p.length>BRD_PTS*2)) return null;
+  for(const v of p) if(!brdNumOk(v)) return null;
+  return {id,k,c,p:p.map(brdN)};
+}
+function brdTokOk(t){ if(!Array.isArray(t)||t.length!==4) return null; const out=[];
+  for(const q of t){ if(!Array.isArray(q)||q.length!==2||!brdNumOk(q[0])||!brdNumOk(q[1])) return null; out.push([brdN(q[0]),brdN(q[1])]); }
+  return out; }
+function brdUnpack(o){ if(!o||typeof o!=="object") return null; const tok=brdTokOk(o.tok); if(!tok||!Array.isArray(o.s)) return null;
+  const s=[]; for(const x of o.s.slice(0,BRD_MAXS)){ const c=brdStroke(x); if(c&&!s.some(y=>y.id===c.id)) s.push(c); }
+  return {tok,s}; }
+/* הודעה מהרשת ← פעולה נקייה, או null. ״all״ רק מהמארח */
+function brdOpOk(m,fromGuest){
+  if(!m||typeof m!=="object"||Array.isArray(m)) return null;
+  const o=m.o;
+  if(o==="tok"){ const i=m.i; if(!(i===0||i===1||i===2||i===3)||!brdNumOk(m.x)||!brdNumOk(m.z)) return null; return {o,i,x:brdN(m.x),z:brdN(m.z)}; }
+  if(o==="add"){ const s=brdStroke(m.s); return s?{o,s}:null; }
+  if(o==="del"){ const id=brdIdOk(m.id); return id?{o,id}:null; }
+  if(o==="clr") return {o};
+  if(o==="all"){ if(fromGuest) return null;
+    const tok=brdTokOk(m.tok); if(!tok||!Array.isArray(m.s)||m.s.length>BRD_MAXS) return null;
+    const s=[], seen={}; for(const x of m.s){ const c=brdStroke(x); if(!c||seen[c.id]) return null; seen[c.id]=1; s.push(c); }
+    return {o,tok,s}; }
+  return null;
+}
+/* ── מצב: מחילים פעולה (בלי רשת). מחזיר true אם משהו השתנה ── */
+function brdApply(op){
+  brdEnsure();
+  if(op.o==="tok"){ const t=BRD.tok[op.i]; if(t[0]===op.x&&t[1]===op.z) return false; BRD.tok[op.i]=[op.x,op.z]; return true; }
+  if(op.o==="add"){ if(BRD.s.length>=BRD_MAXS||BRD.s.some(s=>s.id===op.s.id)) return false; BRD.s.push({id:op.s.id,k:op.s.k,c:op.s.c,p:op.s.p.slice()}); return true; }
+  if(op.o==="del"){ const i=BRD.s.findIndex(s=>s.id===op.id); if(i<0) return false; BRD.s.splice(i,1); return true; }
+  if(op.o==="clr"){ if(!BRD.s.length) return false; BRD.s=[]; return true; }
+  if(op.o==="all"){ BRD.tok=op.tok.map(q=>q.slice()); BRD.s=op.s.map(s=>({id:s.id,k:s.k,c:s.c,p:s.p.slice()})); return true; }
+  return false;
+}
+function brdSnap(){ return {tok:BRD.tok.map(q=>q.slice()), s:BRD.s.map(s=>({id:s.id,k:s.k,c:s.c,p:s.p.slice()}))}; }
+/* ── רשת ── */
+function brdNetOn(){ return (NET.mode==="host"||NET.mode==="guest")&&NET.sock&&NET.sock.readyState===1; }
+function brdSend(op){
+  if(!brdNetOn()) return;
+  if(NET.mode==="host"){ netSend(Object.assign({to:"*",t:"brd"},op)); BRD.tx++; return; }
+  /* אורח: עד 2000 בתים להודעה בגשר — לוח שלם נשלח כרצף של פעולות קטנות */
+  if(op.o==="all"){ netSend({t:"brd",o:"clr"}); op.tok.forEach((q,i)=>netSend({t:"brd",o:"tok",i,x:q[0],z:q[1]}));
+    for(const s of op.s) netSend({t:"brd",o:"add",s}); BRD.tx+=5+op.s.length; return; }
+  netSend(Object.assign({t:"brd"},op)); BRD.tx++;
+}
+function brdRateOk(id){ const now=performance.now();
+  if(Object.keys(BRD.rate).length>50) BRD.rate={};
+  const r=BRD.rate[id]||(BRD.rate[id]={n:100,t:now}); r.n=Math.min(100,r.n+(now-r.t)*0.03); r.t=now;
+  if(r.n<1) return false; r.n--; return true; }
+/* הודעה נכנסת: gid = מזהה האורח (אצל המארח), null = מהמארח (אצל אורח) */
+function brdNetIn(m,gid){
+  const fromGuest=gid!=null;
+  if(fromGuest?NET.mode!=="host":NET.mode!=="guest") return false;
+  if(fromGuest&&!brdRateOk(String(gid))) return false;
+  const op=brdOpOk(m,fromGuest); if(!op){ BRD.bad++; return false; }
+  BRD.rx++;
+  /* רובוט שאני גורר עכשיו — הגרירה שלי קובעת */
+  if(op.o==="tok"&&BRD.drag&&BRD.drag.tok===op.i) return false;
+  const ch=brdApply(op);
+  if(ch&&fromGuest) netSend(Object.assign({to:"*",t:"brd"},op));
+  if(ch) brdChanged(true);
+  return ch;
+}
+/* אורח חדש בחדר מקבל את הלוח של המארח */
+function brdNetJoin(id){ if(NET.mode!=="host"||!id) return; brdEnsure(); netSend({to:String(id),t:"brd",o:"all",tok:BRD.tok,s:BRD.s}); }
+/* ── פעולה של המשתמש: מחילים, זוכרים לביטול, משדרים ── */
+function brdDo(op,inv){
+  if(!brdApply(op)) return false;
+  if(inv){ BRD.hist.push(inv); if(BRD.hist.length>80) BRD.hist.shift(); }
+  brdSend(op); brdChanged(); return true;
+}
+function brdUndo(){ const inv=BRD.hist.pop(); if(!inv) return false;
+  for(const op of inv) if(brdApply(op)) brdSend(op);
+  brdChanged(); return true; }
+function brdClear(){ brdEnsure(); if(!BRD.s.length) return false; const inv=BRD.s.map(s=>({o:"add",s})); return brdDo({o:"clr"},inv); }
+function brdResetTok(){ brdEnsure(); const d=brdTokDef(), inv=[];
+  d.forEach((q,i)=>{ const f=BRD.tok[i].slice(); const op={o:"tok",i,x:q[0],z:q[1]}; if(brdApply(op)){ inv.push({o:"tok",i,x:f[0],z:f[1]}); brdSend(op); } });
+  if(inv.length){ BRD.hist.push(inv); brdChanged(); } return inv.length; }
+function brdAddStroke(k,c,p){ const s={id:BRD.sid+"-"+(++BRD.seq),k,c:c===1?1:0,p:p.map(brdN)};
+  if(BRD.s.length>=BRD_MAXS){ brdMsg(T("אפשר עד")+" "+BRD_MAXS+" "+T("קווים בלוח — מוחקים כמה")); return null; }
+  return brdDo({o:"add",s},[{o:"del",id:s.id}])?s:null; }
+function brdChanged(remote){
+  clearTimeout(BRD.saveT); BRD.saveT=setTimeout(()=>{ try{ localStorage.setItem(BRD_CUR,JSON.stringify({tok:BRD.tok,s:BRD.s})); }catch(e){} },300);
+  if(BRD.open) brdDraw();
+  else if(remote){ const b=$("ppBoard"); if(b) b.classList.add("brdNew"); }
+}
+/* ── ספרייה: לוחות עם שמות בדפדפן (עד 12, עד 32 אלף תווים ללוח) ── */
+function brdLib(){ try{ const o=JSON.parse(localStorage.getItem(BRD_KEY)||"{}");
+  if(!o||typeof o!=="object"||Array.isArray(o)) return {};
+  const out={}; let n=0; for(const k in o){ if(n>=BRD_LIBN) break; const u=brdUnpack(o[k]); if(u){ out[k]={tok:u.tok,s:u.s,at:+o[k].at||0}; n++; } } return out; }catch(e){ return {}; } }
+function brdName(v){ return String(v==null?"":v).replace(/[\u0000-\u001f\u007f]/g,"").trim().slice(0,30); }
+function brdSave(name){ brdEnsure(); name=brdName(name);
+  if(!name){ brdMsg("צריך שם ללוח"); return false; }
+  const L=brdLib(), e={tok:BRD.tok,s:BRD.s,at:Date.now()};
+  if(JSON.stringify(e).length>BRD_LIBB){ brdMsg("הלוח גדול מדי לשמירה — מוחקים כמה קווים"); return false; }
+  if(!L[name]&&Object.keys(L).length>=BRD_LIBN){ brdMsg(T("אפשר לשמור עד")+" "+BRD_LIBN+" "+T("לוחות — מוחקים אחד קודם")); return false; }
+  L[name]=e; let ok=true; try{ localStorage.setItem(BRD_KEY,JSON.stringify(L)); }catch(err){ ok=false; }
+  brdMsg(ok?T("נשמר בשם")+" ״"+name+"״":T("הדפדפן לא מאפשר לשמור כאן")); brdLibUI(name); return ok; }
+function brdLoad(name){ brdEnsure(); const e=brdLib()[name]; if(!e){ brdMsg("אין לוח בשם הזה"); return false; }
+  const prev=brdSnap();
+  brdDo({o:"all",tok:e.tok,s:e.s},[Object.assign({o:"all"},prev)]);
+  brdMsg(T("נטען")+" ״"+name+"״"+(brdNetOn()?" · "+T("נשלח לכל מי שבחדר"):"")); brdLibUI(name); return true; }
+function brdDel(name){ const L=brdLib(); if(!L[name]) return false; delete L[name];
+  try{ localStorage.setItem(BRD_KEY,JSON.stringify(L)); }catch(e){} brdMsg(T("נמחק")+" ״"+name+"״"); brdLibUI(); return true; }
+function brdLibUI(sel){ const s=$("brdSel"); if(!s) return; const L=brdLib(), ks=Object.keys(L).sort((a,b)=>L[b].at-L[a].at);
+  s.innerHTML=ks.length?ks.map(k=>'<option value="'+appEsc(k)+'">'+appEsc(k)+'</option>').join(""):'<option value="">'+T("אין לוחות שמורים")+'</option>';
+  if(sel&&L[sel]) s.value=sel; }
+/* ── ״העבר לעורך״: שרשרת החצים שמתחילה ברובוט שלי ← מסלול אוטונומי ── */
+function brdChain(){ brdEnsure(); const me=BRD.tok[brdMine()], arrows=BRD.s.filter(s=>s.k==="a"), used=new Set(), out=[];
+  let cx=me[0], cz=me[1], R=10;
+  for(let n=0;n<30;n++){ let best=-1, bd=R;
+    arrows.forEach((a,i)=>{ if(used.has(i)) return; const d=Math.hypot(a.p[0]-cx,a.p[1]-cz); if(d<bd){ bd=d; best=i; } });
+    if(best<0) break; used.add(best); const a=arrows[best]; out.push({x:a.p[2],z:a.p[3]}); cx=a.p[2]; cz=a.p[3]; R=8; }
+  return out; }
+function brdToEditor(){
+  const ch=brdChain();
+  if(!ch.length){ brdMsg("אין חץ שיוצא מהרובוט שלי — מציירים חץ שמתחיל ברובוט ״אני״"); return null; }
+  pathClear(); pathStartHere();
+  let moved=0, skipped=0;
+  for(const q of ch){ let x=q.x, z=q.z;
+    if(pathBlocked(x,z)){ const sp=pathSnap(x,z); if(!sp){ skipped++; continue; } x=sp.x; z=sp.z; moved++; }
+    const prev=PATH.pts[PATH.pts.length-1];
+    if(prev&&Math.hypot(prev.x-x,prev.z-z)<2) continue;
+    if(prev&&PATH.detour){ const d=pathDetour(prev,{x,z}); if(d.length) PATH.pts.push(...d); }
+    pathAdd(x,z,{raw:true}); }
+  const n=PATH.pts.filter(p=>!p.auto&&!p.start).length;
+  PATH.warn="הועבר מלוח האסטרטגיה — "+n+" נקודות"+(moved?" · "+moved+" הוזזו מתוך מבנה":"")+(skipped?" · "+skipped+" דולגו":"");
+  PATH.run=null; pathDraw(); pathInfo();
+  brdClose(); try{ goLab("auto"); }catch(e){}
+  return {pts:PATH.pts.filter(p=>!p.auto).map(p=>({x:p.x,z:p.z})), moved, skipped};
+}
+/* ── ציור ── */
+function brdCv(){ const cv=$("brdCv"); if(!cv) return null; const r=cv.getBoundingClientRect(), d=Math.min(2,window.devicePixelRatio||1);
+  const w=Math.max(120,Math.round((r.width||480)*d)); if(cv.width!==w){ cv.width=w; cv.height=w; } return cv; }
+function brdStrokeDraw(g,s,X,Z,S,ghost){
+  const p=s.p; if(!p||p.length<4) return;
+  g.strokeStyle=g.fillStyle=BRD_RGB[s.c]||BRD_RGB[0]; g.globalAlpha=ghost?0.6:1;
+  g.lineWidth=Math.max(2,S*1.1); g.lineCap=g.lineJoin="round";
+  g.beginPath(); g.moveTo(X(p[0]),Z(p[1])); for(let i=2;i<p.length;i+=2) g.lineTo(X(p[i]),Z(p[i+1])); g.stroke();
+  if(s.k==="a"){ const a=Math.atan2(p[3]-p[1],p[2]-p[0]), L=S*5, x=X(p[2]), z=Z(p[3]);
+    g.beginPath(); g.moveTo(x,z); g.lineTo(x-L*Math.cos(a-0.45),z-L*Math.sin(a-0.45)); g.lineTo(x-L*Math.cos(a+0.45),z-L*Math.sin(a+0.45)); g.closePath(); g.fill(); }
+  g.globalAlpha=1;
+}
+function brdDraw(){
+  const cv=brdCv(); if(!cv) return; brdEnsure();
+  const g=cv.getContext("2d"), W=cv.width, F=fieldDraw2D(g,W,W), S=F.S, X=F.X, Z=F.Z;
+  /* קו האמצע (G402) וקירות */
+  g.strokeStyle="rgba(255,255,255,.22)"; g.lineWidth=1; g.setLineDash([S*3,S*3]);
+  g.beginPath(); g.moveTo(X(0),0); g.lineTo(X(0),W); g.stroke(); g.setLineDash([]);
+  g.strokeStyle="#6b7a88"; g.lineWidth=Math.max(2,S*1.2); g.strokeRect(g.lineWidth/2,g.lineWidth/2,W-g.lineWidth,W-g.lineWidth);
+  for(const s of BRD.s) brdStrokeDraw(g,s,X,Z,S,false);
+  if(BRD.draft) brdStrokeDraw(g,BRD.draft,X,Z,S,true);
+  const my=brdMine(), R=S*8;
+  BRD.tok.forEach((q,i)=>{ const x=X(q[0]), z=Z(q[1]);
+    g.fillStyle=i<2?"#c9353b":"#2a6fc4"; g.strokeStyle=i===my?"#ffb020":"rgba(255,255,255,.75)"; g.lineWidth=i===my?Math.max(3,S*1.3):Math.max(1.5,S*0.6);
+    g.beginPath(); if(g.roundRect) g.roundRect(x-R,z-R,2*R,2*R,S*2); else g.rect(x-R,z-R,2*R,2*R); g.fill(); g.stroke();
+    /* התווית נכנסת לריבוע (באנגלית ״Opponent 1״ ארוך) */
+    const lab=T(brdLabel(i)); let fs=Math.max(9,Math.round(S*4.4)); g.font="600 "+fs+"px Rubik, sans-serif";
+    const w=g.measureText(lab).width; if(w>2*R-S*1.5){ fs=Math.max(8,Math.floor(fs*(2*R-S*1.5)/w)); g.font="600 "+fs+"px Rubik, sans-serif"; }
+    g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle"; g.fillText(lab,x,z); });
+  g.fillStyle="#8798a8"; g.font=Math.max(10,Math.round(S*3.6))+"px Rubik, sans-serif"; g.textAlign="center"; g.textBaseline="alphabetic";
+  g.fillText(T("קהל"),W/2,W-S*1.5);
+}
+/* ── קלט: עכבר ומגע (אירועי מצביע) ── */
+function brdPt(e){ const cv=$("brdCv"), r=cv.getBoundingClientRect();
+  return {x:brdN((e.clientX-r.left)/r.width*144-72), z:brdN((e.clientY-r.top)/r.height*144-72)}; }
+function brdTokAt(p){ let bi=-1, bd=9; BRD.tok.forEach((q,i)=>{ const d=Math.hypot(q[0]-p.x,q[1]-p.z); if(d<bd){ bd=d; bi=i; } }); return bi; }
+function brdSegD(px,pz,ax,az,bx,bz){ const dx=bx-ax, dz=bz-az, L=dx*dx+dz*dz; let u=L?((px-ax)*dx+(pz-az)*dz)/L:0; u=Math.max(0,Math.min(1,u));
+  return Math.hypot(px-ax-u*dx,pz-az-u*dz); }
+function brdStrokeAt(p){ for(let k=BRD.s.length-1;k>=0;k--){ const q=BRD.s[k].p;
+    for(let i=0;i+3<q.length;i+=2) if(brdSegD(p.x,p.z,q[i],q[i+1],q[i+2],q[i+3])<3.5) return k; }
+  return -1; }
+function brdEraseAt(p){ const k=brdStrokeAt(p); if(k<0) return false; const s=BRD.s[k];
+  return brdDo({o:"del",id:s.id},[{o:"add",s:{id:s.id,k:s.k,c:s.c,p:s.p.slice()}}]); }
+function brdDown(e){
+  if(e.button>0||BRD.drag) return; e.preventDefault(); brdEnsure();
+  const cv=$("brdCv"), p=brdPt(e); try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+  BRD.ptr=e.pointerId;
+  if(BRD.tool==="erase"){ BRD.drag={erase:true}; brdEraseAt(p); return; }
+  /* ״הזזה״ גוררת רובוט; בחץ ובעט מציירים גם מעל רובוט (חץ מתחיל ברובוט שלי) */
+  if(BRD.tool==="move"){ const ti=brdTokAt(p); if(ti<0) return;
+    const q=BRD.tok[ti]; BRD.drag={tok:ti, from:q.slice(), dx:q[0]-p.x, dz:q[1]-p.z}; return; }
+  BRD.draft=BRD.tool==="pen"?{k:"p",c:brdCol(),p:[p.x,p.z]}:{k:"a",c:brdCol(),p:[p.x,p.z,p.x,p.z]};
+  BRD.drag={draw:true}; brdDraw();
+}
+function brdMove(e){
+  const d=BRD.drag; if(!d||e.pointerId!==BRD.ptr) return; e.preventDefault();
+  const p=brdPt(e);
+  if(d.erase){ brdEraseAt(p); return; }
+  if(d.tok!=null){ const op={o:"tok",i:d.tok,x:brdN(p.x+d.dx),z:brdN(p.z+d.dz)};
+    if(brdApply(op)){ const now=performance.now(); if(now-BRD.tokSentT>=80){ BRD.tokSentT=now; brdSend(op); } brdDraw(); }
+    return; }
+  const s=BRD.draft; if(!s) return;
+  if(s.k==="a"){ s.p[2]=p.x; s.p[3]=p.z; }
+  else { const n=s.p.length; if(Math.hypot(p.x-s.p[n-2],p.z-s.p[n-1])>=1.5){
+      /* תקרת נקודות: מדללים לחצי ומשאירים את הצורה */
+      if(n>=BRD_PTS*2){ const q=[]; for(let i=0;i<n;i+=4) q.push(s.p[i],s.p[i+1]); s.p=q; }
+      s.p.push(p.x,p.z); } }
+  brdDraw();
+}
+function brdUp(e){
+  const d=BRD.drag; if(!d||e.pointerId!==BRD.ptr) return;
+  BRD.drag=null; BRD.ptr=null;
+  if(d.tok!=null){ const q=BRD.tok[d.tok];
+    if(q[0]!==d.from[0]||q[1]!==d.from[1]){ BRD.tokSentT=performance.now(); brdSend({o:"tok",i:d.tok,x:q[0],z:q[1]});
+      BRD.hist.push([{o:"tok",i:d.tok,x:d.from[0],z:d.from[1]}]); if(BRD.hist.length>80) BRD.hist.shift(); brdChanged(); }
+    return; }
+  const s=BRD.draft; BRD.draft=null;
+  if(s&&e.type!=="pointercancel"){
+    if(s.k==="a"&&Math.hypot(s.p[2]-s.p[0],s.p[3]-s.p[1])>=3) brdAddStroke("a",s.c,s.p);
+    else if(s.k==="p"&&s.p.length>=4) brdAddStroke("p",s.c,s.p.slice(0,BRD_PTS*2)); }
+  brdDraw();
+}
+/* ── חלון ── */
+function brdMsg(t){ const m=$("brdMsg"); if(m) m.textContent=T(t); }
+function brdUI(){
+  const m=$("brdBox"); if(!m) return;
+  m.querySelectorAll("[data-brdt]").forEach(b=>{ const on=b.dataset.brdt===BRD.tool; b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false"); });
+  m.querySelectorAll("[data-brdc]").forEach(b=>{ const on=+b.dataset.brdc===brdCol(); b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false"); });
+  const n=$("brdNet"); if(n){ const on=brdNetOn(); n.hidden=!on;
+    if(on) n.textContent=T(NET.mode==="host"?"🌐 מארחים חדר — כל שינוי בלוח עובר לכל מי שבחדר":"🌐 מחוברים לחדר — הלוח משותף עם כולם"); }
+  const cv=$("brdCv"); if(cv) cv.style.cursor=BRD.tool==="move"?"grab":BRD.tool==="erase"?"not-allowed":"crosshair";
+  brdLibUI($("brdSel")&&$("brdSel").value);
+}
+function brdOpen(){ const m=$("brdBox"); if(!m) return false; brdEnsure();
+  m.hidden=false; BRD.open=true; const b=$("ppBoard"); if(b) b.classList.remove("brdNew");
+  brdUI(); brdDraw(); requestAnimationFrame(()=>{ if(BRD.open) brdDraw(); }); return true; }
+function brdClose(){ const m=$("brdBox"); if(m) m.hidden=true; BRD.open=false; BRD.drag=null; BRD.draft=null; BRD.ptr=null; }
+function brdWire(){
+  const m=$("brdBox"), cv=$("brdCv"); if(!m||!cv) return;
+  m.addEventListener("click",e=>{
+    if(e.target.id==="brdBg"){ brdClose(); return; }
+    const t=e.target.closest("[data-brdt]"); if(t){ BRD.tool=t.dataset.brdt; brdUI(); return; }
+    const c=e.target.closest("[data-brdc]"); if(c){ BRD.col=+c.dataset.brdc===1?1:0; brdUI(); return; }
+    const b=e.target.closest("[data-brd]"); if(!b) return; const a=b.dataset.brd, sel=$("brdSel"), nm=$("brdName");
+    if(a==="close") brdClose();
+    else if(a==="undo"){ if(!brdUndo()) brdMsg("אין מה לבטל"); }
+    else if(a==="clear"){ if(brdClear()) brdMsg("הקווים נמחקו — ״בטל״ מחזיר"); }
+    else if(a==="reset") brdResetTok();
+    else if(a==="save") brdSave(nm&&nm.value);
+    else if(a==="load"){ if(sel&&sel.value) brdLoad(sel.value); }
+    else if(a==="del"){ if(sel&&sel.value) brdDel(sel.value); }
+    else if(a==="editor") brdToEditor();
+  });
+  cv.addEventListener("pointerdown",brdDown);
+  cv.addEventListener("pointermove",brdMove);
+  cv.addEventListener("pointerup",brdUp);
+  cv.addEventListener("pointercancel",brdUp);
+  /* Ctrl+Z בלוח פתוח — ביטול בלוח, לא מקש של הרובוט */
+  addEventListener("keydown",e=>{ if(!BRD.open||!(e.ctrlKey||e.metaKey)||String(e.key).toLowerCase()!=="z"||typingIn(e.target)) return;
+    e.preventDefault(); e.stopImmediatePropagation(); brdUndo(); },true);
+  addEventListener("resize",()=>{ if(BRD.open) brdDraw(); });
+  on($("ppBoard"),()=>brdOpen());
+  /* כרטיס בדף הבית של האפליקציה — הדף עצמו כבר עובר ל״משחק״ */
+  document.addEventListener("click",e=>{ const h=e.target&&e.target.closest&&e.target.closest('[data-hm="board"]'); if(h){ e.preventDefault(); setTimeout(()=>brdOpen(),0); } });
+}
+try{ brdWire(); }catch(e){ console.error(e); }
+/* v70: ווים לבדיקה של לוח האסטרטגיה */
+{ const X={BRD,brdOpen,brdClose,brdApply,brdDo,brdUndo,brdClear,brdResetTok,brdAddStroke,brdSave,brdLoad,brdDel,brdLib,brdNetIn,brdNetJoin,brdOpOk,brdChain,brdToEditor,brdDraw,brdMine,brdLabel,
+    pathBlocked:(x,z)=>pathBlocked(x,z), autoStartPose:()=>autoStartPose(), PATH, setNetMode:(m,sock)=>{ NET.mode=m; NET.sock=sock||null; }};
+  if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 /* ״לא מגיע לפתח״ וכדומה — רק אחרי שהתחילו לנהוג/לירות, לא כקבלת פנים */
 document.body.classList.add("fresh");
 { const unfresh=()=>{ document.body.classList.remove("fresh"); removeEventListener("keydown",unfresh,true); };
@@ -15349,6 +15679,7 @@ function cmdkCurated(){
     {id:"wizard",i:"✨",n:"הגדרה אישית — אשף קצר",k:"אשף הגדרה אישית התחלה פתיחה העדפות גרפיקה שליטה setup wizard onboarding personal first run preferences",run:()=>wzOpen()},
     {id:"tour",i:"?",n:"סיור קצר באפליקציה",k:"סיור הדרכה מדריך tour tutorial",run:()=>tourStart(true)},
     {id:"missions",i:"🎯",n:"משימות בשבילי — לתרגל את מה שחלש",k:"משימות אימון תרגול חולשות תוכנית אישי missions training practice weak plan",run:()=>missionsOpen(true)},
+    {id:"board",i:"📋",n:"לוח אסטרטגיה — לתכנן על הזירה מלמעלה",k:"לוח אסטרטגיה טקטיקה תוכנית ציור חצים רובוטים board strategy tactics plan draw arrows whiteboard",run:()=>brdOpen()},
     {id:"bug",i:"🐞",n:"דיווח על באג",k:"באג תקלה דיווח bug report problem",run:()=>bugOpen()},
     {id:"auto-editor",i:"✏",n:"עורך אוטונומי — לצייר מסלול",k:"אוטונומי מסלול עורך ציור רודראנר ייצוא autonomous path editor roadrunner export java",run:()=>goLab("auto")},
     {id:"mode-lab",i:"🧪",n:"מצב בדיקות — כל הלוחות",k:"בדיקות מעבדה הנדסה לוחות lab engineering panels",run:()=>{ if(APP.on&&typeof shellGo==="function") shellGo("lab"); else uiSetMode("lab"); }},
