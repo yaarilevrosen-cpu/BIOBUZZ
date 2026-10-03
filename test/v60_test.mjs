@@ -32,7 +32,8 @@ ok(r.mode==='lab'&&r.ws==='drive'&&r.open,'לוח מהמעבדה: עובר לב�
 await E(()=>__sim.uiSetMode('play'));
 // 3. תרגילים
 r=await E(()=>({n:document.querySelectorAll('#ppDrills [data-drill]').length, names:Object.keys(__sim.DRILL.N)}));
-ok(r.n===9&&r.names.length===9,'תשעה תרגילים בלוח ('+r.names.join(',')+')');
+/* v70: שישה תרגילים נוספו — חמישה עשר */
+ok(r.n===15&&r.names.length===15,'חמישה עשר תרגילים בלוח ('+r.names.join(',')+')');
 r=await E(()=>{ __sim.drillStart('defense'); const on=__sim.BOTS.filter(b=>b.on); return {on:__sim.DRILL.on, n:on.length, roles:on.map(b=>b.role), ally:on.map(b=>b.ally), my:__sim.myAlly?__sim.myAlly():null}; });
 ok(r.on==='defense'&&r.n===1&&r.roles[0]==='defend','מול בולם: רובוט יריב אחד בתפקיד בולם ('+JSON.stringify(r)+')');
 r=await E(()=>{ __sim.matchStop(); __sim.drillStart('pressure'); const on=__sim.BOTS.filter(b=>b.on); return {n:on.length, t:__sim.MT?__sim.MT.tele:null}; });

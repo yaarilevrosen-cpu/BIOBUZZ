@@ -112,7 +112,8 @@ r=await E(()=>{ const S=__sim; const base={ally:'red',opp:20,win:1,auto:'x',foul
   localStorage.setItem('bbDrillH1',JSON.stringify({acc:[[1,5],[2,6],[3,6]]})); S.DRILL.hist=JSON.parse(localStorage.getItem('bbDrillH1'));
   const m=S.missionsBuild(); const top=m.json.improve.map(x=>x.what);
   return {top, plan:m.json.plan, why:m.json.improve.map(x=>x.why)}; });
-ok(r.top.length===3&&/דיוק/.test(r.top.join())&&/3 מחזורים על זמן/.test(r.top.join())&&/מחזורים/.test(r.top.join()),'שלוש החולשות הכי יקרות: '+r.top.join(' · '));
+/* v70: עמידה ללא מטרה מפנה עכשיו ל״החלטות״ (קודם ״מחזורים״) */
+ok(r.top.length===3&&/דיוק/.test(r.top.join())&&/3 מחזורים על זמן/.test(r.top.join())&&/החלטות/.test(r.top.join()),'שלוש החולשות הכי יקרות: '+r.top.join(' · '));
 ok(r.why.some(w=>/דיוק 50%/.test(w))&&r.why.some(w=>/11\.5 שנ׳/.test(w)),'הסיבה במספרים שלך ('+r.why.join(' | ')+')');
 ok(r.plan.length===5&&r.plan.filter(x=>x.drill==='acc').every(x=>x.goal==='7/10')&&r.plan.some(x=>x.drill==='acc'),'חמישה ימים; יעד הדיוק קצת מעל האחרונות (5,6,6 ← 7/10)');
 ok(r.plan[0].drill===r.plan[2].drill,'החולשה הכי יקרה מקבלת שני ימים ('+r.plan.map(x=>x.drill).join(',')+')');
@@ -129,7 +130,8 @@ ok(r==='mock','ניתוח חדש של המאמן מחליף את המשימות 
 r=await E(()=>{ const S=__sim; const base={ally:'red',opp:20,win:1,auto:'x',leave:true,park:true,faults:0,sh:[],bl:[],kind:'match',skill:1,my:80,shots:20,hits:17,avgCycle:7,autoPts:20,fouls:1.5,pts:{park:5}};
   const a=[]; for(let i=0;i<8;i++) a.push(Object.assign({},base,{at:i})); localStorage.setItem('bbSeason1',JSON.stringify(a)); S.DRILL.hist={};
   return S.missionsBuild().json.plan.map(x=>x.drill); });
-ok(new Set(r).size===3&&r[0]==='defense','חולשה אחת בלבד — השבוע משלים בבסיס ולא חוזר על אותו תרגיל ('+r.join(',')+')');
+/* v70: עבירות מפנות עכשיו ל״עקיפה בלי עבירות״ (קודם ״מול בולם״) */
+ok(new Set(r).size===3&&r[0]==='dodge','חולשה אחת בלבד — השבוע משלים בבסיס ולא חוזר על אותו תרגיל ('+r.join(',')+')');
 await E(()=>{ document.getElementById('coachBox').hidden=true; localStorage.removeItem('bbSeason1'); });
 
 ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
