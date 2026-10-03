@@ -1897,6 +1897,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   <main>
     <div id="stage">
       <div id="faultTag" hidden></div>
+      <button id="irBtn" hidden title="שידור חוזר של 10 השניות האחרונות — המאץ׳ ממתין (J)">⏪ שידור חוזר</button>
       <div id="pauseTag" hidden><b>⏸ מושהה</b><span>P או ״השהיה״ כדי להמשיך</span></div>
       <div id="scorePops" aria-live="polite"></div>
       <div id="scrMark" hidden><span></span></div>
@@ -2209,7 +2210,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="row"><button id="bQr2">📱 חבר טלפון עם קוד QR</button></div>
         <div id="netJoinBox" hidden>
           <div class="row"><label class="lbl" for="netAddr">קוד חדר או כתובת</label><input type="text" id="netAddr" placeholder="ABC-123" dir="ltr" autocomplete="off"></div>
-          <div class="row"><button id="netGo">הצטרף לחדר</button></div>
+          <div class="row"><button id="netGo">הצטרף לחדר</button><button id="netWatch" title="נכנסים בלי לנהוג — לוח ניקוד גדול ומצלמה חופשית">👁 צפייה</button></div>
         </div>
         <div class="out" id="oNet"></div>
         <div class="grp">עמדות — מי נוהג באיזה רובוט</div>
@@ -2277,7 +2278,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 
       <details data-ws="match"><summary>שידור, הקלטה ושידור חוזר</summary><div class="body">
         <div class="row"><button id="bReplay">▶ שידור חוזר</button><button id="bHighlight">★ מהלך המאץ׳</button><button id="bBcast">מצב שידור</button></div>
-        <div class="row"><button id="bRec">⏺ הקלט וידאו</button><button id="bCast">🖥 מסך שני</button><button id="bRecShow" hidden>📂 הסרטון האחרון</button><button id="bRecDir" class="appOnly">📂 תיקיית הסרטונים</button></div>
+        <div class="row"><button id="bRec">⏺ הקלט וידאו</button><button id="bCast">🖥 מסך שני</button><button id="bCastDir" title="במסך השני: מצלמה רחבה, מעקב אחרי הכדור, וקלוז־אפ על הכוורת אחרי ניקוד">🎬 במאי אוטומטי</button><button id="bRecShow" hidden>📂 הסרטון האחרון</button><button id="bRecDir" class="appOnly">📂 תיקיית הסרטונים</button></div>
         <label class="check" for="kRecAuto"><input type="checkbox" id="kRecAuto">להקליט כל מאץ׳ לבד (עד 5 שניות אחרי הסוף)</label>
         <p class="note"><b>מסך שני:</b> חלון עם מצלמת טלוויזיה ולוח ניקוד — למקרן או לטלוויזיה, בזמן שנוהגים כאן. באפליקציה הוא נפתח לבד על המסך השני במסך מלא. <b>הקלטה:</b> הזירה ופס הניקוד, לקובץ MP4.</p>
 
@@ -2678,6 +2679,22 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   #ppBoard.brdNew i{position:relative} #ppBoard.brdNew i::after{content:""; position:absolute; top:-2px; inset-inline-end:-4px; width:9px; height:9px; border-radius:50%; background:var(--accent)}
 </style>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
+<script type="application/json" id="i18nX_v70cast" data-i18n>{"👁 צפייה": "👁 Watch", "נכנסים בלי לנהוג — לוח ניקוד גדול ומצלמה חופשית": "Join without driving — big scoreboard and a free camera", "כל העמדות וכל מקומות הצפייה תפוסים": "All seats and all spectator places are taken", "👁 צופה": "👁 Spectator", "👁 צופים": "👁 Spectators", "צופה": "spectator", "רוצים רק לראות?": "Just want to watch?", "⏪ שידור חוזר": "⏪ Replay", "שידור חוזר של 10 השניות האחרונות — המאץ׳ ממתין (J)": "Replay the last 10 seconds — the match waits (J)", "⏪ שידור חוזר · 10 השניות האחרונות · ✕ חוזרים למאץ׳": "⏪ Replay · last 10 seconds · ✕ back to the match", "שידור חוזר באמצע מאץ׳ — רק במשחק לבד, לא ברשת": "Mid-match replay — solo only, not online", "שידור חוזר באמצע מאץ׳ — לא במסך מפוצל": "Mid-match replay — not in split screen", "השידור החוזר כבר פתוח": "The replay is already open", "שידור חוזר מיידי — רק באמצע מאץ׳": "Instant replay — only during a match", "שידור חוזר מיידי — לא בזמן חיפוש מסלול": "Instant replay — not while a path search is running", "עוד אין מה להראות — רגע מתחילת המאץ׳": "Nothing to show yet — the match just started", "🎬 במאי אוטומטי": "🎬 Auto director", "🎬 במאי אוטומטי · פועל": "🎬 Auto director · on", "🎬 במאי אוטומטי · כבוי": "🎬 Auto director · off", "במסך השני: מצלמה רחבה, מעקב אחרי הכדור, וקלוז־אפ על הכוורת אחרי ניקוד": "On the second screen: a wide shot, following the ball, and a close-up on the hive after a score"}</script>
+<style id="css_v70cast">
+  /* v70: שידור חוזר מיידי, צופים, במאי אוטומטי */
+  #irBtn{position:absolute; top:56px; left:14px; z-index:11; background:rgba(11,14,18,.86); color:var(--ink); border:1px solid var(--accent);
+    border-radius:10px; padding:6px 12px; font-size:13px; font-weight:600; cursor:pointer}
+  #irBtn:hover{background:var(--accent); color:#0b0e12}
+  #irBtn[hidden]{display:none}
+  body.replay #irBtn, body.bcast #irBtn{display:none!important}
+  .nseat.nspec{opacity:.92}
+  .nseat .dot.spec{background:var(--dim)}
+  .nseat .kb.spec{border-color:var(--dim); color:var(--dim)}
+  .castDirB{position:fixed; top:12px; left:14px; z-index:21; background:#0b0e12c0; color:#fff; border:1px solid #ffffff40; border-radius:8px;
+    padding:4px 10px; font:600 12px system-ui; cursor:pointer; opacity:.55; transition:opacity .3s}
+  .castDirB:hover{opacity:1}
+  #bCastDir.on{border-color:var(--accent); color:var(--accent)}
+</style>
 <script type="application/json" id="i18nX_v68" data-i18n>{"נהיגה על הרובוט האמיתי — פותר מהירות, אחיזה, סטרייף וסיבוב": "Driving on the real robot — solves speed, grip, strafe and turning", "מהירות מרבית שנמדדה": "Measured top speed", "מרחק המדידה": "Measured distance", "זמן קדימה מעמידה": "Forward time from a standstill", "זמן הצידה מעמידה": "Sideways time from a standstill", "זמן סיבוב שלם במקום": "Time for a full turn in place", "פתור נהיגה": "Solve driving", "מלא מיומן האודומטריה": "Fill from the odometry log", "מה הסימולטור נותן היום": "What the simulator gives now", "מודדים על הרובוט האמיתי בסטופר: עומדים, נותנים סטיק מלא ועוצרים את השעון במרחק שבחרתם. שדה ריק — לא משתנה. אפשר גם למלא מיומן אודומטריה שנטען בלשונית ״אוטונומי״.": "Measure on the real robot with a stopwatch: start still, give full stick and stop the clock at the distance you chose. An empty field is left unchanged. You can also fill it from an odometry log loaded in the Autonomous tab.", "תקרת מהירות": "Speed cap", "אחיזה שנפתרה": "Solved grip", "נצילות סטרייף": "Strafe efficiency", "תקרת סיבוב": "Turn cap", "סיבוב שלם": "Full turn", "מהירות מרבית": "Top speed", "כיול נהיגה": "Driving calibration", "מלאו לפחות שדה אחד": "Fill in at least one field", "אחיזה וסטרייף": "Grip and strafe", "נעולים במצב ״תחרות״ — עוברים ל״פתוח״ כדי לכייל אותם": "Locked in Competition mode — switch to Open to calibrate them", "מהיומן": "From the log", "הבא": "Next", "בודקים את השדות ולוחצים ״פתור נהיגה״": "Check the fields and press “Solve driving”", "מחזור אחרי מחזור": "Cycle by cycle", "המחזור האיטי": "Slowest cycle", "השיא שלך": "Your best", "🏅 שיא חדש": "🏅 New best", "לעומת השיא": "Compared with your best", "📅 תוכנית אימון": "📅 Training plan", "תוכנית האימון": "Training plan", "יום": "Day", "אודומטריה": "Odometry", "אין יומן טעון — טוענים קובץ בלשונית ״אוטונומי״ ← אודומטריה": "No log loaded — load a file in Autonomous → Odometry", "מכוון ויורה": "Aiming and shooting", "טעינה מהפרח": "Loading at a flower", "חסום על ידי בולם": "Blocked by a defender", "עומד ללא מטרה": "Standing with nothing to do", "משימות בשבילי — לתרגל את מה שחלש": "Missions for me — practice what's weak", "🎯 משימות בשבילי": "🎯 Missions for me", "משימות בשבילך": "Missions for you", "המשימות שלך — לפי מה שהכי עולה לך בנקודות": "Your missions — by what costs you the most points", "עוד אין מספיק משחקים — מתחילים מהבסיס": "Not enough matches yet — starting with the basics", "פעם ראשונה — רושמים תוצאה": "First time — note your result", "מתחת ל-": "Under ", "לפחות": "At least", "מחושב במחשב שלך מהמספרים שלך — בלי בינה מלאכותית. ״🎯 משימות בשבילי״ שוב — אחרי עוד משחקים ותרגילים": "Computed on your computer from your numbers — no AI. Press “🎯 Missions for me” again after more matches and drills.", "לעצור לגמרי ולחכות שהמשגר מוכן — ואז לירות": "Stop completely and wait for the launcher to be ready — then shoot", "לבחור עמדה קבועה ולחזור אליה": "Pick one fixed spot and keep going back to it", "מסלול קבוע בין הפרח לעמדת הירי, בלי עצירות באמצע": "A fixed route between the flower and the shooting spot, no stops on the way", "תמיד לדעת לאן נוסעים עכשיו — פרח או עמדה": "Always know where you're going next — flower or shooting spot", "להיכנס לפרח ישר ובמהירות, החרטום כבר דולק": "Drive straight into the flower fast, intake already on", "לא לדחוף את הבולם — לעקוף לצד השני של הכוורת": "Don't push the defender — go around to the other side of the hive", "לשמור מרחק ולא להצמיד אף רובוט": "Keep your distance and don't pin any robot", "לצאת לחניה ב-10 השניות האחרונות, לא ב-3": "Head to park with 10 seconds left, not 3", "להחליט מראש: ירייה אחרונה ואז ישר לחניה": "Decide in advance: last shot, then straight to park", "לפתוח את העורך ולהוסיף ירייה או חניה": "Open the editor and add a shot or parking", "לחזור לקצב של השיא": "Get back to your record pace", "60 שניות בכל הכוח": "60 seconds flat out", "שומרים על הקצב": "Keep up the pace", "עוד אין מספיק משחקים": "Not enough matches yet", "שומרים על הדיוק": "Keep your accuracy", "סוף המשחק — לנקד ולחנות בזמן": "Endgame — score and park in time", "🔍 מתכנן — חיפוש מסלול טוב יותר": "🔍 Planner — search for a better path", "מהיר · 16 ניסיונות": "Quick · 16 tries", "רגיל · 40 ניסיונות": "Normal · 40 tries", "יסודי · 100 ניסיונות": "Thorough · 100 tries", "🔍 חפש מסלול טוב יותר": "🔍 Search for a better path", "מתחיל משני הרצפים הכי טובים של המחולל ומזיז את עמדות הירי ואת הנקודות בדרך. כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences and moves the shooting spots and the points on the way. Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "מתכנן": "Planner", "הכי טוב": "Best", "זמן פנוי בסוף": "Time left at the end", "ריצות": "Runs", "הסתיים": "Done", "עצור": "Stop", "מריץ את המחולל לנקודת התחלה…": "Running the generator as a starting point…", "בודק את נקודת ההתחלה": "Checking the starting point"}</script>
 <script>
 /* ══════ v56 — עברית / English ══════
@@ -12512,6 +12529,7 @@ function netClose(why){
   NET.sock=null;
   for(const b of BOTS) if(b.hum&&b.hum.src==="net") humFree(b);
   const wasGuest=NET.mode==="guest";
+  if(NET.spec) netSpecView(false); NET.specs=[];   /* v70 */
   NET.mode="solo"; NET.id=null; NET.seat=null; NET.guests={}; NET.snaps.length=0;
   if(wasGuest) netGuestLeave();
   NET.err=why||""; netRefresh();
@@ -12537,14 +12555,16 @@ function netHost(port){
   netRefresh();
 }
 /* ── אורח ── */
-function netJoin(txt,name){
+function netJoin(txt,name,opt){
   const r=netResolve(txt);
   if(!r){ NET.err="לא זיהיתי קוד חדר או כתובת"; netRefresh(); return false; }
   if(!netIsLan(r.host)){ NET.err="רק רשת מקומית — "+r.host+" לא כתובת ביתית"; netRefresh(); return false; }
   netClose("");
   NET.mode="guest"; NET.host=r.host; NET.port=r.port; NET.key=r.key;
   if(name) NET.name=name;
-  const u="ws://"+r.host+":"+r.port+"/ws?role=guest&k="+r.key+"&n="+encodeURIComponent(NET.name||"אורח");
+  /* v70: ״👁 צפייה״ — הגשר מעביר רק שם, אז הבקשה לצפות נוסעת כסימן בתחילת השם (בלי לשנות את הגשר) */
+  NET.wantSpec=!!(opt&&opt.spec);
+  const u="ws://"+r.host+":"+r.port+"/ws?role=guest&k="+r.key+"&n="+encodeURIComponent((NET.wantSpec?NET_SPEC_MARK:"")+(NET.name||"אורח"));
   /* נכנסים למצב אורח רק כשהחיבור באמת נפתח */
   netOpenSock(u,()=>netGuestEnter());
   netRefresh(); return true;
@@ -12559,18 +12579,20 @@ function netOnMsg(data){
     if(m.t==="info"){ NET.lan=(Array.isArray(m.lan)?m.lan:[]).map(String).filter(x=>/^[0-9A-Za-z.:\-]{1,64}$/.test(x)).slice(0,8);
       NET.key=(+m.key>>>0)||0; NET.code=netStr(m.code,24);
       NET.port=(+m.port>0&&+m.port<65536)?+m.port|0:NET.port; }
-    else if(m.t==="gj"){ NET.guests[m.id]={name:netStr(m.name,20)||"אורח"}; netAutoSeat(m.id); try{ brdNetJoin(m.id); }catch(e){} }
+    else if(m.t==="gj"){ const g=netGuestNew(m.name); NET.guests[m.id]=g; netAutoSeat(m.id); try{ brdNetJoin(m.id); }catch(e){} }  /* v70: 👁 בתחילת השם = ביקש לצפות · הלוח נשלח לכל מי שנכנס */
     else if(m.t==="gl"){ netUnseat(m.id); delete NET.guests[m.id]; }
     else if(m.t==="g"&&m.m) netFromGuest(m.id,m.m);
     netRefresh();
   } else if(NET.mode==="guest"){
-    if(m.t==="seat"){ NET.seat=(m.seat|0)===m.seat&&m.seat>=0&&m.seat<=3?m.seat:null; m.allies=netAlliesOk(m.allies); netGuestCam(m.allies); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
+    if(m.t==="seat"){ NET.seat=(m.seat|0)===m.seat&&m.seat>=0&&m.seat<=3?m.seat:null; if(NET.spec) netSpecView(false); m.allies=netAlliesOk(m.allies); netGuestCam(m.allies); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
       try{ netSend({t:"build",b:bldPack(bldById(BLD.sel.me))}); }catch(e){} }
+    else if(m.t==="spec"){ NET.seat=null; NET.stationK=null; netSpecView(true); netRefresh(); }   /* v70: נכנסתי כצופה */
     else if(m.t==="builds"){ try{ bldFromHost(m); }catch(e){} }
     else if(m.t==="skins"){ SKIN.remote={me:String(m.me||""),bots:Array.isArray(m.bots)?m.bots.map(String):[]}; skinApplyAll(); }
     else if(m.t==="room"){ NET.seats=(Array.isArray(m.seats)?m.seats.slice(0,4):[]).map(x=>({
         kind:NET_KINDOK[x&&x.kind]?x.kind:"bot", name:netStr(x&&x.name,20), ally:netAllyOk(x&&x.ally)}));
       NET.hostName=netStr(m.host,20); m.allies=netAlliesOk(m.allies);
+      NET.specs=(Array.isArray(m.specs)?m.specs.slice(0,NET_SPEC_MAX):[]).map(x=>netStr(x,20));   /* v70: רשימת הצופים */
       if(m.allies) NET.allies=m.allies; if(NET.seat!==null) netGuestCam(m.allies); netRefresh(); }
     else if(m.t==="deny"){ NET.err=netStr(m.why,80)||"החדר סירב"; netRefresh(); }
     else if(m.t==="nohost"){ NET.err="הגשר פתוח אבל אין מארח שפתח חדר"; netRefresh(); }
@@ -12593,14 +12615,16 @@ function netFreeSeat(){
   for(let s=1;s<=BOTS.length;s++){ const k=netSeatInfo(s).kind; if(k==="bot") return s; }
   return null;
 }
-function netAutoSeat(id){ const s=netFreeSeat(); if(s===null){ netSend({to:id,t:"deny",why:"כל העמדות תפוסות"}); return; }
+/* v70: אורח שביקש לצפות, או שכל העמדות תפוסות — נכנס כצופה (עד NET_SPEC_MAX). רק כשגם הצפייה מלאה — מסרבים */
+function netAutoSeat(id){ const g=NET.guests[id], s=g&&g.wantSpec?null:netFreeSeat();
+  if(s===null){ if(netSpecRoom(id)) netSpecGuest(id); else netSend({to:id,t:"deny",why:"כל העמדות וכל מקומות הצפייה תפוסים"}); return; }
   netSeatGuest(id,s); }
 function netSeatGuest(id,s){
   const b=netSeatBot(s); if(!b) return;
   netUnseat(id,true);
   gameJoinSeat(b);
   b.on=true; humSeat(b,"net",(NET.guests[id]&&NET.guests[id].name)||"אורח"); b.hum.id=id;
-  NET.guests[id]&&(NET.guests[id].seat=s);
+  NET.guests[id]&&(NET.guests[id].seat=s,NET.guests[id].spec=false);
   netSend({to:id,t:"seat",seat:s,ally:b.ally,allies:netAllies()});
   netRoom();
 }
@@ -12609,9 +12633,12 @@ function netUnseat(id,quiet){
   if(!quiet) netRoom();
 }
 function netFromGuest(id,m){
+  if(NET.guests[id]&&NET.guests[id].spec&&m.t!=="want"&&m.t!=="ping") return;   /* v70: צופה לא נוהג ולא משנה כלום */
   const b=BOTS.find(o=>o.hum&&o.hum.src==="net"&&o.hum.id===id);
   if(m.t==="in"&&b) humFeed(b,{x:m.x,y:m.y,t:m.r,fire:m.f,intake:m.i,aim:m.a,fc:m.fc!==0});
-  else if(m.t==="want"){ const s=+m.seat; if(netSeatInfo(s).kind==="bot") netSeatGuest(id,s); }
+  else if(m.t==="want"){ const s=+m.seat;
+    if(s===-1){ if(netSpecRoom(id)) netSpecGuest(id); }        /* v70: ״👁 צפייה״ — מפנה את העמדה */
+    else if(netSeatInfo(s).kind==="bot") netSeatGuest(id,s); }
   else if(m.t==="ping"){ if(NET.guests[id]) NET.guests[id].rtt=+m.rtt||0; netSend({to:id,t:"pong",c:m.c}); }
   else if(m.t==="skin") skinFromGuest(id,String(m.s||""));
   else if(m.t==="build") try{ bldFromGuest(id,m.b); }catch(e){}
@@ -12620,7 +12647,7 @@ function netFromGuest(id,m){
 function netRoom(){
   if(NET.mode!=="host") return;
   const seats=[0,1,2,3].map(s=>{ const i=netSeatInfo(s); return {kind:i.kind,name:i.name,ally:i.ally}; });
-  netSend({to:"*",t:"room",seats,host:NET.name||"המארח",allies:netAllies()});
+  netSend({to:"*",t:"room",seats,host:NET.name||"המארח",allies:netAllies(),specs:netSpecNames()});
   try{ skinNetClean(); skinNet(); }catch(e){}
   try{ bldNetClean(); bldNet(); }catch(e){}
 }
@@ -12707,6 +12734,7 @@ function netGuestPad(){
 function netGuestInput(dt){
   const pn=performance.now();              /* שעון קיר — לא תלוי בקצב הפריימים */
   if(pn-(NET.pingAt||0)>1000){ NET.pingAt=pn; netSend({t:"ping",c:pn,rtt:Math.round(NET.rtt||0)}); }
+  if(NET.spec) return;                     /* v70: צופה לא שולח קלט */
   NET.inT+=dt; if(NET.inT<1/NET_IN_HZ) return; NET.inT=0;
   const kv=kbMoveVec();
   let x=kv.x, y=kv.y, r=kv.t;
@@ -12800,12 +12828,13 @@ function netRefresh(){
         (NET.code?row("קוד חדר",'<b class="netcode">'+appEsc(NET.code)+'</b>',"hl"):"")+
         (NET.lan.length?row("כתובת להצטרפות",appEsc("http://"+NET.lan[0]+":"+NET.port+"/join?k="+NET.key)):"")+
         row("שחקנים ברשת",Object.keys(NET.guests).length+"")+
+        (netSpecNames().length?row("👁 צופים",netSpecNames().length+" מתוך "+NET_SPEC_MAX):"")+
         Object.keys(NET.guests).map(id=>{ const g=NET.guests[id];
           return g.rtt?row("השהיה · "+appEsc(g.name),Math.round(g.rtt)+" מ״ש",g.rtt<40?"ok":g.rtt<90?"hl":"bad"):""; }).join("")+
         row("שידור",Math.round(NET.rate.txHz)+" לשנייה · "+NET.rate.kbs.toFixed(1)+" ק״ב/ש׳");
     } else {
       h=row("חיבור",st===1?"מחובר ל-"+appEsc(NET.host):st===0?"מתחבר…":"מנותק",st===1?"ok":"bad")+
-        row("העמדה שלי",NET.seat===null?"—":(NET.seat+1)+" · "+(NET.seats[NET.seat]?NET.seats[NET.seat].ally==="red"?"אדום":"כחול":""))+
+        row("העמדה שלי",NET.spec?"👁 צופה":NET.seat===null?"—":(NET.seat+1)+" · "+(NET.seats[NET.seat]?NET.seats[NET.seat].ally==="red"?"אדום":"כחול":""))+
         row("קבלה",Math.round(NET.rate.rxHz)+" לשנייה · "+NET.rate.kbs.toFixed(1)+" ק״ב/ש׳")+
         (NET.rtt?row("השהיה הלוך־חזור",Math.round(NET.rtt)+" מ״ש",NET.rtt<40?"ok":NET.rtt<90?"hl":"bad"):"");
     }
@@ -12837,16 +12866,18 @@ function netRefresh(){
       h+='<div class="nseat'+(rel==="אני"?" me":"")+'"><span class="dot '+al+'"></span><b>'+(s+1)+'</b>'+
          '<span class="who">'+who+'</span><em class="rel '+(rel==="מולי"?"vs":"with")+'">'+rel+'</em>'+act+'</div>';
     }
+    h+=netSpecRows(guest);   /* v70: הצופים, ו״👁 צפייה״ לאורח שיושב */
     /* בונים מחדש רק כשמשהו השתנה, ולא באמצע בחירה בתפריט */
     if(tb._h!==h&&!tb.contains(document.activeElement)){
     tb._h=h; tb.innerHTML=h;
     tb.querySelectorAll("button[data-want]").forEach(x=>on(x,()=>netSend({t:"want",seat:+x.dataset.want})));
+    tb.querySelectorAll("button[data-spec]").forEach(x=>on(x,()=>netSend({t:"want",seat:-1})));
     tb.querySelectorAll("select[data-padseat]").forEach(x=>x.addEventListener("change",()=>
       netPadSeat(+x.dataset.padseat,x.value===""?null:+x.value))); }
   }
   const tag=$("netTag");
   if(tag){ tag.hidden=NET.mode!=="guest";
-    if(NET.mode==="guest") tag.innerHTML='<b>'+(NET.seat===null?"מחכה לעמדה…":"עמדה "+(NET.seat+1))+'</b><span>'+
+    if(NET.mode==="guest") tag.innerHTML='<b>'+(NET.spec?"👁 צופה":NET.seat===null?"מחכה לעמדה…":"עמדה "+(NET.seat+1))+'</b><span>'+
       (NET.hostName?"החדר של "+appEsc(NET.hostName):"")+'</span><span>מחסנית <i>'+(NET.seat===0?bot.mag:
       (BOTS[NET.seat-1]?BOTS[NET.seat-1].clip.length:0))+'</i></span>'; }
 }
@@ -12868,6 +12899,7 @@ function netWire(){
     else { if(NET.mode!=="guest"){ netClose(""); NET.mode="joinform"; } netRefresh(); }
   }));
   on($("netGo"),()=>netJoin($("netAddr").value,$("netName").value.trim()));
+  on($("netWatch"),()=>netJoin($("netAddr").value,$("netName").value.trim(),{spec:true}));   /* v70 */
   on($("netRekey"),()=>{ if(NET.mode!=="host"||!NET.sock||NET.sock.readyState!==1){ refToast("קודם פותחים חדר","block"); return; }
     netSend({t:"rekey"}); refToast("🔄 קוד חדש — מי שכבר בחדר נשאר, חדשים נכנסים עם הקוד החדש"); });
   const ad=$("netAddr"); if(ad) ad.addEventListener("keydown",e=>{ if(e.key==="Enter") netJoin(ad.value,$("netName").value.trim()); });
@@ -12972,8 +13004,9 @@ function replayIdx(t){ const F=REPLAY.frames; let lo=0,hi=F.length-1;
 function replayOpen(opt){
   opt=opt||{};
   if(!REPLAY.frames.length||NET.mode==="guest") return false;
-  if(MATCH.on||MATCH.cd>0){ refToast("משחק רץ עכשיו — השידור החוזר נפתח אחרי שהוא נגמר או נעצר","block"); return false; }
-  if(RUN.on) runStop("שידור חוזר",false);
+  /* v70: שידור חוזר מיידי (opt.instant, רק לבד) נפתח גם באמצע מאץ׳ — הפיזיקה קפואה, והאוטונומי שלי לא נעצר */
+  if((MATCH.on||MATCH.cd>0)&&!opt.instant){ refToast("משחק רץ עכשיו — השידור החוזר נפתח אחרי שהוא נגמר או נעצר","block"); return false; }
+  if(RUN.on&&!opt.instant) runStop("שידור חוזר",false);
   if(!REPLAY.on){
     REPLAY.saved={chase, camView, bots:BOTS.map(b=>b.group?b.group.visible:false), traj:typeof traj!=="undefined"?traj.visible:null};
     chase=false;
@@ -13004,6 +13037,7 @@ function replayClose(){
   if(REPLAY.saved){ chase=REPLAY.saved.chase; if(typeof traj!=="undefined"&&REPLAY.saved.traj!=null) traj.visible=REPLAY.saved.traj; }
   document.body.classList.remove("replay");
   const bar=$("rpBar"); if(bar) bar.hidden=true;
+  if(typeof irAfterClose==="function") irAfterClose();   /* v70: חוזרים למאץ׳ בדיוק איפה שעצרנו */
 }
 /* מציב את הזירה לפי מיקום עשרוני בין שתי תמונות */
 function replayApply(){
@@ -13147,7 +13181,7 @@ function bcTick(dt){
   const nm=bcNames();
   let t, red, blue, ph;
   if(REPLAY.on&&REPLAY.cur){ t=REPLAY.cur.t; red=REPLAY.cur.red; blue=REPLAY.cur.blue; ph=REPLAY.cur.ph; }
-  else { t=MATCH.t; red=allianceScore("red"); blue=allianceScore("blue"); ph=netPhaseCode(); }
+  else { t=MATCH.t; red=bcScoreOf("red"); blue=bcScoreOf("blue"); ph=netPhaseCode(); }   /* v70: אצל אורח/צופה — הניקוד של המארח */
   const set=(id,v)=>{ const e=$(id); if(e&&e.textContent!==String(v)) e.textContent=v; };
   set("bcRedN",nm.red); set("bcBlueN",nm.blue); set("bcRed",red|0); set("bcBlue",blue|0);
   const phn=ph===5?"ספירה":ph===1?"אוטונומי":ph===2?"מעבר":ph===3?"טלאופ":ph===4?"סיום":"אימון";
@@ -13173,7 +13207,7 @@ function bcLower(txt,k){
 function bcFinal(show){
   const f=$("bcFinal"); if(!f) return;
   if(!show){ f.hidden=true; return; }
-  const nm=bcNames(), r=allianceScore("red")|0, b=allianceScore("blue")|0;
+  const nm=bcNames(), r=bcScoreOf("red")|0, b=bcScoreOf("blue")|0;
   const w=r>b?"red":b>r?"blue":"";
   f.innerHTML='<span>תוצאה סופית</span><div class="bcfRow"><div class="red'+(w==="red"?" win":"")+'"><i>'+pathEsc(nm.red)+'</i><b>'+r+'</b></div>'+
     '<div class="blue'+(w==="blue"?" win":"")+'"><b>'+b+'</b><i>'+pathEsc(nm.blue)+'</i></div></div>'+
@@ -15044,7 +15078,8 @@ function castOpen(){
     '.castHint{position:fixed;bottom:12px;right:14px;color:#ffffff70;font:12px system-ui;z-index:20;transition:opacity 1s}</style></head>'+
     '<body class="bcast castwin"><canvas id="castCv"></canvas>'+
     '<div id="bcBoard"><div class="bcT red"><i id="bcRedN"></i><b id="bcRed">0</b></div><div class="bcMid"><b id="bcClock">2:38</b><span id="bcPhase">אימון</span></div><div class="bcT blue"><b id="bcBlue">0</b><i id="bcBlueN"></i></div></div>'+
-    '<div id="bcLower"></div><div id="bcFinal" hidden></div><div class="castHint" id="castHint">'+T("לחיצה כפולה — מסך מלא")+'</div></body></html>');
+    '<div id="bcLower"></div><div id="bcFinal" hidden></div><div class="castHint" id="castHint">'+T("לחיצה כפולה — מסך מלא")+'</div>'+
+    '<button id="castDirB" class="castDirB">'+T(castDirLabel())+'</button></body></html>');
   d.close();
   const cv=d.getElementById("castCv");
   try{
@@ -15057,7 +15092,8 @@ function castOpen(){
     r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.0;
     CAST.ren=r;
   }catch(e){ console.error(e); try{ w.close(); }catch(err){} refToast("לא הצלחתי לצייר בחלון השני","block"); return false; }
-  CAST.win=w; CAST.cam=new THREE.PerspectiveCamera(40,16/9,0.05,120); CAST.tgt=new THREE.Vector3(0,M(8),0); CAST.t=0; CAST.finShown=false;
+  CAST.win=w; CAST.cam=new THREE.PerspectiveCamera(40,16/9,0.05,120); CAST.tgt=new THREE.Vector3(0,M(8),0); CAST.pos=null; CAST.t=0; CAST.finShown=false;
+  { const db=d.getElementById("castDirB"); if(db) db.addEventListener("click",()=>castDirSet(!DIR.on)); }   /* v70 */
   cv.addEventListener("dblclick",()=>{ try{ if(d.fullscreenElement) d.exitFullscreen(); else d.documentElement.requestFullscreen(); }catch(e){} });
   setTimeout(()=>{ try{ d.getElementById("castHint").style.opacity="0"; }catch(e){} },5000);
   w.addEventListener("beforeunload",()=>setTimeout(castCleanup,0));
@@ -15074,21 +15110,17 @@ function castRender(dt){
   if(W<10||H<10) return;
   const pr=CAST.ren.getPixelRatio();
   if(cv.width!==Math.round(W*pr)||cv.height!==Math.round(H*pr)) CAST.ren.setSize(W,H,false);
-  let cx=0, cz=0, n=0; const add=g=>{ if(g){ cx+=g.position.x; cz+=g.position.z; n++; } };
-  add(bot.group); for(const b of BOTS) if(b.on) add(b.group);
-  if(n){ cx/=n; cz/=n; } const lim=M(34);
-  CAST.tgt.lerp(new THREE.Vector3(Math.max(-lim,Math.min(lim,cx*0.7)),M(9),Math.max(-lim,Math.min(lim,cz*0.7))),Math.min(1,dt*2*1.2));
-  const th=Math.PI/2+0.22*Math.sin(CAST.t*0.06), ph=0.93, dist=M(190);
   const c=CAST.cam; c.aspect=W/H; c.updateProjectionMatrix();
-  c.position.set(CAST.tgt.x+dist*Math.sin(ph)*Math.cos(th),CAST.tgt.y+dist*Math.cos(ph),CAST.tgt.z+dist*Math.sin(ph)*Math.sin(th));
-  c.lookAt(CAST.tgt);
+  /* v70: במאי אוטומטי — רחב (המצלמה הקודמת), מעקב, וקלוז־אפ על כוורת אחרי ניקוד */
+  castDirTick(dt*2);
+  c.position.copy(CAST.pos); c.lookAt(CAST.tgt);
   CAST.ren.render(scene,c);
   castBoard(d);
 }
 function bcValues(){
   const nm=bcNames(); let t, red, blue, ph;
   if(REPLAY.on&&REPLAY.cur){ t=REPLAY.cur.t; red=REPLAY.cur.red; blue=REPLAY.cur.blue; ph=REPLAY.cur.ph; }
-  else { t=MATCH.t; red=allianceScore("red"); blue=allianceScore("blue"); ph=netPhaseCode(); }
+  else { t=MATCH.t; red=bcScoreOf("red"); blue=bcScoreOf("blue"); ph=netPhaseCode(); }
   const phn=REPLAY.on?"שידור חוזר":ph===5?"ספירה":ph===1?"אוטונומי":ph===2?"מעבר":ph===3?"טלאופ":ph===4?"סיום":"אימון";
   const clock=MATCH.cd>0&&!REPLAY.on?String(Math.ceil(MATCH.cd-1)):fmtClock(Math.max(0,tEnd()-(t||0)));
   return {redN:nm.red, blueN:nm.blue, red:red|0, blue:blue|0, phase:phn, clock};
@@ -15105,6 +15137,197 @@ function castBoard(d){
 function castLower(html){ if(!castOn()) return; const lo=CAST.win.document.getElementById("bcLower"); if(!lo) return; lo.innerHTML=html; if(I18N.lang==="en") i18nNode(lo); lo.classList.add("show"); CAST.lowT=4; }
 function castUI(){ const on=castOn();
   for(const id of ["ppCast","bCast"]){ const b=$(id); if(b){ b.classList.toggle("on",on); b.textContent=on?"🖥 סגור מסך שני":"🖥 מסך שני"; } } }
+
+/* ══════ v70 — שידור: צופים בחדר, שידור חוזר מיידי, במאי אוטומטי למסך השני ══════ */
+
+/* ── 1. צופים בחדר רשת ──
+   אורח שמגיע כשכל ארבע העמדות תפוסות, או שבחר ״👁 צפייה״, נכנס כצופה: מקבל את זרם המצב
+   כמו כולם (הגשר כבר משדר את הבינארי לכל האורחים), לא נוהג (המארח מתעלם מהקלט שלו),
+   מופיע ברשימת החדר עם 👁, ויכול לעבור לעמדה שהתפנתה (״לשבת כאן״).
+   הגשר לא השתנה: הבקשה לצפות נוסעת כסימן 👁 בתחילת השם, והמעבר — בהודעת ״want״ הקיימת (seat:-1). */
+const NET_SPEC_MAX=6, NET_SPEC_MARK="👁";
+function netGuestNew(raw){
+  let nm=netStr(raw,20); const sp=/^\u{1F441}️?/u.test(nm);
+  if(sp) nm=nm.replace(/^\u{1F441}️?\s*/u,"");
+  return {name:netStr(nm,20)||"אורח", wantSpec:sp, spec:false};
+}
+function netSpecIds(){ return Object.keys(NET.guests).filter(id=>NET.guests[id]&&NET.guests[id].spec); }
+function netSpecNames(){ return NET.mode==="host"?netSpecIds().map(id=>NET.guests[id].name):(NET.specs||[]); }
+function netSpecRoom(id){ return netSpecIds().filter(x=>x!==id).length<NET_SPEC_MAX; }
+function netSpecGuest(id){
+  const g=NET.guests[id]; if(!g) return false;
+  netUnseat(id,true); g.seat=null; g.spec=true; g.wantSpec=false;
+  netSend({to:id,t:"spec",n:netSpecIds().length,max:NET_SPEC_MAX});
+  netRoom(); return true;
+}
+/* בצד האורח: צופה מקבל לוח ניקוד גדול ומצלמה חופשית; כשמתיישב — חוזר למה שהיה */
+function netSpecView(on){
+  on=!!on; if(!!NET.spec===on) return; NET.spec=on;
+  document.body.classList.toggle("netspec",on);
+  if(on){ NET.specBc=!BC.on; if(!BC.on) bcSet(true); else if(camView==="driver") setCamView("free"); chase=false; }
+  else { if(NET.specBc&&BC.on) bcSet(false); NET.specBc=false; }
+}
+/* שורות הצופים ברשימת החדר, וכפתור ״👁 צפייה״ לאורח שיושב בעמדה */
+function netSpecRows(guest){
+  const L=netSpecNames(); let h="", meDone=false;
+  if(guest&&NET.seat!==null&&!NET.spec&&L.length<NET_SPEC_MAX)
+    h+='<div class="nseat nspec"><span class="dot spec"></span><b>👁</b><span class="who">רוצים רק לראות?</span><button data-spec="1">👁 צפייה</button></div>';
+  for(const n of L){ const me=guest&&NET.spec&&!meDone&&n===(NET.name||"אורח"); if(me) meDone=true;
+    h+='<div class="nseat nspec'+(me?' me':'')+'"><span class="dot spec"></span><b>👁</b><span class="who"><i class="kb spec">צופה</i>'+appEsc(n)+'</span>'+
+      (me?'<em class="rel with">אני</em>':'')+'</div>'; }
+  return h;
+}
+/* לוח השידור: אצל אורח (שחקן או צופה) הניקוד הוא של המארח, לא של הזירה המקומית */
+function bcScoreOf(ally){
+  if(NET.mode==="guest"&&NET.score) return +NET.score[ally==="red"?0:1]||0;
+  return allianceScore(ally);
+}
+
+/* ── 2. שידור חוזר מיידי באמצע מאץ׳ (רק לבד) ──
+   ״⏪ שידור חוזר״ או J: המאץ׳ קופא (frame לא מריץ stepSim כשהשידור החוזר פתוח), ונפתח הצופה
+   על 10 השניות האחרונות מתוך ההקלטה של המאץ׳ הנוכחי (REPLAY.rec, 15 לשנייה) ועוד תמונה של עכשיו.
+   סגירה (✕, Esc, J) מחזירה את המאץ׳ הקודם לצופה, את המצלמה — והמאץ׳ ממשיך מאותה נקודה בדיוק:
+   הפיזיקה לא נגעה (השידור מזיז רק את הדמויות, והסגירה מציבה אותן לפי הגופים). */
+const IR={on:false, sec:10, saved:null, frames:null, key:"KeyJ"};
+function irWhy(){
+  if(NET.mode!=="solo") return "שידור חוזר באמצע מאץ׳ — רק במשחק לבד, לא ברשת";
+  if(SPLIT.on) return "שידור חוזר באמצע מאץ׳ — לא במסך מפוצל";
+  if(REPLAY.on) return "השידור החוזר כבר פתוח";
+  if(!MATCH.on||MATCH.cd>0) return "שידור חוזר מיידי — רק באמצע מאץ׳";
+  if(GEN.running||RED.busy) return "שידור חוזר מיידי — לא בזמן חיפוש מסלול";
+  if(!REPLAY.rec||REPLAY.rec.length<REPLAY.hz) return "עוד אין מה להראות — רגע מתחילת המאץ׳";
+  return "";
+}
+function irOpen(){
+  const why=irWhy(); if(why){ refToast(why,"block"); return false; }
+  const F=REPLAY.rec.slice(-Math.round(REPLAY.hz*IR.sec));
+  F.push(netPack());                                   /* הרגע שבו עצרנו — השידור נגמר בדיוק כאן */
+  const t0=F[0][2];
+  IR.saved={frames:REPLAY.frames, ev:REPLAY.ev, meta:REPLAY.meta, view:camView,
+    cam:{x:cam.target.x, y:cam.target.y, z:cam.target.z, theta:cam.theta, phi:cam.phi, dist:cam.dist}};
+  REPLAY.frames=F; REPLAY.ev=(REPLAY.recEv||[]).filter(e=>e.t>=t0-1e-6);
+  IR.frames=F; IR.on=true;
+  const ok=replayOpen({instant:true, play:true, follow:0, title:"⏪ שידור חוזר · 10 השניות האחרונות · ✕ חוזרים למאץ׳"});
+  if(!ok){ irAfterClose(); return false; }
+  irUi(); return true;
+}
+function irAfterClose(){
+  if(!IR.on) return; IR.on=false;
+  const S=IR.saved; IR.saved=null;
+  if(S){
+    /* אם בינתיים נשמר מאץ׳ חדש (המאץ׳ נעצר) — לא דורסים אותו */
+    if(REPLAY.frames===IR.frames){ REPLAY.frames=S.frames; REPLAY.ev=S.ev; REPLAY.meta=S.meta; }
+    if(camView!==S.view) setCamView(S.view);
+    cam.target.set(S.cam.x,S.cam.y,S.cam.z); cam.theta=S.cam.theta; cam.phi=S.cam.phi; cam.dist=S.cam.dist;
+  }
+  IR.frames=null; irUi();
+}
+function irShow(){ return NET.mode==="solo"&&!SPLIT.on&&MATCH.on&&!(MATCH.cd>0)&&!REPLAY.on; }
+function irUi(){ const b=$("irBtn"); if(b){ const h=!irShow(); if(b.hidden!==h) b.hidden=h; } }
+function irWire(){
+  on($("irBtn"),()=>irOpen());
+  addEventListener("keydown",e=>{
+    if(typingIn(e.target)||e.ctrlKey||e.metaKey||e.altKey) return;
+    const taken=KB.binds.some(b=>b.k===IR.key)||Object.values(KB.move).includes(IR.key);
+    if(e.code===IR.key&&!taken){ e.preventDefault(); e.stopImmediatePropagation();
+      if(e.repeat) return; if(IR.on) replayClose(); else if(irShow()) irOpen(); return; }
+    /* בזמן השידור החוזר המיידי — מקשי נהיגה ופעולה לא מגיעים למאץ׳ הקפוא (רווח, חיצים ו-Esc שייכים לצופה) */
+    if(IR.on&&e.code!=="Escape") e.stopImmediatePropagation();
+  },true);
+  setInterval(irUi,250);
+}
+
+/* ── 3. במאי אוטומטי למסך השני ──
+   שלושה שוטים: ״רחב״ (מצלמת הטלוויזיה הקודמת, בלי שינוי), ״מעקב״ (אחרי הכדור באוויר, או
+   הרובוט עם הכי הרבה כדורים כשהוא נוסע), ו״כוורת״ (קלוז־אפ על הכוורת שבה נוקד, מיד אחרי ניקוד).
+   כל שוט מחזיק לפחות minLen שניות (קלוז־אפ על ניקוד — אחרי minCut), והמעבר הוא גלישה מהירה, לא קפיצה. */
+const DIR={on:true, shot:"wide", held:0, t:0, minLen:2.5, minCut:1.2, hiveMax:4, followMax:9, wideMax:12,
+  chk:0, sc:null, scAt:-99, shotAt:null, scAlly:"red", cuts:0, blend:9, spd:0, prevP:null, prevG:null, log:[]};
+try{ DIR.on=localStorage.getItem("bbCastDir1")!=="0"; }catch(e){}
+function castDirLabel(){ return DIR.on?"🎬 במאי אוטומטי · פועל":"🎬 במאי אוטומטי · כבוי"; }
+function castDirSet(v){
+  DIR.on=!!v; try{ localStorage.setItem("bbCastDir1",DIR.on?"1":"0"); }catch(e){}
+  if(!DIR.on&&DIR.shot!=="wide"){ DIR.shot="wide"; DIR.held=0; DIR.blend=0; }
+  const b=$("bCastDir"); if(b) b.classList.toggle("on",DIR.on);
+  try{ if(castOn()){ const db=CAST.win.document.getElementById("castDirB"); if(db) db.textContent=T(castDirLabel()); } }catch(e){}
+}
+/* ההחלטה עצמה — פונקציה טהורה (בדיקה ברמת יחידה): מצב נוכחי ← השוט הבא */
+function castDirPick(s){
+  const fresh=s.scoreAge<DIR.hiveMax;
+  if(s.cur!=="hive"&&fresh&&s.held>=DIR.minCut) return "hive";          /* ניקוד — ישר לכוורת */
+  if(s.held<DIR.minLen) return s.cur;                                  /* שוט קצר מדי — לא חותכים */
+  if(s.cur==="hive") return s.held<DIR.hiveMax?"hive":s.flight?"follow":"wide";
+  if(s.flight) return "follow";                                        /* כדור באוויר — אחריו */
+  if(s.cur==="follow") return (s.held>DIR.followMax||!s.moving)?"wide":"follow";
+  if(s.cur==="wide"&&s.moving&&s.held>DIR.wideMax) return "follow";    /* הרבה זמן רחב ויש תנועה — מתקרבים */
+  return s.cur==="follow"?"follow":"wide";
+}
+/* הרובוט ״עם הכדור״: הכי הרבה כדורים במחסנית (אני בתיקו) */
+function castDirSubject(){
+  let g=bot.group, n=bot.mag|0;
+  for(const b of BOTS) if(b.on&&b.group&&b.clip&&b.clip.length>n){ n=b.clip.length; g=b.group; }
+  return g;
+}
+function castDirHiveVal(a){
+  if(NET.mode==="guest") return bcScoreOf(a)|0;
+  const S=scoreAlly(a); return (S.cell+S.tip)|0;                      /* רק מה שנכנס לכוורת, לא חניה ועבירות */
+}
+function castDirSense(edt){
+  const out={flight:null, action:false, moving:false, scoreAge:DIR.t-DIR.scAt};
+  if(REPLAY.on){ out.scoreAge=99; return out; }
+  if(NET.mode!=="guest"){ let best=null; for(const b of balls) if(b.trailOn&&b.mesh&&(!best||b.t0>best.t0)) best=b; out.flight=best; }
+  /* ירייה קצרה (כדור באוויר כשנייה) קצרה מהאורך המינימלי של שוט — זוכרים אותה עוד 2.5 שנ׳ ועוקבים אחרי היורה */
+  if(out.flight){ DIR.shotAt=DIR.t; if(!out.flight.byAI||out.flight.byAI.group) DIR.shooter=out.flight.byAI?out.flight.byAI.group:bot.group; }
+  out.action=!!out.flight||DIR.t-(DIR.shotAt==null?-99:DIR.shotAt)<2.5;
+  const g=castDirSubject();
+  if(g){ const p=g.position;
+    if(DIR.prevP&&DIR.prevG===g&&edt>0){ const v=Math.hypot(p.x-DIR.prevP.x,p.z-DIR.prevP.z)/edt; DIR.spd=DIR.spd*0.7+Math.min(5,v)*0.3; }
+    DIR.prevP={x:p.x,z:p.z}; DIR.prevG=g; }
+  out.moving=DIR.spd>0.35;
+  DIR.chk+=edt;
+  if(DIR.chk>=0.2){ DIR.chk=0; const r=castDirHiveVal("red"), b=castDirHiveVal("blue");
+    if(DIR.sc&&(r>DIR.sc.red||b>DIR.sc.blue)){ DIR.scAt=DIR.t; DIR.scAlly=(r-DIR.sc.red)>=(b-DIR.sc.blue)?"red":"blue"; }
+    DIR.sc={red:r,blue:b}; out.scoreAge=DIR.t-DIR.scAt; }
+  return out;
+}
+/* צעד אחד של הבמאי: בוחר שוט, ומזיז את CAST.tgt ו-CAST.pos (edt = הזמן מאז הציור הקודם) */
+function castDirTick(edt){
+  DIR.t+=edt; DIR.held+=edt; DIR.blend+=edt;
+  if(!CAST.tgt) CAST.tgt=new THREE.Vector3(0,M(8),0);
+  const S=castDirSense(edt);
+  if(DIR.on){ const nx=castDirPick({cur:DIR.shot, held:DIR.held, scoreAge:S.scoreAge, flight:S.action, moving:S.moving});
+    if(nx!==DIR.shot){ DIR.log.push({t:+DIR.t.toFixed(2), from:DIR.shot, to:nx, held:+DIR.held.toFixed(2)}); if(DIR.log.length>40) DIR.log.shift();
+      DIR.shot=nx; DIR.held=0; DIR.blend=0; DIR.cuts++; } }
+  else if(DIR.shot!=="wide"){ DIR.shot="wide"; DIR.held=0; DIR.blend=0; }
+  let th, ph, dist;
+  if(DIR.shot==="wide"){
+    /* המצלמה של v54 בדיוק: מהצד של הקהל, עוקבת בעדינות אחרי מרכז הרובוטים ומתנדנדת לאט */
+    let cx=0, cz=0, n=0; const add=g=>{ if(g){ cx+=g.position.x; cz+=g.position.z; n++; } };
+    add(bot.group); for(const b of BOTS) if(b.on) add(b.group);
+    if(n){ cx/=n; cz/=n; } const lim=M(34);
+    CAST.tgt.lerp(new THREE.Vector3(Math.max(-lim,Math.min(lim,cx*0.7)),M(9),Math.max(-lim,Math.min(lim,cz*0.7))),Math.min(1,edt*1.2));
+    th=Math.PI/2+0.22*Math.sin(CAST.t*0.06); ph=0.93; dist=M(190);
+  } else if(DIR.shot==="follow"){
+    const p=S.flight?S.flight.mesh.position:((S.action&&DIR.shooter)||castDirSubject()||bot.group).position, lim=M(60);
+    CAST.tgt.lerp(new THREE.Vector3(Math.max(-lim,Math.min(lim,p.x)),M(S.flight?14:10),Math.max(-lim,Math.min(lim,p.z))),Math.min(1,edt*3));
+    th=Math.PI/2-0.45*Math.max(-1,Math.min(1,CAST.tgt.x/M(72))); ph=0.98; dist=M(88);
+  } else {
+    const h=DIR.scAlly==="blue"?hiveBlue:hiveRed, p=h&&h.group?h.group.position:{x:0,z:0};
+    CAST.tgt.lerp(new THREE.Vector3(p.x,M(22),p.z),Math.min(1,edt*3));
+    th=Math.PI/2+(p.x<0?0.55:-0.55); ph=1.08; dist=M(60);
+  }
+  const want=new THREE.Vector3(CAST.tgt.x+dist*Math.sin(ph)*Math.cos(th),CAST.tgt.y+dist*Math.cos(ph),CAST.tgt.z+dist*Math.sin(ph)*Math.sin(th));
+  if(!CAST.pos) CAST.pos=want.clone();
+  else if(!DIR.on) CAST.pos.copy(want);                               /* כבוי — בדיוק כמו קודם */
+  else CAST.pos.lerp(want,Math.min(1,edt*(DIR.blend<1.2?2.6:6)));    /* מעבר בין שוטים — גלישה של כשנייה, לא קפיצה */
+  return {shot:DIR.shot, pos:CAST.pos, tgt:CAST.tgt};
+}
+setTimeout(()=>{ try{ irWire(); on($("bCastDir"),()=>castDirSet(!DIR.on)); castDirSet(DIR.on); }catch(e){ console.error(e); } },0);
+{ const X={NET_SPEC_MAX, netGuestNew, netSpecIds, netSpecNames, netSpecRoom, netSpecGuest, netSpecView, netSpecRows,
+    netAutoSeat, netSeatGuest, netFromGuest, netFreeSeat, netRoom, netPack, bcScoreOf, netGuestInput, netGuestEnter,
+    IR, irOpen, irWhy, irShow, irUi, irAfterClose, DIR, castDirPick, castDirTick, castDirSet, castDirSense, scoreAlly};
+  if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k];
+  if(window.__sim&&!("simT" in window.__sim)) Object.defineProperty(window.__sim,"simT",{get:()=>simT}); }
 
 /* ══════ v54 — הקלטת וידאו ══════
    מקליטים את הזירה + פס ניקוד, לקובץ MP4 (או WebM אם אין). באפליקציה נשמר לתיקיית ״סרטונים״. */
