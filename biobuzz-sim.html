@@ -3134,6 +3134,9 @@ let fieldUnlocked=false;
       l.append(tt,ip,em,sl);
       inputs[sp.k]=ip; sliders[sp.k]=sl;
       const push=x=>{ if(!isFinite(x)) return;
+        /* v70: מקלידים 0 או מינוס — נצמד לטווח המחוון (קוטר גלגל 0 = NaN בכל הפיזיקה) */
+        if(lo!==undefined&&x<lo) x=lo; if(hi!==undefined&&x>hi) x=hi;
+        if(+ip.value!==x) ip.value=x;
         P[sp.k]=uiTo(sp,x);
         if(sp.k==="vAvg"&&lock){ if(typeof autoVSet==="function") autoVSet(false); else { lock=false; $("kLock").checked=false; } }
         apply(sp.act); saveParams(); };
@@ -3184,7 +3187,7 @@ function applyRealm(opts){
   const open=realmOpen(), acts={};
   for(const sp of SPEC){
     const row=$("row_"+sp.k); if(!row) continue;
-    const gated=(sp.rm==="open"||sp.rm==="cal");
+    const gated=(sp.rm==="open"||sp.rm==="cal"||sp.rm==="field");   /* v70: גם מידות הזירה חוזרות לערך הרשמי בתחרות (נערכו ב״פתוח״ ושרדו) */
     const lk=gated&&!open;
     row.classList.toggle("lockrow",lk);
     const ip=inputs[sp.k], sl=sliders[sp.k];
@@ -3243,7 +3246,11 @@ function loadParams(){
     for(const k in j){ if(!Object.prototype.hasOwnProperty.call(P,k)) continue;
       const v=typeof j[k]==="number"?j[k]:(typeof j[k]==="string"&&j[k].trim()!==""?+j[k]:NaN);
       if(!isFinite(v)) continue;
-      const sp=SPECOF[k]; if(sp&&isFinite(sp.lo)&&isFinite(sp.hi)){ const w=sp.hi-sp.lo; if(v<sp.lo-w||v>sp.hi+w) continue; }
+      const sp=SPECOF[k];
+      /* v70: פרמטרי רובוט ושלדה — רק בתוך טווח המחוון (0 בקוטר גלגל = NaN שמת את הסימולטור אחרי רענון);
+         מידות הזירה (ed:0) לא נטענות בכלל — הן באות מהמודל הרשמי */
+      if(sp&&sp.ed===0) continue;
+      if(sp&&isFinite(sp.lo)&&isFinite(sp.hi)){ if(v<sp.lo||v>sp.hi) continue; }
       setP(k,v); n++; }
     return n>0;
   }catch(e){ return false; }
@@ -4630,6 +4637,7 @@ function cellContents(h){
   h.group.updateMatrixWorld(true);
   const inv=_m4inv.copy(h.group.matrixWorld).invert();
   for(const b of balls){
+    if(b.fromTip) continue;   /* v70: כדור שנשפך בהיפוך כבר נספר ב-20 של ההיפוך — לא גם כ-2 ״בתא״ (ניקוד כפול בהיפוך על הצפירה) */
     _v.copy(b.body.position).applyMatrix4(inv);
     const x=I(_v.x),y=I(_v.y),z=I(_v.z)*s;
     if(Math.abs(x)<=P.cellW/2+1 && y>=P.mouthY-P.cellH/2-1 && y<=P.mouthY+P.cellH/2+1 &&
@@ -6887,6 +6895,7 @@ function gameBotSet(b,on,role){ b.on=on; if(role) setAIRole(b,role);
 function gameStart(full){
   GAME.full=!!full; GAME.t=0;
   /* הכפייה של השופט תלויה במשחק המלא — המתג בלוח מתעדכן מיד */
+  try{ const at=$("kAutoTip"); if(at){ at.disabled=refForced(); if(refForced()&&!autoTip){ autoTip=true; at.checked=true; } } }catch(e){}   /* v70 */
   try{ const k=$("kRef"); if(k){ k.checked=refEnabled(); k.disabled=refForced();
     const lb=k.closest("label"); if(lb) lb.classList.toggle("lockrow",refForced()); }
     refreshRef(); }catch(e){} GAME.nextSwap=18+Math.random()*20; GAME.lastSwap="";
@@ -8631,6 +8640,8 @@ function placeAllAtStart(){
 function matchStart(){
   MATCH.netMirror=false;
   if(typeof GEN!=="undefined"&&GEN.running&&!GEN.inEval){ refToast("המחולל רץ — חכה שיסיים או עצור אותו","block"); return; }
+  /* v70: תרגיל חופשי (דיוק, מרחוק, חניה, עמדות משתנות, סיבוב פרחים) לא ממשיך לתוך מאץ׳ — אחרת המאץ׳ נרשם כתרגיל */
+  if(typeof DRILL!=="undefined"&&DRILL.on&&!GEN.running&&["acc","far","park","moveshoot","circuit"].includes(DRILL.on)){ DRILL.on=null; DRILL.daily=false; try{ v70DrillClear(); }catch(e){} }
   if(typeof vrecMatchStart==="function"&&!(typeof GEN!=="undefined"&&GEN.running)&&!fastMode) try{ vrecMatchStart(); }catch(e){}
   /* ספירה לאחור לפני שהשעון רץ — כמו על המגרש */
   MATCH.on=false; MATCH.cd=MT.cd>0?MT.cd+0.999:0; MATCH.phase=MT.cd>0?"ספירה":"AUTO";
@@ -8651,7 +8662,7 @@ function matchStart(){
   ghostArm(); debriefReset(); teachReset(); cueReset(); sndCtx();
   refreshGamePanel(); updateMatch(0); showBanner();
 }
-function matchStop(){ if(MATCH.on&&typeof DRILL!=="undefined"&&DRILL.on&&DRILL.on!=="acc") DRILL.on=null; if(typeof vrecMatchEnd==="function") try{ vrecMatchEnd(); }catch(e){} if(MATCH.on&&!GEN.running) replayCommit(); if(typeof myAutoReset==="function") myAutoReset(); MATCH.final=null; MATCH.on=false; MATCH.cd=0; MATCH.locked=false; faultReset(); SEASON.cur=null;
+function matchStop(){ if((MATCH.on||MATCH.cd>0)&&typeof DRILL!=="undefined"&&DRILL.on&&DRILL.on!=="acc"){ DRILL.on=null; try{ v70DrillClear(); }catch(e){} }   /* v70: גם עצירה בספירה לאחור מנקה את התרגיל */ if(typeof vrecMatchEnd==="function") try{ vrecMatchEnd(); }catch(e){} if(MATCH.on&&!GEN.running) replayCommit(); if(typeof myAutoReset==="function") myAutoReset(); MATCH.final=null; MATCH.on=false; MATCH.cd=0; MATCH.locked=false; faultReset(); SEASON.cur=null;
   MATCH.phase="idle"; ghostDisarm(); showBanner(); updateMatch(0); }
 /* ══════════════════════════════════════════════════════════════════
    שופט — פרק 11 במדריך, כמה שאפשר למדוד בסימולטור
@@ -9240,6 +9251,8 @@ function updateMatch(dt){
     /* v63: מאץ׳ שהגיע מהמארח (אורח ברשת) לא נשמר כאן — לא שיא, לא עונה, לא שידור חוזר */
     if(MATCH.netMirror&&MATCH.t>=tEnd()){ MATCH.on=false; MATCH.phase="סיום"; return; }
     if(MATCH.t>=tEnd()){ MATCH.final={red:scoreAlly("red").total, blue:scoreAlly("blue").total};
+      /* v70: פסילה (כרטיס אדום) — הברית שלי מסיימת ב-0, כמו ב-RP; לפני כן הבאנר, העונה ולוח השידור הראו תיקו */
+      if(MATCH.dq) MATCH.final[myAlly()]=0;
       MATCH.on=false; MATCH.phase="סיום"; MATCH.locked=false;
       MATCH.endT=simT; MATCH.rp=refRP();
       const tot=MATCH.dq?0:scoreNow().total; logRecord(tot);
@@ -9762,7 +9775,7 @@ chk($("kFC"),v=>{ fieldCentric=v; if(typeof refreshOri==="function") refreshOri(
 chk($("kAssist"),v=>aimAssist=v);
 chk($("kChase"),v=>chase=v);
 chk($("kPlace"),v=>placeOnClick=v);
-chk($("kAutoTip"),v=>autoTip=v);
+chk($("kAutoTip"),v=>{ if(refForced()&&!v){ const k=$("kAutoTip"); if(k) k.checked=true; refToast("בתחרות הכוורת מתהפכת לבד בסף — זה חלק מהזירה","block"); return; } autoTip=v; });   /* v70: לא מכבים היפוך אוטומטי בתחרות */
 chk($("kVol"),v=>volGhosts.forEach(g=>g.visible=v));
 chk($("kTags"),v=>tagPanels.forEach(p=>p.visible=v));
 chk($("kPanels"),v=>panels.forEach(p=>p.visible=v));
@@ -15751,8 +15764,9 @@ function drillRecord(k,v,unit){ if(typeof dailyCatch==="function"&&dailyCatch(k,
 function drillFree(){ PP.last="free"; if(MATCH.phase==="סיום") matchStop(); ACT.solo(); stageMatch(); homeRobot(); }
 function drillStart(k,ov){
   if(!DRILL.N[k]) return;
-  try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} /* v70: האתגר היומי מסמן את עצמו אחרי */
+  if(typeof GEN!=="undefined"&&GEN.running){ refToast("המתכנן רץ — חכה שיסיים או עצור אותו","block"); return; }   /* v70 */
   if(MATCH.on||MATCH.cd>0){ if(!matchStopSafe()) return; }
+  try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} /* v70: האתגר היומי מסמן את עצמו אחרי — ורק אחרי שבאמת עוצרים (לחיצה ראשונה רק ״דורכת״) */
   if(REPLAY.on) replayClose(); if(SPLIT.on) splitSet(false);
   DRILL.far=null; DRILL.cycles=0; DRILL.t0=null; DRILL.daily=!!(ov&&ov.daily); v70DrillClear();   /* v70: מנקים סימונים של תרגיל קודם */
   if(k==="acc"||k==="far"){ drillFree();
@@ -16910,7 +16924,7 @@ function coachClose(){ const m=$("coachBox"); if(m) m.hidden=true; }
   if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 /* v68: מה שהבדיקות של כיול הנהיגה, פירוק המחזורים ותוכנית האימון צריכות */
 { const X={calDrive1D,calTurn1D,calSolveDrive,calDriveFromOdo,calDriveSim,DEB,debriefReset,debriefShot,debriefFinish,renderDebrief,
-    planGet,planMark,planToggle,missionsBuild,optRun,optMutate,optRng,OPT,GEN,genLoad,missionsOpen,planSrc,coachSummary,coachShow,coachLast,drillRecord,DRILL,ODO,seasonEnd,SEASON,setRealm,realmOpen:()=>realmOpen(),P,
+    planGet,planMark,planToggle,missionsBuild,optRun,optMutate,optRng,OPT,GEN,genLoad,loadParams,get autoTip(){ return autoTip; },bcScoreOf:a=>bcScoreOf(a),missionsOpen,planSrc,coachSummary,coachShow,coachLast,drillRecord,DRILL,ODO,seasonEnd,SEASON,setRealm,realmOpen:()=>realmOpen(),P,
     setMatchOn:v=>{ MATCH.on=!!v; }, setMatchT:t=>{ MATCH.t=t; }, seasonAll:()=>seasonAll()};
   if(window.__sim) for(const k in X) if(!(k in window.__sim)) window.__sim[k]=X[k]; }
 Object.assign(window.__sim||{},{AIST,aiOn,aiRefresh,aiRender,CMDK,cmdkOpen,cmdkClose,cmdkSearch,cmdkIndex,cmdkRun,AICHAT,chatOpen,chatSend,chatClose,COACH,coachSummary,coachTeamSummary,coachRun,coachShow,coachBarUI,drillStart,drillFire,DRILL});

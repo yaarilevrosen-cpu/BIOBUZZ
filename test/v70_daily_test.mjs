@@ -59,7 +59,7 @@ r=await E(async()=>{ const S=__sim, D=S.DAILY; localStorage.removeItem('bbDaily1
   const card=document.getElementById('ppDaily').textContent;
   const out={k,c:S.dailySig(c),st,added:a.length-n0,kind:m&&m.kind,my:m&&m.my,d,on:D.on,best0,best1:S.DRILL.best.cycle,card};
   // תרגיל רגיל אחרי זה לא נחשב לאתגר
-  S.dailyStart(); const was=D.on; S.drillStart('acc'); out.afterNormal=D.on; out.wasDaily=was; S.matchStop();
+  S.dailyStart(); const was=D.on; S.drillStart('acc'); out.afterOne=D.on; S.drillStart('acc'); out.afterNormal=D.on; out.wasDaily=was; S.matchStop();   /* v70: לחיצה ראשונה רק ״דורכת״ — האתגר נשאר; השנייה עוצרת */
   D.fake=null; return out; });
 ok(r.st.on===r.k&&r.st.drill==='cycle'&&r.st.tele,'כפתור ״התחל את האתגר״ מתחיל את תרגיל המחזורים ('+r.c+')');
 ok(r.st.ally===r.st.want&&r.st.faults===!!r.st.wantF,'הצד והתקלות מהאתגר: '+r.st.ally+'/'+r.st.want+' · תקלות '+r.st.faults+'/'+r.st.wantF);
@@ -67,7 +67,7 @@ ok(r.added===1&&r.kind==='daily','סוף המאץ׳: רשומה אחת בעונ�
 ok(r.d&&r.d.n===1&&r.d.best===r.my&&r.on===null,'התוצאה נשמרה לאתגר של היום: '+(r.d&&r.d.best)+' · ניסיונות '+(r.d&&r.d.n));
 ok(r.best0===r.best1,'השיא הרגיל של התרגיל לא השתנה ('+r.best0+' → '+r.best1+')');
 ok(/הכי טוב היום/.test(r.card)&&r.card.includes(String(r.my)),'הכרטיס בלוח המשחק מציג את התוצאה של היום');
-ok(r.wasDaily===r.k&&r.afterNormal===null,'תרגיל רגיל אחרי האתגר מבטל את סימון האתגר');
+ok(r.wasDaily===r.k&&r.afterOne===r.k&&r.afterNormal===null,'לחיצה אחת על תרגיל אחר לא מפילה את האתגר ('+r.afterOne+'); לחיצה שנייה מבטלת אותו');
 
 // 4. הישגים על עונה סינתטית
 r=await E(()=>{ const S=__sim; const all=[];
