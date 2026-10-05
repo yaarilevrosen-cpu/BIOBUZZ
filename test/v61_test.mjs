@@ -132,7 +132,9 @@ await E(()=>{ __sim.matchStop(); });
 
 // 6ב. אסטרטגיית מעלית: לא מאכילים פרח של היריב, ונקטר רק בדקה האחרונה
 r=await E(()=>{ const S=__sim, b=S.BOTS[1]; S.bldSet(1,'lift'); const opp=b.ally==='red'?'blue':'red';
-  const fl=S.flowers[1]; S.bldDeposit(fl,'test','pollen'); S.bldDeposit(fl,'test',opp); S.advance(1.5,1/120);
+  /* v70: בלי בוטים בזירה בזמן שהכדורים מתייצבים — בוט שעבר ליד הפרח שלף אותם וה-owner יצא null (נכשל ב-CI) */
+  const on0=S.BOTS.map(x=>x.on); S.BOTS.forEach(x=>x.on=false);
+  const fl=S.flowers[1]; S.bldDeposit(fl,'test','pollen'); S.bldDeposit(fl,'test',opp); S.advance(1.5,1/120); S.BOTS.forEach((x,i)=>x.on=on0[i]);
   const info=S.bldFlowerInfo(fl); b.clip.length=0; b.clip.push('pollen'); const t=S.bldLiftTarget(b);
   b.clip.length=0; b.clip.push(b.ally); const noEarly=!S.bldEndgame()&&!S.bldCanDropTest?true:true;
   const wants=S.bldBotWantsLiftTest?S.bldBotWantsLiftTest(b):null; b.clip.length=0;

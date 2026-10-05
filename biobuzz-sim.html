@@ -6438,6 +6438,14 @@ function aiStep(b,dt){
   let v0x=b.vx||0, v0z=b.vz||0;
   if(botPushedByHuman(b)){ v0x=b.body.velocity.x; v0z=b.body.velocity.z; b.vx=v0x; b.vz=v0z; }
   b.ivSet=false; aiStepDrive(b,dt);
+  /* v70: באוטונומי קיר רך בקו האמצע (G402) — הניווט עוקף כוורת או שותף שחוסם, ולפעמים מהצד של היריב.
+     המרכז לא עובר יותר מ-2″ לצד השני; רכיב המהירות לכיוון היריב מתאפס, הנסיעה לאורך הקו נשארת */
+  if(MATCH.on&&MATCH.phase==="AUTO"){ const sg=b.ally==="red"?-1:1, xs=I(b.body.position.x)*sg;
+    if(xs<=-2&&b.vx*sg<0){ b.vx=0; } else if(xs<4&&b.vx*sg<0){ b.vx*=Math.max(0,(xs+2)/6); }
+    /* גם רובוט אחר שדוחף אותו (שותף בדרך) לא מעביר אותו — כמו קיר: מחזירים אל הקו */
+    /* רק מי שחוצה עכשיו (היה בצד שלו בצעד הקודם) — לא בוט שהוצב שם (בדיקות, עמדה ידנית) */
+    if(xs<-2&&b.xsPrev!=null&&b.xsPrev>=-2.5&&b.xsPrev-xs<6){   /* קפיצה של יותר מ-6″ בצעד = הצבה, לא נסיעה */ b.body.position.x=M(-2*sg); if(b.body.velocity.x*sg<0) b.body.velocity.x=0; }
+    b.xsPrev=I(b.body.position.x)*sg; } else b.xsPrev=null;
   if(!b.ivSet){ b.ivx=b.vx; b.ivz=b.vz; }   /* הכוונה (מה שהבוט רצה) — לשופט: הצמדה נמדדת לפי כוונה, לא לפי מה שהמגע השאיר */
   botFaultTick(b,dt);
   if(botFault(b,"radio")){ b.vx=0; b.vz=0; }                       /* מקלט מנותק — עוצר */
@@ -6451,6 +6459,9 @@ function aiStep(b,dt){
   aiBlockCheck(b,dt);
 }
 function botPushedByHuman(b){
+  /* v70: באוטונומי אף אדם לא נוהג — גם הרובוט שלי מריץ תוכנית. בלי זה הרובוט שלי, בדרך לעמדת הירי ליד
+     קו האמצע, דחף את השותף הבוט לצד של היריב (v63_core_test סעיף 18 נכשל ב-CI: 9.3″) */
+  if(MATCH.on&&MATCH.phase==="AUTO") return false;
   for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o) continue;
     if(o===botBody) return true;
     for(const q of BOTS) if(q!==b&&q.body===o&&q.hum) return true; }
@@ -12768,7 +12779,7 @@ function netGuestPad(){
 function netGuestInput(dt){
   const pn=performance.now();              /* שעון קיר — לא תלוי בקצב הפריימים */
   if(pn-(NET.pingAt||0)>1000){ NET.pingAt=pn; netSend({t:"ping",c:pn,rtt:Math.round(NET.rtt||0)}); }
-  if(NET.spec) return;                     /* v70: צופה לא שולח קלט */
+  if(NET.spec||NET.seat==null) return;     /* v70: צופה (או אורח שעוד לא קיבל מושב) לא שולח קלט */
   NET.inT+=dt; if(NET.inT<1/NET_IN_HZ) return; NET.inT=0;
   const kv=kbMoveVec();
   let x=kv.x, y=kv.y, r=kv.t;

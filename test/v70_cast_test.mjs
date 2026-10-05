@@ -60,7 +60,7 @@ r=await E(()=>{ const S=window.S; const sent=[];
   S.netOnMsg(JSON.stringify({t:"spec",n:1,max:6}));
   S.netOnMsg(JSON.stringify({t:"room",seats:[{kind:"host",name:"מארח",ally:"red"},{kind:"net",name:"א",ally:"blue"},{kind:"bot",name:"",ally:"blue"},{kind:"net",name:"ב",ally:"red"}],
     host:"מארח",allies:["red","blue","blue","red"],specs:["אורח","זרה"]}));
-  S.NET.inT=1; S.NET.pingAt=0; S.netGuestInput(0.1);
+  S.NET.inT=1; S.NET.pingAt=-1e9; S.netGuestInput(0.1);   /* -1e9: פינג נשלח גם כשהדף עלה לפני פחות משנייה (performance.now קטן) */
   S.NET.score=[7,3]; S.netRefresh();
   const tb=document.getElementById("netSeats");
   const o={spec:S.NET.spec, bc:S.BC.on, cam:S.camView, cls:document.body.classList.contains("netspec"), sentIn:sent.some(m=>m.t==="in"), ping:sent.some(m=>m.t==="ping"),
@@ -70,7 +70,7 @@ r=await E(()=>{ const S=window.S; const sent=[];
   o.after={spec:S.NET.spec, bc:S.BC.on, seat:S.NET.seat};
   S.netClose(""); return o; });
 ok(r.spec&&r.bc&&r.cam!=="driver"&&r.cls,'אצל הצופה: לוח ניקוד גדול ומצלמה חופשית ('+r.cam+')');
-ok(!r.sentIn&&r.ping,'הצופה לא שולח קלט (רק פינג)');
+ok(!r.sentIn&&r.ping,'הצופה לא שולח קלט (רק פינג) — קלט: '+r.sentIn+', פינג: '+r.ping);
 ok(r.want&&r.specRows===2&&/👁/.test(r.tag),'הצופה רואה את הצופים ('+r.specRows+') וכפתור ״לשבת כאן״ לעמדה הפנויה');
 ok(r.red===7&&r.blue===3,'לוח השידור אצל האורח מראה את הניקוד של המארח ('+r.red+':'+r.blue+')');
 ok(!r.after.spec&&!r.after.bc&&r.after.seat===2,'כשהצופה מתיישב — חוזר לתצוגת נהג (עמדה '+r.after.seat+')');
