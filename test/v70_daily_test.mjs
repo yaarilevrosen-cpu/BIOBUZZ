@@ -107,6 +107,21 @@ ok(r.cards>=15&&r.on===r.un&&r.on>=2,'הגלריה: '+r.cards+' הישגים, '+
 ok(r.prog.every(p=>/^\d+\/\d+$/.test(p))&&/✓ \d+\.\d+\.\d{4}/.test(r.date),'התקדמות לנעולים ('+r.prog.join(' · ')+') ותאריך לפתוחים ('+r.date+')');
 
 // 7. אנגלית — בלי עברית בכרטיס ובגלריה
+// ── שילוב בין הפיצ׳רים (נמצא בסקירה אחרי המיזוג) ──
+r=await page.evaluate(()=>{ const S=__sim; S.matchStop(); S.SETUP.ally='red';
+  /* אתגר בברית השנייה: הברית נשארת כחולה כל עוד התרגיל רץ, וחוזרת לאדומה בסופו */
+  S.drillStart('cycle',{setup:{ally:'blue'}}); const during=S.myAlly(); S.advance(4,1/60); const during2=S.myAlly();
+  S.matchStop(); S.DRILL.on=null; return {during,during2}; });
+await page.waitForTimeout(1500);
+r.after=await page.evaluate(()=>__sim.myAlly());
+ok(r.during==='blue'&&r.during2==='blue'&&r.after==='red','אתגר בברית אחרת: כחול בזמן התרגיל ('+r.during2+'), חוזר ל-'+r.after+' אחרי');
+r=await page.evaluate(()=>{ const S=__sim; const o={}; for(const k of ['load','decide','dodge','transition']){ S.DRILL.on=k; o[k]=S.ghostMode(); } S.DRILL.on=null; return o; });
+ok(Object.entries(r).every(([k,v])=>k===v),'ארבעת התרגילים החדשים עם שעון — רוח משלהם, לא של המאץ׳ המלא ('+JSON.stringify(r)+')');
+r=await page.evaluate(()=>{ const S=__sim; const N=S.NET, m0=N.mode, s0=N.spec; S.brdOpen(); const n0=S.BRD.s.length;
+  N.mode='guest'; N.spec=true; const ok1=S.brdAddStroke?S.brdAddStroke('a',0,[-40,40,-20,20]):null; const n1=S.BRD.s.length;
+  N.mode=m0; N.spec=s0; S.brdClose(); return {n0,n1,ok1}; });
+ok(r.n1===r.n0,'צופה ברשת לא עורך את לוח האסטרטגיה (קווים: '+r.n0+' → '+r.n1+')');
+
 allErrs.push(...errs);
 await E(()=>localStorage.setItem('bbLang1','en'));
 await page.reload({timeout:120000}); await page.waitForFunction(()=>window.__sim&&window.__sim.dailyFor&&window.__sim.botBody,null,{timeout:90000});
