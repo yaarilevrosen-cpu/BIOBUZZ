@@ -88,13 +88,13 @@ r=await E((good)=>{ const G=JSON.parse(good), T=o=>!!S.ghostParse(typeof o==='st
     obj:T(c(o=>o.frames[2]={x:1})),
     short:T(c(o=>o.frames[1]=[1,2,3,4])),
     outField:T(c(o=>o.frames[5][0]=500)),
-    tooMany:T(c(o=>{ const f=o.frames[0]; o.frames=Array.from({length:3601},()=>f.slice()); })),
+    tooMany:T(c(o=>{ const f=o.frames[0]; o.frames=Array.from({length:12001},()=>f.slice()); })),
     noScore:T(c(o=>delete o.score)),
-    exactCap:T(c(o=>{ const f=o.frames[0]; o.frames=Array.from({length:3600},()=>f.slice()); })),
+    exactCap:T(c(o=>{ const f=o.frames[0]; o.frames=Array.from({length:12000},()=>f.slice()); })),
     file0:S.ghostStore().file.name };
   },txt);
 const bad=['big','notJson','wrongKind','wrongVer','strNum','nullNum','obj','short','outField','tooMany','noScore'];
-ok(r.good&&r.exactCap&&bad.every(k=>r[k]===false),'קבצים פגומים נדחים ('+bad.filter(k=>r[k]===false).length+'/'+bad.length+'), תקין ו-3600 פריימים בדיוק מתקבלים');
+ok(r.good&&r.exactCap&&bad.every(k=>r[k]===false),'קבצים פגומים נדחים ('+bad.filter(k=>r[k]===false).length+'/'+bad.length+'), תקין ו-12000 פריימים בדיוק מתקבלים');
 r=await E((good)=>{ const o=JSON.parse(good); o.name='<img src=x onerror="window.__xss=1">\u0007abcdefghijklmnopqrstuvwxyz';
   const okI=S.ghostImportText(JSON.stringify(o)); S.refreshGhost(); const bad0=S.ghostImportText('{"bb":"ghost","v":1,"frames":[["x"]]}');
   return {okI, bad0, name:S.ghostStore().file.name, img:document.querySelectorAll('#oGhost img').length, xss:!!window.__xss}; },txt);

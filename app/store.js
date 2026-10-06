@@ -161,8 +161,9 @@ class Store {
   addProfile(name, opt) {
     opt = opt || {};
     const i = this.meta.list.length;
-    const p = { id: newId(), name: this.uniqueName(name), emoji: opt.emoji || EMOJI[i % EMOJI.length],
-      color: opt.color || COLORS[i % COLORS.length], created: Date.now(), metaAt: opt.quiet ? 0 : Date.now(), kvAt: 0 };
+    /* 1.12.4: סמל ארוך / צבע לא תקין נדחו בשרת ותקעו את הסנכרון */
+    const p = { id: newId(), name: this.uniqueName(name), emoji: (typeof opt.emoji === "string" && opt.emoji ? Array.from(opt.emoji).slice(0, 4).join("") : "") || EMOJI[i % EMOJI.length],
+      color: (typeof opt.color === "string" && /^#[0-9a-f]{6}$/i.test(opt.color) ? opt.color : "") || COLORS[i % COLORS.length], created: Date.now(), metaAt: opt.quiet ? 0 : Date.now(), kvAt: 0 };
     if (opt.id && validId(opt.id)) p.id = opt.id;
     if (opt.local) p.local = true;       /* נהג מקומי — נשאר רק במחשב הזה, לא עולה לחשבון */
     const owner = opt.owner !== undefined ? opt.owner : this.viewer;   /* נוצר בזמן שמחוברים — שייך לחשבון */
@@ -175,7 +176,7 @@ class Store {
   updateProfile(id, patch) {
     const p = this.meta.list.find(x => x.id === id); if (!p || !this.visible(p)) return null;
     if (patch.name != null) p.name = this.uniqueName(patch.name, id);
-    if (patch.emoji) p.emoji = String(patch.emoji).slice(0, 4);
+    if (patch.emoji) p.emoji = Array.from(String(patch.emoji)).slice(0, 4).join("");
     if (patch.color && /^#[0-9a-f]{6}$/i.test(patch.color)) p.color = patch.color;
     if (patch.local != null) { if (patch.local) p.local = true; else { delete p.local; p.kvAt = Date.now(); if (this.viewer && !p.owner) p.owner = this.viewer; } }
     p.metaAt = Date.now();
@@ -203,12 +204,31 @@ class Store {
   /* ── מפתחות הסימולטור ── */
   loadKv() {
     const id = this.meta.active;
-    this.kv = readJSON(path.join(this.dir(id), "store.json"), {}) || {};
-    if (typeof this.kv !== "object" || Array.isArray(this.kv)) this.kv = {};
+    this.kv = this.readStore(id);
     for (const k of Object.keys(this.kv)) if (!KEYRE.test(k) || typeof this.kv[k] !== "string" || k === KVAT) delete this.kv[k];
     this.kat = this.readKat(id, this.kv);
     this.katDirty = false;
     this.seedArchive(id);
+  }
+  /* 1.12.4: store.json פגום לא הופך בשקט ל-{} (השמירה הבאה הייתה דורסת הכול) —
+     הקובץ עובר ל-store.json.bad-<זמן>, והמפתחות חוזרים מהגיבוי היומי הכי חדש שתקין */
+  readStore(id) {
+    const f = path.join(this.dir(id), "store.json");
+    if (!fs.existsSync(f)) return {};
+    let o; try { o = JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) { o = undefined; }
+    if (o && typeof o === "object" && !Array.isArray(o)) return o;
+    const tag = new Date().toISOString().replace(/[:.]/g, "-");
+    try { fs.renameSync(f, f + ".bad-" + tag); } catch (e) {}
+    for (const t of this.backupsList()) {
+      const b = readJSON(path.join(this.root, "backups", t, "profiles", id, "store.json"), null);
+      if (b && typeof b === "object" && !Array.isArray(b)) {
+        this.kvRecovered = "backup " + t;
+        try { writeAtomic(f, JSON.stringify(b)); } catch (e) {}
+        return b;
+      }
+    }
+    this.kvRecovered = "empty";
+    return {};
   }
   /* זמני המפתחות. נהג מלפני v63 — כל המפתחות מקבלים את זמן השינוי האחרון של הנהג */
   readKat(id, kv) {
@@ -259,7 +279,7 @@ class Store {
   /* ── לסנכרון ── */
   kvOf(id) {
     if (id === this.meta.active) return Object.assign({}, this.kv);
-    const o = readJSON(path.join(this.dir(id), "store.json"), {}) || {};
+    const o = this.readStore(id);
     for (const k of Object.keys(o)) if (!KEYRE.test(k) || typeof o[k] !== "string" || k === KVAT) delete o[k];
     return o;
   }
@@ -346,7 +366,7 @@ class Store {
   }
   addMatch(m, id) {
     id = id || this.meta.active;
-    if (!m || typeof m !== "object" || !isFinite(m.at) || !validId(id)) return false;
+    if (!m || typeof m !== "object" || Array.isArray(m) || !isFinite(m.at) || +m.at <= 0 || +m.at > 4102444800000 || !validId(id)) return false;
     fs.mkdirSync(this.dir(id), { recursive: true });
     appendLines(this.mfile(id), JSON.stringify(m) + "\n");
     return true;

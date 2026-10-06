@@ -25,6 +25,24 @@ const HEB = {
 };
 /* v60: שם החשבון שמור בשרת (user_metadata.name) — אותו שם בכל מחשב */
 function userName(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.name === "string" ? m.name.trim().slice(0, 40) : ""; }
+/* 1.12.4: מה שהשרת ידחה בכל מקרה (v63_security.sql) — מסננים לפני השליחה, ושורה שבכל זאת נדחתה לא תוקעת את כל הסנכרון */
+const MATCH_MAX = 250000;            /* bb_matches_size_ok: pg_column_size(data) <= 262144 */
+const KV_MAX = 1900000;              /* bb_profiles_size_ok: pg_column_size(kv) <= 2000000 */
+const AT_MAX = 4102444800000;        /* שנת 2100 — at הוא bigint; 1e300 נכשל */
+const cut = (v, n) => typeof v === "string" ? Array.from(v).slice(0, n).join("") : null;
+function cleanColor(c) { return typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c : null; }
+function matchOk(m) { return !!m && typeof m === "object" && isFinite(m.at) && +m.at > 0 && +m.at < AT_MAX; }
+/* הנתונים של מאץ׳ לענן: גדול מדי — בלי מסלול הירי והכדורים (sh/bl); עדיין גדול — לא עולה */
+function matchData(m) {
+  let j = JSON.stringify(m); if (Buffer.byteLength(j) <= MATCH_MAX) return m;
+  const o = Object.assign({}, m); delete o.sh; delete o.bl; j = JSON.stringify(o);
+  return Buffer.byteLength(j) <= MATCH_MAX ? o : null;
+}
+/* דחייה של השרת (לא תקלת רשת / אסימון) — השורה עצמה לא תקינה */
+const rejected = e => e && e.status >= 400 && e.status < 500 && e.status !== 401 && e.status !== 408 && e.status !== 429;
+/* שדות הסיכום של מאץ׳ של חבר קבוצה (store.summarize) — לא את כל המאץ׳ */
+const TEAM_FIELDS = ["win", "my", "shots", "hits", "avgCycle", "fouls", "park", "autoPts"];
+const TEAM_PAGE = 500;               /* לכל חבר בכל סנכרון; הבא ממשיך מאיפה שעצר */
 function heb(msg) {
   msg = String(msg || "שגיאה");
   for (const k in HEB) if (msg.indexOf(k) >= 0) return HEB[k];
@@ -41,6 +59,9 @@ class Sync {
     /* v57: חשבון אחד לכל אדם. הקבוצה = קבוצה שמצטרפים אליה בקוד (bb_teams) */
     this.kind = "main";
     this.cloud = Object.assign({}, DEFAULT_CLOUD, readJSON(path.join(dir, "cloud.json"), {}) || {}, opt.cloud || {});
+    /* 1.12.4: שרת אחר לבדיקות, בלי לגעת בייצור */
+    if (process.env.BIOBUZZ_CLOUD_URL) this.cloud.url = process.env.BIOBUZZ_CLOUD_URL;
+    if (process.env.BIOBUZZ_CLOUD_KEY) this.cloud.key = process.env.BIOBUZZ_CLOUD_KEY;
     this.enc = opt.enc || (s => Buffer.from(s, "utf8").toString("base64"));
     this.dec = opt.dec || (s => Buffer.from(s, "base64").toString("utf8"));
     /* v63: בלי הצפנה אמיתית (לינוקס בלי מחזיק מפתחות) — ההתחברות נשמרת רק בזיכרון, עד היציאה */
@@ -178,8 +199,9 @@ class Sync {
     for (let from = 0; ; from += page) {
       const { data } = await this.rest("GET", table + "?select=" + select + (filter ? "&" + filter : "") + "&order=" + (table === "bb_matches" ? "at" : "id"),
         undefined, { "Range-Unit": "items", Range: from + "-" + (from + page - 1) });
-      out.push.apply(out, data || []);
-      if (!data || data.length < page) break;
+      if (!Array.isArray(data)) break;            /* 1.12.4: תשובה שאינה מערך — לולאה אינסופית */
+      out.push.apply(out, data);
+      if (data.length < page || from > 2e6) break;
     }
     return out;
   }
@@ -188,7 +210,7 @@ class Sync {
   own() { return "owner=eq." + encodeURIComponent(this.uid()); }
   async _sync() {
     const S = this.store; S.flushKv(); const K = this.kind; const uid = this.uid();
-    const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0 };
+    const res = { ok: true, changedActive: false, profilesChanged: false, pushedMatches: 0, pulledMatches: 0, pushedProfiles: 0, pulledProfiles: 0, skipped: [] };
     if (this.viewerSwitched) { this.viewerSwitched = false; res.changedActive = true; }
     const activeBefore = S.meta.active;
     try { await this.namePull(await this.myTeamLabel()); } catch (e) {}
@@ -246,11 +268,13 @@ class Sync {
       if ((q.kvAt || 0) > (q.kvDone || 0)) kvPush = true;
       const pushMeta = !r || pm > rm;
       if (pushMeta || kvPush) {
-        const row = { id: q.id, name: q.name, emoji: q.emoji || null, color: q.color || null, created: q.created || null, meta_at: q.metaAt || 0, deleted: false };
+        const row = { id: q.id, name: cut(q.name, 60) || "נהג", emoji: cut(q.emoji, 16), color: cleanColor(q.color), created: isFinite(q.created) && q.created > 0 && q.created < AT_MAX ? Math.round(q.created) : null,
+          meta_at: isFinite(q.metaAt) && q.metaAt >= 0 && q.metaAt < AT_MAX ? Math.round(q.metaAt) : 0, deleted: false };
         let done = null;
         if (kvPush) {
           const at = Math.max(Date.now(), rk + 1); done = q.kvAt || 0;
           row.kv = S.kvSynced(q.id); row.kv[KVAT] = JSON.stringify({ k: at, t: S.katSynced(q.id) }); row.kv_at = at;
+          if (Buffer.byteLength(JSON.stringify(row.kv)) > KV_MAX) { res.skipped.push({ id: q.id, why: "kv-size" }); delete row.kv; row.kv_at = r ? r.kv_at : 0; done = null; if (!pushMeta) continue; }
         } else { row.kv_at = r.kv_at; }
         push.push({ row, done });
       }
@@ -258,7 +282,8 @@ class Sync {
     S.saveMeta();
     /* שורה אחת לכל נהג (שורות בלי kv לא יכולות להיות באותה בקשה עם שורות עם kv) */
     for (const { row, done } of push) {
-      await this.rest("POST", "bb_profiles?on_conflict=owner,id", [row], { Prefer: "resolution=merge-duplicates,return=minimal" });
+      try { await this.rest("POST", "bb_profiles?on_conflict=owner,id", [row], { Prefer: "resolution=merge-duplicates,return=minimal" }); }
+      catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: row.id, why: String(e.message || e.status).slice(0, 120) }); continue; }
       const q = S.meta.list.find(x => x.id === row.id);
       if (q && row.kv) { q.kvSeen = row.kv_at; q.kvDone = Math.max(q.kvDone || 0, done); }
       res.pushedProfiles++;
@@ -269,13 +294,24 @@ class Sync {
     const rset = new Map();
     for (const m of remoteM) { if (!validId(m.profile_id)) continue; if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
     for (const p of S.meta.list.filter(q => this.mine(q))) {
-      const local = S.matches(p.id); const lset = new Set(local.map(m => +m.at));
+      const local = S.matches(p.id); const lset = new Set(local.map(m => Math.round(+m.at)));
       const rs = rset.get(p.id) || new Set();
-      const up = local.filter(m => isFinite(m.at) && !rs.has(+m.at));
+      const up = [];
+      for (const m of local) { if (!isFinite(m.at) || rs.has(Math.round(+m.at))) continue;
+        const d = matchOk(m) ? matchData(m) : null;
+        if (d) up.push({ profile_id: p.id, at: Math.round(+m.at), data: d }); else res.skipped.push({ id: p.id, at: m.at, why: "match" }); }
+      const post = rows => this.rest("POST", "bb_matches?on_conflict=owner,profile_id,at", rows, { Prefer: "resolution=ignore-duplicates,return=minimal" });
       for (let i = 0; i < up.length; i += 200) {
-        const chunk = up.slice(i, i + 200).map(m => ({ profile_id: p.id, at: Math.round(+m.at), data: m }));
-        await this.rest("POST", "bb_matches?on_conflict=owner,profile_id,at", chunk, { Prefer: "resolution=ignore-duplicates,return=minimal" });
-        res.pushedMatches += chunk.length;
+        const chunk = up.slice(i, i + 200);
+        try { await post(chunk); res.pushedMatches += chunk.length; }
+        catch (e) {
+          if (!rejected(e)) throw e;
+          /* חבילה נדחתה — אחד־אחד, ומה שנדחה נשאר מקומי בלי לעצור את השאר */
+          for (const row of chunk) {
+            try { await post([row]); res.pushedMatches++; }
+            catch (e2) { if (!rejected(e2)) throw e2; res.skipped.push({ id: p.id, at: row.at, why: String(e2.message || e2.status).slice(0, 120) }); }
+          }
+        }
       }
       const down = [...rs].filter(a => isFinite(a) && !lset.has(a));
       for (let i = 0; i < down.length; i += 100) {
@@ -371,17 +407,25 @@ class Sync {
       const profs = await this.remoteAll("bb_profiles", "owner,id,name,emoji,color,deleted", inq);
       for (const r of profs) if (r && validId(r.id)) T.profiles[r.owner + "/" + r.id] = r;
       let pulled = 0;
+      /* 1.12.4: רק שדות הסיכום (לא כל המאץ׳ עם sh/bl), עד TEAM_PAGE לכל חבר בכל סנכרון, ותקרה לכל נהג —
+         חבר עם הרבה מאצ׳ים גדולים לא ממלא את הזיכרון והדיסק של כולם */
+      const sel = "owner,profile_id,at,created_at," + TEAM_FIELDS.map(f => f + ":data->" + f).join(",");
+      const num = v => (typeof v === "number" && isFinite(v) ? v : typeof v === "boolean" ? v : null);
       for (const u of others) {
         const since = T.sinceBy[u] || "";
-        const ms = await this.remoteAll("bb_matches", "owner,profile_id,at,data,created_at", "owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : ""));
-        for (const m of ms) {
-          if (!m || !validId(m.profile_id)) continue;
-          const k = m.owner + "/" + m.profile_id; const l = T.matches[k] || (T.matches[k] = []);
-          if (m.data && !l.some(x => +x.at === +m.at)) { l.push(m.data); pulled++; }
-          if (m.created_at && (!T.sinceBy[u] || m.created_at > T.sinceBy[u])) T.sinceBy[u] = m.created_at;
+        const { data: ms } = await this.rest("GET", "bb_matches?select=" + sel + "&owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : "") + "&order=created_at.asc&limit=" + TEAM_PAGE);
+        for (const m of Array.isArray(ms) ? ms : []) {
+          if (!m || !validId(m.profile_id) || !isFinite(m.at)) continue;
+          const k = m.owner + "/" + m.profile_id; if (!T.profiles[k]) continue;
+          const l = T.matches[k] || (T.matches[k] = []);
+          if (!l.some(x => +x.at === +m.at)) { const o = { at: +m.at }; for (const f of TEAM_FIELDS) { const v = num(m[f]); if (v != null) o[f] = v; } l.push(o); pulled++; }
+          if (typeof m.created_at === "string" && m.created_at.length < 40 && (!T.sinceBy[u] || m.created_at > T.sinceBy[u])) T.sinceBy[u] = m.created_at;
         }
       }
-      for (const k in T.matches) if (T.matches[k].length > 3000) T.matches[k] = T.matches[k].slice(-3000);
+      /* מטמון ישן (לפני 1.12.4) עם מאצ׳ים מלאים — מצמצמים לשדות הסיכום */
+      for (const k in T.matches) { let l = T.matches[k]; if (!Array.isArray(l)) { delete T.matches[k]; continue; }
+        if (l.length > 3000) l = l.slice(-3000);
+        T.matches[k] = l.filter(x => x && isFinite(x.at)).map(x => { const o = { at: +x.at }; for (const f of TEAM_FIELDS) { const v = num(x[f]); if (v != null) o[f] = v; } return o; }); }
       T.pulled = pulled;
     }
     this.saveTeam();
