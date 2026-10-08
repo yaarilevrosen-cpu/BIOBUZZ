@@ -15,14 +15,16 @@ try {
   for (const k in boot.kv) ls.setItem(k, boot.kv[k]);
 } catch (e) { console.error("bbApp preload", e); }
 
+const PID = boot.profile && typeof boot.profile.id === "string" ? boot.profile.id : undefined;
 contextBridge.exposeInMainWorld("bbApp", {
   version: boot.version, dataDir: boot.dataDir, firstRun: boot.firstRun, test: !!boot.test,
   /* v63: האסימון לגשר המובנה (חיבור ״sim״/״host״) — חדש בכל הפעלה */
   bridgeTok: String(boot.bridgeTok || ""),
   profile: boot.profile, profilesAtBoot: boot.profiles, backupsAtBoot: boot.backups,
-  kvSet: (k, v) => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvSet", String(k), String(v)); },
-  kvRemove: k => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvRemove", String(k)); },
-  kvClear: () => ipcRenderer.send("bb:kvClear"),
+  /* 1.12.5: כל כתיבה עם הנהג שבשבילו הדף נטען (התהליך הראשי זורק כתיבה של דף ישן) */
+  kvSet: (k, v) => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvSet", String(k), String(v), PID); },
+  kvRemove: k => { if (KEYRE.test(k)) ipcRenderer.send("bb:kvRemove", String(k), PID); },
+  kvClear: () => ipcRenderer.send("bb:kvClear", PID),
   flush: () => ipcRenderer.sendSync("bb:flush"),
   bugSend: row => ipcRenderer.invoke("bb:bugSend", row),
   shot: () => ipcRenderer.invoke("bb:shot"),
@@ -33,7 +35,7 @@ contextBridge.exposeInMainWorld("bbApp", {
   profileRemove: id => ipcRenderer.invoke("bb:profileRemove", id),
   profileSwitch: id => ipcRenderer.invoke("bb:profileSwitch", id),
   firstRunDone: () => ipcRenderer.invoke("bb:firstRunDone"),
-  matchAdd: m => ipcRenderer.invoke("bb:matchAdd", m),
+  matchAdd: m => ipcRenderer.invoke("bb:matchAdd", m, PID),
   matches: id => ipcRenderer.invoke("bb:matches", id),
   team: () => ipcRenderer.invoke("bb:team"),
   openData: () => ipcRenderer.invoke("bb:openData"),

@@ -114,6 +114,12 @@ function findAdb() {
   return null;
 }
 
+/* 1.12.5: קישור ישן לשלט (בלי מפתח) — הודעה ברורה במקום שלט שלא נוהג */
+const PAD_OLD = "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>" +
+  "<body style='background:#0B0E12;color:#E9EFF5;font:18px system-ui;padding:24px;text-align:center'>" +
+  "<h2 dir=rtl>הקישור לשלט ישן או לא נכון</h2>" +
+  "<p dir=rtl>בסימולטור לחצו ״📱 חבר טלפון עם קוד QR״ וסרקו שוב את הקוד.</p>" +
+  "<p dir=ltr style='color:#95A5B4'>This phone-pad link is old or wrong. In the simulator, open the phone QR code and scan it again.</p>";
 /* הגבלות */
 const LIM = { failsPerIp: 8, failWindow: 5 * 60e3, lockMs: 5 * 60e3, failsGlobal: 60, lockGlobalMs: 2 * 60e3,
   joinPerMin: 20, wsPerIp: 12, smallPayload: 64 * 1024, bigPayload: 4 * 1024 * 1024, pingMs: 20000 };
@@ -126,6 +132,10 @@ class Bridge {
     this.lim = Object.assign({}, LIM, opt.limits || {});
     this.token = opt.token || crypto.randomBytes(24).toString("base64url");
     this.key = this.loadKey(opt.key);
+    /* 1.12.5: מפתח לשלט הטלפון (בתוך קוד ה-QR). נשמר בין הפעלות כדי שקישור שמור בטלפון ימשיך לעבוד */
+    this.padKey = this.loadPadKey(opt.padKey);
+    /* לבדיקות בלבד: ״האם הכתובת היא המחשב הזה״ (כדי לבדוק טלפון ״מהרשת״ מתוך אותו מחשב) */
+    this.isLocal = opt.isLocal || isLocal;
     this.sims = new Set(); this.pads = new Set(); this.guests = new Map(); this.host = null; this.n = 0;
     this.lan = lanIps(); this.code = this.lan.length ? roomCode(this.lan[0], this.port, this.key) : "";
     this.on = false; this.error = ""; this.adb = null; this.adbSeen = new Set(); this.adbT = null; this.adbWanted = false;
@@ -139,6 +149,19 @@ class Bridge {
     try { if (f) { const k = parseInt(fs.readFileSync(f, "utf8"), 10); if (k >= KEY_MIN && k < KEY_MAX) return k; } } catch (e) {}
     return this._newKey(f);
   }
+  loadPadKey(fixed) {
+    const ok = k => typeof k === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(k);
+    if (ok(fixed)) return fixed;
+    const f = this.dataDir ? path.join(this.dataDir, ".pad-key") : null;
+    try { if (f) { const k = fs.readFileSync(f, "utf8").trim(); if (ok(k)) return k; } } catch (e) {}
+    const k = crypto.randomBytes(16).toString("base64url");
+    try { if (f) fs.writeFileSync(f, k); } catch (e) {}
+    return k;
+  }
+  padOk(v) {
+    const a = Buffer.from(String(v || "")), b = Buffer.from(this.padKey);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  }
   _newKey(f) { const k = crypto.randomInt(KEY_MIN, KEY_MAX); try { if (f) fs.writeFileSync(f, String(k)); } catch (e) {} return k; }
   /* קוד חדש לבקשת המארח — אורחים שכבר בפנים נשארים, חדשים צריכים את הקוד החדש */
   rekey() {
@@ -150,11 +173,11 @@ class Bridge {
   /* v63: בלי קוד חדר ובלי שמות/כתובות של אורחים. כתובות הרשת — רק למחשב הזה (קוד ה-QR של הטלפון) */
   health(local) {
     const o = { ok: true, app: true, port: this.port, host: !!this.host, sims: this.sims.size, pad: this.pads.size > 0, guests: this.guests.size };
-    if (local) o.lan = this.lan;
+    if (local) { o.lan = this.lan; o.pk = this.padKey; }   /* 1.12.5: מפתח השלט — רק למחשב הזה (קוד ה-QR) */
     return o;
   }
   status() { return { on: this.on, port: this.port, error: this.error, code: this.code, lan: this.lan, pad: this.pads.size > 0,
-    guests: this.guests.size, host: !!this.host, adb: !!this.adb, phones: this.adbSeen.size }; }
+    guests: this.guests.size, host: !!this.host, adb: !!this.adb, phones: this.adbSeen.size, pk: this.padKey }; }
   toSims(msg) { for (const s of this.sims) this.sendTxt(s, msg); }
   sendTxt(ws, s) { try { if (ws.readyState === 1) ws.send(String(s)); } catch (e) {} }
   /* ── ניסיונות שגויים ── */
@@ -212,6 +235,8 @@ class Bridge {
         const hh = splitHost(q.headers.host); if (!hh || !hostOk(hh.host)) return deny(403);
         if (!originOk(q.headers.origin, q.headers.host, role)) return deny(403);
         if ((role === "sim" || role === "host") && (!isLocal(peer) || !this.tokOk(u.searchParams.get("t")))) return deny(403);
+        /* 1.12.5: טלפון מהרשת — רק עם המפתח מקוד ה-QR (בכבל USB הכתובת היא המחשב הזה) */
+        if (role === "pad" && !this.isLocal(peer) && !this.padOk(u.searchParams.get("p"))) return deny(403);
         if ((this.conns.get(peer) || 0) >= this.lim.wsPerIp) return deny(429, "Too Many Requests");
         if (role === "guest") {
           if (this.locked(peer)) return deny(429, "Too Many Requests");
@@ -260,6 +285,7 @@ class Bridge {
       const o = String(q.headers.origin || "").toLowerCase(), cors = o === "null" || o.startsWith("file:");
       return this.send(r, 200, JSON.stringify(this.health(isLocal(peer))), "application/json", cors ? { "Access-Control-Allow-Origin": "null", "Vary": "Origin" } : { "Vary": "Origin" });
     }
+    if (p === "/" && !this.isLocal(peer) && !this.padOk(u.searchParams.get("p"))) return this.send(r, 403, PAD_OLD);
     if (p === "/") { let b = null; try { b = this.padBody || (this.padBody = fs.readFileSync(this.padPath)); } catch (e) {} return b ? this.send(r, 200, b) : this.send(r, 404, "pad not found"); }
     if (p === "/sim") { if (!isLocal(peer)) return this.send(r, 403, "local only"); return this.sendSim(r, "<script>window.BB_TOK=" + JSON.stringify(this.token) + ";</script>"); }
     if (p === "/join") {
@@ -276,7 +302,10 @@ class Bridge {
   }
   add(ws) {
     if (ws.role === "sim") { this.sims.add(ws); this.sendTxt(ws, JSON.stringify({ t: "pad", on: this.pads.size > 0 })); for (const p of this.pads) this.sendTxt(p, '{"t":"sim","on":true}'); }
-    else if (ws.role === "pad") { this.pads.add(ws); this.toSims('{"t":"pad","on":true}'); this.log("phone connected " + ws.addr); }
+    else if (ws.role === "pad") {
+      /* 1.12.5: טלפון אחד בכל רגע — החדש מחליף את הקודם (שני טלפונים ״נלחמו״ על אותו שלט, והסטיק קפץ לאפס) */
+      for (const o of this.pads) { this.sendTxt(o, '{"t":"kick"}'); try { o.close(); } catch (e) {} }
+      this.pads.clear(); this.pads.add(ws); this.toSims('{"t":"pad","on":true}'); this.log("phone connected " + ws.addr); }
     else if (ws.role === "host") { const old = this.host; this.host = ws; if (old) try { old.close(); } catch (e) {}
       this.sendTxt(ws, JSON.stringify(this.info())); for (const g of this.guests.values()) this.sendTxt(ws, JSON.stringify({ t: "gj", id: g.id, name: g.name })); }
     else if (ws.role === "guest") { ws.id = "g" + (++this.n); this.guests.set(ws.id, ws);

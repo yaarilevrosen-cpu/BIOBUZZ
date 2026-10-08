@@ -17,6 +17,8 @@ const COLORS = ["#FFB020", "#35D6A4", "#4C9AF5", "#F2545B", "#B07CFF", "#FF7AC6"
 
 /* v63: מזהה נהג נכנס לנתיב קבצים — רק אותיות לטיניות, ספרות, _ ו-- (בלי ../ ובלי /) */
 const IDRE = /^[A-Za-z0-9_-]{1,64}$/;
+/* גיבוי יומי: YYYY-MM-DD · 1.12.5: עותק עם שעה: YYYY-MM-DD_HHMMSS */
+const DAYRE = /^\d{4}-\d\d-\d\d$/, SNAPRE = /^\d{4}-\d\d-\d\d_\d{6}$/;
 function validId(id) { return typeof id === "string" && IDRE.test(id); }
 function sleepMs(ms) { try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); } catch (e) {} }
 /* כתיבה בטוחה: קובץ זמני + fsync ואז החלפה. ב-Windows אנטי־וירוס / OneDrive תופסים את הקובץ לרגע —
@@ -114,6 +116,8 @@ class Store {
     this.kv = {};                 // מטמון של הפרופיל הפעיל
     this.kat = {};                // v63: מתי השתנה כל מפתח (לסנכרון לפי מפתח)
     this.kvDirty = false; this.kvTimer = null; this.flushFails = 0;
+    /* 1.12.5: הדף הפתוח — של איזה נהג הוא נטען, ואילו מפתחות התעדכנו מהענן אחרי שנטען (העותק שלו ישן) */
+    this.pageId = null; this.held = new Set();
     this.loadKv();
   }
   static metaOk(m) { return !!(m && typeof m === "object" && Array.isArray(m.list) && m.list.some(p => p && validId(p.id))); }
@@ -122,7 +126,7 @@ class Store {
     try { fs.renameSync(this.pfile, this.pfile + ".bad-" + tag); } catch (e) {}
     let base = null, from = "";
     const bdir = path.join(this.root, "backups");
-    let tags = []; try { tags = fs.readdirSync(bdir).filter(n => /^\d{4}-\d\d-\d\d$/.test(n)).sort().reverse(); } catch (e) {}
+    let tags = []; try { tags = fs.readdirSync(bdir).filter(n => DAYRE.test(n) || SNAPRE.test(n)).sort().reverse(); } catch (e) {}
     for (const t of tags) { const m = readJSON(path.join(bdir, t, "profiles.json"), null); if (Store.metaOk(m)) { base = m; from = "backup " + t; break; } }
     if (!base) base = { v: 1, active: null, list: [] };
     base.list = base.list.filter(p => p && typeof p === "object" && validId(p.id));
@@ -211,6 +215,23 @@ class Store {
     if (!p || !this.visible(p)) return false;
     this.flushKv();
     this.meta.active = id; this.saveMeta(); this.loadKv(); return true;
+  }
+  /* ── 1.12.5: כתיבות מהדף ──
+     הדף שולח עם כל כתיבה את הנהג שבשבילו נטען. כתיבה של דף ישן (הנהג הפעיל התחלף בסנכרון — למשל נמחק במחשב אחר)
+     לא נכנסת לנהג אחר. ומפתח שהגיע מהענן אחרי שהדף נטען — הדף מחזיק עותק ישן שלו (למשל כל ההעדפות כאובייקט אחד),
+     ולכן כתיבה שלו למפתח הזה נזרקת עד שהדף נטען מחדש (ואז הוא מקבל את הערך החדש). */
+  pageBoot() { this.pageId = this.meta.active; this.held = new Set(); }
+  pageOk(pid) {
+    if (pid === undefined || pid === null) return this.pageId === null || this.pageId === this.meta.active;   /* preload ישן */
+    return pid === this.meta.active && (this.pageId === null || this.pageId === pid);
+  }
+  pageKvSet(k, v, pid) { if (!this.pageOk(pid) || this.held.has(k)) return false; this.kvSet(k, v); return true; }
+  pageKvClear(pid) { if (!this.pageOk(pid)) return false; this.kvClear(); return true; }
+  /* מאץ׳ שנגמר — לנהג שבשבילו הדף נטען, גם אם בינתיים הפעיל התחלף. נהג שנמחק — לא נשמר */
+  pageMatchAdd(m, pid) {
+    if (pid === undefined || pid === null) return this.pageOk(pid) ? this.addMatch(m) : false;
+    if (!validId(pid) || !this.meta.list.some(p => p.id === pid)) return false;
+    return this.addMatch(m, pid);
   }
   /* ── מפתחות הסימולטור ── */
   loadKv() {
@@ -310,16 +331,16 @@ class Store {
     for (const k in cur) if (NOSYNC.has(k)) out[k] = cur[k];
     const keys = new Set();
     for (const o of [cur, rkv, rkat, kat]) for (const k in o) if (KEYRE.test(k) && k !== KVAT && !NOSYNC.has(k)) keys.add(k);
-    let changed = false, needPush = false;
+    let changed = false, needPush = false; const won = [];
     for (const k of keys) {
       const lv = cur[k], rv = typeof rkv[k] === "string" ? rkv[k] : undefined;
       const lt = +kat[k] || 0, rt = legacy ? (lv !== rv ? (+rk || 0) : 0) : (+rkat[k] || 0);
       if (lv === rv) { if (lv !== undefined) out[k] = lv; if (rt > lt) kat[k] = rt; continue; }
-      if (rt > lt) { if (rv !== undefined) out[k] = rv; kat[k] = rt; changed = true; }
+      if (rt > lt) { if (rv !== undefined) out[k] = rv; kat[k] = rt; changed = true; won.push(k); }
       else { if (lv !== undefined) out[k] = lv; needPush = true; }
     }
     if (changed) {
-      if (act) { this.kv = out; this.kvDirty = true; }
+      if (act) { this.kv = out; this.kvDirty = true; if (this.pageId === id) for (const k of won) this.held.add(k); }   /* 1.12.5 */
       else writeAtomic(path.join(this.dir(id), "store.json"), JSON.stringify(out));
     }
     if (act) { this.kat = kat; this.katDirty = true; this.flushKv(); }
@@ -347,7 +368,9 @@ class Store {
   /* נהג שנמחק במחשב אחר */
   removeFromRemote(id) {
     const i = this.meta.list.findIndex(x => x.id === id); if (i < 0) return false;
-    if (this.vis().length <= 1) return false;
+    /* 1.12.5: היה הנהג היחיד כאן — במקום להישאר ״חצי מסונכרן״ (מקומי בלבד, הגדרות שלא עולות) מקבלים נהג חדש וריק;
+       הנהג שנמחק עובר לסל (trash/) כמו כל מחיקה */
+    if (this.vis().length <= 1) { if (!this.visible(this.meta.list[i])) return false; this.addProfile("נהג 1", { quiet: true }); }
     let switched = false;
     if (id === this.meta.active) { this.flushKv(); this.meta.active = this.vis().find(x => x.id !== id).id; switched = true; }
     this.removeProfile(id, { noTomb: true });
@@ -412,18 +435,36 @@ class Store {
     const tag = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
     const bdir = path.join(this.root, "backups");
     const dst = path.join(bdir, tag);
-    if (!fs.existsSync(dst)) {
-      fs.mkdirSync(dst, { recursive: true });
-      fs.cpSync(path.join(this.root, "profiles"), path.join(dst, "profiles"), { recursive: true });
-      fs.copyFileSync(this.pfile, path.join(dst, "profiles.json"));
-    }
-    const all = fs.readdirSync(bdir).filter(n => /^\d{4}-\d\d-\d\d$/.test(n)).sort();
+    if (!fs.existsSync(dst)) this.copyTo(dst);
+    const all = fs.readdirSync(bdir).filter(n => DAYRE.test(n)).sort();
     while (all.length > keep) { const old = all.shift(); try { fs.rmSync(path.join(bdir, old), { recursive: true, force: true }); } catch (e) {} }
     return tag;
   }
+  copyTo(dst) {
+    const tmp = dst + ".part";
+    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
+    fs.mkdirSync(tmp, { recursive: true });
+    fs.cpSync(path.join(this.root, "profiles"), path.join(tmp, "profiles"), { recursive: true });
+    fs.copyFileSync(this.pfile, path.join(tmp, "profiles.json"));
+    fs.renameSync(tmp, dst);
+  }
+  /* 1.12.5: ״גבה עכשיו״ ולפני כל ייבוא — עותק חדש עם שעה (YYYY-MM-DD_HHMMSS), גם אם כבר יש גיבוי של היום.
+     נשמרים 10 כאלה, בנפרד מ-14 הגיבויים היומיים */
+  snapshot(keep) {
+    keep = keep || 10;
+    this.flushKv();
+    const d = new Date(), pad = x => String(x).padStart(2, "0");
+    let tag = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "_" + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+    const bdir = path.join(this.root, "backups");
+    if (!fs.existsSync(path.join(bdir, tag))) this.copyTo(path.join(bdir, tag));
+    const all = fs.readdirSync(bdir).filter(n => SNAPRE.test(n)).sort();
+    while (all.length > keep) { const old = all.shift(); try { fs.rmSync(path.join(bdir, old), { recursive: true, force: true }); } catch (e) {} }
+    return tag;
+  }
+  /* כל הגיבויים, החדש ראשון (יומיים ועותקים עם שעה) */
   backupsList() {
     const bdir = path.join(this.root, "backups");
-    try { return fs.readdirSync(bdir).filter(n => /^\d{4}-\d\d-\d\d$/.test(n)).sort().reverse(); } catch (e) { return []; }
+    try { return fs.readdirSync(bdir).filter(n => DAYRE.test(n) || SNAPRE.test(n)).sort().reverse(); } catch (e) { return []; }
   }
   /* ── ייצוא/ייבוא של כל הקבוצה ── */
   teamExport() {
@@ -453,6 +494,8 @@ class Store {
   importBrowserBackup(txt) {
     let o; try { o = JSON.parse(txt); } catch (e) { return { ok: false, why: "הקובץ שבור" }; }
     if (!o || o.bb !== "backup" || !o.data || typeof o.data !== "object") return { ok: false, why: "זה לא קובץ גיבוי של הסימולטור" };
+    /* 1.12.5: הייבוא מחליף את כל ההגדרות (וזה עובר לכל המחשבים) — קודם עותק של המצב הנוכחי */
+    let snap = ""; try { snap = this.snapshot(); } catch (e) { return { ok: false, why: "לא הצלחתי לגבות לפני הייבוא — לא ייבאתי כלום" }; }
     const st = {}; for (const k in o.data) if (KEYRE.test(k) && typeof o.data[k] === "string") st[k] = o.data[k];
     const now = Date.now();
     for (const k of new Set(Object.keys(st).concat(Object.keys(this.kv)))) if (!NOSYNC.has(k) && k !== KVAT) this.kat[k] = now;
@@ -462,7 +505,7 @@ class Store {
     let season = []; try { season = JSON.parse(st.bbSeason1 || "[]"); } catch (e) {}
     const have = new Set(this.matches(null, { lite: true }).map(m => m.at));
     let n = 0; for (const m of (Array.isArray(season) ? season : [])) if (m && isFinite(m.at) && !have.has(m.at)) { this.addMatch(m); n++; }
-    return { ok: true, keys: Object.keys(st).length, matches: n };
+    return { ok: true, keys: Object.keys(st).length, matches: n, snap };
   }
 }
 module.exports = { Store, KEYRE, NOSYNC, EMOJI, COLORS, KVAT, IDRE, validId, writeAtomic, readJSON, parseJsonl, appendLines };

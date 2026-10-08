@@ -176,6 +176,24 @@ def load_key(fixed):
             pass
         return k
 
+# 1.12.5: מפתח לשלט הטלפון (בתוך קוד ה-QR) — בלעדיו טלפון ברשת לא נוהג. נשמר בין הפעלות כמו מפתח החדר
+def load_pad_key():
+    path = os.path.join(HERE, ".pad-key")
+    try:
+        with open(path) as f:
+            k = f.read().strip()
+        if re.match(r"^[A-Za-z0-9_-]{16,64}$", k):
+            return k
+        raise ValueError("bad pad key")
+    except Exception:
+        k = secrets.token_urlsafe(16)
+        try:
+            with open(path, "w") as f:
+                f.write(k)
+        except Exception:
+            pass
+        return k
+
 # ── הגבלות (v63) ──
 LIM = {"fails_per_ip": 8, "fail_window": 300, "lock": 300, "fails_global": 60, "lock_global": 120,
        "join_per_min": 20, "ws_per_ip": 12, "small": 64 * 1024, "big": 4 * 1024 * 1024}
@@ -253,6 +271,10 @@ class WS:
 
     def close(self):
         self.alive = False
+        try:                                          # 1.12.5: shutdown משחרר גם recv שחוסם בחוט אחר
+            self.sock.shutdown(socket.SHUT_RDWR)
+        except Exception:
+            pass
         try:
             self.sock.close()
         except Exception:
@@ -260,9 +282,10 @@ class WS:
 
 # ── החדר: מי מחובר, ולאן כל הודעה הולכת ──
 class Room:
-    def __init__(self, port, key, token=None):
+    def __init__(self, port, key, token=None, pad_key=None):
         self.port, self.key = port, key
         self.token = token or secrets.token_urlsafe(24)
+        self.pad_key = pad_key or load_pad_key()
         self.fails, self.gfails, self.glock, self.joins, self.conns = {}, [], 0.0, {}, {}
         self.lock = threading.Lock()
         self.sims, self.pads, self.guests = [], [], {}
@@ -295,6 +318,7 @@ class Room:
                  "pad": len(self.pads) > 0, "guests": len(self.guests), "port": self.port}
         if local:
             o["lan"] = self.lan
+            o["pk"] = self.pad_key                    # 1.12.5: רק למחשב הזה — נכנס לקוד ה-QR
         return o
 
     # ── ניסיונות שגויים ──
@@ -328,6 +352,12 @@ class Room:
 
     def tok_ok(self, v):
         return hmac.compare_digest((v or "").encode(), self.token.encode())
+
+    def pad_ok(self, v):
+        return hmac.compare_digest((v or "").encode(), self.pad_key.encode())
+
+    def pad_url(self):
+        return "http://%s:%d/?p=%s" % (self.lan[0], self.port, self.pad_key) if self.lan else ""
 
     def join_rate(self, ip):
         now = time.time()
@@ -366,11 +396,13 @@ class Room:
             s.send(msg)
 
     def add(self, ws):
+        olds = []
         with self.lock:
             if ws.role == "sim":
                 self.sims.append(ws)
             elif ws.role == "pad":
-                self.pads.append(ws)
+                # 1.12.5: טלפון אחד בכל רגע — החדש מחליף את הקודם (שני טלפונים ״נלחמו״ על אותו שלט)
+                olds, self.pads = list(self.pads), [ws]
             elif ws.role == "host":
                 old = self.host
                 self.host = ws
@@ -380,6 +412,9 @@ class Room:
                 self.n += 1
                 ws.id = "g%d" % self.n
                 self.guests[ws.id] = ws
+        for o in olds:
+            o.send('{"t":"kick"}')
+            o.close()
         if ws.role == "pad":
             self.to_sims('{"t":"pad","on":true}')
             say("● טלפון התחבר (%s)" % ws.addr, "* phone connected (%s)" % ws.addr)
@@ -486,6 +521,12 @@ def pinger():
 
 ROOM = None
 SIM_PATH = None
+# 1.12.5: קישור ישן לשלט (בלי מפתח) — הודעה ברורה במקום שלט שלא נוהג
+PAD_OLD = ("<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>"
+           "<body style='background:#0B0E12;color:#E9EFF5;font:18px system-ui;padding:24px;text-align:center'>"
+           "<h2 dir=rtl>הקישור לשלט ישן או לא נכון</h2>"
+           "<p dir=rtl>בסימולטור לחצו ״📱 חבר טלפון עם קוד QR״ וסרקו שוב את הקוד.</p>"
+           "<p dir=ltr style='color:#95A5B4'>This phone-pad link is old or wrong. In the simulator, open the phone QR code and scan it again.</p>")
 
 def pad_page():
     ext = os.path.join(HERE, "pad.html")
@@ -573,6 +614,9 @@ class H(BaseHTTPRequestHandler):
             cors = {"Access-Control-Allow-Origin": "null", "Vary": "Origin"} if (o == "null" or o.startswith("file:")) else {"Vary": "Origin"}
             return self._send(200, json.dumps(ROOM.health(is_local(peer))), "application/json", cors)
         if path == "/":
+            # 1.12.5: טלפון ברשת צריך את המפתח מקוד ה-QR (בכבל USB / מהמחשב הזה — לא צריך)
+            if not is_local(peer) and not ROOM.pad_ok((q.get("p") or [""])[0]):
+                return self._send(403, PAD_OLD)
             return self._send(200, pad_page())
         if path == "/sim":
             if not is_local(peer):
@@ -595,6 +639,8 @@ class H(BaseHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if not origin_ok(origin, self.headers.get("Host"), role):
             return self._send(403, "bad origin")
+        if role == "pad" and not is_local(peer) and not ROOM.pad_ok((q.get("p") or [""])[0]):
+            return self._send(403, "scan the QR code again")
         if role in ("sim", "host") and not is_local(peer):
             return self._send(403, "local only")
         # מארח צריך את האסימון הסודי (מוזרק לדף /sim). ״sim״ (שלט הטלפון בסימולטור) מותר גם מסימולטור שנפתח מקובץ
@@ -710,7 +756,7 @@ def main():
     if ROOM.lan:
         say(" קוד חדר:              %s" % ROOM.code, " room code:        %s" % ROOM.code)
         say(" הצטרפות ממחשב אחר:   %s" % ROOM.join_url(), " join from LAN:    %s" % ROOM.join_url())
-        say(" שלט טלפון בוויי-פיי:  http://%s:%d" % (ROOM.lan[0], a.port), " phone over Wi-Fi: http://%s:%d" % (ROOM.lan[0], a.port))
+        say(" שלט טלפון בוויי-פיי:  %s" % ROOM.pad_url(), " phone over Wi-Fi: %s" % ROOM.pad_url())
     else:
         say(" לא נמצאה רשת מקומית — משחק ברשת לא זמין", " no LAN found — network play unavailable")
     say(" רשת מקומית בלבד. Ctrl+C לסגירה.", " LAN only. Ctrl+C to quit.")

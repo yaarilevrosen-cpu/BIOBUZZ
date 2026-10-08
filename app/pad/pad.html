@@ -46,6 +46,11 @@
   #rot{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;align-items:center;
     justify-content:center;text-align:center;font-size:18px;padding:30px}
   @media (orientation:portrait){ #rot{display:flex} }
+  /* 1.12.5: טלפון אחר לקח את השלט */
+  #kick{position:fixed;inset:0;background:rgba(11,14,18,.97);z-index:30;display:none;flex-direction:column;align-items:center;
+    justify-content:center;gap:16px;text-align:center;font-size:18px;padding:30px}
+  #kick.on{display:flex}
+  #kick button{font:600 16px system-ui;padding:12px 22px;border-radius:12px;border:2px solid var(--accent);background:var(--panel2);color:var(--ink)}
 </style></head><body>
 <div id="top"><div id="st"><i id="led"></i><span id="stx">מתחבר…</span></div>
   <span class="chip" id="cMag">מחסנית 0</span><span class="chip" id="cIn">איסוף</span>
@@ -70,6 +75,7 @@
   <label>התחל <button class="b sh" data-bit="9" style="width:120px">Start</button></label>
   <label>חזור <button class="b sh" data-bit="8" style="width:120px">Back</button></label>
 </div>
+<div id="kick"><div id="kickT">טלפון אחר התחבר ולקח את השלט</div><button id="kickB">לקחת את השלט בחזרה</button></div>
 <div id="rot">סובב את הטלפון לרוחב</div>
 <script>
 (function(){
@@ -88,6 +94,10 @@ $("oInv").onchange=e=>{O.inv=e.target.checked;saveO();};
 $("gear").onclick=()=>$("set").classList.toggle("on");
 
 let ws=null, last="", beat=0;
+/* 1.12.5: המפתח מקוד ה-QR (?p=) נשלח לגשר. טלפון אחד בכל רגע — מי שהוחלף לא מתחבר שוב לבד */
+const PK=new URLSearchParams(location.search).get("p")||"";
+let kicked=false, opened=false, fails=0;
+$("kickB").onclick=()=>{ kicked=false; $("kick").classList.remove("on"); if(!ws||ws.readyState>1) connect(); };
 function send(o){ if(ws&&ws.readyState===1) ws.send(JSON.stringify(o)); }
 function push(force){
   const m={t:"s",a:S.a.map(v=>+v.toFixed(3)),b:S.b,lt:+S.lt.toFixed(3),rt:S.rt};
@@ -95,10 +105,14 @@ function push(force){
   if(force||s!==last){ last=s; if(ws&&ws.readyState===1) ws.send(s); }
 }
 function connect(){
-  ws=new WebSocket("ws://"+location.host+"/ws?role=pad");
-  ws.onopen=()=>{ $("led").classList.add("ok"); $("stx").textContent="מחובר"; push(true); };
-  ws.onclose=()=>{ $("led").classList.remove("ok"); $("stx").textContent="מנותק — מתחבר שוב"; setTimeout(connect,1200); };
+  ws=new WebSocket("ws://"+location.host+"/ws?role=pad"+(PK?"&p="+encodeURIComponent(PK):""));
+  ws.onopen=()=>{ opened=true; fails=0; $("led").classList.add("ok"); $("stx").textContent="מחובר"; push(true); };
+  ws.onclose=()=>{ $("led").classList.remove("ok");
+    if(kicked){ $("stx").textContent="טלפון אחר נוהג"; return; }
+    fails++; $("stx").textContent=fails>=4?"לא מצליח להתחבר — אם זה נמשך, סרקו שוב את קוד ה-QR":"מנותק — מתחבר שוב";
+    setTimeout(connect,fails>=4?3000:1200); };
   ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(x){ return; }
+    if(m.t==="kick"){ kicked=true; $("kick").classList.add("on"); return; }
     if(m.t==="r"){ if(O.vib&&navigator.vibrate) navigator.vibrate(Math.max(10,Math.min(400,m.ms|0))); }
     else if(m.t==="q"){ send({t:"qr",c:m.c}); }
     else if(m.t==="ui"){ $("cMag").textContent="מחסנית "+(m.mag|0); $("cIn").classList.toggle("on",!!m.intake);
