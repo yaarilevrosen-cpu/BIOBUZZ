@@ -189,13 +189,13 @@ r=await E(()=>{ S.pathLoad('ex:preload'); const plan=X.pathPlan(S.PATH.pts,null)
   return {t1,t2,st:JSON.parse(st).maxWheelVel,j,T:T.t,info,clamp}; });
 ok(r.t2>r.t1&&r.st===25,'U9: maxWheelVel 50 → 25 מאריך את ההערכה ('+r.t1+' → '+r.t2+' שנ׳) ונשמר ב-bbRRcons1');
 ok(Math.abs(r.T-3.3)<0.05,'U9: טרפז — 100″ ב-50″/s, תאוצה 50 והאטה 30: '+r.T+' שנ׳ (צפוי 3.33)');
-ok(/מגבלות RR: maxWheelVel 25/.test(r.j)&&/הערכת זמן ב-RR/.test(r.j),'U9: המגבלות והערכת הזמן כתובות בראש הקוד');
+ok(/מגבלות RR: maxWheelVel 25/.test(r.j)&&/זמן משוער \(פרופיל טרפז\)/.test(r.j),'U9: המגבלות והערכת הזמן כתובות בראש הקוד');
 ok(/RR ≈ [\d.]+/.test(r.info),'U9: בלוח — ״RR ≈ X שנ׳״ ליד הזמן על השלדה');
 ok(r.clamp===300,'U9: ערך לא סביר נחתך לטווח (9999 → '+r.clamp+')');
 
 // כותרת: מוסכמת הזירה בשורה אחת, ושורות הכותרת לפי הסיבוב
 r=await E(()=>{ const o={}; S.pathLoad('ex:leave'); for(const rot of [0,90,180,270]){ S.rrSetRot(rot); const l=S.pathJava().split('\n').find(l=>/מוסכמת הזירה/.test(l)); o[rot]=l; } S.rrSetRot(0); return o; });
-ok(/\+X של RR מצביע אל הקהל, \+Y אל הצד הכחול/.test(r[0])&&/\+X של RR מצביע אל הצד האדום, \+Y אל הקהל/.test(r[90])&&/הצד הרחוק מהקהל/.test(r[180]),'כותרת: ״מוסכמת הזירה״ — לאן מצביעים ‎+X ו-‎+Y בכל סיבוב');
+ok(/RR \+X → הקהל, \+Y → הצד הכחול/.test(r[0])&&/RR \+X → הצד האדום, \+Y → הקהל/.test(r[90])&&/הצד הרחוק מהקהל/.test(r[180]),'כותרת: ״מוסכמת הזירה״ — לאן מצביעים ‎+X ו-‎+Y בכל סיבוב');
 
 // לימוד בהדגמה: עדיין עם כיוון, מהירות, סיבוב במקום וזמנים
 r=await E(()=>{ S.stageMatch(); S.pathClear(); S.homeRobot(); S.teachStart();
