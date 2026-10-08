@@ -64,8 +64,19 @@ function appendLines(file, text) {
 function newId() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function cleanName(n) { return String(n == null ? "" : n).replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 24); }
 
-function summarize(l) {
-  const n = l.length; if (!n) return { n: 0 };
+/* 1.13: שיאי תרגילים (רשומות {kind:"drill", drill, dv}) — לטבלת הקבוצה; גבוה טוב, חוץ מתרגילי זמן */
+const DRILL_LOWER = { speed: 1, park: 1, load: 1, circuit: 1 };
+function drillBests(l) {
+  const o = {};
+  for (const m of l) { if (!m || typeof m.drill !== "string" || !/^[a-z]{1,12}$/.test(m.drill) || typeof m.dv !== "number" || !isFinite(m.dv)) continue;
+    const k = m.drill, v = m.dv; if (o[k] == null || (DRILL_LOWER[k] ? v < o[k] : v > o[k])) o[k] = v; }
+  return o;
+}
+function summarize(l0) {
+  /* 1.13: הסיכום (טבלת הקבוצה, ״נתח את הקבוצה״, רשימת הנהגים) — משחקים בלבד; תרגילים ואתגרים יומיים בנפרד */
+  const l = (l0 || []).filter(m => m && m.kind !== "drill" && m.kind !== "daily" && !(m.dv != null && m.my == null));
+  const drills = drillBests(l0 || []);
+  const n = l.length; if (!n) return { n: 0, drills };
   let W = 0, L = 0, pts = 0, best = 0, shots = 0, hits = 0, last = 0;
   for (const m of l) { if (m.win > 0) W++; else if (m.win < 0) L++; pts += +m.my || 0; best = Math.max(best, +m.my || 0);
     shots += +m.shots || 0; hits += +m.hits || 0; last = Math.max(last, +m.at || 0); }
@@ -74,7 +85,7 @@ function summarize(l) {
   const s = l.slice().sort((a, b) => (+a.at || 0) - (+b.at || 0)), l10 = s.slice(-10), p10 = s.slice(-20, -10);
   return { n, W, L, T: n - W - L, avg: pts / n, best, acc: shots ? hits / shots : null, shots, last,
     cyc: avgOf(l, m => m.avgCycle > 0 ? +m.avgCycle : null), fouls: avgOf(l, m => +m.fouls || 0), park: avgOf(l, m => m.park ? 1 : 0),
-    auto: avgOf(l, m => m.autoPts != null ? +m.autoPts : null), l10: avgOf(l10, m => +m.my || 0), p10: p10.length >= 3 ? avgOf(p10, m => +m.my || 0) : null };
+    auto: avgOf(l, m => m.autoPts != null ? +m.autoPts : null), l10: avgOf(l10, m => +m.my || 0), p10: p10.length >= 3 ? avgOf(p10, m => +m.my || 0) : null, drills };
 }
 class Store {
   constructor(root) {

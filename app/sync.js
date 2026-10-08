@@ -41,7 +41,8 @@ function matchData(m) {
 /* דחייה של השרת (לא תקלת רשת / אסימון) — השורה עצמה לא תקינה */
 const rejected = e => e && e.status >= 400 && e.status < 500 && e.status !== 401 && e.status !== 408 && e.status !== 429;
 /* שדות הסיכום של מאץ׳ של חבר קבוצה (store.summarize) — לא את כל המאץ׳ */
-const TEAM_FIELDS = ["win", "my", "shots", "hits", "avgCycle", "fouls", "park", "autoPts"];
+/* 1.13: גם סוג המשחק (תרגיל/אתגר לא נספרים בסיכום), רמת הבוטים, ושיא תרגיל (drill + dv) */
+const TEAM_FIELDS = ["win", "my", "shots", "hits", "avgCycle", "fouls", "park", "autoPts", "kind", "skill", "drill", "dv"];
 const TEAM_PAGE = 500;               /* לכל חבר בכל סנכרון; הבא ממשיך מאיפה שעצר */
 function heb(msg) {
   msg = String(msg || "שגיאה");
@@ -410,7 +411,7 @@ class Sync {
       /* 1.12.4: רק שדות הסיכום (לא כל המאץ׳ עם sh/bl), עד TEAM_PAGE לכל חבר בכל סנכרון, ותקרה לכל נהג —
          חבר עם הרבה מאצ׳ים גדולים לא ממלא את הזיכרון והדיסק של כולם */
       const sel = "owner,profile_id,at,created_at," + TEAM_FIELDS.map(f => f + ":data->" + f).join(",");
-      const num = v => (typeof v === "number" && isFinite(v) ? v : typeof v === "boolean" ? v : null);
+      const num = v => (typeof v === "number" && isFinite(v) ? v : typeof v === "boolean" ? v : typeof v === "string" && /^[a-z]{1,12}$/.test(v) ? v : null);   /* 1.13: kind/drill — מילה קצרה בלבד */
       for (const u of others) {
         const since = T.sinceBy[u] || "";
         const { data: ms } = await this.rest("GET", "bb_matches?select=" + sel + "&owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : "") + "&order=created_at.asc&limit=" + TEAM_PAGE);
