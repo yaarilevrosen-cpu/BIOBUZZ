@@ -27,7 +27,7 @@ const HEB = {
 function userName(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.name === "string" ? m.name.trim().slice(0, 40) : ""; }
 /* 1.12.4: מה שהשרת ידחה בכל מקרה (v63_security.sql) — מסננים לפני השליחה, ושורה שבכל זאת נדחתה לא תוקעת את כל הסנכרון */
 const MATCH_MAX = 250000;            /* bb_matches_size_ok: pg_column_size(data) <= 262144 */
-const KV_MAX = 1900000;              /* bb_profiles_size_ok: pg_column_size(kv) <= 2000000 */
+const KV_MAX = 1400000;              /* bb_profiles_size_ok: pg_column_size(kv) <= 1500000 (1.12.5, v72_security.sql; לפני כן 2000000) */
 const AT_MAX = 4102444800000;        /* שנת 2100 — at הוא bigint; 1e300 נכשל */
 const cut = (v, n) => typeof v === "string" ? Array.from(v).slice(0, n).join("") : null;
 function cleanColor(c) { return typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c : null; }
@@ -42,7 +42,9 @@ function matchData(m) {
 const rejected = e => e && e.status >= 400 && e.status < 500 && e.status !== 401 && e.status !== 408 && e.status !== 429;
 /* שדות הסיכום של מאץ׳ של חבר קבוצה (store.summarize) — לא את כל המאץ׳ */
 const TEAM_FIELDS = ["win", "my", "shots", "hits", "avgCycle", "fouls", "park", "autoPts"];
-const TEAM_PAGE = 500;               /* לכל חבר בכל סנכרון; הבא ממשיך מאיפה שעצר */
+const TEAM_PAGE = 500;
+/* 1.12.5: הודעת השרת כשהחשבון הגיע לתקרת האחסון (v72_security.sql) */
+const QUOTA = /bb quota/i;               /* לכל חבר בכל סנכרון; הבא ממשיך מאיפה שעצר */
 function heb(msg) {
   msg = String(msg || "שגיאה");
   for (const k in HEB) if (msg.indexOf(k) >= 0) return HEB[k];
@@ -236,8 +238,13 @@ class Sync {
     for (const t of S.meta.tombs.slice()) {
       if (t.owner && t.owner !== uid) continue;
       const r = R.get(t.id);
-      if (t.owner && (!r || !r.deleted)) await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
-        { Prefer: "resolution=merge-duplicates,return=minimal" });
+      /* 1.12.5: נהג שלא הגיע לענן אף פעם — אין מה למחוק שם (ושורת מחיקה הייתה נספרת בתקרת הנהגים).
+         מחיקה שהשרת דוחה — לא תוקעת את כל הסנכרון */
+      if (t.owner && r && !r.deleted) {
+        try { await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
+          { Prefer: "resolution=merge-duplicates,return=minimal" }); }
+        catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: t.id, why: "tomb: " + String(e.message || e.status).slice(0, 100) }); }
+      }
       S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
     }
     S.saveMeta();
@@ -293,7 +300,10 @@ class Sync {
     const remoteM = await this.remoteAll("bb_matches", "profile_id,at", this.own());
     const rset = new Map();
     for (const m of remoteM) { if (!validId(m.profile_id)) continue; if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
+    let quota = false;
     for (const p of S.meta.list.filter(q => this.mine(q))) {
+      /* 1.12.5: נהג שנמחק בענן — המאצ׳ים שלו לא עולים */
+      const pr = R.get(p.id); if (pr && pr.deleted) continue;
       const local = S.matches(p.id); const lset = new Set(local.map(m => Math.round(+m.at)));
       const rs = rset.get(p.id) || new Set();
       const up = [];
@@ -301,15 +311,19 @@ class Sync {
         const d = matchOk(m) ? matchData(m) : null;
         if (d) up.push({ profile_id: p.id, at: Math.round(+m.at), data: d }); else res.skipped.push({ id: p.id, at: m.at, why: "match" }); }
       const post = rows => this.rest("POST", "bb_matches?on_conflict=owner,profile_id,at", rows, { Prefer: "resolution=ignore-duplicates,return=minimal" });
-      for (let i = 0; i < up.length; i += 200) {
+      for (let i = 0; i < up.length && !quota; i += 200) {
         const chunk = up.slice(i, i + 200);
         try { await post(chunk); res.pushedMatches += chunk.length; }
         catch (e) {
           if (!rejected(e)) throw e;
+          /* 1.12.5: החשבון הגיע לתקרת האחסון (v72_security.sql) — לא מנסים אחד־אחד; מה שלא עלה נשאר מקומי */
+          if (QUOTA.test(String(e.message))) { quota = true; res.quota = true; res.skipped.push({ id: p.id, why: "quota" }); break; }
           /* חבילה נדחתה — אחד־אחד, ומה שנדחה נשאר מקומי בלי לעצור את השאר */
           for (const row of chunk) {
             try { await post([row]); res.pushedMatches++; }
-            catch (e2) { if (!rejected(e2)) throw e2; res.skipped.push({ id: p.id, at: row.at, why: String(e2.message || e2.status).slice(0, 120) }); }
+            catch (e2) { if (!rejected(e2)) throw e2;
+              if (QUOTA.test(String(e2.message))) { quota = true; res.quota = true; res.skipped.push({ id: p.id, why: "quota" }); break; }
+              res.skipped.push({ id: p.id, at: row.at, why: String(e2.message || e2.status).slice(0, 120) }); }
           }
         }
       }
@@ -369,14 +383,16 @@ class Sync {
       else if (what === "kick") await this.rpc("bb_team_kick", { p_uid: String(a || "") });
       else if (what === "rotate") await this.rpc("bb_team_rotate_code");
       else return { ok: false, why: "?" };
-      this.team = null; this.saveTeam();
+      /* 1.12.5: שינוי שם / קוד חדש לא זורקים את היסטוריית המאצ׳ים של החברים (3000 → 500) — רק הצטרפות/יצירה/יציאה/הוצאה */
+      if (what === "create" || what === "join" || what === "leave" || what === "kick") { this.team = null; this.saveTeam(); }
       await this.teamPull();
       return { ok: true, team: this.status().team };
     } catch (e) {
       const m = String(e.message || "");
       return { ok: false, why: /code not found/.test(m) ? "אין קבוצה עם הקוד הזה — בדקו שוב"
         : /too many/.test(m) ? "יותר מדי ניסיונות עם קוד שגוי — נסו שוב בעוד שעה"
-        : /only the team owner|not the owner/.test(m) ? "רק מי שפתח את הקבוצה יכול לעשות את זה" : heb(m) };
+        : /only the team owner|not the owner/.test(m) ? "רק מי שפתח את הקבוצה יכול לעשות את זה"
+        : /bb quota/i.test(m) ? "החשבון הגיע לתקרת האחסון בענן" : heb(m) };
     }
   }
   async myTeamLabel() {

@@ -153,14 +153,16 @@ function reg() {
   const handle = (ch, fn) => ipcMain.handle(ch, (e, ...a) => { if (!okSender(e)) throw new Error("denied"); return fn(e, ...a); });
   /* סינכרוני — לפני שהסימולטור עולה, הוא צריך את הנתונים של הנהג */
   on("bb:boot", e => {
-    kvFrozen = false;
+    kvFrozen = false; store.pageBoot();   /* 1.12.5: הדף החדש — של הנהג הפעיל, עם הערכים העדכניים */
     e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun,
       version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST,
       bridgeTok: bridge ? BRIDGE_TOK : "" };
   });
-  on("bb:kvSet", (e, k, v) => { if (!kvFrozen) store.kvSet(String(k), v); });
-  on("bb:kvRemove", (e, k) => { if (!kvFrozen) store.kvSet(String(k), null); });
-  on("bb:kvClear", () => { if (!kvFrozen) store.kvClear(); });
+  /* 1.12.5: כל כתיבה מגיעה עם הנהג שבשבילו הדף נטען — דף ישן לא כותב לנהג אחר, ולא דורס ערך שהגיע מהענן */
+  const pidOf = x => typeof x === "string" ? x : undefined;
+  on("bb:kvSet", (e, k, v, pid) => { if (!kvFrozen) store.pageKvSet(String(k), v, pidOf(pid)); });
+  on("bb:kvRemove", (e, k, pid) => { if (!kvFrozen) store.pageKvSet(String(k), null, pidOf(pid)); });
+  on("bb:kvClear", (e, pid) => { if (!kvFrozen) store.pageKvClear(pidOf(pid)); });
   on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
   on("bb:ready", () => showMain());
   handle("bb:profiles", () => store.profiles());
@@ -169,11 +171,12 @@ function reg() {
   handle("bb:profileRemove", (e, id) => { const r = store.removeProfile(id); soonSync(); return r; });
   handle("bb:profileSwitch", (e, id) => { const ok = store.switchTo(String(id || "")); if (ok) { kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } return ok; });
   handle("bb:firstRunDone", () => { store.firstRun = false; return true; });
-  handle("bb:matchAdd", (e, m) => { const r = store.addMatch(m); soonSync(); return r; });
+  handle("bb:matchAdd", (e, m, pid) => { const r = store.pageMatchAdd(m, pidOf(pid)); soonSync(); return r; });
   handle("bb:matches", (e, id) => store.matches(id, { lite: true }));
   handle("bb:team", () => store.team(sync && sync.status().loggedIn ? sync.team : null));
   handle("bb:openData", () => shell.openPath(DATA));
-  handle("bb:backupNow", () => { const t = store.dailyBackup(); return { tag: t, list: store.backupsList() }; });
+  /* 1.12.5: ״גבה עכשיו״ עושה עותק חדש (עם שעה), גם אם כבר יש גיבוי של היום */
+  handle("bb:backupNow", () => { try { store.dailyBackup(14); } catch (err) {} const t = store.snapshot(); return { tag: t, list: store.backupsList() }; });
   handle("bb:teamExport", async () => {
     const d = new Date(), pad = x => String(x).padStart(2, "0");
     const r = await dialog.showSaveDialog(win, { title: "ייצוא הקבוצה", defaultPath: "BIOBUZZ-team-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + ".json",
@@ -277,6 +280,8 @@ function runSync(why) {
   syncRun = (async () => {
     const st = acctStatus(); st.busy = true; send("bb:sync", { status: st });
     const out = await sync.syncNow();
+    /* 1.12.5: הנהג הפעיל התחלף (נמחק במחשב אחר / חשבון אחר) — עד שהדף נטען מחדש, שום כתיבה שלו לא נכנסת */
+    if (out && out.changedActive && store.pageId && store.pageId !== store.meta.active) kvFrozen = true;
     send("bb:sync", { status: acctStatus(), result: out, why });
     return out;
   })().finally(() => { syncRun = null; });
@@ -364,7 +369,8 @@ app.whenReady().then(() => {
     if (AU) setTimeout(() => updCheck(false), 8000);
     else if (app.isPackaged && !process.env.BIOBUZZ_TEST) setTimeout(() => updCheck(false), 8000);
   });
-  setInterval(() => runSync("timer"), 120000);
+  /* 1.12.5: גם אפליקציה שפתוחה כמה ימים מקבלת גיבוי יומי חדש (לא רק בהפעלה) */
+  setInterval(() => { try { store.dailyBackup(14); } catch (e) {} runSync("timer"); }, 120000);
 });
 let quitting = false;
 app.on("before-quit", e => {

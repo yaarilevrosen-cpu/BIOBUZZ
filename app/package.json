@@ -41,7 +41,7 @@
     "electronFuses": {
       "runAsNode": false,
       "enableNodeOptionsEnvironmentVariable": false,
-      "enableNodeCliInspectArguments": true,
+      "enableNodeCliInspectArguments": false,
       "onlyLoadAppFromAsar": true,
       "resetAdHocDarwinSignature": true
     },

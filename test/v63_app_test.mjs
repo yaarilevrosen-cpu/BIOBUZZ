@@ -89,7 +89,8 @@ const get = (port, p, headers) => new Promise(res => {
   fs.appendFileSync(simCopy, '\n<!-- changed -->'); await wait(20);
   r = await get(port, '/join?k=' + b.key); ok(b.cache !== c1 && r.body.endsWith('<!-- changed -->'), 'קובץ הסימולטור השתנה — הזיכרון מתחדש');
   // תקרת חיבורים לכתובת
-  const many = []; for (let i = 0; i < 4; i++) many.push(await wsOpen(U('role=pad'), { origin: 'null' }));
+  /* 1.12.5: טלפון חדש מחליף את הקודם (טלפון אחד בכל רגע) — את התקרה בודקים עם חיבורי ״sim״ */
+  const many = []; for (let i = 0; i < 5; i++) many.push(await wsOpen(U('role=sim' + T), { origin: 'null' }));
   ok(many.some(x => x.refused === 429) && many.some(x => x.readyState === 1), 'תקרת חיבורים לכל כתובת (' + many.map(x => x.refused || 'ok').join(',') + ')');
   for (const x of many) try { x.close(); } catch (e) {}
   await wait(150);
@@ -396,8 +397,8 @@ if (!process.env.BB_NO_ELECTRON) {
 {
   const pj = JSON.parse(fs.readFileSync(APPDIR + '/package.json', 'utf8'));
   const f = pj.build.electronFuses || {};
-  /* --inspect נשאר פתוח בכוונה: בלעדיו אי אפשר לבדוק את האפליקציה הארוזה (linux_pkg_test) */
-  ok(f.runAsNode === false && f.enableNodeOptionsEnvironmentVariable === false && f.enableNodeCliInspectArguments === true && f.onlyLoadAppFromAsar === true, 'Electron fuses בבנייה (runAsNode ו-NODE_OPTIONS כבויים, --inspect פתוח לבדיקות)');
+  /* 1.12.5 (P10): גם --inspect כבוי — linux_pkg_test מתחבר לאפליקציה הארוזה דרך --remote-debugging-port (CDP) */
+  ok(f.runAsNode === false && f.enableNodeOptionsEnvironmentVariable === false && f.enableNodeCliInspectArguments === false && f.onlyLoadAppFromAsar === true, 'Electron fuses בבנייה (runAsNode, NODE_OPTIONS ו---inspect כבויים)');
   const main = fs.readFileSync(APPDIR + '/main.js', 'utf8');
   ok(/requestSingleInstanceLock\(\)\) \{ app\.quit\(\); process\.exit\(0\); return; \}/.test(main), 'מופע יחיד: יוצאים באמת (return)');
   ok(/DEVTOOLS = !app\.isPackaged \|\| process\.env\.BIOBUZZ_DEV === "1"/.test(main) && /devTools: DEVTOOLS/.test(main), 'F12 / כלי מפתחים — רק בפיתוח או עם BIOBUZZ_DEV=1');

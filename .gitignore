@@ -8,3 +8,5 @@ test/*.png
 *.log
 .DS_Store
 Thumbs.db
+.pad-key
+.room-key
