@@ -11686,7 +11686,7 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)retur
   }}
 addEventListener("resize",resize);
 addEventListener("orientationchange",()=>setTimeout(resize,260));
-let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,fastMode=false;
+let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,tipT=0,fastMode=false;
 let physAcc=0;   /* v63: זמן פיזיקה שעוד לא נצעד (תת־צעדים של 1/120) */
 const upV=new CANNON.Vec3(0,1,0);
 const _sF=new THREE.Vector3(), _sR=new THREE.Vector3(), _sDR=new THREE.Vector3(), _sUP=new THREE.Vector3(0,1,0),
@@ -11931,10 +11931,14 @@ function stepSim(dt){
     refreshGameOut(); refreshPad(); if(SPLIT.on) refreshSplit(); refreshGhost(); refreshVpad(); refreshDrv(); refreshOri();
     refreshQual();
     if(TEACH.on) teachInfo();
-    const{cr,cb}=updateHUD();
-    if(autoTip){ if(hiveRed&&!hiveRed.tipping&&cr.mass*1000>=P.tipMass) tip(hiveRed);
-                 if(hiveBlue&&!hiveBlue.tipping&&cb.mass*1000>=P.tipMass) tip(hiveBlue); }
+    updateHUD();
   }
+  /* 1.12.5: ההיפוך האוטומטי לפי זמן הסימולציה בלבד — ב-1.12.4 הוא ישב מאחורי ההאטה של הלוחות
+     במחולל/מתכנן (שעון אמיתי), והיפוכים בסוף האוטונומי הלכו לאיבוד, תלוי במהירות המחשב */
+  tipT+=dt;
+  if(tipT>.22){ tipT=0;
+    if(autoTip){ if(hiveRed&&!hiveRed.tipping&&cellContents(hiveRed).mass*1000>=P.tipMass) tip(hiveRed);
+                 if(hiveBlue&&!hiveBlue.tipping&&cellContents(hiveBlue).mass*1000>=P.tipMass) tip(hiveBlue); } }
   if(aimT>(fastMode?1.0:0.12)){aimT=0;refreshAim();}
   shotHud(dt);
 }
