@@ -50,7 +50,8 @@ jobs:
           FAILED=""
           for t in smoke name_test v60_test v61_test ui_test play_test hud_test backup_test stop_test split_test mag_test v52_test v56_test v57_test v58_test kb_test pathlib_test p2_test p3_test \
                    auto_test brain_test g304_test regress_test review_test teach_test v42_test dist_test mp2_test \
-                   v63_bld_test v63_core_test v63_ui_test v63_wiz_test v64_push_test v65_practice_test v66_test v68_test v69_test v70_drills_test v70_plan_test v70_ghost_test v70_board_test v70_cast_test v70_daily_test v70_redteam_test v71_fixes_test; do
+                   v63_bld_test v63_core_test v63_ui_test v63_wiz_test v64_push_test v65_practice_test v66_test v68_test v69_test v70_drills_test v70_plan_test v70_ghost_test v70_board_test v70_cast_test v70_daily_test v70_redteam_test v71_fixes_test \
+                   v72_rules_test v72_uiperf_test v72_training_test v72_netapp_test v72_export_test v72_corner_test; do
             echo "::group::$t"
             if node $t.mjs > "/tmp/$t.log" 2>&1; then cat "/tmp/$t.log"; else
               rc=$?; cat "/tmp/$t.log"; FAILED="$FAILED $t"
@@ -90,6 +91,8 @@ jobs:
             fi; echo "::endgroup::"; }
           run bridge_test timeout 120 node bridge_test.mjs
           run sync_robust_test timeout 180 node sync_robust_test.mjs
+          run v72_netapp_app_test timeout 300 node v72_netapp_app_test.mjs
+          run v72_training_app_test timeout 300 node v72_training_app_test.mjs
           for t in app_test app_p2_test app_shell_test app_v56_test app_ai_test app_drag_test v63_app_test app_v63_wiz_test; do
             run $t timeout 600 xvfb-run -a node $t.mjs
           done
