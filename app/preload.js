@@ -57,7 +57,10 @@ contextBridge.exposeInMainWorld("bbApp", {
   acctSignUp: (email, pw, meta) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || ""),
     meta && typeof meta === "object" ? { tos_v: String(meta.tos_v || ""), age_bracket: String(meta.age_bracket || ""), guardian_ok: meta.guardian_ok === true } : null),
   /* 1.14 (v73 legal): אישור תנאים מעודכנים, הורדת הנתונים מהענן, מחיקת החשבון, ומחיקה מקומית אחרי מחיקת חשבון */
-  acctTos: v => ipcRenderer.invoke("bb:acctTos", String(v || "")),
+  /* 1.14 (legalfix): לחשבון מלפני 1.14 — גם טווח הגיל (אותו סינון כמו בהרשמה) */
+  acctTos: (v, meta) => ipcRenderer.invoke("bb:acctTos", String(v || ""),
+    meta && typeof meta === "object" ? { age_bracket: String(meta.age_bracket || ""), guardian_ok: meta.guardian_ok === true } : null),
+  wipeBackups: () => ipcRenderer.invoke("bb:wipeBackups"),
   acctExport: () => ipcRenderer.invoke("bb:acctExport"),
   acctDelete: () => ipcRenderer.invoke("bb:acctDelete"),
   wipeLocal: () => ipcRenderer.invoke("bb:wipeLocal"),

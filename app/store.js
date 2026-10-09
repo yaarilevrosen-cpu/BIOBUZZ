@@ -476,6 +476,16 @@ class Store {
     while (all.length > keep) { const old = all.shift(); try { fs.rmSync(path.join(bdir, old), { recursive: true, force: true }); } catch (e) {} }
     return tag;
   }
+  /* 1.14 (legalfix): ״אפס הכול — כולל הגיבויים״ — כל הגיבויים במחשב (יומיים ועותקים עם שעה, של כל הנהגים) והסל */
+  wipeBackups() {
+    let n = 0;
+    for (const sub of ["backups", "trash"]) {
+      const d = path.join(this.root, sub);
+      try { n += fs.readdirSync(d).length; } catch (e) { continue; }
+      try { fs.rmSync(d, { recursive: true, force: true }); } catch (e) { return { ok: false, n, why: String(e.message || e).slice(0, 120) }; }
+    }
+    return { ok: true, n };
+  }
   /* כל הגיבויים, החדש ראשון (יומיים ועותקים עם שעה) */
   backupsList() {
     const bdir = path.join(this.root, "backups");

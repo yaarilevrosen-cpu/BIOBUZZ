@@ -70,7 +70,7 @@ revoke all on public.bb_bugs from anon, authenticated;
 grant insert on public.bb_bugs to anon, authenticated;
 grant usage on sequence public.bb_bugs_id_seq to anon, authenticated;
 
--- v57: חשבון אחד לכל אדם + קבוצה שמצטרפים אליה בקוד. חברי קבוצה רואים (קריאה בלבד) את הנהגים והמאצ׳ים של כולם.
+-- v57: חשבון אחד לכל אדם + קבוצה שמצטרפים אליה בקוד. חברי קבוצה רואים (קריאה בלבד) את השמות ואת סיכומי המאצ׳ים (1.14: דרך פונקציות).
 create table if not exists public.bb_teams (
   id uuid primary key default gen_random_uuid(),
   code text not null unique,
@@ -104,10 +104,10 @@ create policy bb_members_read on public.bb_team_members for select to authentica
 revoke all on public.bb_teams, public.bb_team_members from anon, authenticated;
 grant select on public.bb_teams, public.bb_team_members to authenticated;
 
+-- 1.14 (v73_privacy.sql): חברי קבוצה כבר לא קוראים את הטבלאות ישירות (רק שם, סמל, צבע ושדות הסיכום — דרך
+-- bb_team_profiles() / bb_team_matches()). לא יוצרים כאן את ההרשאות הרחבות, כדי שהרצה חוזרת של הקובץ לא תפתח אותן שוב.
 drop policy if exists bb_profiles_team_read on public.bb_profiles;
-create policy bb_profiles_team_read on public.bb_profiles for select to authenticated using (owner in (select public.bb_teammates()));
 drop policy if exists bb_matches_team_read on public.bb_matches;
-create policy bb_matches_team_read on public.bb_matches for select to authenticated using (owner in (select public.bb_teammates()));
 
 create or replace function public.bb_code() returns text language plpgsql as $$
 declare c text; a text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; i int;

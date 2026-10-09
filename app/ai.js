@@ -30,6 +30,57 @@ function cleanSummary(v, key, depth) {
   return null;
 }
 
+/* 1.14 (legalfix): שמות לא יוצאים לגוגל. שם נהג → ״Driver 1״, שם של חבר קבוצה → ״Member 1״, שם הקבוצה → ״Team X״;
+   בתשובה הכינויים מוחלפים בחזרה בשמות (רק במחשב הזה). */
+const PSEUDO_NOTE = "\n\nPRIVACY: names of drivers, people and the team were replaced by placeholders such as \"Driver 1\", \"Member 1\" and \"Team X\". " +
+  "Refer to them only by these placeholders, copied exactly in Latin letters (also when answering in Hebrew). Never ask for real names.";
+function reEsc(x) { return x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+class Pseudo {
+  constructor() { this.fw = new Map(); this.bk = new Map(); this.n = { Driver: 0, Member: 0 }; }
+  /* kind: Driver / Member / Team */
+  of(name, kind) {
+    const k = String(name == null ? "" : name).replace(/\s+/g, " ").trim(); if (!k) return "";
+    const key = kind + "\u0000" + k.toLowerCase();
+    if (this.fw.has(key)) return this.fw.get(key);
+    const p = kind === "Team" ? "Team X" : kind + " " + (++this.n[kind]);
+    if (kind === "Team" && this.bk.has(p)) return p;
+    this.fw.set(key, p); this.bk.set(p, k); return p;
+  }
+  /* טקסט חופשי: כל שם מוכר (גם עם אות שימוש עברית לפניו: ״לדנה״) → הכינוי. ארוך קודם (״Maya Cohen״ לפני ״Maya״) */
+  text(t, names) {
+    t = String(t == null ? "" : t);
+    const list = [];
+    for (const [kind, arr] of [["Team", names.team], ["Driver", names.drivers], ["Member", names.members]])
+      for (const x of (Array.isArray(arr) ? arr : [arr])) { const k = String(x == null ? "" : x).replace(/\s+/g, " ").trim(); if (k.length >= 2 && k.length <= 60 && !/^(Driver|Member) \d+$|^Team X$/.test(k)) list.push([k, kind]); }
+    list.sort((a, b) => b[0].length - a[0].length);
+    for (const [k, kind] of list.slice(0, 400)) {
+      const re = new RegExp("(^|[^\\p{L}\\p{N}])([ובכלמשה]{0,2})(" + reEsc(k) + ")(?![\\p{L}\\p{N}])", "giu");
+      t = t.replace(re, (m, a, pre) => a + pre + this.of(k, kind));
+    }
+    return t;
+  }
+  back(t) {
+    if (!this.bk.size) return t;
+    return String(t).replace(/\b(Driver|Member) (\d{1,4})\b|\bTeam X\b|נהג (\d{1,4})(?![\p{N}])/gu, (m, kind, n, hn) => {
+      const p = hn ? "Driver " + hn : kind ? kind + " " + n : "Team X";
+      return this.bk.has(p) ? this.bk.get(p) : m; });
+  }
+  deep(v) {
+    if (typeof v === "string") return this.back(v);
+    if (Array.isArray(v)) return v.map(x => this.deep(x));
+    if (v && typeof v === "object") { const o = {}; for (const k of Object.keys(v)) o[k] = this.deep(v[k]); return o; }
+    return v;
+  }
+}
+/* הסיכום של המאמן: driver (נהג אחד), team (שם הקבוצה), drivers[].name (נהגי הקבוצה) */
+function pseudoSummary(sum, P) {
+  const o = Object.assign({}, sum);
+  if (typeof o.driver === "string") o.driver = P.of(o.driver, "Driver") || "";
+  if (typeof o.team === "string") o.team = P.of(o.team, "Team") || "";
+  if (Array.isArray(o.drivers)) o.drivers = o.drivers.map(d => d && typeof d === "object" ? Object.assign({}, d, { name: P.of(d.name, "Driver") || "" }) : d);
+  return o;
+}
+
 function aiDir(dataDir) {
   /* קבצי ההוראות: באפליקציה הארוזה — resources/ai; בפיתוח — ai/ בשורש הריפו */
   const c = [process.env.BIOBUZZ_AI_DIR, process.resourcesPath && path.join(process.resourcesPath, "ai"), path.join(__dirname, "..", "ai"), path.join(__dirname, "ai")];
@@ -230,16 +281,17 @@ class AI {
     const order = coach ? [this.st.pick.strong, this.st.pick.fast] : [this.st.pick.fast, this.st.pick.strong];
     const models = order.filter((x, i, a) => x && a.indexOf(x) === i);
     let sent = null;
+    const P = new Pseudo();   /* 1.14 (legalfix) */
     if (coach) {
-      sent = cleanSummary(o.summary && typeof o.summary === "object" ? o.summary : {}, "", 0) || {};
+      sent = cleanSummary(pseudoSummary(o.summary && typeof o.summary === "object" && !Array.isArray(o.summary) ? o.summary : {}, P), "", 0) || {};
       if (JSON.stringify(sent).length > 24000) return { ok: false, why: "יותר מדי נתונים לניתוח" };
     }
     const msgs = coach ? [{ role: "user", text: JSON.stringify(sent) }]
-      : (Array.isArray(o.messages) ? o.messages : []).filter(m => m && typeof m === "object").slice(-12).map(m => ({ role: m.role === "model" ? "model" : "user", text: String(m.text == null ? "" : m.text).slice(0, 2000) })).filter(m => m.text);
+      : (Array.isArray(o.messages) ? o.messages : []).filter(m => m && typeof m === "object").slice(-12).map(m => ({ role: m.role === "model" ? "model" : "user", text: P.text(String(m.text == null ? "" : m.text).slice(0, 2000), o.names && typeof o.names === "object" ? o.names : {}) })).filter(m => m.text);
     if (!msgs.length) return { ok: false, why: "אין שאלה" };
     const sys = this.sys(coach ? "coach" : "helper", o.lang, o.features);
     const mk = extra => ({
-      systemInstruction: { parts: [{ text: sys + (extra || "") }] },
+      systemInstruction: { parts: [{ text: sys + PSEUDO_NOTE + (extra || "") }] },
       contents: msgs.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
       generationConfig: Object.assign({ temperature: coach ? 0.4 : 0.3, maxOutputTokens: coach ? 8192 : 2048 }, coach ? { responseMimeType: "application/json" } : {})
     });
@@ -256,9 +308,9 @@ class AI {
           if (coach) {
             let j = null; try { j = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, "")); } catch (e) {}
             if (!j || typeof j !== "object" || Array.isArray(j)) { last = { status: 0, message: c && c.finishReason === "MAX_TOKENS" ? "cut" : "bad json" }; continue; }
-            return { ok: true, model: id, ms, json: j, sent };
+            return { ok: true, model: id, ms, json: P.deep(j), sent };
           }
-          return { ok: true, model: id, ms, text: text.slice(0, 6000) };
+          return { ok: true, model: id, ms, text: P.back(text.slice(0, 6000)) };
         } catch (e) { last = e; break; }
       }
     }
@@ -266,4 +318,4 @@ class AI {
     return { ok: false, sent, why: m === "empty" ? "המודל לא החזיר תשובה — נסו שוב" : m === "cut" ? "התשובה נקטעה באמצע — נסו שוב" : m === "bad json" ? "התשובה לא הגיעה בצורה הנכונה — נסו שוב" : m === "safety" ? "המודל סירב לענות — נסו שוב" : this.why(last) };
   }
 }
-module.exports = { AI, aiDir, cleanSummary };
+module.exports = { AI, aiDir, cleanSummary, Pseudo, pseudoSummary };

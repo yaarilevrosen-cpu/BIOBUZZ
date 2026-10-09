@@ -55,7 +55,7 @@ If you act in good faith and follow this policy, we will consider your research 
 ## Protections already in place
 
 - Encrypted connections (HTTPS/TLS) to the cloud service and GitHub.
-- Row-level security in the database: each account can only change its own data; team members get read-only access to team data; bug reports are insert-only for the public key.
+- Row-level security in the database: each account can only change its own data; team members can read only driver names, emojis, colours and match summaries, through dedicated server functions; bug reports are insert-only for the public key, and the IP-based rate-limit code is a keyed hash (HMAC) that is erased after 24 hours.
 - Passwords handled and hashed by Supabase's sign-in service.
 - Sign-in session and AI key stored encrypted with the operating system's secure storage.
 - Quotas and rate limits on storage, bug reports and team code guesses; 8-character random team codes that change when a member is removed.

@@ -84,7 +84,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <h2>הגנות שכבר קיימות</h2>
 <ul>
 <li>חיבורים מוצפנים לשירות הענן ולגיטהאב.</li>
-<li>אבטחה ברמת השורה במסד הנתונים: כל חשבון יכול לשנות רק את המידע שלו; לחברי קבוצה יש גישת קריאה בלבד למידע הקבוצה; דרך המפתח הציבורי אפשר רק להוסיף דיווחי באגים.</li>
+<li>אבטחה ברמת השורה במסד הנתונים: כל חשבון יכול לשנות רק את המידע שלו; חברי קבוצה יכולים לקרוא רק שמות, סמלים וצבעים של נהגים וסיכומי משחקים, דרך פונקציות ייעודיות בשרת; דרך המפתח הציבורי אפשר רק להוסיף דיווחי באגים, והקוד שמגביל דיווחים לפי כתובת IP הוא גיבוב עם מפתח סודי (HMAC) שנמחק אחרי 24 שעות.</li>
 <li>בסיסמאות מטפל שירות ההתחברות של סופאבייס, שמצפין אותן חד־כיוונית.</li>
 <li>החיבור לחשבון ומפתח הבינה המלאכותית נשמרים מוצפנים באחסון המאובטח של מערכת ההפעלה.</li>
 <li>מכסות והגבלות קצב על אחסון, דיווחי באגים וניחוש קודי קבוצה; קודי קבוצה אקראיים בני 8 תווים, שמתחלפים כשמוציאים חבר.</li>
@@ -149,7 +149,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <h2>Protections already in place</h2>
 <ul>
 <li>Encrypted connections (HTTPS/TLS) to the cloud service and GitHub.</li>
-<li>Row-level security in the database: each account can only change its own data; team members get read-only access to team data; bug reports are insert-only for the public key.</li>
+<li>Row-level security in the database: each account can only change its own data; team members can read only driver names, emojis, colours and match summaries, through dedicated server functions; bug reports are insert-only for the public key, and the IP-based rate-limit code is a keyed hash (HMAC) that is erased after 24 hours.</li>
 <li>Passwords handled and hashed by Supabase's sign-in service.</li>
 <li>Sign-in session and AI key stored encrypted with the operating system's secure storage.</li>
 <li>Quotas and rate limits on storage, bug reports and team code guesses; 8-character random team codes that change when a member is removed.</li>

@@ -36,7 +36,7 @@ If you create an account, the following is stored in our cloud database, which i
 
 - **Account details:** your email address and password. The password is handled by Supabase's sign-in service and stored only as a secure hash; we never see it. Supabase sends you account emails (confirm your address, reset your password).
 - **Account name:** the display name you choose for the account.
-- **Your age group and acceptance record:** when you sign up you confirm your age group and that you accept the Terms of Use and this policy. We store that confirmation with its date and the version of the documents, so we can show what you agreed to. We do not ask for or store your date of birth.
+- **Your age group and acceptance record:** when you sign up you confirm your age group and that you accept the Terms of Use and this policy. We store that confirmation with its date and the version of the documents, so we can show what you agreed to. Accounts created before the age question existed are asked for their age group once, together with accepting updated documents. We do not ask for or store your date of birth.
 - **Drivers:** name, emoji, colour and when they were created or changed.
 - **Driver settings:** the simulator settings of each driver, such as key bindings, robot parameters, autonomous paths and season history.
 - **Match archive:** scores, statistics, cycle times and the traces of shots and the ball for each match.
@@ -51,8 +51,7 @@ On your computer, the sign-in session is stored encrypted with your operating sy
 If you create or join a team with a join code:
 
 - We store the team name, team number, the join code, who owns the team, and each member's label inside the team.
-- **What your teammates see in the app:** your drivers' names, emojis and colours, and a summary of each match (type, skill level, win, your score, shots, hits, average cycle, fouls, park, autonomous points, drill, version).
-- **Please note:** the database permissions currently allow a teammate's account to read your drivers' settings and full match records too, even though the app itself only downloads the summary. Only join teams of people you trust, and do not put private information in driver names or settings.
+- **What your teammates see:** your drivers' names, emojis and colours, and a summary of each match (type, skill level, win, your score, shots, hits, average cycle, fouls, park, autonomous points, drill, version). The database gives teammates only these fields, through dedicated server functions; they cannot read your driver settings or your full match records.
 - The team owner can remove a member, which also changes the join code. You can leave a team at any time. A team with no members left is deleted automatically.
 
 ### Bug reports (optional)
@@ -65,13 +64,13 @@ When you send a bug report from the app or the browser version, we receive what 
 - if you leave "Attach system info and recent errors" on: screen size, graphics card name, browser/app user-agent, which mode you were in, and the last error messages;
 - if you leave "Attach a screenshot" on: a screenshot of the app window, which may show driver names or anything else that was on screen.
 
-The report form shows you a preview of exactly what will be sent before you press Send. If you are signed in, the report is linked to your account. To prevent spam, the server stores a one-way scrambled code (a hash) made from your internet (IP) address, not the address itself, and limits how many reports can be sent per hour.
+The report form shows you a preview of exactly what will be sent before you press Send. If you are signed in, the report is linked to your account. To prevent spam, the server limits how many reports can be sent per hour. For that it stores a one-way scrambled code made from your internet (IP) address with a secret key that exists only on the server (a keyed hash, HMAC-SHA256), not the address itself, and erases that code after 24 hours.
 
 Please don't write personal information in a bug report that isn't needed. If you choose "Open on GitHub" instead, the report is posted publicly on GitHub under your own GitHub account.
 
 ### AI features (optional, adults 18+ only)
 
-The AI coach and helper use Google's Gemini service with **your own** Google API key. They are off by default and are meant for adult mentors (18+) only. The key is stored encrypted on your computer and is never sent to us. What you type, and the summaries the AI coach sends, go **directly from your computer to Google**, never through us. We do not receive or store your AI questions or answers. Google's terms apply to that data. See the separate **AI Notice** for details.
+The AI coach and helper use Google's Gemini service with **your own** Google API key. They are off by default and are meant for adult mentors (18+) only. The key is stored encrypted on your computer and is never sent to us. What you type, and the summaries the AI coach sends, go **directly from your computer to Google**, never through us. Before anything is sent, the app replaces driver and team names it knows with nicknames ("Driver 1", "Team X") and puts the real names back only on your computer. Accounts for ages 13–17 do not see the AI features at all. We do not receive or store your AI questions or answers. Google's terms apply to that data. See the separate **AI Notice** for details.
 
 ### Network play, phone controller and spectators
 
@@ -122,8 +121,9 @@ We are in Israel. Supabase and GitHub are US-based companies and may store or pr
 - **Account, drivers, settings, matches and team membership:** for as long as your account exists. They are deleted when you delete your account.
 - **Deleted drivers:** when you delete a driver, its name and settings are wiped from the cloud at the next sync and its matches are deleted. A small marker (the driver's random ID and the time of deletion, without the name) is kept until your account is deleted, so your other computers know the driver was deleted and don't bring it back.
 - **Teams:** until the last member leaves; then the team is deleted automatically.
-- **Counters for fair use and security:** wrong-code counters reset after one hour; storage counters are kept until the account is deleted.
-- **Bug reports (including screenshot and hashed IP):** deleted 12 months after we receive them, or earlier when they are no longer needed.
+- **Counters for fair use and security:** wrong-code counters reset after one hour and are deleted after a day; storage counters are kept until the account is deleted.
+- **Bug reports (including the screenshot):** deleted 12 months after we receive them, or earlier when they are no longer needed. The scrambled IP code is erased 24 hours after the report.
+- **Automatic deletion:** these deletions run automatically on our server; nobody has to remember to do them.
 - **Provider backups:** after deletion, copies may remain in our cloud provider's routine backups for a short time (normally up to 14 days) until they are overwritten. We do not restore deleted data from them except to recover from a technical failure.
 - **AI data:** we store none. Your API key stays encrypted on your computer until you remove it. Google keeps data according to its own terms.
 
@@ -132,9 +132,9 @@ We are in Israel. Supabase and GitHub are US-based companies and may store or pr
 Under the Israeli Privacy Protection Law and, where it applies to you, the GDPR, you have the right to know what data we hold about you, get a copy, correct it, delete it, object to some uses, withdraw consent and, in some cases, receive your data in a portable format. Most of this you can do yourself, right away, in the app:
 
 - **See and correct:** all your drivers, matches and settings are visible and editable in the app. Change your account name in the account panel.
-- **Download a copy (access and portability):** account panel → **"Download my cloud data"**. You get a file (JSON) with everything stored in the cloud for your account. For local data, use Settings → Backup, restore and reset → **"Export to file"**.
+- **Download a copy (access and portability):** account panel → **"Download my cloud data"**. You get a file (JSON) with everything stored in the cloud for your account: account details (email, name, creation date, age group and acceptance record), drivers with their settings, matches, team membership and the bug reports linked to your account. For local data, use Settings → Backup, restore and reset → **"Export to file"**.
 - **Delete your account and cloud data:** account panel → **"Delete my account and cloud data"**. This deletes your account, drivers, settings, matches, team membership and the bug reports linked to your account from our database. If you own a team, ownership passes to the longest-standing member, or the team is deleted if you were the last one. It cannot be undone, so download a copy first if you want one. Your local data on the device stays until you delete it too.
-- **Delete local data:** Settings → Backup, restore and reset → **"Reset all"**. The app keeps one safety backup when you reset; to remove everything, also delete the backups (or the app data folder listed above), or clear the browser's site data for the browser version.
+- **Delete local data:** Settings → Backup, restore and reset → **"Reset all"**. Normally the app keeps one safety backup when you reset. Tick **"Including backups"** to delete the backups too: in the browser version all backups stored in the browser; in the desktop app also the whole backups folder (for every driver on that computer) and the bin of deleted drivers. In the desktop app, Reset all clears the current driver; delete other drivers from the drivers list. You can also delete the app data folder listed above, or clear the browser's site data for the browser version.
 - **Delete a single bug report or ask a question:** contact us as described in "Who we are". We will answer within 30 days. We may need to confirm that the request really comes from the account owner (for example by asking you to send it while signed in).
 - **Withdraw consent for AI:** turn the AI features off and remove your key in Settings at any time.
 - **Object:** you can object to our use of data based on legitimate interest; the easiest way is to stop sending bug reports, or ask us to delete ones you sent.
@@ -147,13 +147,13 @@ FIRST Tech Challenge is for students, so we expect many users to be under 18. We
 
 - **Under 13:** you can use the whole simulator **locally**, with no account. Accounts are not available under 13, and nothing about you leaves your device (unless a bug report is sent — please ask a parent or mentor first).
 - **13 to 17:** you may create an account **only with the permission of a parent or legal guardian**. This also covers EU countries where the age of digital consent is 14, 15 or 16.
-- **AI features:** for adults **18 and over only**. If you are under 18, do not turn them on. This is required by Google's terms.
+- **AI features:** for adults **18 and over only**. If you are under 18, do not turn them on. This is required by Google's terms. In an account for ages 13–17 the AI features are hidden completely.
 - **If we learn that a child under 13 has an account,** we will delete the account and its cloud data. If you are a parent and think this has happened, contact us and we will act quickly.
 
 ## How we protect data
 
 - All connections to our cloud and to GitHub are encrypted (HTTPS/TLS).
-- **Row-level security** in the database: each account can only change its own rows; teammates have read-only access to team data; bug reports can be added but not read back through the app's public key.
+- **Row-level security** in the database: each account can only change its own rows; teammates can only read driver names, emojis, colours and match summaries, through dedicated server functions; bug reports can be added but not read back through the app's public key.
 - Passwords are handled and hashed by Supabase's sign-in service; we never see them.
 - On your computer, the sign-in session and the AI key are stored encrypted using the operating system's secure storage.
 - Network play and the phone controller require a room key or secret token, accept connections only from the expected pages, and limit wrong attempts.
@@ -169,13 +169,13 @@ If we learn of a security incident that affects personal data, we will act to st
 
 ## Changes to this policy
 
-The version date at the top shows when this policy last changed. If we make an important change, the app will show you a notice and ask you to review it before you continue using your account. Older versions are kept in the project's history on GitHub.
+The version date at the top shows when this policy last changed. When we publish a new version, the app shows a notice. If you have an account, cloud sync pauses until you accept the new version in the account panel; the app keeps working on your device in the meantime, and you can still download or delete your data. Older versions are kept in the project's history on GitHub.
 
 ## Complaints
 
 If you are not happy with how we handle your data, please contact us first and we will try to fix it. You also have the right to complain to:
 
-- **Israel:** the Privacy Protection Authority (הרשות להגנת הפרטיות) — [gov.il public inquiries](https://www.gov.il/he/Departments/General/public_inquiries_ilita).
+- **Israel:** the Privacy Protection Authority (Rashut LeHaganat HaPratiyut) — [gov.il public inquiries](https://www.gov.il/he/Departments/General/public_inquiries_ilita).
 - **European Union / EEA:** the data protection supervisory authority in the country where you live — [list of EU authorities](https://www.edpb.europa.eu/about-edpb/about-edpb/members_en).
 - **Other countries:** your local data protection authority.
 

@@ -54,8 +54,10 @@ const {D,st,sy}=mk();
   S.meta={name:'Maya'}; S.reqs.length=0;
   let r=await sy.signIn('maya@example.com','pw123456'); ok(r.ok&&sy.status().tos==='','חשבון ישן בלי tos_v: status().tos ריק (הדף מבקש לאשר)');
   r=await sy.tosAccept('bad'); ok(!r.ok,'גרסה לא תקינה — לא נשלח');
-  r=await sy.tosAccept(VER); const p=S.reqs.find(x=>x.m==='PUT'&&x.u==='/auth/v1/user');
-  ok(r.ok&&p&&p.body.data.tos_v===VER&&Object.keys(p.body.data).sort().join()==='tos_at,tos_v'&&/Bearer tok/.test(p.auth),'אישור: PUT /auth/v1/user עם data {tos_v, tos_at} ועם האסימון');
+  /* legalfix: חשבון בלי טווח גיל עונה גם על הגיל באישור (v73_legalfix_app_test בודק את כל המקרים) */
+  r=await sy.tosAccept(VER); ok(!r.ok&&r.needAge,'חשבון ישן בלי טווח גיל — האישור מבקש גם גיל');
+  r=await sy.tosAccept(VER,{age_bracket:'18+'}); const p=S.reqs.find(x=>x.m==='PUT'&&x.u==='/auth/v1/user');
+  ok(r.ok&&p&&p.body.data.tos_v===VER&&Object.keys(p.body.data).sort().join()==='age_bracket,guardian_ok,tos_at,tos_v'&&p.body.data.age_bracket==='18+'&&/Bearer tok/.test(p.auth),'אישור: PUT /auth/v1/user עם data {tos_v, tos_at, age_bracket, guardian_ok} ועם האסימון');
   ok(sy.status().tos===VER&&S.meta.name==='Maya'&&S.meta.tos_v===VER,'השם בחשבון נשאר; tos_v נשמר');
   /* חיבור מחדש — namePull קורא tos_v מהשרת */
   sy.sess.user.tos_v=''; await sy.namePull(''); ok(sy.status().tos===VER,'namePull מעדכן את tos_v מהשרת');

@@ -45,6 +45,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li>הן מיועדות ל<strong>מנטורים מבוגרים, בני 18 ומעלה</strong>. <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">התנאים הנוספים של ממשק ג׳מיני</a> קובעים שצריך להיות בן 18 ומעלה כדי להשתמש בממשק.</li>
 <li><strong>אם אתם מתחת לגיל 18, אל תפעילו אותן</strong> ואל תזינו מפתח. כל שאר BIOBUZZ עובד בלי בינה מלאכותית.</li>
 <li>כדי להפעיל אותן, מבוגר צריך לאשר שהוא בן 18 ומעלה ושקרא את התנאים של גוגל ואת ההודעה הזאת. בלי האישור הזה האפליקציה לא שומרת מפתח ולא משתמשת בו.</li>
+<li>אם אתם מחוברים לחשבון שקבוצת הגיל שלו היא <strong>13 עד 17</strong>, תכונות הבינה המלאכותית <strong>מוסתרות לגמרי</strong> ואי אפשר להשתמש בהן, גם אם נשמר מפתח במחשב הזה קודם.</li>
 </ul>
 <h2>איך זה עובד</h2>
 <ul>
@@ -55,12 +56,13 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 </ul>
 <h2>מה נשלח לגוגל</h2>
 <ul>
-<li><strong>העוזר החכם:</strong> השאלות שאתם מקלידים (עד 12 ההודעות האחרונות בשיחה), יחד עם הוראות קבועות ורשימה של תכונות האפליקציה כדי שיוכל לענות עליהן. כשהוא מסביר תוצאה של המתכנן, נשלחים רק המספרים של התוצאה, עם בקשה מהמודל לא להזכיר שמות.</li>
-<li><strong>המאמן החכם (נהג אחד):</strong> סיכום של הסטטיסטיקה של הנהג — מספרים כמו כמות משחקים, ממוצעים, דיוק וזמני מחזור — יחד עם <strong>שם התצוגה של הנהג</strong>, בקיצור.</li>
-<li><strong>המאמן החכם (כל הקבוצה):</strong> סיכום סטטיסטיקה לכל הנהגים של חברי הקבוצה, כולל <strong>שמות התצוגה של הנהגים</strong> ו<strong>שם הקבוצה</strong>, מקוצרים לכמה עשרות תווים. השתמשו בזה רק אם חברי הקבוצה מסכימים.</li>
-<li><strong>מה שהאפליקציה אף פעם לא שולחת:</strong> המייל, הסיסמה, פרטי החשבון, המפתח (חוץ מלגוגל עצמה, לצורך זיהוי), צילומי מסך או קבצים.</li>
+<li><strong>בלי שמות:</strong> לפני השליחה האפליקציה מחליפה את השמות של הנהגים (שלכם ושל חברי הקבוצה), את שם החשבון ואת שם הקבוצה בכינויים כמו <strong>״Driver 1״</strong>, <strong>״Member 1״</strong> ו־<strong>״Team X״</strong>. התשובה חוזרת עם הכינויים, והאפליקציה מחזירה את השמות האמיתיים רק במחשב שלכם. רשימת הכינויים לא נשלחת אף פעם.</li>
+<li><strong>העוזר החכם:</strong> השאלות שאתם מקלידים (עד 12 ההודעות האחרונות בשיחה), כשהשמות שלמעלה מוחלפים, יחד עם הוראות קבועות ורשימה של תכונות האפליקציה כדי שיוכל לענות עליהן. כשהוא מסביר תוצאה של המתכנן, נשלחים רק המספרים של התוצאה.</li>
+<li><strong>המאמן החכם (נהג אחד):</strong> סיכום של הסטטיסטיקה של הנהג — מספרים כמו כמות משחקים, ממוצעים, דיוק וזמני מחזור — והנהג מופיע בשם ״Driver 1״.</li>
+<li><strong>המאמן החכם (כל הקבוצה):</strong> סיכום סטטיסטיקה לכל הנהגים של חברי הקבוצה, כשכל נהג מופיע בכינוי (״Driver 1״, ״Driver 2״…) והקבוצה בשם ״Team X״.</li>
+<li><strong>מה שהאפליקציה אף פעם לא שולחת:</strong> שמות אמיתיים של נהגים, של החשבון או של הקבוצה, המייל, הסיסמה, פרטי החשבון, המפתח (חוץ מלגוגל עצמה, לצורך זיהוי), צילומי מסך או קבצים.</li>
 </ul>
-<p>אל תקלידו לעוזר החכם מידע אישי, רגיש או סודי. אם אתם מתכוונים להשתמש במאמן, תנו לנהגים כינויים.</p>
+<p>האפליקציה יכולה להחליף רק שמות שהיא מכירה. <strong>אל תקלידו לעוזר החכם מידע אישי, רגיש או סודי אחר</strong> (למשל שמות מלאים של אנשים, כתובות מייל, מספרי טלפון או בית ספר); גם חלון העוזר מזכיר את זה.</p>
 <h2>מה גוגל עושה עם המידע</h2>
 <p>הקובע הוא התנאים של גוגל; כדאי לקרוא אותם. בקצרה, נכון לתאריך ההודעה הזאת:</p>
 <ul>
@@ -94,6 +96,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li>They are meant for <strong>adult mentors, aged 18 or over</strong>. Google's <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Gemini API Additional Terms</a> say you must be 18 or older to use the API.</li>
 <li><strong>If you are under 18, do not turn them on</strong> and do not enter an API key. Everything else in BIOBUZZ works without AI.</li>
 <li>To turn them on, an adult must confirm they are 18 or over and that they have read Google's terms and this notice. The app will not save or use a key without that confirmation.</li>
+<li>If you are signed in with an account whose age group is <strong>13–17</strong>, the AI features are <strong>hidden completely</strong> and cannot be used, even if a key was saved on that computer earlier.</li>
 </ul>
 <h2>How it works</h2>
 <ul>
@@ -104,12 +107,13 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 </ul>
 <h2>What is sent to Google</h2>
 <ul>
-<li><strong>AI helper:</strong> the questions you type (up to the last 12 messages of the conversation), plus fixed instructions and a list of the app's features so it can answer about them. When it explains a planner result, it sends only the numbers of that result and asks the model not to mention names.</li>
-<li><strong>AI coach (one driver):</strong> a summary of that driver's statistics — numbers such as match counts, averages, accuracy and cycle times — together with the <strong>driver's display name</strong>, shortened.</li>
-<li><strong>AI coach (whole team):</strong> a statistics summary for each teammate's drivers, including their <strong>driver display names</strong> and the <strong>team name</strong>, shortened to a few dozen characters. Only use this if your teammates are OK with it.</li>
-<li><strong>Never sent by the app:</strong> your email, password, account details, API key (except to Google itself, to authenticate), screenshots or files.</li>
+<li><strong>No names:</strong> before anything is sent, the app replaces the names of drivers (yours and your teammates'), your account name and your team name with nicknames such as <strong>&quot;Driver 1&quot;</strong>, <strong>&quot;Member 1&quot;</strong> and <strong>&quot;Team X&quot;</strong>. The answer comes back with the nicknames, and the app puts the real names back only on your computer. The list of nicknames is never sent.</li>
+<li><strong>AI helper:</strong> the questions you type (up to the last 12 messages of the conversation), with the names above replaced, plus fixed instructions and a list of the app's features so it can answer about them. When it explains a planner result, it sends only the numbers of that result.</li>
+<li><strong>AI coach (one driver):</strong> a summary of that driver's statistics — numbers such as match counts, averages, accuracy and cycle times — with the driver shown as &quot;Driver 1&quot;.</li>
+<li><strong>AI coach (whole team):</strong> a statistics summary for each teammate's drivers, with every driver shown as a nickname (&quot;Driver 1&quot;, &quot;Driver 2&quot;, …) and the team as &quot;Team X&quot;.</li>
+<li><strong>Never sent by the app:</strong> real driver, account or team names, your email, password, account details, API key (except to Google itself, to authenticate), screenshots or files.</li>
 </ul>
-<p>Do not type personal, sensitive or confidential information into the AI helper. Use nicknames for drivers if you plan to use the coach.</p>
+<p>The app can only replace names it knows. <strong>Do not type other personal, sensitive or confidential information</strong> (for example people's full names, email addresses, phone numbers or school) into the AI helper; the helper window shows this reminder too.</p>
 <h2>What Google does with it</h2>
 <p>Google's terms are what count; please read them. In short, as of the date of this notice:</p>
 <ul>

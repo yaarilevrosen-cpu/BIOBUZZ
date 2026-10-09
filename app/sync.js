@@ -28,6 +28,12 @@ function userName(u) { const m = u && (u.user_metadata || u.meta); return m && t
 /* 1.14 (v73 legal): איזו גרסת תנאים החשבון אישר (user_metadata.tos_v). בלי תאריך לידה — רק טווח גיל בהרשמה */
 const TOSV = /^\d{4}-\d\d-\d\d$/;
 function userTos(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.tos_v === "string" && TOSV.test(m.tos_v) ? m.tos_v : ""; }
+/* 1.14 (legalfix): טווח הגיל שנבחר בהרשמה (או באישור התנאים, לחשבון מלפני 1.14) — ״13-17״ מסתיר את הבינה המלאכותית */
+const AGES = ["13-17", "18+"];
+function userAge(u) { const m = u && (u.user_metadata || u.meta); return m && AGES.includes(m.age_bracket) ? m.age_bracket : ""; }
+/* הפונקציה עוד לא קיימת בשרת (v73_privacy.sql לא הורץ) — PostgREST מחזיר 404 / PGRST202 */
+function noFn(e) { const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || ""); return !!e && (e.status === 404 || /PGRST202|Could not find the function/i.test(m)); }
+const TOS_WAIT = "עדכנו את תנאי השימוש ומדיניות הפרטיות — הסנכרון מושהה עד שמאשרים בחלונית החשבון";
 /* מה שנשלח בהרשמה — רק השדות האלה, ורק בצורה הזו */
 function signupMeta(meta) {
   meta = meta && typeof meta === "object" ? meta : {};
@@ -96,6 +102,9 @@ class Sync {
         else if (has(pr)) fs.renameSync(pr, this.file);
       } catch (e) {}
     }
+    /* 1.14 (legalfix): גרסת המסמכים המשפטיים (legal/VERSION) שהחשבון צריך לאשר; ריק = לא בודקים */
+    this.tosNeed = typeof opt.tosNeed === "string" && TOSV.test(opt.tosNeed) ? opt.tosNeed : "";
+    this.teamRpc = undefined;
     this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null; this.refreshing = null; this.viewerSwitched = false;
     this.teamFile = path.join(dir, "team-cache.json");
     this.team = readJSON(this.teamFile, null) || null;
@@ -118,8 +127,11 @@ class Sync {
     const t = this.team && this.team.team;
     return { kind: this.kind, loggedIn: !!this.sess, name: this.label(), parked: this.store && this.store.parked ? this.store.parked() : 0, persist: !!this.canPersist(), team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url,
-      tos: this.sess && this.sess.user && this.sess.user.tos_v || "" };
+      tos: this.sess && this.sess.user && this.sess.user.tos_v || "",
+      /* 1.14 (legalfix): גרסת המסמכים הנוכחית; כשהחשבון לא אישר אותה — הסנכרון והקבוצה מושהים (המחיקה וההורדה עובדות) */
+      tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "" };
   }
+  tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") !== this.tosNeed); }
   /* ── רשת ── */
   async http(method, url, body, headers, timeoutMs) {
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeoutMs || 20000);
@@ -139,7 +151,8 @@ class Sync {
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
       expires_at: Date.now() + ttl * 1000,
       user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "",
-        tos_v: userTos(d.user) || (this.sess && this.sess.user && this.sess.user.tos_v) || "" } };
+        tos_v: userTos(d.user) || (this.sess && this.sess.user && this.sess.user.tos_v) || "",
+        age: userAge(d.user) || (this.sess && this.sess.user && this.sess.user.age) || "" } };
     this.saveSess();
     if (this.uid() !== prev) this.viewer(this.uid());
   }
@@ -212,7 +225,7 @@ class Sync {
     if (!this.sess) return Promise.resolve({ ok: false, why: "לא מחוברים" });
     if (this.busy) return this.busy;
     this.busy = this._sync().then(r => { this.lastError = ""; this.lastSync = Date.now(); this.saveSess(); this.lastResult = r; return r; },
-      e => { this.lastError = heb(e.message); return { ok: false, why: this.lastError }; })
+      e => { this.lastError = heb(e.message); return e.needTos ? { ok: false, why: this.lastError, needTos: true } : { ok: false, why: this.lastError }; })
       .finally(() => { this.busy = null; });
     return this.busy;
   }
@@ -236,6 +249,8 @@ class Sync {
     if (this.viewerSwitched) { this.viewerSwitched = false; res.changedActive = true; }
     const activeBefore = S.meta.active;
     try { await this.namePull(await this.myTeamLabel()); } catch (e) {}
+    /* 1.14 (legalfix): תנאים מעודכנים שהחשבון עוד לא אישר — שום דבר לא עולה ולא יורד עד שמאשרים (מקומית הכול ממשיך) */
+    if (this.tosWait()) { const e = new Error(TOS_WAIT); e.needTos = true; throw e; }
     const rows = (await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own())).filter(r => r && validId(r.id));
     const R = new Map(rows.map(r => [r.id, r]));
     if (this.uid() !== uid) throw new Error("לא מחוברים");
@@ -262,7 +277,7 @@ class Sync {
          מחיקה שהשרת דוחה — לא תוקעת את כל הסנכרון */
       if (t.owner && r && !r.deleted) {
         try { await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
-          { Prefer: "resolution=merge-duplicates,return=minimal" }); }
+          { Prefer: "resolution=merge-duplicates,return=minimal" }); r.deleted = true; }
         catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: t.id, why: "tomb: " + String(e.message || e.status).slice(0, 100) }); }
       }
       S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
@@ -320,6 +335,13 @@ class Sync {
     const remoteM = await this.remoteAll("bb_matches", "profile_id,at", this.own());
     const rset = new Map();
     for (const m of remoteM) { if (!validId(m.profile_id)) continue; if (!rset.has(m.profile_id)) rset.set(m.profile_id, new Set()); rset.get(m.profile_id).add(+m.at); }
+    /* 1.14 (legalfix): נהג שנמחק (כאן או במחשב אחר) — גם המאצ׳ים שלו נמחקים מהענן. נשארת רק המצבה (מזהה + זמן, בלי שם) */
+    res.deletedMatches = 0;
+    for (const [pid, ats] of rset) {
+      const pr = R.get(pid); if (!pr || !pr.deleted || !ats.size) continue;
+      try { await this.rest("DELETE", "bb_matches?" + this.own() + "&profile_id=eq." + encodeURIComponent(pid), undefined, { Prefer: "return=minimal" }); res.deletedMatches += ats.size; rset.delete(pid); }
+      catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: pid, why: "del-matches: " + String(e.message || e.status).slice(0, 100) }); }
+    }
     let quota = false;
     for (const p of S.meta.list.filter(q => this.mine(q))) {
       /* 1.12.5: נהג שנמחק בענן — המאצ׳ים שלו לא עולים */
@@ -369,7 +391,7 @@ class Sync {
     if (!this.sess) return "";
     const { data } = await this.authed("GET", this.cloud.url + "/auth/v1/user", undefined, {});
     let n = userName(data);
-    { const tv = userTos(data); if (tv !== (this.sess.user.tos_v || "")) { this.sess.user.tos_v = tv; this.saveSess(); } }   /* 1.14 */
+    { const tv = userTos(data), ag = userAge(data); if (tv !== (this.sess.user.tos_v || "") || ag !== (this.sess.user.age || "")) { this.sess.user.tos_v = tv; this.sess.user.age = ag; this.saveSess(); } }   /* 1.14 */
     if (!n) {
       const a = this.store.meta.list.find(p => p.id === this.store.meta.active);
       n = String(teamLabel || (a && !/^נהג( \d+)?$/.test(a.name || "") && a.name) || "").trim().slice(0, 40) || String(this.sess.user.email || "").split("@")[0];
@@ -390,13 +412,20 @@ class Sync {
     } catch (e) { if (quiet) throw e; return { ok: false, why: heb(e.message) }; }
   }
   /* ── 1.14 (v73 legal): זכויות על הנתונים ── */
-  /* אישור תנאים מעודכנים — לחשבון קיים (לא עוצר את הסנכרון) */
-  async tosAccept(v) {
+  /* אישור תנאים מעודכנים — לחשבון קיים. 1.14 (legalfix): עד שמאשרים הסנכרון מושהה.
+     חשבון בלי טווח גיל (מלפני 1.14) עונה עכשיו גם על הגיל: מתחת ל-13 — אין חשבון; 13–17 — עם הסכמת הורה */
+  async tosAccept(v, meta) {
     if (!this.sess) return { ok: false, why: "לא מחוברים" };
     v = String(v || ""); if (!TOSV.test(v)) return { ok: false, why: "?" };
+    const data = { tos_v: v, tos_at: new Date().toISOString() };
+    if (!this.sess.user.age) {
+      const m = signupMeta(Object.assign({}, meta && typeof meta === "object" ? meta : {}, { tos_v: v }));
+      if (!m.data) return { ok: false, needAge: true, u13: !!(meta && meta.age_bracket === "u13"), why: meta && meta.age_bracket ? m.why : "בחרו את טווח הגיל" };
+      data.age_bracket = m.data.age_bracket; data.guardian_ok = m.data.guardian_ok;
+    }
     try {
-      await this.authed("PUT", this.cloud.url + "/auth/v1/user", { data: { tos_v: v, tos_at: new Date().toISOString() } }, {});
-      this.sess.user.tos_v = v; this.saveSess(); return { ok: true, tos: v };
+      await this.authed("PUT", this.cloud.url + "/auth/v1/user", { data }, {});
+      this.sess.user.tos_v = v; if (data.age_bracket) this.sess.user.age = data.age_bracket; this.saveSess(); return { ok: true, tos: v };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   /* כל מה ששמור עליי בענן, כ-JSON: החשבון, הנהגים (עם ההגדרות), המאצ׳ים, והחברות בקבוצה */
@@ -413,10 +442,17 @@ class Sync {
         const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner,created_at&id=eq." + mem[0].team_id);
         team = Array.isArray(tt) && tt[0] || null;
       }
-      const u = user && typeof user === "object" ? user : {};
+      const u = user && typeof user === "object" ? user : {}, md = u.user_metadata && typeof u.user_metadata === "object" ? u.user_metadata : {};
+      /* 1.14 (legalfix): הדיווחים שלי — דרך bb_my_bugs() (את bb_bugs אי אפשר לקרוא ישירות). בלי הפונקציה בשרת — הערה במקום */
+      let bugs = null, bugsNote = "";
+      try { const b = await this.rpc("bb_my_bugs"); bugs = Array.isArray(b) ? b : []; }
+      catch (e) { if (!noFn(e)) throw e; bugsNote = "bug reports are not available for download yet (server update pending) — ask us on GitHub"; }
       return { ok: true, data: { app: "BIOBUZZ", kind: "cloud-export", exported_at: new Date().toISOString(),
-        account: { id: u.id || uid, email: u.email || this.sess.user.email || "", created_at: u.created_at || null, user_metadata: u.user_metadata || {} },
-        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team } } };
+        account: { id: u.id || uid, email: u.email || this.sess.user.email || "", name: typeof md.name === "string" ? md.name : "",
+          created_at: u.created_at || null, last_sign_in_at: u.last_sign_in_at || null,
+          age_bracket: md.age_bracket || null, guardian_ok: md.guardian_ok == null ? null : md.guardian_ok, tos_v: md.tos_v || null, tos_at: md.tos_at || null,
+          user_metadata: md },
+        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team }, bug_reports: bugs, ...(bugsNote ? { bug_reports_note: bugsNote } : {}) } };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   /* מחיקת החשבון וכל הנתונים בענן (bb_delete_me — supabase/v73_privacy.sql), ואז התנתקות במחשב הזה */
@@ -427,7 +463,7 @@ class Sync {
     catch (e) {
       const m = String(e.message || "") + " " + JSON.stringify(e.body || "");
       /* הפונקציה עוד לא קיימת בשרת (v73_privacy.sql לא הורץ) */
-      if (e.status === 404 || /PGRST202|Could not find the function|bb_delete_me/i.test(m))
+      if (noFn(e) || /bb_delete_me/i.test(m))
         return { ok: false, missing: true, why: "מחיקה אוטומטית עוד לא זמינה בשרת — כתבו לנו בגיטהאב ונמחק את החשבון ידנית", contact: "https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" };
       return { ok: false, why: heb(e.message) };
     }
@@ -438,6 +474,7 @@ class Sync {
   }
   async teamCall(what, a, b) {
     if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
+    if (this.tosWait()) return { ok: false, needTos: true, why: TOS_WAIT };   /* 1.14 (legalfix) */
     try {
       if (what === "create") await this.rpc("bb_team_create", { p_name: a || "", p_num: b || "", p_label: this.label() });
       else if (what === "join") {
@@ -487,8 +524,11 @@ class Sync {
     delete T.since;
     for (const k of Object.keys(T.sinceBy)) if (!alive.has(k)) delete T.sinceBy[k];
     if (others.length) {
-      const inq = "owner=in.(" + others.join(",") + ")";
-      const profs = await this.remoteAll("bb_profiles", "owner,id,name,emoji,color,deleted", inq);
+      /* 1.14 (legalfix): דרך הפונקציות של v73_privacy.sql (רק שם/סמל/צבע ושדות הסיכום). שרת בלי הפונקציות — השאילתות הישנות */
+      let profs = null; this.teamRpc = false;
+      try { const d = await this.rpc("bb_team_profiles"); if (Array.isArray(d)) { profs = d.filter(r => r && alive.has(r.owner)); this.teamRpc = true; } }
+      catch (e) { if (!noFn(e)) throw e; }
+      if (!profs) profs = await this.remoteAll("bb_profiles", "owner,id,name,emoji,color,deleted", "owner=in.(" + others.join(",") + ")");
       for (const r of profs) if (r && validId(r.id)) T.profiles[r.owner + "/" + r.id] = r;
       let pulled = 0;
       /* 1.12.4: רק שדות הסיכום (לא כל המאץ׳ עם sh/bl), עד TEAM_PAGE לכל חבר בכל סנכרון, ותקרה לכל נהג —
@@ -497,7 +537,8 @@ class Sync {
       const num = v => (typeof v === "number" && isFinite(v) ? v : typeof v === "boolean" ? v : typeof v === "string" && /^[a-z]{1,12}$/.test(v) ? v : null);   /* 1.13: kind/drill — מילה קצרה בלבד */
       for (const u of others) {
         const since = T.sinceBy[u] || "";
-        const { data: ms } = await this.rest("GET", "bb_matches?select=" + sel + "&owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : "") + "&order=created_at.asc&limit=" + TEAM_PAGE);
+        const { data: ms } = this.teamRpc ? { data: await this.rpc("bb_team_matches", { p_owner: u, p_since: since || null, p_limit: TEAM_PAGE }) }
+          : await this.rest("GET", "bb_matches?select=" + sel + "&owner=eq." + u + (since ? "&created_at=gte." + encodeURIComponent(since) : "") + "&order=created_at.asc&limit=" + TEAM_PAGE);
         for (const m of Array.isArray(ms) ? ms : []) {
           if (!m || !validId(m.profile_id) || !isFinite(m.at)) continue;
           const k = m.owner + "/" + m.profile_id; if (!T.profiles[k]) continue;
@@ -516,4 +557,4 @@ class Sync {
     return { members: T.members.length, pulled: T.pulled || 0 };
   }
 }
-module.exports = { Sync, DEFAULT_CLOUD, heb, signupMeta };
+module.exports = { Sync, DEFAULT_CLOUD, heb, signupMeta, TEAM_FIELDS };

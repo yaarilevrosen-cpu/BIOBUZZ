@@ -41,6 +41,20 @@ let updQuit = false;
 /* 1.14 (v73 legal): ההסכמה לתנאים במחשב הזה (גם כשמחליפים נהג) */
 function legalRec() { try { const o = JSON.parse(fs.readFileSync(path.join(DATA, "legal.json"), "utf8")); return o && typeof o.v === "string" ? { v: o.v, at: +o.at || 0 } : null; } catch (e) { return null; } }
 function acctStatus() { return sync ? sync.status() : { loggedIn: false }; }
+/* 1.14 (legalfix): גרסת המסמכים (legal/VERSION) — חשבון שלא אישר אותה מתבקש לאשר, והסנכרון מושהה עד אז.
+   BIOBUZZ_LEGAL_V קובע אחרת (ריק = בלי בדיקה); בבדיקות אוטומטיות (BIOBUZZ_TEST) בלי בדיקה אלא אם נקבע */
+function legalVersion() {
+  if (process.env.BIOBUZZ_LEGAL_V !== undefined) return process.env.BIOBUZZ_LEGAL_V;
+  if (process.env.BIOBUZZ_TEST) return "";
+  for (const d of [process.resourcesPath && path.join(process.resourcesPath, "legal"), path.join(__dirname, "..", "legal"), path.join(__dirname, "legal")]) {
+    try { const v = fs.readFileSync(path.join(d, "VERSION"), "utf8").trim(); if (/^\d{4}-\d\d-\d\d$/.test(v)) return v; } catch (e) {}
+  }
+  return "";
+}
+/* 1.14 (legalfix): חשבון של בן/בת 13–17 — הבינה המלאכותית מוסתרת לגמרי (גם כאן, לא רק בדף) */
+const MINOR_AI = "הבינה המלאכותית לא זמינה בחשבון של מתחת לגיל 18";
+function aiMinor() { return acctStatus().age === "13-17"; }
+function aiSt() { const s = ai.status(); return aiMinor() ? Object.assign(s, { ok: false, minor: true }) : s; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
 if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); process.exit(0); return; }
@@ -217,7 +231,10 @@ function reg() {
   /* ── 1.14 (v73 legal): הסכמה לתנאים, זכויות על הנתונים ── */
   handle("bb:legalAck", (e, v) => { v = String(v || ""); if (!/^\d{4}-\d\d-\d\d$/.test(v)) return { ok: false };
     try { writeAtomic(path.join(DATA, "legal.json"), JSON.stringify({ v, at: Date.now() })); } catch (err) { return { ok: false }; } return { ok: true }; });
-  handle("bb:acctTos", async (e, v) => { const r = await sync.tosAccept(String(v || "")); send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:acctTos", async (e, v, meta) => { const r = await sync.tosAccept(String(v || ""), meta && typeof meta === "object" ? meta : null); send("bb:sync", { status: acctStatus() });
+    if (r && r.ok) soonSync(500); return r; });   /* 1.14 (legalfix): אחרי האישור הסנכרון ממשיך מיד */
+  /* 1.14 (legalfix): ״אפס הכול — כולל הגיבויים״: תיקיית הגיבויים (יומיים ועותקים) והסל של הנהגים שנמחקו */
+  handle("bb:wipeBackups", () => { const r = store.wipeBackups(); return Object.assign(r, { list: store.backupsList() }); });
   handle("bb:acctExport", async () => {
     const r = await sync.exportMine(); if (!r.ok) return r;
     const d = new Date(), pad = x => String(x).padStart(2, "0");
@@ -238,13 +255,14 @@ function reg() {
   handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   handle("bb:syncNow", () => runSync("manual"));
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
-  handle("bb:aiStatus", () => ai.status());
-  handle("bb:aiSetKey", async (e, k) => { const r = await ai.setKey(String(k || "")); return Object.assign({ status: ai.status() }, r, { status: ai.status() }); });
-  handle("bb:aiClear", () => ai.clear());
-  handle("bb:aiAck18", (e, on) => ({ status: ai.ack18(on === true) }));
-  handle("bb:aiCheck", async () => { const r = await ai.check(); return Object.assign({}, r, { status: ai.status() }); });
+  handle("bb:aiStatus", () => aiSt());
+  handle("bb:aiSetKey", async (e, k) => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() };
+    const r = await ai.setKey(String(k || "")); return Object.assign({ status: aiSt() }, r, { status: aiSt() }); });
+  handle("bb:aiClear", () => { ai.clear(); return aiSt(); });
+  handle("bb:aiAck18", (e, on) => ({ status: aiMinor() ? aiSt() : (ai.ack18(on === true), aiSt()) }));
+  handle("bb:aiCheck", async () => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() }; const r = await ai.check(); return Object.assign({}, r, { status: aiSt() }); });
   handle("bb:aiDrills", () => ai.drills());
-  handle("bb:aiAsk", (e, kind, o) => ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
+  handle("bb:aiAsk", (e, kind, o) => aiMinor() ? { ok: false, minor: true, why: MINOR_AI } : ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
   handle("bb:acctName", async (e, n) => { const r = await sync.nameSet(String(n || "")); send("bb:sync", { status: acctStatus() }); return r; });
   /* ── עדכונים ── */
   handle("bb:bugSend", (e, row) => sync.bugSend(row || {}));
@@ -371,7 +389,7 @@ app.whenReady().then(() => {
   const canEnc = () => { try { return !!(safeStorage && safeStorage.isEncryptionAvailable()); } catch (e) { return false; } };
   const enc = s => canEnc() ? "e:" + safeStorage.encryptString(s).toString("base64") : null;
   const dec = s => s.startsWith("e:") ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : Buffer.from(s.replace(/^p:/, ""), "base64").toString("utf8");
-  sync = new Sync(store, DATA, { enc, dec, canEnc: () => canEnc() || process.env.BIOBUZZ_PLAIN_SESS === "1" });
+  sync = new Sync(store, DATA, { enc, dec, canEnc: () => canEnc() || process.env.BIOBUZZ_PLAIN_SESS === "1", tosNeed: legalVersion() });
   /* מפתח גוגל: רק מוצפן באמת (safeStorage). בלי הצפנה — נשמר בזיכרון עד היציאה */
   ai = new AI(DATA, { enc: s => "e:" + safeStorage.encryptString(s).toString("base64"),
     dec: s => s.startsWith("e:") && safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : "",

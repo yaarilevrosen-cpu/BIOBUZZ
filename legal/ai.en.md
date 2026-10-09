@@ -12,6 +12,7 @@ BIOBUZZ has two optional AI features in the desktop app: the **AI coach**, which
 - They are meant for **adult mentors, aged 18 or over**. Google's [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) say you must be 18 or older to use the API.
 - **If you are under 18, do not turn them on** and do not enter an API key. Everything else in BIOBUZZ works without AI.
 - To turn them on, an adult must confirm they are 18 or over and that they have read Google's terms and this notice. The app will not save or use a key without that confirmation.
+- If you are signed in with an account whose age group is **13–17**, the AI features are **hidden completely** and cannot be used, even if a key was saved on that computer earlier.
 
 ## How it works
 
@@ -22,12 +23,13 @@ BIOBUZZ has two optional AI features in the desktop app: the **AI coach**, which
 
 ## What is sent to Google
 
-- **AI helper:** the questions you type (up to the last 12 messages of the conversation), plus fixed instructions and a list of the app's features so it can answer about them. When it explains a planner result, it sends only the numbers of that result and asks the model not to mention names.
-- **AI coach (one driver):** a summary of that driver's statistics — numbers such as match counts, averages, accuracy and cycle times — together with the **driver's display name**, shortened.
-- **AI coach (whole team):** a statistics summary for each teammate's drivers, including their **driver display names** and the **team name**, shortened to a few dozen characters. Only use this if your teammates are OK with it.
-- **Never sent by the app:** your email, password, account details, API key (except to Google itself, to authenticate), screenshots or files.
+- **No names:** before anything is sent, the app replaces the names of drivers (yours and your teammates'), your account name and your team name with nicknames such as **"Driver 1"**, **"Member 1"** and **"Team X"**. The answer comes back with the nicknames, and the app puts the real names back only on your computer. The list of nicknames is never sent.
+- **AI helper:** the questions you type (up to the last 12 messages of the conversation), with the names above replaced, plus fixed instructions and a list of the app's features so it can answer about them. When it explains a planner result, it sends only the numbers of that result.
+- **AI coach (one driver):** a summary of that driver's statistics — numbers such as match counts, averages, accuracy and cycle times — with the driver shown as "Driver 1".
+- **AI coach (whole team):** a statistics summary for each teammate's drivers, with every driver shown as a nickname ("Driver 1", "Driver 2", …) and the team as "Team X".
+- **Never sent by the app:** real driver, account or team names, your email, password, account details, API key (except to Google itself, to authenticate), screenshots or files.
 
-Do not type personal, sensitive or confidential information into the AI helper. Use nicknames for drivers if you plan to use the coach.
+The app can only replace names it knows. **Do not type other personal, sensitive or confidential information** (for example people's full names, email addresses, phone numbers or school) into the AI helper; the helper window shows this reminder too.
 
 ## What Google does with it
 
