@@ -8,6 +8,12 @@
 ## מה חדש ב-v61 (אפליקציה 1.8.0)
 - **בונה רובוטים** — כל רובוט בנוי ממערכות: הנעה (מכאנום / 6 גלגלים / טנק), איסוף (קשיחים / Gecko / מכאנום שמרכז, קדימה או משני הצדדים, הכול או רק פולן), ירי (דיפרנציאלי / הוד, אחד או שניים), צריח ומעלית לפרח. שבע בניות מוכנות — כולל goBILDA StarterBot — ובוחרים לכל בוט רובוט משלו. בדיקה לפי חוקי המדריך (8 מנועים, 8 סרוו, 18 אינץ׳). פירוט: `docs/robot-builder-v61.md`.
 
+## פרטיות, תנאים ואבטחה
+[מדיניות פרטיות](PRIVACY.md) · [תנאי שימוש](TERMS.md) · [אבטחה ודיווח על חולשות](SECURITY.md) · [הודעות צד שלישי](THIRD_PARTY_NOTICES.md) · באתר: privacy.html, terms.html, ai.html, accessibility.html.
+המסמכים עצמם בתיקייה `legal/` (עברית ואנגלית); אחרי שינוי מריצים `python3 tools/legal_embed.py`. מה עוד צריך לפני השקה ציבורית: `docs/legal-readiness.md`.
+
+FIRST®, FIRST® Tech Challenge and the game name BIOBUZZ are trademarks of FIRST (For Inspiration and Recognition of Science and Technology). This is an independent team project, not affiliated with, endorsed by or sponsored by FIRST; FIRST is not overseeing, involved with, or responsible for this software.
+
 ## להוריד ולשחק
 - **אפליקציה:** בלשונית **Releases** — `BIOBUZZ-Setup-x.y.z.exe` (מתקין) או `BIOBUZZ-x.y.z-portable.exe` (בלי התקנה, הנתונים נשמרים ליד הקובץ — טוב לדיסק און קי).
   בהפעלה הראשונה Windows עשוי להציג ״Windows הגן על המחשב״ → **מידע נוסף** → **הפעל בכל זאת** (האפליקציה לא חתומה).
