@@ -68,6 +68,7 @@
         "en_US"
       ],
       "language": "1033",
+      "license": "build/license.txt",
       "runAfterFinish": true
     },
     "portable": {
@@ -123,6 +124,18 @@
           "*.md",
           "*.json"
         ]
+      },
+      {
+        "from": "../legal",
+        "to": "legal",
+        "filter": [
+          "*.md",
+          "VERSION"
+        ]
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
       }
     ]
   },

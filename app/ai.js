@@ -45,6 +45,9 @@ class AI {
     this.stFile = path.join(dataDir, "ai-state.json");
     this.enc = opt.enc; this.dec = opt.dec; this.canEnc = opt.canEnc || (() => false);
     this.key = ""; this.mem = false;
+    /* 1.14 (v73 legal): אישור ״18 ומעלה + התנאים של Gemini API״ — בלעדיו אין שמירת מפתח, בדיקה או שאלה (גם למפתח שכבר שמור) */
+    this.ackFile = path.join(dataDir, "ai-ack.json");
+    this.ack = (o => o && isFinite(o.at) ? { at: +o.at } : null)(readJSON(this.ackFile, null));
     this.st = readJSON(this.stFile, null) || { checkedAt: 0, ok: false, models: [], pick: { fast: "", strong: "" } };
     try { if (fs.existsSync(this.keyFile)) this.key = this.dec(fs.readFileSync(this.keyFile, "utf8")) || ""; } catch (e) { this.key = ""; }
     this.busy = null; this.gen = 0; this.ctl = null;
@@ -54,14 +57,22 @@ class AI {
   status() {
     const s = this.st;
     return { has: !!this.key, tail: this.key ? this.key.slice(-4) : "", saved: !!this.key && !this.mem, enc: this.canEnc(),
-      ok: !!this.key && !!s.ok && !!(s.pick.fast || s.pick.strong), checkedAt: s.checkedAt || 0, busy: !!this.busy,
+      ok: !!this.key && !!this.ack && !!s.ok && !!(s.pick.fast || s.pick.strong), ack18: !!this.ack, checkedAt: s.checkedAt || 0, busy: !!this.busy,
       models: (s.models || []).map(m => ({ id: m.id, name: m.name, ok: m.ok, ms: m.ms, why: m.why })),
       pick: Object.assign({}, s.pick), error: s.error || "", files: !!this.files };
   }
+  /* 1.14: מאשרים / מבטלים את האישור (ביטול עוצר בדיקה שרצה; המפתח נשאר שמור) */
+  ack18(on) {
+    if (on) { this.ack = { at: Date.now() }; try { writeAtomic(this.ackFile, JSON.stringify(this.ack)); } catch (e) {} }
+    else { this.cancel(); this.ack = null; try { fs.unlinkSync(this.ackFile); } catch (e) {} }
+    return this.status();
+  }
+  static NOACK() { return "קודם מאשרים בהגדרות: אני בן/בת 18 ומעלה ומסכים/ה לתנאים של Gemini API"; }
   saveSt() { try { writeAtomic(this.stFile, JSON.stringify(this.st)); } catch (e) {} }
   scrub(msg) { msg = String(msg || ""); if (this.key) msg = msg.split(this.key).join("•••"); return msg.replace(/key=[A-Za-z0-9_.\-]{10,}/g, "key=•••").slice(0, 240); }
   async setKey(k) {
     k = String(k || "").trim();
+    if (!this.ack) return { ok: false, needAck: true, why: AI.NOACK() };
     if (!KEYRE.test(k)) return { ok: false, why: "זה לא נראה כמו מפתח של גוגל — מעתיקים אותו מ-Google AI Studio (מתחיל ב-AIza או ב-AQ.)" };
     this.cancel();
     this.key = k; this.mem = false;
@@ -146,6 +157,7 @@ class AI {
     return { fast: fast.id, strong: strong.id };
   }
   check() {
+    if (!this.ack) return Promise.resolve({ ok: false, needAck: true, why: AI.NOACK(), status: this.status() });
     if (this.busy && this.busyGen === this.gen) return this.busy;
     const g = this.gen;
     const p = this._check(g).finally(() => { if (this.busy === p) this.busy = null; });
@@ -211,6 +223,7 @@ class AI {
   /* ── שאלה ── kind: helper (מהיר, שיחה) / coach (חזק, JSON) */
   async ask(kind, o) {
     o = o && typeof o === "object" ? o : {};
+    if (!this.ack) return { ok: false, needAck: true, why: AI.NOACK() };
     if (!this.key) return { ok: false, why: "אין מפתח של גוגל — מוסיפים אותו בהגדרות" };
     if (!this.st.ok) return { ok: false, why: "המפתח עוד לא נבדק — ״בדוק״ בהגדרות" };
     const coach = kind === "coach";

@@ -43,6 +43,9 @@ await win.waitForTimeout(500);
 let r=await E(async()=>{ const s=await bbApp.aiStatus(); document.querySelector('#appNav [data-nav="settings"]').click(); await new Promise(r=>setTimeout(r,300));
   return {s, aion:document.documentElement.classList.contains('aion'), box:!!document.querySelector('#appPage #aiKeyIn'), txt:document.querySelector('#appPage #aiSet').innerText}; });
 ok(!r.s.has&&!r.aion&&r.box,'בלי מפתח: הכול כבוי, ויש תיבה בהגדרות');
+// 1.14 (v73 legal): לפני מפתח — אישור ״18 ומעלה + התנאים של Gemini API״ (בלי זה המפתח לא נשמר)
+r=await E(async()=>{ const c=document.querySelector('#appPage #aiAck18'); if(c&&!c.checked) c.click(); for(let t=0;t<30;t++){ await new Promise(r=>setTimeout(r,100)); if(window.__sim.AIST.st&&window.__sim.AIST.st.ack18) break; } return window.__sim.AIST.st&&window.__sim.AIST.st.ack18; });
+ok(r===true,'אישור 18+ בהגדרות נשמר בתהליך הראשי');
 // 2. מפתח לא בפורמט / מפתח שגוי
 r=await E(()=>bbApp.aiSetKey('abc')); ok(!r.ok&&/לא נראה כמו מפתח/.test(r.why),'מפתח קצר מדי נדחה בלי לפנות לגוגל');
 r=await E(k=>bbApp.aiSetKey(k),'AQ.WRONG'+'y'.repeat(40)); ok(!r.ok&&!/לא נראה כמו מפתח/.test(r.why),'מפתח בפורמט החדש (AQ. עם נקודה) עובר את בדיקת הפורמט ומגיע לגוגל ('+r.why+')');

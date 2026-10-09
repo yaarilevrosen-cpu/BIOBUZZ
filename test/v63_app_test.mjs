@@ -327,6 +327,7 @@ mock.close();
   }); }); srv.reqs = [];
   await new Promise(r => srv.listen(0, '127.0.0.1', r)); process.env.BIOBUZZ_GEMINI_BASE = 'http://127.0.0.1:' + srv.address().port;
   const D = tmp('bb63ai-'); const A = new AI(D, { canEnc: () => false });
+  A.ack18(true);   /* 1.14 (v73 legal): בלי אישור 18+ אין מפתח ואין שאלות */
   ok(AI.rank('gemini-exp-1206').v === 0 && AI.rank('gemini-2.5-flash').v === 2.5, 'גרסה רק מ-gemini-<מספר> (exp-1206 הוא לא גרסה 1206)');
   const r = await A.setKey('AIza' + 'k'.repeat(35));
   const probes = srv.reqs.filter(x => x.url.includes(':generateContent')).length;

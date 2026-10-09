@@ -9,7 +9,7 @@ const path = require("path");
 
 const KEYRE = /^(bb|biobuzz)/i;
 /* מפתחות של המחשב הזה בלבד — לא מסונכרנים (מצב מסך, לשונית, תצוגה, גיבויים מקומיים) */
-const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1", "bbLang1", "bbTour1", "bbNew57"]);
+const NOSYNC = new Set(["bbUiMode1", "biobuzz_ws_v1", "bbHud1", "bbBackups1", "bbQual1", "bbHelp1", "bbShellLast", "bbLive1", "bbRecAuto1", "bbLang1", "bbTour1", "bbNew57", "bbLegal1"]);   /* 1.14: הסכמה לתנאים — של המחשב הזה */
 const EMOJI = ["🐝", "🚀", "🤖", "⚡", "🔥", "🦅", "🐺", "🦊", "🐉", "🎯", "🌟", "🏆"];
 /* v63: זמני המפתחות בשורת הענן (לאיחוד לפי מפתח) */
 const KVAT = "bb__at";
@@ -209,6 +209,21 @@ class Store {
     this.meta.list.splice(i, 1);
     if (!(opt && opt.noTomb) && !p.local && p.owner) this.meta.tombs.push({ id, at: Date.now(), acct: p.acct || "team", owner: p.owner });
     this.saveMeta(); return true;
+  }
+  /* 1.14 (v73 legal): אחרי מחיקת חשבון — מוחקים מהמחשב גם את הנהגים שלו (תיקייה, הגדרות, מאצ׳ים, ומה שבסל). נהגים מקומיים / של חשבון אחר נשארים */
+  wipeOwner(uid) {
+    if (typeof uid !== "string" || !uid) return { ok: false, n: 0 };
+    this.flushKv();
+    const gone = this.meta.list.filter(p => p.owner === uid);
+    for (const p of gone) { try { fs.rmSync(this.dir(p.id), { recursive: true, force: true }); } catch (e) {} }
+    this.meta.list = this.meta.list.filter(p => p.owner !== uid);
+    this.meta.tombs = this.meta.tombs.filter(t => t.owner !== uid);
+    try { const tr = path.join(this.root, "trash");
+      for (const d of fs.readdirSync(tr)) { const pj = readJSON(path.join(tr, d, "profile.json"), null); if (pj && pj.owner === uid) fs.rmSync(path.join(tr, d), { recursive: true, force: true }); } } catch (e) {}
+    if (!this.meta.list.length) { const p = this.addProfile("נהג 1", { quiet: true, owner: null }); this.meta.active = p.id; }
+    if (!this.meta.list.some(p => p.id === this.meta.active)) this.meta.active = this.meta.list[0].id;
+    this.saveMeta(); this.loadKv();
+    return { ok: true, n: gone.length };
   }
   switchTo(id) {
     const p = this.meta.list.find(x => x.id === id);

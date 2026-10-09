@@ -18,6 +18,9 @@ try {
 const PID = boot.profile && typeof boot.profile.id === "string" ? boot.profile.id : undefined;
 contextBridge.exposeInMainWorld("bbApp", {
   version: boot.version, dataDir: boot.dataDir, firstRun: boot.firstRun, test: !!boot.test,
+  /* 1.14 (v73 legal): ההסכמה לתנאים במחשב הזה {v, at} */
+  legal: boot.legal && typeof boot.legal === "object" ? { v: String(boot.legal.v || ""), at: +boot.legal.at || 0 } : null,
+  legalAck: v => ipcRenderer.invoke("bb:legalAck", String(v || "")),
   /* v63: האסימון לגשר המובנה (חיבור ״sim״/״host״) — חדש בכל הפעלה */
   bridgeTok: String(boot.bridgeTok || ""),
   profile: boot.profile, profilesAtBoot: boot.profiles, backupsAtBoot: boot.backups,
@@ -51,7 +54,13 @@ contextBridge.exposeInMainWorld("bbApp", {
   /* חשבון וסנכרון */
   acctStatus: () => ipcRenderer.invoke("bb:acctStatus"),
   acctSignIn: (email, pw) => ipcRenderer.invoke("bb:acctSignIn", String(email || ""), String(pw || "")),
-  acctSignUp: (email, pw) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || "")),
+  acctSignUp: (email, pw, meta) => ipcRenderer.invoke("bb:acctSignUp", String(email || ""), String(pw || ""),
+    meta && typeof meta === "object" ? { tos_v: String(meta.tos_v || ""), age_bracket: String(meta.age_bracket || ""), guardian_ok: meta.guardian_ok === true } : null),
+  /* 1.14 (v73 legal): אישור תנאים מעודכנים, הורדת הנתונים מהענן, מחיקת החשבון, ומחיקה מקומית אחרי מחיקת חשבון */
+  acctTos: v => ipcRenderer.invoke("bb:acctTos", String(v || "")),
+  acctExport: () => ipcRenderer.invoke("bb:acctExport"),
+  acctDelete: () => ipcRenderer.invoke("bb:acctDelete"),
+  wipeLocal: () => ipcRenderer.invoke("bb:wipeLocal"),
   acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
   acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
@@ -61,6 +70,7 @@ contextBridge.exposeInMainWorld("bbApp", {
   aiStatus: () => ipcRenderer.invoke("bb:aiStatus"),
   aiSetKey: k => ipcRenderer.invoke("bb:aiSetKey", String(k || "")),
   aiClear: () => ipcRenderer.invoke("bb:aiClear"),
+  aiAck18: on => ipcRenderer.invoke("bb:aiAck18", !!on),
   aiCheck: () => ipcRenderer.invoke("bb:aiCheck"),
   aiDrills: () => ipcRenderer.invoke("bb:aiDrills"),
   aiAsk: (kind, o) => ipcRenderer.invoke("bb:aiAsk", String(kind || ""), o),

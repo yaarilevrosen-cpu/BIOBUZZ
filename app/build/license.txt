@@ -1,0 +1,39 @@
+﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-10-09)
+
+TERMS OF USE
+============
+
+PLACEHOLDER — temporary text ("draft"). The real document won't look like this & will replace this file.
+
+What is here
+------------
+  * A first item with bold
+  * A link: GitHub issues (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues)
+
+----------------------------------------
+
+Contact
+--------
+
+Write to us on GitHub (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
+
+============================================================
+
+תנאי שימוש
+==========
+
+PLACEHOLDER — טקסט זמני. המסמך האמיתי יחליף את הקובץ הזה.
+
+מה כאן
+--------
+  * פריט ראשון עם הדגשה
+  * קישור: הבעיות בגיטהאב (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues)
+
+----------------------------------------
+
+יצירת קשר
+---------
+
+פונים דרך GitHub (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
+
+Privacy Policy / מדיניות פרטיות: https://yaarilevrosen-cpu.github.io/BIOBUZZ/privacy.html

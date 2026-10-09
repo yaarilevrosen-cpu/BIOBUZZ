@@ -38,6 +38,8 @@ let kvFrozen = false;
 /* v63: יציאה לצורך עדכון — בלי סנכרון אחרון (המתקין מחכה) */
 let updQuit = false;
 /* v57: חשבון אחד לכל אדם; הקבוצה — קוד הצטרפות */
+/* 1.14 (v73 legal): ההסכמה לתנאים במחשב הזה (גם כשמחליפים נהג) */
+function legalRec() { try { const o = JSON.parse(fs.readFileSync(path.join(DATA, "legal.json"), "utf8")); return o && typeof o.v === "string" ? { v: o.v, at: +o.at || 0 } : null; } catch (e) { return null; } }
 function acctStatus() { return sync ? sync.status() : { loggedIn: false }; }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
@@ -154,7 +156,7 @@ function reg() {
   /* סינכרוני — לפני שהסימולטור עולה, הוא צריך את הנתונים של הנהג */
   on("bb:boot", e => {
     kvFrozen = false; store.pageBoot();   /* 1.12.5: הדף החדש — של הנהג הפעיל, עם הערכים העדכניים */
-    e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun,
+    e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun, legal: legalRec(),
       version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST,
       bridgeTok: bridge ? BRIDGE_TOK : "" };
   });
@@ -211,7 +213,26 @@ function reg() {
   /* התחברות לחשבון אחר במחשב הזה — הנהגים של החשבון הקודם ״חונים״; אם הנהג הפעיל היה שלו, הדף נטען מחדש */
   const afterLogin = r => { if (r.ok) { if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); } return r; };
   handle("bb:acctSignIn", async (e, em, pw) => afterLogin(await sync.signIn(em, pw)));
-  handle("bb:acctSignUp", async (e, em, pw) => { const r = await sync.signUp(em, pw); return r.ok && !r.confirm ? afterLogin(r) : r; });
+  handle("bb:acctSignUp", async (e, em, pw, meta) => { const r = await sync.signUp(em, pw, meta && typeof meta === "object" ? meta : null); return r.ok && !r.confirm ? afterLogin(r) : r; });
+  /* ── 1.14 (v73 legal): הסכמה לתנאים, זכויות על הנתונים ── */
+  handle("bb:legalAck", (e, v) => { v = String(v || ""); if (!/^\d{4}-\d\d-\d\d$/.test(v)) return { ok: false };
+    try { writeAtomic(path.join(DATA, "legal.json"), JSON.stringify({ v, at: Date.now() })); } catch (err) { return { ok: false }; } return { ok: true }; });
+  handle("bb:acctTos", async (e, v) => { const r = await sync.tosAccept(String(v || "")); send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:acctExport", async () => {
+    const r = await sync.exportMine(); if (!r.ok) return r;
+    const d = new Date(), pad = x => String(x).padStart(2, "0");
+    const name = "BIOBUZZ-my-cloud-data-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + ".json";
+    let file = null;
+    if (process.env.BIOBUZZ_TEST && process.env.BIOBUZZ_EXPORT_DIR) file = path.join(process.env.BIOBUZZ_EXPORT_DIR, name);
+    else { const s = await dialog.showSaveDialog(win, { title: "הנתונים שלי מהענן", defaultPath: name, filters: [{ name: "JSON", extensions: ["json"] }] });
+      if (s.canceled || !s.filePath) return { ok: false, canceled: true }; file = s.filePath; }
+    fs.writeFileSync(file, JSON.stringify(r.data, null, 1)); return { ok: true, file, profiles: r.data.profiles.length, matches: r.data.matches.length };
+  });
+  let deletedUid = "";
+  handle("bb:acctDelete", async () => { const r = await sync.deleteMe(); if (r.ok) { deletedUid = r.uid; clearTimeout(syncT); } send("bb:sync", { status: acctStatus() }); return r; });
+  /* רק אחרי מחיקת חשבון מוצלחת, ורק הנהגים של אותו חשבון */
+  handle("bb:wipeLocal", () => { if (!deletedUid) return { ok: false, why: "?" };
+    const r = store.wipeOwner(deletedUid); deletedUid = ""; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 300); return r; });
   handle("bb:acctRecover", (e, em) => sync.recover(em));
   handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
   handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
@@ -220,6 +241,7 @@ function reg() {
   handle("bb:aiStatus", () => ai.status());
   handle("bb:aiSetKey", async (e, k) => { const r = await ai.setKey(String(k || "")); return Object.assign({ status: ai.status() }, r, { status: ai.status() }); });
   handle("bb:aiClear", () => ai.clear());
+  handle("bb:aiAck18", (e, on) => ({ status: ai.ack18(on === true) }));
   handle("bb:aiCheck", async () => { const r = await ai.check(); return Object.assign({}, r, { status: ai.status() }); });
   handle("bb:aiDrills", () => ai.drills());
   handle("bb:aiAsk", (e, kind, o) => ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
@@ -231,7 +253,8 @@ function reg() {
   handle("bb:updCheck", () => updCheck(true));
   handle("bb:updInstall", () => { if (AU && UPD.state === "ready") { updQuit = true; try { store.flushKv(); } catch (err) {} setImmediate(() => AU.quitAndInstall(false, true)); return true; } return false; });
   handle("bb:updState", () => UPD);
-  handle("bb:openUrl", (e, url) => { if (/^https:\/\/github\.com\//.test(url)) shell.openExternal(url); });
+  /* 1.14: גם דפי המסמכים באתר והתנאים של גוגל (קישורים מהמסמכים המשפטיים) */
+  handle("bb:openUrl", (e, url) => { if (/^https:\/\/(github\.com|yaarilevrosen-cpu\.github\.io|ai\.google\.dev)\//.test(String(url))) shell.openExternal(url); });
   handle("bb:importBackup", async (e, txt) => {
     txt = txt || await pick("ייבוא גיבוי מהדפדפן"); if (txt == null) return { ok: false, canceled: true };
     const r = store.importBrowserBackup(txt); if (r.ok) { kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } return r;

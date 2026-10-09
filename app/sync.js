@@ -25,6 +25,20 @@ const HEB = {
 };
 /* v60: שם החשבון שמור בשרת (user_metadata.name) — אותו שם בכל מחשב */
 function userName(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.name === "string" ? m.name.trim().slice(0, 40) : ""; }
+/* 1.14 (v73 legal): איזו גרסת תנאים החשבון אישר (user_metadata.tos_v). בלי תאריך לידה — רק טווח גיל בהרשמה */
+const TOSV = /^\d{4}-\d\d-\d\d$/;
+function userTos(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.tos_v === "string" && TOSV.test(m.tos_v) ? m.tos_v : ""; }
+/* מה שנשלח בהרשמה — רק השדות האלה, ורק בצורה הזו */
+function signupMeta(meta) {
+  meta = meta && typeof meta === "object" ? meta : {};
+  const v = typeof meta.tos_v === "string" && TOSV.test(meta.tos_v) ? meta.tos_v : "";
+  if (!v) return { why: "צריך לאשר את תנאי השימוש ומדיניות הפרטיות לפני פתיחת חשבון" };
+  const age = meta.age_bracket;
+  if (age === "u13") return { why: "חשבון בענן פתוח מגיל 13 — אפשר להשתמש בסימולטור בלי חשבון" };
+  if (age !== "13-17" && age !== "18+") return { why: "צריך לאשר את תנאי השימוש ומדיניות הפרטיות לפני פתיחת חשבון" };
+  if (age === "13-17" && meta.guardian_ok !== true) return { why: "מתחת לגיל 18 צריך הסכמה של הורה או אפוטרופוס" };
+  return { data: { tos_v: v, tos_at: new Date().toISOString(), age_bracket: age, guardian_ok: age === "13-17" ? true : null } };
+}
 /* 1.12.4: מה שהשרת ידחה בכל מקרה (v63_security.sql) — מסננים לפני השליחה, ושורה שבכל זאת נדחתה לא תוקעת את כל הסנכרון */
 const MATCH_MAX = 250000;            /* bb_matches_size_ok: pg_column_size(data) <= 262144 */
 const KV_MAX = 1400000;              /* bb_profiles_size_ok: pg_column_size(kv) <= 1500000 (1.12.5, v72_security.sql; לפני כן 2000000) */
@@ -103,7 +117,8 @@ class Sync {
   status() {
     const t = this.team && this.team.team;
     return { kind: this.kind, loggedIn: !!this.sess, name: this.label(), parked: this.store && this.store.parked ? this.store.parked() : 0, persist: !!this.canPersist(), team: t ? { code: t.code, name: t.name, num: t.num, owner: t.owner === this.uid(), members: (this.team.members || []).length } : null, email: this.sess && this.sess.user && this.sess.user.email || "",
-      lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url };
+      lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url,
+      tos: this.sess && this.sess.user && this.sess.user.tos_v || "" };
   }
   /* ── רשת ── */
   async http(method, url, body, headers, timeoutMs) {
@@ -123,7 +138,8 @@ class Sync {
     const ttl = +d.expires_in > 0 ? +d.expires_in : 3600;
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
       expires_at: Date.now() + ttl * 1000,
-      user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "" } };
+      user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "",
+        tos_v: userTos(d.user) || (this.sess && this.sess.user && this.sess.user.tos_v) || "" } };
     this.saveSess();
     if (this.uid() !== prev) this.viewer(this.uid());
   }
@@ -172,9 +188,12 @@ class Sync {
       this.setSession(data); this.lastError = ""; return { ok: true, email: this.sess.user.email };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
-  async signUp(email, password) {
+  /* 1.14 (v73 legal): בלי הסכמה לתנאים וטווח גיל (13+, ומתחת ל-18 עם הורה) — אין חשבון. ההסכמה נשמרת בחשבון (user_metadata) */
+  async signUp(email, password, meta) {
+    const m = signupMeta(meta);
+    if (!m.data) return { ok: false, why: m.why };
     try {
-      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/signup?redirect_to=" + encodeURIComponent(SITE), { email: String(email).trim(), password: String(password) });
+      const { data } = await this.http("POST", this.cloud.url + "/auth/v1/signup?redirect_to=" + encodeURIComponent(SITE), { email: String(email).trim(), password: String(password), data: m.data });
       if (data && data.access_token) { this.setSession(data); return { ok: true, email: this.sess.user.email }; }
       return { ok: true, confirm: true };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
@@ -350,6 +369,7 @@ class Sync {
     if (!this.sess) return "";
     const { data } = await this.authed("GET", this.cloud.url + "/auth/v1/user", undefined, {});
     let n = userName(data);
+    { const tv = userTos(data); if (tv !== (this.sess.user.tos_v || "")) { this.sess.user.tos_v = tv; this.saveSess(); } }   /* 1.14 */
     if (!n) {
       const a = this.store.meta.list.find(p => p.id === this.store.meta.active);
       n = String(teamLabel || (a && !/^נהג( \d+)?$/.test(a.name || "") && a.name) || "").trim().slice(0, 40) || String(this.sess.user.email || "").split("@")[0];
@@ -368,6 +388,53 @@ class Sync {
       if (this.team && this.team.members) { try { await this.rpc("bb_team_label", { p_label: n }); this.team.members.forEach(x => { if (x.me) x.label = n; }); this.saveTeam(); } catch (e) {} }
       return { ok: true, name: n };
     } catch (e) { if (quiet) throw e; return { ok: false, why: heb(e.message) }; }
+  }
+  /* ── 1.14 (v73 legal): זכויות על הנתונים ── */
+  /* אישור תנאים מעודכנים — לחשבון קיים (לא עוצר את הסנכרון) */
+  async tosAccept(v) {
+    if (!this.sess) return { ok: false, why: "לא מחוברים" };
+    v = String(v || ""); if (!TOSV.test(v)) return { ok: false, why: "?" };
+    try {
+      await this.authed("PUT", this.cloud.url + "/auth/v1/user", { data: { tos_v: v, tos_at: new Date().toISOString() } }, {});
+      this.sess.user.tos_v = v; this.saveSess(); return { ok: true, tos: v };
+    } catch (e) { return { ok: false, why: heb(e.message) }; }
+  }
+  /* כל מה ששמור עליי בענן, כ-JSON: החשבון, הנהגים (עם ההגדרות), המאצ׳ים, והחברות בקבוצה */
+  async exportMine() {
+    if (!this.sess) return { ok: false, why: "לא מחוברים" };
+    try {
+      const uid = this.uid();
+      const { data: user } = await this.authed("GET", this.cloud.url + "/auth/v1/user", undefined, {});
+      const profiles = await this.remoteAll("bb_profiles", "*", this.own());
+      const matches = await this.remoteAll("bb_matches", "*", this.own());
+      const { data: mem } = await this.rest("GET", "bb_team_members?select=*&uid=eq." + encodeURIComponent(uid));
+      let team = null;
+      if (Array.isArray(mem) && mem[0] && /^[0-9a-f-]{36}$/i.test(String(mem[0].team_id))) {
+        const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner,created_at&id=eq." + mem[0].team_id);
+        team = Array.isArray(tt) && tt[0] || null;
+      }
+      const u = user && typeof user === "object" ? user : {};
+      return { ok: true, data: { app: "BIOBUZZ", kind: "cloud-export", exported_at: new Date().toISOString(),
+        account: { id: u.id || uid, email: u.email || this.sess.user.email || "", created_at: u.created_at || null, user_metadata: u.user_metadata || {} },
+        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team } } };
+    } catch (e) { return { ok: false, why: heb(e.message) }; }
+  }
+  /* מחיקת החשבון וכל הנתונים בענן (bb_delete_me — supabase/v73_privacy.sql), ואז התנתקות במחשב הזה */
+  async deleteMe() {
+    if (!this.sess) return { ok: false, why: "לא מחוברים" };
+    const uid = this.uid();
+    try { await this.rpc("bb_delete_me"); }
+    catch (e) {
+      const m = String(e.message || "") + " " + JSON.stringify(e.body || "");
+      /* הפונקציה עוד לא קיימת בשרת (v73_privacy.sql לא הורץ) */
+      if (e.status === 404 || /PGRST202|Could not find the function|bb_delete_me/i.test(m))
+        return { ok: false, missing: true, why: "מחיקה אוטומטית עוד לא זמינה בשרת — כתבו לנו בגיטהאב ונמחק את החשבון ידנית", contact: "https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" };
+      return { ok: false, why: heb(e.message) };
+    }
+    /* המשתמש כבר לא קיים בשרת — לא צריך /logout; מנקים כאן */
+    this.team = null; this.saveTeam();
+    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null);
+    return { ok: true, uid };
   }
   async teamCall(what, a, b) {
     if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
@@ -449,4 +516,4 @@ class Sync {
     return { members: T.members.length, pulled: T.pulled || 0 };
   }
 }
-module.exports = { Sync, DEFAULT_CLOUD, heb };
+module.exports = { Sync, DEFAULT_CLOUD, heb, signupMeta };
