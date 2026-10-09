@@ -120,6 +120,8 @@ ok(!r.far&&r.near,'B1: בוט 1.8″ מהרגל — לא מגע; 1.0″ — מג
 ok(r.mx<=1.1+1e-6&&r.mx2>1.3,'B1: ליד הרגל הבוט מוגבל ל-'+r.mx.toFixed(2)+' מ׳/ש׳, בשטח פתוח '+r.mx2.toFixed(2));
 
 // B2 — השותף חונה כשאני באמצע אזור הטעינה, ולא דוחף אותי
+/* מצב נקי: הבדיקות הקודמות משאירות כדורים/בוטים במקומות שמשנים את הנתיב לחניה */
+await page.reload(); await page.waitForFunction(()=>window.__sim&&window.__sim.botBody&&window.__sim.BOTS.length,null,{timeout:60000});
 r=await E(()=>{ const S=__sim; S.MT.cd=0; S.SETUP.ally='red'; S.gameStart(true); S.matchStart();
   const [B1,B2,RP]=S.BOTS; B1.on=false; B2.on=false;
   S.setMatchT(S.tEnd()-14); S.advance(0.05,1/60); S.setPose(-60.4,-35,90); S.advance(0.5,1/60);

@@ -4,7 +4,8 @@ let {browser,page,errs}=await open({noraf:true,play:true});
 const E=f=>page.evaluate(f);
 let r=await E(()=>({b:document.getElementById('verBadge').textContent, w:document.body.innerText}));
 ok(/^v\d+$/.test(r.b),'תג הגרסה בלי שם קבוצה ('+r.b+')');
-r=await E(()=>document.documentElement.outerHTML.replace(/<script type="application\/json"[\s\S]*?<\/script>/,''));
+/* 1.14: המסמכים המשפטיים (legalDocs) חייבים לציין מי מפעיל את השירות — כל בלוקי ה-JSON מחוץ לבדיקה, הממשק עצמו עדיין בלי שם קבוצה */
+r=await E(()=>document.documentElement.outerHTML.replace(/<script type="application\/json"[\s\S]*?<\/script>/g,'').replace(/<div[^>]*id="legalBody"[\s\S]*?<\/div>/,'').split(' FTC Apollo #9662</p>').join(''));   /* ״אודות״ — מי המפעיל, בכוונה */
 ok(!/\u05D9\u05E2\u05E8\u05D9|\u05D0\u05E4\u05D5\u05DC\u05D5|APOLLO|Apollo/.test(r),'אין בדף שם של משתמש או קבוצה קבועים');
 await E(()=>__sim.teamSet('Robo Lions','12345'));
 r=await E(()=>({b:document.getElementById('verBadge').textContent, l:__sim.teamLabel(), st:localStorage.getItem('bbTeam1')}));
@@ -31,6 +32,8 @@ ok(r.shot.startsWith('data:image/jpeg')&&r.len>2000,'צילום מסך מצור�
 await E(()=>{ window.__fetchLog=[]; const of=window.fetch; window.fetch=async(u,o)=>{ window.__fetchLog.push({u:String(u),b:JSON.parse(o.body)}); return new Response(null,{status:201}); }; });
 await E(()=>document.getElementById('bugSend').click()); 
 ok(/לפחות/.test(await E(()=>document.getElementById('bugMsg').textContent)),'בלי תיאור — לא שולח ומבקש לכתוב');
+/* 1.14: צילום המסך רק בהסכמה — מסמנים את התיבה */
+await E(()=>{ const c=document.getElementById('bugShot'); c.checked=true; c.dispatchEvent(new Event('change')); });
 await E(()=>{ document.getElementById('bugWhat').value='בדיקה אוטומטית: הרובוט נתקע'; window.onerrorTest=1; window.__bbErr.push({t:1,m:'שגיאת בדיקה'}); document.getElementById('bugSend').click(); });
 await page.waitForTimeout(300);
 r=await E(()=>({log:window.__fetchLog, msg:document.getElementById('bugMsg').textContent}));

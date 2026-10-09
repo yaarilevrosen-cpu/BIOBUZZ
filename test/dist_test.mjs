@@ -20,7 +20,7 @@ for(const [file,lite] of [['BIOBUZZ-lab.html',false],['BIOBUZZ-lab-lite.html',tr
   ok(r.brain&&r.run,'המוח והמבצע האוטונומי קיימים');
   if(lite){ const m=await page.evaluate(()=>{ const S=__sim; S.MT.cd=0; S.GAME.randAuto=false; S.gameStart(true); for(const b of S.BOTS) b.autoLvl='preload'; S.matchStart(); for(const b of S.BOTS) b.autoLvl='preload'; S.advance(10,1/60);   /* v67: רמת אוטונומי קבועה — ״יציאה בלבד״ אקראית לשלושתם = אפס יריות */
       return {ph:S.MATCH.phase, shots:S.BOTS.reduce((a,b)=>a+b.shots,0)}; });
-    ok(m.ph==='AUTO'&&m.shots>0,'קל: מאץ׳ מלא רץ (בוטים יורים באוטונומי)'); ok(+mb<3,'קל: פחות מ-3 מ״ב ('+mb+')'); }
+    ok(m.ph==='AUTO'&&m.shots>0,'קל: מאץ׳ מלא רץ (בוטים יורים באוטונומי)'); ok(+mb<3.5,'קל: פחות מ-3.5 מ״ב ('+mb+')');   /* 1.14: המסמכים המשפטיים (עברית+אנגלית) מוטמעים — ~0.2 מ״ב */ }
   ok(ext.filter(u=>!/^ws:/.test(u)).length===0,'אפס בקשות רשת החוצה '+ext.filter(u=>!/^ws:/.test(u)).slice(0,2).join(','));
   ok(realErrs(errs).length===0,'אין שגיאות '+realErrs(errs).slice(0,2).join(' | '));
   await page.close();
