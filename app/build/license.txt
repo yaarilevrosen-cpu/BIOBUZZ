@@ -1,39 +1,233 @@
 ﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-10-09)
 
-TERMS OF USE
-============
+BIOBUZZ TERMS OF USE
+====================
 
-PLACEHOLDER — temporary text ("draft"). The real document won't look like this & will replace this file.
+Version: 2026-10-09
 
-What is here
-------------
-  * A first item with bold
-  * A link: GitHub issues (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues)
+These terms are the rules for using BIOBUZZ: the desktop app, the single-file browser version, the phone controller page, the website and the optional cloud service (accounts, sync and teams). By using BIOBUZZ you agree to them. If you are under 18, please read them with a parent, guardian or mentor.
+
+BIOBUZZ is made by FIRST® Tech Challenge team Apollo #9662 from Israel, a volunteer student team ("we", "us"). Contact: GitHub issues (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
 
 ----------------------------------------
 
-Contact
+Free, non-commercial licence
+----------------------------
+
+BIOBUZZ is free. We give you a personal, non-exclusive, non-transferable, revocable licence to download, install and use BIOBUZZ for non-commercial purposes — practice, learning, team training, outreach and having fun. You may share the original, unmodified download with others for free.
+
+You may not sell BIOBUZZ, charge money for access to it, bundle it in a paid product, or remove our notices, the FIRST disclaimer or the third-party notices. Unless the project is published under an open-source licence that says otherwise, all rights not given here are reserved.
+
+Who may use BIOBUZZ
+-------------------
+  * Anyone may use the simulator locally on their own device, without an account.
+  * Accounts (cloud sync and teams) are only for people aged 13 or over. If you are 13 to 17, you need permission from a parent or legal guardian to create an account (in EU countries where the age of digital consent is higher, the same rule applies until that age).
+  * AI features are for adults 18 or over only.
+  * When you sign up, you confirm your age group truthfully. If we learn that an account belongs to a child under 13, we will delete it.
+
+Your account
+------------
+  * Give a real email address you control, keep your password secret and don't share your account.
+  * You are responsible for what happens in your account. If you think someone else has access, change your password and tell us.
+  * One account per person. Don't create accounts automatically or in bulk.
+
+Acceptable use
+--------------
+
+The cloud service is run by volunteers on a small budget, and it is shared by students around the world. Please treat it with respect. You must not:
+  * use offensive, hateful, sexual, threatening or bullying driver names, team names, account names or labels, or pretend to be another person or team;
+  * put other people's personal information into driver names, settings or bug reports;
+  * flood or overload the service, get around the storage limits or quotas, or use it as general file storage;
+  * try to access accounts, teams or data that are not yours, guess team join codes, or attack, scan or disrupt the service, the network play feature or other users;
+  * reverse-engineer, decompile or modify BIOBUZZ in order to attack the service, get around its security or harm other users (good-faith security research under our Security Policy is welcome);
+  * use BIOBUZZ in any way that breaks the law or the rules of your school, team or competition.
+
+We may remove content that breaks these rules, and suspend or delete accounts that seriously or repeatedly break them.
+
+Your content
+------------
+
+Your drivers, matches, settings, paths and team data stay yours. You give us permission to store, copy, sync and show them only as needed to run the service for you — for example to sync them between your computers and to show the agreed summaries to your teammates. We don't use your content for anything else, and this permission ends when you delete the content or your account (apart from short-lived backups described in the Privacy Policy).
+
+Teams
+--------
+  * Any account holder can create a team and gets a join code to share. Anyone with the code can join, so share it only with your team.
+  * The person who created the team is its owner. The owner can rename the team, change the join code and remove members. If the owner leaves, ownership passes to the longest-standing member. An empty team is deleted.
+  * Members can see each other's drivers and match summaries (see the Privacy Policy). Be kind; don't use team features to embarrass or pressure anyone.
+
+AI features
+-----------
+
+The optional AI coach and helper use Google's Gemini API with your own API key. Using them means you also agree to Google's API terms (https://developers.google.com/terms) and Gemini API Additional Terms (https://ai.google.dev/gemini-api/terms), which require you to be 18 or over. You are responsible for your key and for any cost on your Google account. AI answers can be wrong — see the AI Notice.
+
+Robot safety — please read
+--------------------------
+
+BIOBUZZ is a simulator. Its physics, timings, scores, paths and exported RoadRunner code are estimates and will not match your real robot exactly.
+  * Before running exported or AI-suggested code on a real robot, test it first with the robot on blocks (wheels off the ground), then at low speed, in a clear area, with an adult mentor present and the emergency stop within reach.
+  * Check every path, speed, servo and motor value yourself. A wrong coordinate or direction can make a robot move suddenly.
+  * You are responsible for your robot, for safe operation, and for making sure your robot, code and strategy follow the official game manual and competition rules. BIOBUZZ's rules engine and score are an aid for practice, not an official ruling.
+
+No warranty
+-----------
+
+BIOBUZZ is provided "as is" and "as available", without warranties of any kind, to the maximum extent permitted by law. We don't promise that it will be error-free, always available, that the cloud service will keep running, or that data will never be lost — keep your own backups (the app makes local backups and lets you export to a file).
+
+Limitation of liability
+-----------------------
+
+To the maximum extent permitted by law, we (the team, its members, mentors and contributors) are not liable for any indirect or consequential damage, lost data, lost competition results, or damage to robots or property arising from the use of BIOBUZZ, and our total liability is limited to the amount you paid us for BIOBUZZ, which is zero.
+
+Nothing in these terms excludes or limits any liability that cannot be excluded or limited by law, including under Israeli consumer protection law or the mandatory consumer laws of the country where you live, or liability for harm caused deliberately or by gross negligence.
+
+Ending use
+----------
+
+You can stop using BIOBUZZ at any time and delete your account in the app (account panel → "Delete my account and cloud data"). We may stop offering the cloud service, or parts of BIOBUZZ, at any time; if we shut down the cloud service we will try to give at least 30 days' notice in the app so you can download your data. The local simulator keeps working on your device.
+
+Changes to these terms
+----------------------
+
+The version date at the top shows when these terms last changed. If we make an important change, the app will show you a notice, and you may be asked to accept the new version to keep using your account. If you don't agree, you can stop using the cloud service and delete your account.
+
+Law and courts
+--------------
+
+These terms are governed by the laws of the State of Israel. Disputes will be heard by the competent courts in Israel. If you are a consumer living in another country, this does not take away the protection of the mandatory laws of your country or your right to go to your local courts where that law gives it to you.
+
+FIRST trademark disclaimer
+--------------------------
+
+FIRST®, FIRST® Tech Challenge and the game name BIOBUZZ (the 2026–2027 FIRST Tech Challenge game) are trademarks of FIRST (For Inspiration and Recognition of Science and Technology); this is an independent team project, not affiliated with, endorsed by or sponsored by FIRST; FIRST is not overseeing, involved with, or responsible for this software.
+
+The 3D field model shown in BIOBUZZ is the official field CAD model for the season (published in Onshape), which belongs to its owners. It is used only to show the field: we converted it to a compressed web format and split it into parts, without changing its design. The simulator also works without it, using its own simplified field. The rules and scoring implemented in the simulator are our own interpretation; the official game manual always takes priority.
+
+Third-party software
+--------------------
+
+BIOBUZZ includes open-source software and fonts made by others (such as three.js, cannon.js, meshoptimizer, Electron and the Rubik, Secular One and IBM Plex Mono fonts). They are used under their own licences, listed in full in the Third-party notices. Those licences, not these terms, apply to those components.
+
+Other
 --------
 
-Write to us on GitHub (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
+If any part of these terms is found invalid, the rest still applies. These terms, together with the Privacy Policy and the AI Notice, are the whole agreement between you and us about BIOBUZZ.
 
 ============================================================
 
-תנאי שימוש
-==========
+תנאי השימוש ב־BIOBUZZ
+=====================
 
-PLACEHOLDER — טקסט זמני. המסמך האמיתי יחליף את הקובץ הזה.
+גרסה: 9 באוקטובר 2026 (2026-10-09)
 
-מה כאן
---------
-  * פריט ראשון עם הדגשה
-  * קישור: הבעיות בגיטהאב (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues)
+התנאים האלה הם הכללים לשימוש ב־BIOBUZZ: אפליקציית המחשב, גרסת הדפדפן בקובץ אחד, דף השלט בטלפון, האתר ושירות הענן הרשותי (חשבונות, סנכרון וקבוצות). מי שמשתמש ב־BIOBUZZ מסכים להם. אם אתם מתחת לגיל 18, קראו אותם יחד עם הורה, אפוטרופוס או מנטור.
+
+את BIOBUZZ בונה קבוצת הרובוטיקה אפולו 9662 (Apollo #9662) מתחרות FIRST® Tech Challenge, קבוצת תלמידים מתנדבים מישראל (״אנחנו״). יצירת קשר: עמוד הבעיות בגיטהאב (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
 
 ----------------------------------------
 
-יצירת קשר
----------
+רישיון חינמי לשימוש לא מסחרי
+----------------------------
 
-פונים דרך GitHub (https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues).
+BIOBUZZ חינמי. אנחנו נותנים לכם רישיון אישי, לא בלעדי, שאינו ניתן להעברה ושאפשר לבטל, להוריד, להתקין ולהשתמש ב־BIOBUZZ למטרות לא מסחריות — תרגול, למידה, אימון הקבוצה, פעילות הסברה והנאה. מותר לשתף את קובץ ההורדה המקורי, בלי שינויים, עם אחרים, בחינם.
+
+אסור למכור את BIOBUZZ, לגבות כסף על גישה אליו, לצרף אותו למוצר בתשלום, או להסיר את ההודעות שלנו, את ההבהרה לגבי FIRST או את ההודעות על תוכנות צד שלישי. כל עוד הפרויקט לא פורסם ברישיון קוד פתוח שקובע אחרת, כל הזכויות שלא ניתנו כאן שמורות.
+
+מי רשאי להשתמש
+--------------
+  * כל אחד רשאי להשתמש בסימולטור במכשיר שלו, בלי חשבון.
+  * חשבונות (סנכרון וקבוצות) מיועדים רק לבני 13 ומעלה. בגילאי 13 עד 17 צריך רשות של הורה או אפוטרופוס כדי לפתוח חשבון (במדינות האיחוד האירופי שבהן גיל ההסכמה הדיגיטלית גבוה יותר, אותו כלל חל עד הגיל הזה).
+  * בינה מלאכותית — למבוגרים בני 18 ומעלה בלבד.
+  * בהרשמה אתם מאשרים את קבוצת הגיל שלכם, בכנות. אם נגלה שחשבון שייך לילד מתחת לגיל 13, נמחק אותו.
+
+החשבון שלכם
+-----------
+  * השתמשו בכתובת מייל אמיתית שבשליטתכם, שמרו את הסיסמה בסוד ואל תשתפו את החשבון.
+  * אתם אחראים למה שקורה בחשבון שלכם. אם אתם חושבים שמישהו אחר נכנס אליו, החליפו סיסמה וספרו לנו.
+  * חשבון אחד לכל אדם. אסור לפתוח חשבונות באופן אוטומטי או בכמויות.
+
+שימוש הוגן
+----------
+
+את שירות הענן מפעילים מתנדבים בתקציב קטן, ותלמידים מכל העולם חולקים אותו. בבקשה, התייחסו אליו בכבוד. אסור:
+  * לתת לנהגים, לקבוצות, לחשבונות או לכינויים שמות פוגעניים, שונאים, מיניים, מאיימים או מעליבים, או להתחזות לאדם או לקבוצה אחרים;
+  * להכניס מידע אישי של אנשים אחרים לשמות נהגים, להגדרות או לדיווחי באגים;
+  * להציף או להעמיס על השירות, לעקוף את מגבלות האחסון והמכסות, או להשתמש בו כאחסון קבצים כללי;
+  * לנסות להיכנס לחשבונות, לקבוצות או למידע שאינם שלכם, לנחש קודי הצטרפות, או לתקוף, לסרוק או לשבש את השירות, את המשחק ברשת או משתמשים אחרים;
+  * לפרק, להנדס לאחור או לשנות את BIOBUZZ כדי לתקוף את השירות, לעקוף את האבטחה שלו או לפגוע במשתמשים אחרים (מחקר אבטחה בתום לב לפי מדיניות האבטחה שלנו — מבורך);
+  * להשתמש ב־BIOBUZZ בדרך שמפרה את החוק או את הכללים של בית הספר, הקבוצה או התחרות.
+
+אנחנו רשאים להסיר תוכן שמפר את הכללים, ולהשעות או למחוק חשבונות שמפרים אותם בחומרה או שוב ושוב.
+
+התוכן שלכם
+----------
+
+הנהגים, המשחקים, ההגדרות, המסלולים ונתוני הקבוצה נשארים שלכם. אתם מרשים לנו לשמור, להעתיק, לסנכרן ולהציג אותם רק במידה שצריך כדי להפעיל עבורכם את השירות — למשל לסנכרן בין המחשבים שלכם ולהציג לחברי הקבוצה את הסיכומים שהוסכמו. אנחנו לא משתמשים בתוכן שלכם לשום דבר אחר, וההרשאה הזאת נגמרת כשמוחקים את התוכן או את החשבון (חוץ מגיבויים קצרי־טווח שמתוארים במדיניות הפרטיות).
+
+קבוצות
+--------
+  * כל בעל חשבון יכול לפתוח קבוצה ומקבל קוד הצטרפות לשיתוף. כל מי שיש לו את הקוד יכול להצטרף, אז שתפו אותו רק עם הקבוצה שלכם.
+  * מי שפתח את הקבוצה הוא הבעלים שלה. הבעלים יכול לשנות את שם הקבוצה, להחליף את קוד ההצטרפות ולהוציא חברים. אם הבעלים יוצא, הבעלות עוברת לחבר הוותיק ביותר. קבוצה ריקה נמחקת.
+  * חברי הקבוצה רואים את הנהגים ואת סיכומי המשחקים זה של זה (ראו מדיניות הפרטיות). היו נחמדים; אל תשתמשו בתכונות הקבוצה כדי להביך או ללחוץ על מישהו.
+
+בינה מלאכותית
+-------------
+
+המאמן והעוזר החכמים, שהם רשות, משתמשים בממשק ג׳מיני של גוגל עם מפתח גישה שלכם. מי שמשתמש בהם מסכים גם לתנאי הממשקים של גוגל (https://developers.google.com/terms) ולתנאים הנוספים של ממשק ג׳מיני (https://ai.google.dev/gemini-api/terms), שמחייבים גיל 18 ומעלה. אתם אחראים למפתח שלכם ולכל עלות בחשבון הגוגל שלכם. תשובות של בינה מלאכותית יכולות להיות שגויות — ראו את ההודעה על בינה מלאכותית.
+
+בטיחות הרובוט — חשוב לקרוא
+--------------------------
+
+BIOBUZZ הוא סימולטור. הפיזיקה, הזמנים, הניקוד, המסלולים וקוד הרואדראנר (RoadRunner) שמיוצא ממנו הם הערכות, ולא יתאימו בדיוק לרובוט האמיתי שלכם.
+  * לפני שמריצים על רובוט אמיתי קוד שיוצא מהסימולטור או שהבינה המלאכותית הציעה, בודקים קודם כשהרובוט מורם על קוביות (הגלגלים באוויר), אחר כך במהירות נמוכה, באזור פנוי, בנוכחות מנטור מבוגר, ועם עצירת חירום בהישג יד.
+  * בדקו בעצמכם כל מסלול, מהירות וערך של סרוו ומנוע. קואורדינטה או כיוון שגויים יכולים לגרום לרובוט לזוז פתאום.
+  * אתם אחראים לרובוט שלכם, להפעלה בטוחה שלו, ולכך שהרובוט, הקוד והאסטרטגיה עומדים בספר המשחק הרשמי ובכללי התחרות. מנוע החוקים והניקוד של BIOBUZZ הם כלי עזר לתרגול, לא פסיקה רשמית.
+
+בלי אחריות
+----------
+
+BIOBUZZ ניתן ״כמות שהוא״ ו״כפי שהוא זמין״, בלי שום אחריות, במידה המרבית שהחוק מתיר. אנחנו לא מבטיחים שהוא יהיה בלי שגיאות, שיהיה זמין תמיד, ששירות הענן ימשיך לפעול, או שמידע לעולם לא יאבד — שמרו גיבויים משלכם (האפליקציה יוצרת גיבויים מקומיים ומאפשרת ייצוא לקובץ).
+
+הגבלת אחריות
+------------
+
+במידה המרבית שהחוק מתיר, אנחנו (הקבוצה, חבריה, המנטורים והתורמים) לא אחראים לנזק עקיף או תוצאתי, לאובדן מידע, לאובדן תוצאות בתחרות, או לנזק לרובוטים או לרכוש שנגרם מהשימוש ב־BIOBUZZ, והאחריות הכוללת שלנו מוגבלת לסכום ששילמתם לנו עבור BIOBUZZ — כלומר אפס.
+
+שום דבר בתנאים האלה לא שולל או מגביל אחריות שאי אפשר לשלול או להגביל לפי החוק, כולל לפי חוק הגנת הצרכן בישראל או לפי חוקי הצרכנות המחייבים במדינה שבה אתם גרים, וגם לא אחריות לנזק שנגרם בכוונה או ברשלנות חמורה.
+
+סיום השימוש
+-----------
+
+אפשר להפסיק להשתמש ב־BIOBUZZ בכל רגע ולמחוק את החשבון באפליקציה (חלונית החשבון ← ״מחיקת החשבון והמידע בענן״). אנחנו רשאים להפסיק להציע את שירות הענן, או חלקים מ־BIOBUZZ, בכל עת; אם נסגור את שירות הענן, ננסה להודיע באפליקציה לפחות 30 יום מראש כדי שתוכלו להוריד את הנתונים. הסימולטור המקומי ממשיך לעבוד במכשיר שלכם.
+
+שינויים בתנאים
+--------------
+
+תאריך הגרסה בראש המסמך מראה מתי התנאים השתנו לאחרונה. אם נעשה שינוי חשוב, האפליקציה תציג הודעה, וייתכן שתתבקשו לאשר את הגרסה החדשה כדי להמשיך להשתמש בחשבון. אם אתם לא מסכימים, אפשר להפסיק להשתמש בשירות הענן ולמחוק את החשבון.
+
+דין ושיפוט
+----------
+
+על התנאים האלה חלים דיני מדינת ישראל. סכסוכים יידונו בבתי המשפט המוסמכים בישראל. אם אתם צרכנים שגרים במדינה אחרת, זה לא שולל מכם את ההגנה של החוקים המחייבים במדינה שלכם או את הזכות לפנות לבית משפט מקומי כשהחוק שם מקנה אותה.
+
+הבהרה לגבי הסימנים המסחריים של FIRST
+------------------------------------
+
+FIRST®‏, FIRST® Tech Challenge ושם המשחק BIOBUZZ (משחק העונה 2026–2027 של התחרות) הם סימנים מסחריים של FIRST (For Inspiration and Recognition of Science and Technology). זהו פרויקט עצמאי של קבוצה, שאינו קשור ל־FIRST, אינו מאושר על ידה ואינו ממומן על ידה; FIRST אינה מפקחת על התוכנה הזאת, אינה מעורבת בה ואינה אחראית לה.
+
+הנוסח המחייב באנגלית:
+
+FIRST®, FIRST® Tech Challenge and the game name BIOBUZZ (the 2026–2027 FIRST Tech Challenge game) are trademarks of FIRST (For Inspiration and Recognition of Science and Technology); this is an independent team project, not affiliated with, endorsed by or sponsored by FIRST; FIRST is not overseeing, involved with, or responsible for this software.
+
+מודל הזירה התלת־ממדי שמוצג ב־BIOBUZZ הוא מודל התיב״ם הרשמי של זירת העונה (שפורסם באונשייפ), והוא שייך לבעליו. אנחנו משתמשים בו רק כדי להציג את הזירה: המרנו אותו לפורמט דחוס לרשת וחילקנו אותו לחלקים, בלי לשנות את התכנון שלו. הסימולטור עובד גם בלעדיו, עם זירה מפושטת משלו. החוקים והניקוד בסימולטור הם הפרשנות שלנו; ספר המשחק הרשמי תמיד קודם.
+
+תוכנות צד שלישי
+---------------
+
+BIOBUZZ כולל תוכנות קוד פתוח וגופנים שאחרים יצרו (למשל three.js‏, cannon.js‏, meshoptimizer‏, Electron והגופנים Rubik‏, Secular One ו־IBM Plex Mono). הם בשימוש לפי הרישיונות שלהם, שמופיעים במלואם בהודעות על תוכנות צד שלישי (באנגלית). על הרכיבים האלה חלים הרישיונות שלהם, ולא התנאים האלה.
+
+שונות
+--------
+
+אם חלק כלשהו מהתנאים יימצא לא תקף, שאר התנאים ממשיכים לחול. התנאים האלה, יחד עם מדיניות הפרטיות וההודעה על בינה מלאכותית, הם כל ההסכם בינכם לבינינו בנוגע ל־BIOBUZZ.
 
 Privacy Policy / מדיניות פרטיות: https://yaarilevrosen-cpu.github.io/BIOBUZZ/privacy.html
