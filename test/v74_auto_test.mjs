@@ -220,6 +220,19 @@ r=await E(()=>{ setAlly('red'); S.pathLoad('ex:two'); const c=V.pathClass('rr'),
   setAlly('red'); S.SETUP.spot=1; return o; });
 ok(r.length===4&&r.every(v=>v.bad===0&&v.start<0.2),'U7: מחלקה מלאה — 4 הגרסאות מתחילות בעמדת הפתיחה שלהן ונקיות (מבנים/אמצע/קיר) '+r.map(v=>v.al+v.sp+':'+v.bad+' '+v.b.join(';')).join(' '));
 
+/* ── U9: במאץ׳ מלא השותף מריץ את המסלול מבדיקת ההתאמה ── */
+r=await E(()=>{ const C=S.v72corner; setAlly('red'); if(C.mySpot()!==1) C.spotSet(1);
+  C.spotSet(2); S.pathLoad('ex:preload'); const ptxt=S.pathExportText(); C.spotSet(1); C.ptnImport(ptxt); S.pathLoad('ex:leave');
+  const k=document.getElementById('kPtnMatch'); k.checked=true; k.dispatchEvent(new Event('change'));
+  const sv=JSON.stringify(S.SETUP);
+  Object.assign(S.SETUP,{autoOn:true,partner:true,blue1:false,blue2:false,cd:0,auto:30,trans:8,tele:30,ally:'red'}); S.SETUP.autos[0]='path'; S.SETUP.myAuto='ex:leave';
+  S.setupApply(); const b=S.BOTS[2]; const o={armed:!!b.ptnMatch}; let maxI=0;
+  for(let i=0;i<60*31;i++){ S.advance(1/60,1/60); if(b.prun) maxI=Math.max(maxI,b.prun.i); }
+  o.maxI=maxI; o.n=(b.pprog||[]).length; o.shots=b.shots|0; o.lz=S.botInLZ?S.botInLZ(b):null; S.matchStop(); o.after=!!b.pprog;
+  k.checked=false; k.dispatchEvent(new Event('change')); S.setupApply(); o.off=!!S.BOTS[2].ptnMatch; S.matchStop();
+  Object.assign(S.SETUP,JSON.parse(sv)); return o; });
+ok(r.armed&&r.maxI>=3&&r.shots>=1&&!r.after&&!r.off,`U9: במאץ׳ מלא השותף מריץ את ״ירי מקדים וחניה״ מבדיקת ההתאמה (${r.shots} יריות, צעד ${r.maxI}) · אחרי המאץ׳ ובלי הסימון — הבוט הרגיל`);
+
 /* ── אנגלית ── */
 await page.evaluate(()=>localStorage.setItem('bbLang1','en')); await page.reload();
 await page.waitForFunction(()=>window.__sim&&window.__sim.botBody,null,{timeout:60000});
