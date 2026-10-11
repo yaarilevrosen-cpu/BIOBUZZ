@@ -5022,7 +5022,7 @@ function runVmax(remainIn,scale){
   return v;
 }
 /* v74 auto (U1): נסיעה אוטונומית בקצב של RR — לא בהרצת ״מה שהוקלט״ (שם הקצב הוא של הנהג) */
-function runPaceOn(){ return typeof RRC!=="undefined"&&RRC.pace!==0&&RUN.on&&RUN.src!=="teach"; }
+function runPaceOn(){ return typeof RRC!=="undefined"&&RRC.pace!==0&&RUN.on&&RUN.src!=="teach"&&!RUN.taught; }
 /* תאוצה עד maxProfileAccel ופנייה עד maxAngVel (ותאוצה זוויתית maxAngAccel) — על הפקודה שיוצאת לשלדה */
 function runPaceCmd(c,dt,s){
   if(!c||!runPaceOn()) { RUN.vCmd=null; return c; }
@@ -5047,6 +5047,8 @@ function runStart(prog,src,opt){
   RUN.chk=0; RUN.shots0=shots; RUN.hits0=hits; RUN.why=""; RUN.trail=[];
   RUN.shotPoses=[]; RUN.sig=opt.sig||null;   /* 1.13 (U1): איפה הרובוט באמת ירה, ולאיזה מסלול זה שייך */
   RUN.vCmd=null; RUN.wCmd=null;   /* v74 auto (U1) */
+  /* מסלול מלימוד בהדגמה (מהירויות שהוקלטו, TranslationalVelConstraint בקוד) — הקצב הוא של הנהג, לא של RR */
+  RUN.taught=prog.some(s=>s&&s.k==="drive"&&s.pts&&s.pts.some(p=>p&&p.v));
   auto=RUN; runUI();
 }
 function runStop(why,done){
