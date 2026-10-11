@@ -64,6 +64,9 @@ contextBridge.exposeInMainWorld("bbApp", {
   acctExport: () => ipcRenderer.invoke("bb:acctExport"),
   acctDelete: () => ipcRenderer.invoke("bb:acctDelete"),
   wipeLocal: () => ipcRenderer.invoke("bb:wipeLocal"),
+  /* v74: ״לא, להשאיר״ אחרי מחיקת חשבון (P3), וארכיון המשחקים של הנהג באיפוס המלא (P2) */
+  keepLocal: () => ipcRenderer.invoke("bb:keepLocal"),
+  wipeMatches: () => ipcRenderer.invoke("bb:wipeMatches", PID),
   acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
   acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),

@@ -95,7 +95,8 @@ const reset=()=>{ DB.profiles=[]; DB.matches=[]; DB.cap=1e9; DB.tombRej=false; D
   ok(r.ok&&DB.matches.length===1&&A.s.meta.tombs.length===0&&!DB.profiles.some(x=>x.id===t.id),'P6 נהג שנוצר ונמחק בין סנכרונים — בלי שורת מחיקה, הסנכרון ממשיך ('+(r.why||'ok')+')');
   DB.cap=1e9; const u=A.s.addProfile('up'); await A.y.syncNow(); A.s.removeProfile(u.id); DB.tombRej=true;
   const r2=await A.y.syncNow(); const r3=await A.y.syncNow();
-  ok(r2.ok&&r3.ok&&A.s.meta.tombs.length===0&&r2.skipped.some(x=>/tomb/.test(x.why)),'P6 מחיקה שהשרת דחה — נרשמת ב-skipped והסנכרון לא נתקע');
+  /* v74 (P8): הרשומה נשארת ומנוסה שוב (עד 5 פעמים) — הנהג לא חוזר מהענן בינתיים */
+  ok(r2.ok&&r3.ok&&A.s.meta.tombs.length===1&&A.s.meta.tombs[0].fails===2&&!A.s.vis().some(p=>p.id===u.id)&&r2.skipped.some(x=>/tomb/.test(x.why)),'P6 מחיקה שהשרת דחה — נרשמת ב-skipped, הסנכרון לא נתקע, והרשומה נשארת לניסיון הבא (v74 P8)');
 }
 // P8 — הנהג היחיד כאן נמחק בענן
 { reset();

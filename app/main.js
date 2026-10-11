@@ -1,6 +1,6 @@
 /* BIOBUZZ — האפליקציה (Electron, התהליך הראשי) */
 "use strict";
-const { app, BrowserWindow, ipcMain, dialog, shell, screen, safeStorage, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell, screen, safeStorage, Menu, session } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const { Store, writeAtomic } = require("./store");
@@ -53,8 +53,14 @@ function legalVersion() {
 }
 /* 1.14 (legalfix): חשבון של בן/בת 13–17 — הבינה המלאכותית מוסתרת לגמרי (גם כאן, לא רק בדף) */
 const MINOR_AI = "הבינה המלאכותית לא זמינה בחשבון של מתחת לגיל 18";
-function aiMinor() { return acctStatus().age === "13-17"; }
-function aiSt() { const s = ai.status(); return aiMinor() ? Object.assign(s, { ok: false, minor: true }) : s; }
+function aiMinor() { aiBind(); return acctStatus().age === "13-17"; }
+function aiSt() { aiBind(); const s = ai.status(); return aiMinor() ? Object.assign(s, { ok: false, minor: true }) : s; }
+/* v74 (P9): אישור 18+ שייך לחשבון שאישר. חשבון 13–17 שמתחבר — האישור במחשב נמחק */
+function aiBind() {
+  if (!ai || !ai.setUid) return;
+  const st = acctStatus(); ai.setUid(st.loggedIn && sync ? sync.uid() : "");
+  if (st.age === "13-17" && ai.ackRec) ai.ack18(false);
+}
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 
 if (!process.env.BIOBUZZ_TEST && !app.requestSingleInstanceLock()) { app.quit(); process.exit(0); return; }
@@ -98,6 +104,46 @@ function showMain() {
   if (splash && wait > 0) { setTimeout(showMain, wait); return; }
   shown = true; win.show();
   if (splash && !splash.isDestroyed()) { const s = splash; splash = null; setTimeout(() => { try { s.close(); } catch (e) {} }, 150); }
+}
+
+/* ══════ v74 app ══════ */
+/* v74 (P11): CSP לדף הסימולטור (קובץ מקומי). הדף כולו סקריפטים מוטמעים — לכן 'unsafe-inline'; מה שחשוב: בלי eval,
+   בלי object/embed, בלי base, ורשת רק למה שבאמת בשימוש: הגשר המקומי (ws/http), משחק ברשת וחיבור חי לרובוט (ws ברשת המקומית),
+   הענן (Supabase — בדרך כלל דרך התהליך הראשי), וגופנים מגוגל בגרסה עם רשת. העדכונים מגיטהאב והבינה המלאכותית — בתהליך הראשי (לא כפופים ל-CSP) */
+function simCsp() {
+  let cloud = "https://*.supabase.co";
+  try { const u = new URL(process.env.BIOBUZZ_CLOUD_URL || ""); if (/^https?:$/.test(u.protocol)) cloud += " " + u.origin; } catch (e) {}
+  return [
+    "default-src 'self' file: data: blob:",
+    "script-src 'self' file: 'unsafe-inline' 'wasm-unsafe-eval' blob:",
+    "style-src 'self' file: 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' file: data: https://fonts.gstatic.com",
+    "img-src 'self' file: data: blob:",
+    "media-src 'self' file: data: blob:",
+    "worker-src 'self' file: blob:",
+    "connect-src 'self' file: data: blob: ws: http://localhost:* http://127.0.0.1:* " + cloud,
+    "object-src 'none'", "base-uri 'none'", "form-action 'none'", "frame-src 'none'"
+  ].join("; ");
+}
+const SIM_CSP = simCsp();
+/* הרשאות: רק מה שהסימולטור צריך (העתקה ללוח, מסך מלא, התראות) — ורק לדף הסימולטור. כל השאר (מצלמה, מיקרופון, מיקום, MIDI, USB…) — לא */
+const PERM_OK = new Set(["clipboard-sanitized-write", "fullscreen", "notifications"]);
+function permOk(wc, perm, url) {
+  if (!PERM_OK.has(perm)) return false;
+  const u = String(url || (wc && wc.getURL && wc.getURL()) || "").split(/[?#]/)[0];
+  return u === SIM_URL || u === "file://" || u === "" || u === "about:blank";
+}
+function hardenSession(ses) {
+  ses.webRequest.onHeadersReceived((d, cb) => {
+    const h = Object.assign({}, d.responseHeaders || {});
+    if (d.resourceType === "mainFrame" && String(d.url).split(/[?#]/)[0] === SIM_URL) {
+      for (const k of Object.keys(h)) if (k.toLowerCase() === "content-security-policy") delete h[k];
+      h["Content-Security-Policy"] = [SIM_CSP];
+    }
+    cb({ responseHeaders: h });
+  });
+  ses.setPermissionRequestHandler((wc, perm, cb, det) => cb(permOk(wc, perm, det && (det.requestingUrl || det.securityOrigin))));
+  ses.setPermissionCheckHandler((wc, perm, origin, det) => permOk(wc, perm, (det && det.requestingUrl) || origin));
 }
 
 function createWindow() {
@@ -157,6 +203,8 @@ function createWindow() {
 }
 
 /* v63: כל ערוץ נבדק — רק הדף של הסימולטור בחלון הראשי (לא חלון השידור, לא דף אחר) */
+/* v74 (P5): synced = הנהג באמת שייך לחשבון המחובר (ולכן עולה לענן); בלי זה — ״מקומי״ וכפתור ״הוסף מייל״ */
+function withSynced(l) { const v = sync && sync.status().loggedIn ? sync.uid() : ""; return (l || []).map(p => Object.assign(p, { synced: !!v && !p.local && p.owner === v })); }
 function okSender(e) {
   try {
     if (!win || win.isDestroyed() || e.sender !== win.webContents) return false;
@@ -170,7 +218,7 @@ function reg() {
   /* סינכרוני — לפני שהסימולטור עולה, הוא צריך את הנתונים של הנהג */
   on("bb:boot", e => {
     kvFrozen = false; store.pageBoot();   /* 1.12.5: הדף החדש — של הנהג הפעיל, עם הערכים העדכניים */
-    e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: store.profiles(), firstRun: store.firstRun, legal: legalRec(),
+    e.returnValue = { kv: store.kvAll(), profile: store.active(), profiles: withSynced(store.profiles()), firstRun: store.firstRun, legal: legalRec(),
       version: app.getVersion(), dataDir: DATA, backups: store.backupsList(), test: !!process.env.BIOBUZZ_TEST,
       bridgeTok: bridge ? BRIDGE_TOK : "" };
   });
@@ -181,7 +229,8 @@ function reg() {
   on("bb:kvClear", (e, pid) => { if (!kvFrozen) store.pageKvClear(pidOf(pid)); });
   on("bb:flush", e => { store.flushKv(); e.returnValue = true; });
   on("bb:ready", () => showMain());
-  handle("bb:profiles", () => store.profiles());
+  /* v74 (P5): synced = הנהג באמת שייך לחשבון המחובר (ולכן עולה לענן); בלי זה — ״מקומי״ וכפתור ״הוסף מייל״ */
+  handle("bb:profiles", () => withSynced(store.profiles()));
   handle("bb:profileAdd", (e, name, emoji, color, local) => { const p = store.addProfile(name, { emoji, color, local: !!local }); soonSync(); return p; });
   handle("bb:profileUpdate", (e, id, patch) => { const p = store.updateProfile(id, patch || {}); soonSync(); return p; });
   handle("bb:profileRemove", (e, id) => { const r = store.removeProfile(id); soonSync(); return r; });
@@ -225,7 +274,7 @@ function reg() {
   handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
   handle("bb:acctStatus", () => acctStatus());
   /* התחברות לחשבון אחר במחשב הזה — הנהגים של החשבון הקודם ״חונים״; אם הנהג הפעיל היה שלו, הדף נטען מחדש */
-  const afterLogin = r => { if (r.ok) { if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); } return r; };
+  const afterLogin = r => { if (r.ok) { aiBind(); if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); } return r; };
   handle("bb:acctSignIn", async (e, em, pw) => afterLogin(await sync.signIn(em, pw)));
   handle("bb:acctSignUp", async (e, em, pw, meta) => { const r = await sync.signUp(em, pw, meta && typeof meta === "object" ? meta : null); return r.ok && !r.confirm ? afterLogin(r) : r; });
   /* ── 1.14 (v73 legal): הסכמה לתנאים, זכויות על הנתונים ── */
@@ -235,6 +284,8 @@ function reg() {
     if (r && r.ok) soonSync(500); return r; });   /* 1.14 (legalfix): אחרי האישור הסנכרון ממשיך מיד */
   /* 1.14 (legalfix): ״אפס הכול — כולל הגיבויים״: תיקיית הגיבויים (יומיים ועותקים) והסל של הנהגים שנמחקו */
   handle("bb:wipeBackups", () => { const r = store.wipeBackups(); return Object.assign(r, { list: store.backupsList() }); });
+  /* v74 (P2): ״אפס הכול — כולל הגיבויים״ — גם ארכיון המשחקים של הנהג שהדף נטען בשבילו */
+  handle("bb:wipeMatches", (e, pid) => { pid = pidOf(pid); if (!pid || !store.pageOk(pid)) return { ok: false, n: 0 }; return store.wipeMatches(pid); });
   handle("bb:acctExport", async () => {
     const r = await sync.exportMine(); if (!r.ok) return r;
     const d = new Date(), pad = x => String(x).padStart(2, "0");
@@ -250,8 +301,11 @@ function reg() {
   /* רק אחרי מחיקת חשבון מוצלחת, ורק הנהגים של אותו חשבון */
   handle("bb:wipeLocal", () => { if (!deletedUid) return { ok: false, why: "?" };
     const r = store.wipeOwner(deletedUid); deletedUid = ""; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 300); return r; });
+  /* v74 (P3): ״לא, להשאיר״ — הנהגים של החשבון שנמחק נשארים במחשב כנהגים מקומיים (לא ״חונים״ לתמיד) */
+  handle("bb:keepLocal", () => { if (!deletedUid) return { ok: false, why: "?" };
+    const r = store.orphanOwner(deletedUid); deletedUid = ""; return r; });
   handle("bb:acctRecover", (e, em) => sync.recover(em));
-  handle("bb:acctSignOut", async () => { const r = await sync.signOut(); send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:acctSignOut", async () => { const r = await sync.signOut(); aiBind(); send("bb:sync", { status: acctStatus() }); return r; });
   handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   handle("bb:syncNow", () => runSync("manual"));
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
@@ -259,7 +313,7 @@ function reg() {
   handle("bb:aiSetKey", async (e, k) => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() };
     const r = await ai.setKey(String(k || "")); return Object.assign({ status: aiSt() }, r, { status: aiSt() }); });
   handle("bb:aiClear", () => { ai.clear(); return aiSt(); });
-  handle("bb:aiAck18", (e, on) => ({ status: aiMinor() ? aiSt() : (ai.ack18(on === true), aiSt()) }));
+  handle("bb:aiAck18", (e, on) => { aiBind(); return { status: aiMinor() ? aiSt() : (ai.ack18(on === true), aiSt()) }; });
   handle("bb:aiCheck", async () => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() }; const r = await ai.check(); return Object.assign({}, r, { status: aiSt() }); });
   handle("bb:aiDrills", () => ai.drills());
   handle("bb:aiAsk", (e, kind, o) => aiMinor() ? { ok: false, minor: true, why: MINOR_AI } : ai.ask(kind === "coach" ? "coach" : "helper", o && typeof o === "object" ? o : {}));
@@ -394,11 +448,13 @@ app.whenReady().then(() => {
   ai = new AI(DATA, { enc: s => "e:" + safeStorage.encryptString(s).toString("base64"),
     dec: s => s.startsWith("e:") && safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(s.slice(2), "base64")) : "",
     canEnc: () => !!(safeStorage && safeStorage.isEncryptionAvailable()) || !!process.env.BIOBUZZ_AI_PLAIN });
+  aiBind();   /* v74 (P9) */
   /* הגשר המובנה: שלט טלפון ומשחק ברשת בלי start.bat */
   if (!process.env.BIOBUZZ_TEST || process.env.BIOBUZZ_BRIDGE) {
     bridge = new Bridge({ port: +process.env.BIOBUZZ_BRIDGE || 9662, dataDir: DATA, simPath: SIM, padPath: path.join(__dirname, "pad", "pad.html"), token: BRIDGE_TOK });
     bridge.start().then(ok => { if (ok && !process.env.BIOBUZZ_NOADB) bridge.adbWatch(); });
   }
+  try { hardenSession(session.defaultSession); } catch (e) { console.error("BIOBUZZ harden", e); }   /* v74 (P11) */
   reg();
   createSplash();
   createWindow();
