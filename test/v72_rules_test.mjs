@@ -72,14 +72,14 @@ ok(r.comp.legal==='gb6000'&&r.comp.speed===2.5,'R4: בתחרות 6000 סל״ד +
 ok(r.comp.mx<2.6,'R4: מהירות מרבית בתחרות '+r.comp.mx.toFixed(2)+' מ׳/ש׳ (קודם 3.99)');
 ok(r.open.rpm===6000&&r.open.nm===20&&r.open.speed===4,'R4: במצב פתוח הכול נשאר חופשי');
 
-// R6 — כרטיס אדום של בוט יריב פוסל את הברית שלו (סוף + RP)
+// R6 — v74 (T601): כרטיס אדום של בוט יריב פוסל רק את הקבוצה שלו — במוקדמות ניקוד הברית שלו נשאר
 r=await E(()=>{ const S=__sim; S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true); S.matchStart();
   for(const b of S.BOTS) b.on=false; S.MATCH.t=40; S.advance(0.1,1/60);
   const B=S.BOTS[0]; for(let i=0;i<2;i++) S.refCall({rule:"G417",team:B.name,ally:B.ally,sev:["major","yellow"],what:"t"});
   S.MATCH.t=S.tEnd()-0.05; S.advance(0.2,1/60);
-  const out={ally:B.ally,dq:S.MATCH.dq,dqA:{...S.MATCH.dqA},final:{...S.MATCH.final},rp:S.MATCH.rp.win};
+  const out={ally:B.ally,dq:S.MATCH.dq,dqA:{...S.MATCH.dqA},dqT:{...S.MATCH.dqT},name:B.name,final:{...S.MATCH.final},rp:S.MATCH.rp.win};
   S.matchStop(); S.REF.carry={}; return out; });
-ok(r.final.blue===0&&r.dqA.blue&&!r.dq&&r.rp===3,'R6: כרטיס אדום לבוט כחול → כחול 0 בסוף, ניצחון לי ('+JSON.stringify(r.final)+')');
+ok(!r.dqA.blue&&r.dqT[r.name]&&!r.dq,'R6 (v74): כרטיס אדום לבוט כחול → רק הקבוצה שלו נפסלת, לא הברית ('+JSON.stringify(r.final)+')');
 
 // R7 — G417 לא תלוי בקצב הפריימים
 r=await E(()=>{ const S=__sim; S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true); S.matchStart();
