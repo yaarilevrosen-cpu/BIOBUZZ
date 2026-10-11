@@ -19960,7 +19960,7 @@ function v74rbRailDist(x,z){
   return d;
 }
 function v74rbRailCap(b){
-  const vb=1.45, thr=navClrBot()+I(vb*vb/(2*AIC.aMax))+1.5;   /* ≈ 21″ */
+  const vb=1.45, thr=Math.hypot(AIC.W,AIC.L)/2+I(vb*vb/(2*AIC.aMax))+4;   /* חצי אלכסון + בלימה + 4″ של frameTouch ≈ 21″ */
   return v74rbRailDist(I(b.body.position.x),I(b.body.position.z))<thr;
 }
 /* B4: יעד הבולם בתוך האזור החסום של מבנה — זזים לאורך הקו מהיריב אל היעד, אל התא הפנוי האחרון לפני המבנה */
@@ -20071,7 +20071,7 @@ function v74rbParkDebrief(){
   return dl>0?row("יציאה לחניה","יצאת לחניה "+dl.toFixed(1)+" שנ׳ מאוחר מדי","bad")
              :row("יציאה לחניה","יצאת לחניה "+(-dl).toFixed(1)+" שנ׳ מוקדם","hl");
 }
-Object.assign(window.__sim||{},{v74rb:{muzzleWorld,mouthFrame,aimHive:()=>aimHive(),myMuzzleVel,aiMuzzleVel,leadDir,myLeadPt,aiLeadPt,v74rbRailDist,v74rbDefFree,v74rbYieldCheck,v74rbFinishClip,PARK4,v74rbParkHud,v74rbParkDebrief,v74rbParkTick,BLDC,aiDrive,aiParkStep,aiDefendStep,aiScoreStep,brainParkNow,refCard}});
+Object.assign(window.__sim||{},{SKILL,skill,v74rb:{muzzleWorld,mouthFrame,aimHive:()=>aimHive(),myMuzzleVel,aiMuzzleVel,leadDir,myLeadPt,aiLeadPt,v74rbRailDist,v74rbDefFree,v74rbYieldCheck,v74rbFinishClip,PARK4,v74rbParkHud,v74rbParkDebrief,v74rbParkTick,BLDC,aiDrive,aiParkStep,aiDefendStep,aiScoreStep,brainParkNow,refCard}});
 requestAnimationFrame(frame);
 setTimeout(resize,60);
 if(PHONE) setTimeout(()=>{ if(!camTouched) fitView(); applyCam(); },420);
