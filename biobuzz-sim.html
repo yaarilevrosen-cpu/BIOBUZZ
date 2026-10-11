@@ -2295,6 +2295,9 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div id="seasonAutos"></div>
         <div class="row"><button id="bSeasonExp">ייצא לקובץ</button><button id="bSeasonClr">אפס עונה</button></div>
         <div class="row"><button id="bPitCard">🧾 כרטיס לבור — יום תחרות</button></div>
+        <div class="grp">שידורים שמורים</div>
+        <div id="rpLib"></div>
+        <div class="row"><button id="bRpImp">טען שידור מקובץ</button><input type="file" id="rpFile" accept=".json,.txt" style="display:none"></div>
       </div></details>
         <details class="sub"><summary>תחקיר מאץ׳ — לאן הלך הזמן</summary><div class="body">
         <div class="out" id="oDebrief"></div>
@@ -2862,6 +2865,15 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_v71" data-i18n>{"עוד בערך": "about", "שנ׳": "s", "דק׳": "min", "המסלול ארוך מדי — עד": "Path too long — up to", "המסלול ארוך מדי לשמירה — עד": "Path too long to save — up to", "נקודות": "points", "⚠ אין מקום בדפדפן לגיבוי ביטחון — לא נמחק כלום. ייצא קודם לקובץ (⇩) ואז נסה שוב": "⚠ No room in the browser for a safety backup — nothing was deleted. Export to a file first (⇩), then try again", "אין מקום לגיבוי — לא נמחק כלום. ייצא קודם לקובץ": "No room for a backup — nothing was deleted. Export to a file first", "לפני איפוס הכול": "before reset all", "לפני איפוס הרובוט": "before robot reset"}</script>
 <script type="application/json" id="i18nX_v72rules" data-i18n>{"היריב נפסל — כרטיס אדום": "Opponent disqualified — red card", "יציאה / חניה · הברית": "Leave / park · alliance", "התרומה שלי — יציאה / חניה": "My contribution — leave / park", "סך הכול · הברית": "Total · alliance"}</script>
 <script type="application/json" id="i18nX_v72uiperf" data-i18n>{"מהיר מהמנוע שמוגדר": "is faster than the configured motor allows", "מ׳/ש׳) — בדקו סל״ד, קוטר גלגל ותמסורת בלשונית השלדה": "m/s) — check RPM, wheel diameter and gearing on the Chassis tab", "גם באחיזה מרבית הסימולטור איטי מהמדידה": "Even at maximum grip the simulator is slower than measured", "שנ׳ מול": "s vs", "המנוע מגביל: בדקו מומנט, תמסורת או סוללה": "the motor is the limit: check torque, gearing or battery", "גם באחיזה הכי נמוכה הסימולטור מהיר מהמדידה": "Even at the lowest grip the simulator is faster than measured", "שנ׳) — מדדו גם את המהירות המרבית": "s) — measure the top speed too", "שנמדדו": "measured", "הצידה": "Sideways", "גם בנצילות מלאה הסימולטור איטי מהמדידה": "Even at full efficiency the simulator is slower than measured", "גם בנצילות הכי נמוכה הסימולטור מהיר מהמדידה": "Even at the lowest efficiency the simulator is faster than measured", "גם בתקרה מרבית הסימולטור מסתובב לאט מהמדידה": "Even at the maximum cap the simulator turns slower than measured", "המנוע מגביל": "the motor is the limit", "הזמן שנמדד ארוך מדי לסיבוב שלם": "The measured time is too long for a full turn", "לא נמצא קטע ישר מעמידה באורך": "No straight run from a standstill of", "מיפוי צירים (סיבוב": "axis mapping (rotation", "לכיוון הכחול": "toward blue", "לכיוון הקהל": "toward the audience", "נגד כיוון השעון": "counter-clockwise", "הזירה אצלכם מסובבת? משנים את ״כיוון הזירה״ בסימולטור — סיבוב בלבד, פנייה שמאלה נשארת שמאלה": "Is your field rotated? Change “Field orientation” in the simulator — rotation only, a left turn stays a left turn", "שמרתי": "Saved", "נק׳ (היה": "pts (was", "השווית": "tied", "חסרות": "short by", "יותר": "More", "שנ׳ — רובו": "s — mostly", "אזור הטעינה תפוס — השחקן האנושי מחכה שיתפנה": "The loading zone is occupied — the human player waits until it clears", "בתחרות הכוורת מתהפכת לבד בסף — זה חלק מהזירה": "In competition the hive flips by itself at the threshold — it is part of the field", "כל העמדות תפוסות בשחקנים — אין מקום לשחקן": "All positions are taken by players — no room for player", "המחולל לא החזיר מסלול": "The generator returned no path", "ניסיון": "Try", "משופר": "Improved", "נעצר — מה שנמצא עד עכשיו בראש הרשימה": "Stopped — the best found so far is at the top of the list", "התחלה": "start", "שנ׳ (התחלה": "s (start", "המתכנן רץ בין מאצ׳ים — עצור קודם את המאץ׳": "The planner runs between matches — stop the match first", "סנכרון": "Sync", "המתכנן רץ — חכה שיסיים או עצור אותו": "The planner is running — wait for it to finish or stop it", "לפני": "ago", "הרבה פספוסים — כדאי לתרגל גם מרחוק": "Many misses — practice from far away too", "חסום": "Blocked", "שנ׳ במשחק": "s per match", "עבירות במשחק": "fouls per match", "חניה בסוף רק": "Endgame parking only", "נק׳ בממוצע": "pts on average", "בפעם האחרונה": "Last time", "אפשר לפתוח דיווח בגיטהאב": "You can open a report on GitHub", "מה השתבש?": "What went wrong?", "איך לשחזר?": "How to reproduce?", "מערכת": "System", "מול המחולל": "vs the generator", "שנ׳ פנויות": "s free", "סימולטור שדה ל": "a field simulator for", "תוצאות": "Results", "אפשר להחליף בכל רגע מכפתור השפה (EN) למעלה.": "You can switch any time with the language button at the top."}</script>
+<script type="application/json" id="i18nX_v74training" data-i18n>{"התרגיל נעצר — מתחילים מאץ׳ (התרגיל לא נרשם)": "Drill stopped — starting a match (the drill isn't recorded)", "כפתורי הקסם כבויים בתרגיל": "Magic buttons are off in drills", "מעבר לניקוד הפתיחה": "beyond the starting score", "השידור השמור פגום — אי אפשר לנגן": "The saved replay is damaged — it can't be played", "השידור הזה כבר לא שמור": "This replay is no longer saved", "⚠ זה לא קובץ שידור תקין": "⚠ This isn't a valid replay file", "⚠ הקובץ גדול מדי בשביל שידור": "⚠ The file is too big for a replay", "⚠ בקובץ יש ערכים לא תקינים": "⚠ The file has invalid values", "הניקוד לאורך המאץ׳": "Score over the match", "צפה במאץ׳": "Watch the match", "העבירות שלי": "My fouls", "אין — משחק נקי": "None — a clean match", "עוד אין — כל מאץ׳ שמסתיים נשמר כאן (20 האחרונים, השיא, ומה שסימנתם ⭐)": "None yet — every finished match is saved here (the last 20, your best, and the ones you marked ⭐)", "שמור תמיד": "Always keep", "שידורים שמורים": "Saved replays", "טען שידור מקובץ": "Load a replay from file", "שידור חוזר": "Replay", "עבירה": "Foul", "ייצא לקובץ": "Export to file", "שנ׳": "s"}</script>
+<style id="css_v74training">
+.v74Deb{margin:8px 0;padding:8px;border:1px solid var(--line,#2a333d);border-radius:10px}
+.v74DebH{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600;margin-bottom:4px}
+.v74Graph{width:100%;height:auto;display:block}
+.v74Fouls{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:6px;font-size:12px}
+.v74Fouls button,.v74Play,.v74Lib button{padding:2px 6px;font-size:12px}
+.v74Lib{width:100%;font-size:12px}.v74Lib td.n{text-align:center}
+</style>
 <script type="application/json" id="i18nX_v72training" data-i18n>{"האימון של היום נעצר": "Today's session stopped", "אין תוכנית אימון — ״🎯 משימות בשבילי״ בונה אחת": "No training plan — “🎯 Missions for me” builds one", "כל הימים בתוכנית כבר סומנו ✓": "Every day in the plan is already ticked ✓", "האימון של היום": "Today's session", "חימום דיוק, ואז": "accuracy warm-up, then", "השידור החוזר נפתח אחרי שהמאץ׳ נגמר": "The replay opens after the match ends", "10 התוצאות האחרונות": "Last 10 results", "סיכום": "summary", "חימום דיוק": "Accuracy warm-up", "היום סומן בתוכנית": "Day ticked in the plan", "שוב": "Again", "המחזור האיטי שלי": "Watch my slowest cycle", "זמנים — אמיתי מול סימולטור": "Timing — real robot vs sim", "הרץ את המסלול בסימולטור להשוואת זמנים": "Run the path in the sim to compare times", "עד סוף המסלול": "To the end of the path", "אמיתי": "Real", "סימולטור": "sim", "נקודה": "Point", "לא עבר ליד הנקודה": "did not pass the point", "פיגור": "lag", "קטעים ישרים": "Straights", "האמיתי איטי ב-": "Real robot is slower by ", "האמיתי מהיר ב-": "Real robot is faster by ", "כייל נהיגה מהיומן והרץ שוב": "Calibrate drive from the log and run again", "כיול מהיומן": "Calibration from the log", "ערכים עודכנו": "values updated", "שיא בתרגיל": "Drill best", "התחל את האימון של היום": "Start today's session", "חימום דיוק + התרגיל של היום ×3": "Accuracy warm-up + today's drill ×3", "▶ שידור חוזר של המחזור הזה": "▶ Replay this cycle", "אין תרגילים בטווח הזה.": "No drills in this range.", "🎯 תרגילים": "🎯 Drills", "משחקים בלבד, או רק תרגילים ואתגרים": "Matches only, or only drills and challenges", "🔁 עוד משחק": "🔁 Play again"}</script>
 <script type="application/json" id="i18nX_v72netapp" data-i18n>{"🔒 אי אפשר להחליף עמדה באמצע מאץ׳ בתחרות — אחרי המאץ׳": "🔒 You can't switch seats in the middle of a competition match — wait until it ends", "🌐 המארח יצא מהחדר — מחכים שיחזור (או צאו מהחדר)": "🌐 The host left the room — waiting for them to come back (or leave the room)", "📱 מישהו אחר נוהג ברובוט הזה — בחרו רובוט אחר לטלפון": "📱 Someone else is driving that robot — pick another robot for the phone", "🔒 העמדות נעולות עד סוף המאץ׳ (תחרות)": "🔒 Seats are locked until the match ends (competition)"}</script>
 <script type="application/json" id="i18nX_v72export" data-i18n>{"X ב-RoadRunner (אינץ׳)": "X in RoadRunner (inches)", "Y ב-RoadRunner (אינץ׳)": "Y in RoadRunner (inches)", "כיוון ב-RoadRunner במעלות — ריק: לאורך הנסיעה": "Heading in RoadRunner, degrees — empty: along the path", "פונה לכוורת": "Face the hive", "פעולה": "Action", "מספר לא תקין": "Invalid number", "אין במסלול נקודות ״ירי מעמדת הירי״": "The path has no \"Shoot from the shooting spot\" points", "באמצע מאץ׳ — הקפאה בין מאצ׳ים": "Mid-match — freeze between matches", "בהרצה לא נורתה אף ירייה מעמדת הירי — אין מה להקפיא": "The run fired no shot from a shooting spot — nothing to freeze", "עמדות ירי שהוקפאו": "Shooting spots frozen", "המסלול שבעורך הועבר לברית השנייה": "The editor path was moved to the other alliance", "עמדות ירי": "Shooting spots", "מההרצה": "from the run", "יחושבו בהרצה": "computed during the run", "כל ״ירי מעמדת הירי״ הופך ל״ירי״ בעמדה שממנה הסימולטור באמת ירה": "Every \"Shoot from the shooting spot\" becomes \"Shoot\" at the spot the simulator actually shot from", "הקפא עמדות ירי": "Freeze shoot spots", "📌 הקפא עמדות ירי": "📌 Freeze shoot spots", "מגבלות הנסיעה של RoadRunner": "RoadRunner drive constraints", "מההגדרות של MecanumDrive אצלכם. משמשות להערכת הזמן של RR (פרופיל טרפז על הקטעים המיוצאים), לזמן הפנוי במחולל ובמתכנן, ונכתבות בראש הקוד.": "From your MecanumDrive settings. Used for the RR time estimate (trapezoid profile over the exported segments), for the free time in the generator and planner, and written at the top of the code.", "פרופיל טרפז על הקטעים המיוצאים": "trapezoid profile over the exported segments", "אצלכם. משמשות להערכת הזמן של": "settings. Used for the time estimate of", "מההגדרות של": "From your", "לזמן הפנוי במחולל ובמתכנן, ונכתבות בראש הקוד": "for the free time in the generator and planner, and written at the top of the code"}</script>
@@ -8569,6 +8581,10 @@ function ghostClean(o){
   if(!num(sc)||Math.abs(sc)>5000) return null;
   const g={score:Math.round(sc), when:num(at)&&at>0?Math.round(at):0, mode:ghostModeOk(o.mode)?o.mode:"match", rows};
   if(num(o.metric)&&Math.abs(o.metric)<1e5) g.metric=+o.metric;   /* 1.12.5: מדד התרגיל */
+  /* v74 T4: רוח ישנה (בלי t0) הוקלטה עם הספירה לאחור — מדלגים על הפריימים הקפואים בהתחלה */
+  if(o.t0!==1){ let k=1; while(k<rows.length&&rows[k][0]===rows[0][0]&&rows[k][1]===rows[0][1]&&rows[k][2]===rows[0][2]) k++;
+    if(k>1&&k<rows.length) g.rows=rows.slice(k-1); }
+  g.t0=1;
   const nm=netStr(o.name,24).trim(); if(nm) g.name=nm;
   return g;
 }
@@ -8640,6 +8656,7 @@ function ghostDisarm(){ GHOST.armed=false; GHOST.on=false;
   if(GHOST.mesh) GHOST.mesh.visible=false; }
 function ghostTick(dt){
   if(!GHOST.armed) return;
+  if(MATCH.cd>0) return;   /* v74 T4: הספירה לאחור לא מוקלטת — GHOST.t מתחיל יחד עם השעון */
   GHOST.t+=dt;
   const i=Math.floor(GHOST.t*20);
   if(i>=GHOST.rec.length&&i<ghostCap())
@@ -8663,13 +8680,14 @@ function ghostCommit(total,metric){
   GHOST.newBest=false;
   if((typeof GEN!=="undefined"&&GEN.running)||GHOST.rec.length<20) return;   /* v70: ריצות של המתכנן לא נשמרות */
   const st=ghostStore(), m=GHOST.mode;
-  const g={score:Math.round(total),when:Date.now(),mode:m,rows:GHOST.rec.slice()};
+  const g={score:Math.round(total),when:Date.now(),mode:m,rows:GHOST.rec.slice(),t0:1};
   /* 1.12.5: רוח של תרגיל — השיא לפי מדד התרגיל (שניות, מחזורים נכונים, נקודות פחות עבירות), לא לפי נקודות הברית */
   if(metric==null&&m!=="match"&&typeof DRILL!=="undefined"&&DRILL.last&&DRILL.last.k===m&&Date.now()-DRILL.last.at<5000) metric=DRILL.last.v;
   if(typeof metric==="number"&&isFinite(metric)) g.metric=metric;
   st.last[m]=g;
   const best=st.best[m], lo=typeof DRILL!=="undefined"&&!!DRILL.lower[m];
-  const better=g.metric!=null&&best&&best.metric!=null?(lo?g.metric<best.metric:g.metric>best.metric):(!best||total>best.score);
+  /* v74 T3: בתרגיל — רק ריצה עם מדד יכולה להיות שיא; ריצה שלא הושלמה (בלי מדד) נשמרת רק כ״קודמת״ */
+  const better=m==="match"?(!best||total>best.score):g.metric!=null&&(!best||best.metric==null||(lo?g.metric<best.metric:g.metric>best.metric));
   if(better){ st.best[m]=g; GHOST.newBest=true; }
   ghostPut(); try{ ghostExpUI(); }catch(e){}
 }
@@ -8677,7 +8695,7 @@ function ghostCommit(total,metric){
 function ghostExportText(g,name){
   if(!g) return null;
   const nm=netStr(name!=null?name:(g.name||""),24).trim();
-  const o={bb:"ghost",v:1,mode:g.mode||"match",score:g.score|0,date:g.when||Date.now(),frames:g.rows};
+  const o={bb:"ghost",v:1,mode:g.mode||"match",score:g.score|0,date:g.when||Date.now(),frames:g.rows,t0:1};
   if(nm) o.name=nm;
   return JSON.stringify(o);
 }
@@ -8805,6 +8823,7 @@ function debriefShot(){
 }
 function debriefFinish(total,opt){
   DEB.on=false;
+  if(typeof GEN!=="undefined"&&GEN.running) return;   /* v74 T2: ריצה של המחולל/המתכנן לא נכנסת ל״קודם״ ולשיא */
   /* 1.12.5: תרגיל לא נכנס ל״קודם״, לשיא ולרשימת השיאים (drillEnd כבר ניקה את DRILL.on, לכן מקבלים את זה מבחוץ) */
   const isDrill=opt&&opt.drill!=null?!!opt.drill:(typeof DRILL!=="undefined"&&!!DRILL.on);
   const cyc=DEB.cyc.filter(v=>v>0.35&&v<45);   // מחזור ארוך מ-45 שנ׳ הוא כבר לא מחזור
@@ -8838,7 +8857,7 @@ function renderDebrief(){
     row("פגיעות",r.hits+" מתוך "+r.shots+" יריות")+
     row("זמן מחזור ממוצע",r.avgCycle?r.avgCycle+" שנ׳ · "+r.cycles+" מחזורים":"—",
         prev&&prev.avgCycle&&r.avgCycle<prev.avgCycle?"ok":"")+
-    '<div class="dbwrap">'+DBINS.map(([k,n])=>bar(k,n)).join("")+'</div>'+debriefBestHTML(r)+debriefCycHTML(r)+debriefPosHTML(r);
+    '<div class="dbwrap">'+DBINS.map(([k,n])=>bar(k,n)).join("")+'</div>'+debriefBestHTML(r)+debriefCycHTML(r)+debriefPosHTML(r)+(typeof v74rpDebriefHTML==="function"?v74rpDebriefHTML(r):"");   /* v74 U6/U10 */
   debriefPosDraw(r);
 }
 /* v70: מפה קטנה — איפה הייתי במאץ׳ הזה (הצד שלי משמאל, הקהל למטה) */
@@ -9273,6 +9292,7 @@ function matchStart(){
   if(typeof GEN!=="undefined"&&GEN.running&&!GEN.inEval){ refToast("המחולל רץ — חכה שיסיים או עצור אותו","block"); return; }
   /* v70: תרגיל חופשי (דיוק, מרחוק, חניה, עמדות משתנות, סיבוב פרחים) לא ממשיך לתוך מאץ׳ — אחרת המאץ׳ נרשם כתרגיל */
   if(typeof DRILL!=="undefined"&&DRILL.on&&!GEN.running&&["acc","far","park","moveshoot","circuit"].includes(DRILL.on)){ DRILL.on=null; DRILL.daily=false; try{ v70DrillClear(); }catch(e){} }
+  else if(typeof DRILL!=="undefined"&&DRILL.on&&!DRILL.starting&&!GEN.inEval&&!GEN.running) v74DrillAbortForMatch();   /* v74 T1: כניסה ישירה (מקש, שידור) באמצע תרגיל עם שעון או אתגר */
   /* 1.12.5: אחרי תרגיל עם שעון (60 שנ׳ לבד, בלי בוטים) — המאץ׳ הבא חוזר להגדרות שלך, גם ממקש ״מאץ׳״ או מ״התחל מאץ׳ בשידור״ */
   if(typeof DRILL!=="undefined"&&!DRILL.on&&!GEN.running){ DRILL.daily=false;
     if(DRILL.applied&&NET.mode!=="guest"&&!matchStart._re){ DRILL.applied=false; matchStart._re=true; try{ setupApply(); } finally{ matchStart._re=false; } return; }
@@ -9298,7 +9318,7 @@ function matchStart(){
   refreshGamePanel(); updateMatch(0); showBanner();
 }
 function matchStop(){ if((MATCH.on||MATCH.cd>0)&&typeof DRILL!=="undefined"&&DRILL.on&&DRILL.on!=="acc"){ DRILL.on=null; try{ v70DrillClear(); }catch(e){} }   /* v70: גם עצירה בספירה לאחור מנקה את התרגיל */ if(typeof vrecMatchEnd==="function") try{ vrecMatchEnd(); }catch(e){} if(MATCH.on&&!GEN.running) replayCommit(); if(typeof myAutoReset==="function") myAutoReset(); MATCH.final=null; MATCH.on=false; MATCH.cd=0; MATCH.locked=false; faultReset(); SEASON.cur=null;
-  MATCH.phase="idle"; ghostDisarm(); showBanner(); updateMatch(0); }
+  MATCH.phase="idle"; ghostDisarm(); if(typeof v74DrillRestoreMT==="function"&&typeof DRILL!=="undefined"&&!DRILL.on) v74DrillRestoreMT(); showBanner(); updateMatch(0); }
 /* ══════════════════════════════════════════════════════════════════
    שופט — פרק 11 במדריך, כמה שאפשר למדוד בסימולטור
    ──────────────────────────────────────────────────────────────────
@@ -9376,7 +9396,7 @@ function refCall(o){
   if(card) parts.push(SEVNAME[card]);
   if(e.warn) parts.push("אזהרה");
   refToast(parts.join(" · ")+" — "+o.what, card||(pts?"foul":"warn"));
-  if((pts||card)&&typeof replayEv==="function") replayEv("foul",o.rule+" · "+who+(pts?" · +"+pts:"")+(card?" · "+SEVNAME[card]:""));
+  if((pts||card)&&typeof replayEv==="function") replayEv("foul",o.rule+" · "+who+(pts?" · +"+pts:"")+(card?" · "+SEVNAME[card]:""),o.team==="me"?{me:1}:null);   /* v74 U6: ״העבירות שלי״ */
   /* שחקן ברשת לא רואה את המסך של המארח — העבירה שלו נשלחת אליו */
   if(o.team&&o.team!=="me"){ const w=humOf(o.team);
     if(w&&w.hum&&w.hum.src==="net") humWarn(w,parts.join(" · ")+" — "+o.what,"foul"); }
@@ -9891,11 +9911,11 @@ function updateMatch(dt){
       MATCH.endT=simT; MATCH.rp=refRP();
       const tot=MATCH.dq?0:scoreNow().total;
       const wasDrill=typeof DRILL!=="undefined"&&!!DRILL.on;   /* 1.12.5: נלכד לפני ש-drillEnd מנקה */
-      if(!wasDrill) logRecord(tot);
+      if(!wasDrill&&!GEN.running) logRecord(tot);   /* v74 T2: המחולל/המתכנן (טלאופ 0) לא נכנס לשיאים */
       MATCH.on=true; replayEv("phase","סוף המאץ׳ · "+(allianceScore("red")|0)+" : "+(allianceScore("blue")|0)); replayRecTick(1); MATCH.on=false;
-      if(!GEN.running) replayCommit();
-      seasonEnd(); faultReset(); if(typeof drillEnd==="function") drillEnd();
-      ghostCommit(tot); debriefFinish(tot,{drill:wasDrill}); showBanner(); mpMatchEnd(); }
+      const rpOk=!GEN.running&&replayCommit();   /* v74 U6: נשמר רק שידור שבאמת נכנס */
+      const sm=seasonEnd(); faultReset(); if(typeof drillEnd==="function") drillEnd();
+      ghostCommit(tot); debriefFinish(tot,{drill:wasDrill}); if(!GEN.running){ showBanner(); mpMatchEnd(); if(typeof v74rpAfterMatch==="function") try{ v74rpAfterMatch(sm,rpOk); }catch(e){} } }
   }
   /* הלוח במעבדה — רק כשהוא על המסך, ועד חמש פעמים בשנייה (לא בכל צעד פיזיקה) */
   /* 1.12.4: קודם ה-throttle, אחר כך offsetParent (שמכריח חישוב פריסה) — אחרת בכל צעד של המתכנן */
@@ -9995,9 +10015,9 @@ function clearCadHives(){
 }
 const DBN="biobuzz_cad";
 function idb(){ return new Promise((res,rej)=>{
-  const r=indexedDB.open(DBN,1);
-  r.onupgradeneeded=()=>r.result.createObjectStore("files");
-  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+  const r=indexedDB.open(DBN,2);   /* v74 U6: גרסה 2 — נוסף מאגר ״replays״; ״files״ של ה-CAD נשאר כמו שהוא */
+  r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains("files")) d.createObjectStore("files"); if(!d.objectStoreNames.contains("replays")) d.createObjectStore("replays"); };
+  r.onsuccess=()=>{ const d=r.result; d.onversionchange=()=>d.close(); res(d); }; r.onerror=()=>rej(r.error); r.onblocked=()=>rej(new Error("blocked")); }); }
 async function idbPut(k,v){ try{const d=await idb();
   await new Promise((res,rej)=>{const t=d.transaction("files","readwrite");
     t.objectStore("files").put(v,k); t.oncomplete=res; t.onerror=()=>rej(t.error);});}catch(e){} }
@@ -10284,6 +10304,9 @@ function assistStop(why){
   if(typeof routeHide==="function") routeHide();
 }
 function assistGo(job,tx,tz,fx,fz,need,tol){
+  /* v74 T5: בתרגיל ובאתגר היומי כפתורי הקסם חסומים — השיא הוא של הנהג */
+  if(typeof DRILL!=="undefined"&&DRILL.on){ ASSIST.job=null; ASSIST.autofire=false; ASSIST.note="כפתורי הקסם כבויים בתרגיל"; syncBar();
+    try{ refToast("כפתורי הקסם כבויים בתרגיל","block"); }catch(e){} return; }
   /* בהגדרות אפשר לכבות את כפתורי הקסם בזמן מאץ׳, כדי להתאמן בלעדיהם */
   if(GAME.assistOK===false&&(MATCH.on||MATCH.cd>0)){
     ASSIST.job=null; ASSIST.note="כפתורי הקסם כבויים במאץ׳"; syncBar(); return; }
@@ -11140,6 +11163,7 @@ function setupSummary(){
 
 /* ── החלת ההגדרות על המשחק ואז התחלה ── */
 function setupApply(){
+  if(typeof DRILL!=="undefined"&&DRILL.on&&!DRILL.starting) v74DrillAbortForMatch();   /* v74 T1: מאץ׳ מהחלון / ״מהיר״ באמצע תרגיל — התרגיל נעצר בלי לרשום */
   MT.cd=SETUP.cd; MT.auto=SETUP.autoOn?SETUP.auto:0;
   MT.trans=SETUP.autoOn?SETUP.trans:0; MT.tele=SETUP.tele;
   PH[0][1]=MT.auto; PH[1][1]=MT.trans; PH[2][1]=MT.tele;
@@ -14044,7 +14068,8 @@ function seasonEnd(){
   { const cyc=(DEB.cyc||[]).filter(v=>v>0.35&&v<45); if(cyc.length){ m.cycles=cyc.length; m.avgCycle=+(cyc.reduce((x,y)=>x+y,0)/cyc.length).toFixed(2); } }
   /* v68: לאן הלך הזמן במאץ׳ — לסטטיסטיקות ולמאמן */
   if(DEB.bins&&DEB.total>0){ m.bins={}; for(const [k] of DBINS) m.bins[k]=+(DEB.bins[k]||0).toFixed(1); }
-  { const S0=scoreNow(); m.pts={tip:S0.tip,cell:S0.cell,flower:S0.flower,garden:S0.garden,leave:S0.leave,park:S0.park}; }
+  { const S0=scoreNow(); m.pts={tip:S0.tip,cell:S0.cell,flower:S0.flower,garden:S0.garden,leave:S0.leave,park:S0.park};
+    if(S0.mine){ m.myPark=S0.mine.park|0; m.myLeave=S0.mine.leave|0; } }   /* v74 T6: החניה והיציאה שלי (לא של השותף) */
   if(c.pos&&c.pos.length){ m.pos=c.pos.slice(0,POS_MAX); SEASON.lastPos=m.pos; }   /* v70: מפת נסיעה */
   const a=seasonAll(); a.push(m); while(a.length>150) a.shift();
   while(!seasonPut(a)&&a.length>10) a.splice(0,10);
@@ -15450,7 +15475,7 @@ function statUI(){
     '<tr><td>הכי הרבה נקודות</td><td>'+s.best.my+' · '+statDate(s.best.at)+'</td></tr>'+
     '<tr><td>הניצחון הכי גדול</td><td>'+(s.margin.my-s.margin.opp>0?'<bdi dir="ltr">+'+(s.margin.my-s.margin.opp)+" ("+s.margin.my+":"+s.margin.opp+")</bdi>":"—")+'</td></tr>'+
     (s.accM?'<tr><td>הדיוק הכי טוב (5+ יריות)</td><td>'+pct(s.accM.hits/s.accM.shots)+' · '+statDate(s.accM.at)+'</td></tr>':'')+'</table>';
-  h+='<div class="stH">המשחקים האחרונים</div><table>'+l.slice(-8).reverse().map(m=>'<tr><td>'+(m.win>0?"✅ ניצחון":m.win<0?"❌ הפסד":"➖ תיקו")+' · '+(STKIND[m.kind]||"מאץ׳")+'</td><td>'+m.my+':'+m.opp+' · '+statDate(m.at)+'</td></tr>').join("")+'</table>';
+  h+='<div class="stH">המשחקים האחרונים</div><table>'+l.slice(-8).reverse().map(m=>'<tr><td>'+(m.win>0?"✅ ניצחון":m.win<0?"❌ הפסד":"➖ תיקו")+' · '+(STKIND[m.kind]||"מאץ׳")+'</td><td>'+m.my+':'+m.opp+' · '+statDate(m.at)+(typeof v74rpRowBtn==="function"?v74rpRowBtn(m.at):"")+'</td></tr>').join("")+'</table>';   /* v74 U6: ▶ */
   o.innerHTML=h;
   const ch=$("stChart"), tip=$("stTip");
   if(ch&&tip){ const L=l.slice(-30);
@@ -16543,6 +16568,7 @@ function drillBestUI(){ const b=$("ppDrillBest"); if(!b) return; const B=DRILL.b
   b.textContent=parts.length?T("שיאים:")+" "+parts.join(" · "):T("בכל תרגיל נשמר השיא שלך."); }
 function drillRecord(k,v,unit){ if(typeof GEN!=="undefined"&&GEN.running) return;   /* 1.12.5: ריצות של המחולל/המתכנן הן לא תרגיל */
   DRILL.last={k,v,at:Date.now()}; DRILL.daily=false;
+  if(DRILL.act) v74Tried(k);   /* v74 T8: ״ניסית תרגיל״ רק עם תזוזה או יריה */
   if(typeof dailyCatch==="function"&&dailyCatch(k,v)){ try{ v72tCard(k,v,{daily:true}); }catch(e){} return; } /* v70: אתגר יומי */
   const prev=DRILL.best[k]; const lo=!!DRILL.lower[k]; const nb=prev==null||(lo?v<prev:v>prev);
   if(nb){ DRILL.best[k]=v; try{ localStorage.setItem(DRILL.KEY,JSON.stringify(DRILL.best)); }catch(e){} }
@@ -16555,7 +16581,7 @@ function drillRecord(k,v,unit){ if(typeof GEN!=="undefined"&&GEN.running) return
   try{ if(typeof achCheck==="function") achCheck(); }catch(e){} /* v70 */ }
 /* 1.12.5: עוצרים תרגיל פתוח בלי לרשום (המחולל / המתכנן מתחילים) */
 function drillAbort(){ if(DRILL.on){ DRILL.on=null; DRILL.far=null; DRILL.accL=null; DRILL.ci=null; try{ v70DrillClear(); }catch(e){} }
-  DRILL.daily=false; try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} }
+  DRILL.daily=false; try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} v74DrillRestoreMT(); }
 /* תרגילים בלי שעון מאץ׳: דיוק, דיוק מרחוק, חניה */
 function drillFree(){ PP.last="free"; if(MATCH.phase==="סיום") matchStop(); ACT.solo(); stageMatch(); homeRobot(); }
 function drillStart(k,ov){
@@ -16564,6 +16590,7 @@ function drillStart(k,ov){
   if(MATCH.on||MATCH.cd>0){ if(!matchStopSafe()) return; }
   try{ if(typeof DAILY==="object") DAILY.on=null; }catch(e){} /* v70: האתגר היומי מסמן את עצמו אחרי — ורק אחרי שבאמת עוצרים (לחיצה ראשונה רק ״דורכת״) */
   if(REPLAY.on) replayClose(); if(SPLIT.on) splitSet(false);
+  assistStop(); DRILL.act=false; DRILL.base=null; DRILL.p0=null;   /* v74 T5 · T8 */
   DRILL.far=null; DRILL.cycles=0; DRILL.t0=null; DRILL.daily=!!(ov&&ov.daily); v70DrillClear();   /* v70: מנקים סימונים של תרגיל קודם */
   DRILL.lastK=k; DRILL.accL=null; DRILL.accT=null; try{ v72tCardOff(); }catch(e){}   /* 1.13: ״↻ שוב״ חוזר לתרגיל הזה */
   if(k==="acc"||k==="far"){ drillFree();
@@ -16584,7 +16611,10 @@ function drillStart(k,ov){
     transition:{autoOn:true,auto:30,trans:8,tele:30}}[k]||{};
   Object.assign(SETUP,base,X,(ov&&ov.setup)||{});
   PP.last="quick"; DRILL.on=k;
-  try{ setupApply(); } finally { Object.assign(SETUP,JSON.parse(keep)); setupSave(); }
+  if(!DRILL.mt0) DRILL.mt0={cd:MT.cd,auto:MT.auto,trans:MT.trans,tele:MT.tele,ph:PH.map(x=>x[1])};   /* v74 T7: השעון שלך חוזר בסוף התרגיל */
+  DRILL.starting=true;
+  try{ setupApply(); } finally { DRILL.starting=false; Object.assign(SETUP,JSON.parse(keep)); setupSave(); }
+  try{ DRILL.base=allianceScore(myAlly())|0; }catch(e){ DRILL.base=null; }   /* v74 T8: הניקוד בפתיחה (תא וגינה טעונים מראש) */
   DRILL.applied=true;   /* 1.12.5: המאץ׳ הבא (לא תרגיל) מחיל שוב את ההגדרות שלך */
   /* v70: אתגר יומי בברית אחרת — הברית נשארת כל עוד התרגיל רץ (myAlly קורא את SETUP.ally), וחוזרת בסופו (drillAllyBack) */
   if(ov&&ov.setup&&ov.setup.ally&&ov.setup.ally!==SETUP.ally){ DRILL.allyBack=SETUP.ally; SETUP.ally=ov.setup.ally; }
@@ -16600,12 +16630,14 @@ function drillStart(k,ov){
     transition:"🔁 האוטונומי שלך, המעבר, ואז 30 שניות טלאופ"}[k]); ppRefresh();
 }
 function drillEnd(){ const k=DRILL.on; if(!k||k==="acc"||k==="far"||k==="park"||k==="moveshoot"||k==="circuit") return; DRILL.on=null; DRILL.daily=false;
+  v74DrillRestoreMT(); if(k==="speed"||k==="load") DRILL.last=null;   /* v74 T7 · T3: ריצה שלא הושלמה — אין מדד ישן לרוח */
   if(k==="speed"){ try{ v72tCard(k,null,{left:(DRILL.cycles|0)+"/3"}); }catch(e){} if(typeof dailyCatch==="function"&&dailyCatch(k,null)) return; refToast("⏱ "+T("3 מחזורים על זמן")+": "+T("לא הושלם")+" ("+(DRILL.cycles|0)+"/3)"); return; }
   if(k==="load"||k==="decide"||k==="dodge"){ v70DrillEnd(k); return; }   /* v70 */
   drillRecord(k,allianceScore(myAlly())|0," נק׳"); }
 /* נקרא מ-fire() — יריה של הרובוט שלי */
 function drillFire(rec){
   if(typeof GEN!=="undefined"&&GEN.running) return;   /* 1.12.5 */
+  if(DRILL.on) DRILL.act=true;   /* v74 T8: יריה = ניסיון אמיתי */
   /* 1.12.5: דיוק — עשר היריות הראשונות, והתוצאה רק אחרי שהעשירית נוחתת */
   if(DRILL.on==="acc"&&DRILL.accL&&DRILL.accL.length<10){ DRILL.accL.push((rec&&rec.logEntry)||{hit:false}); if(DRILL.accL.length===10) DRILL.accT=simT; }
   if(DRILL.on==="far"&&DRILL.far){ const r=rec&&rec.logEntry&&rec.logEntry.range;
@@ -17254,17 +17286,17 @@ function achData(o){ o=o||{};
     for(const e of h){ const v=Array.isArray(e)?+e[1]:NaN; if(!isFinite(v)) continue; if(b!=null&&(lower[k]?v<b:v>b)) beat=true; b=b==null?v:(lower[k]?Math.min(b,v):Math.max(b,v)); } }
   const auto=all.map(m=>+m.autoPts).filter(isFinite);
   return {all, games, wins:games.filter(m=>m.win>0).length, best,
-    cleanRun:run(games,m=>(m.fouls|0)===0), parkRun:run(games,m=>!!(m.pts&&m.pts.park>0)),
+    cleanRun:run(games,m=>(m.fouls|0)===0), parkRun:run(games,m=>m.myPark!=null?m.myPark>0:!!(m.pts&&m.pts.park>0)),   /* v74 T6 */
     fastCycle:games.some(m=>m.avgCycle>0&&m.avgCycle<7&&(m.cycles|0)>=3),   /* 1.12.5: במאץ׳, לא בתרגיל */
     autoBest:auto.reduce((a,v)=>v>a?v:a,Math.max(0,best.auto|0)), beat,   /* 1.12.4: בלי ...spread — 200 אלף רשומות הפילו */
-    drillsTried:Object.keys(DRILL.N).filter(k=>best[k]!=null||(Array.isArray(hist[k])&&hist[k].length)).length,
+    drillsTried:Object.keys(DRILL.N).filter(k=>o.tried&&typeof o.tried==="object"?!!o.tried[k]:(best[k]!=null||(Array.isArray(hist[k])&&hist[k].length))).length,   /* v74 T8 */
     dailyHits:o.dailyHits|0, streak:o.streak|0, planDone:o.planDone|0, planTotal:o.planTotal|0, planner:!!o.planner}; }
 function achEval(D){ return ACH_DEFS.map(a=>{ const [v,max]=a.f(D); const m=Math.max(1,max|0); return {id:a.id,i:a.i,n:a.n,h:a.h,v:Math.min(m,Math.max(0,Math.floor(+v||0))),max:m,ok:(+v||0)>=m}; }); }
 function achLive(){ const s=ACH.st||achLoad(), st=DAILY.st||dailyLoad();
   let pd=0,pt=0; try{ const p=planGet(); if(p){ pt=p.items.length; pd=p.st.done.filter(Boolean).length; } }catch(e){}
   if(pt&&pd>=pt) s.planMax=Math.max(s.planMax|0,pt);
   const all=(APP.on&&Array.isArray(APP.all)&&APP.all.length)?APP.all:seasonAll();
-  return achData({all, best:DRILL.best, hist:DRILL.hist, lower:DRILL.lower, dailyHits:st.hits,
+  return achData({all, best:DRILL.best, hist:DRILL.hist, lower:DRILL.lower, tried:v74TriedGet(), dailyHits:st.hits,
     streak:Math.max(st.bestStreak|0,dailyStreak(st.days,dailyToday())), planDone:Math.max(pd,s.planMax|0), planTotal:Math.max(pt,s.planMax|0)||5, planner:!!s.flags.planner}); }
 /* בודק מה נפתח עכשיו. silent — בטעינה: נועלים מה שכבר הושג, בלי הודעות */
 function achCheck(silent,D){ const s=ACH.st||achLoad(); const L=achEval(D||achLive()), now=Date.now(), fresh=[];
@@ -17564,7 +17596,7 @@ function coachSummary(){
       last10CycleSec:coachAvg(last,"avgCycle"), prev10CycleSec:prev.length?coachAvg(prev,"avgCycle"):null},
     accuracy:s.acc!=null?+s.acc.toFixed(3):null, shotsPerMatch:+(s.shots/s.n).toFixed(1), avgCycleSec:coachAvg(l,"avgCycle"),
     autoAvgPoints:s.autoAvg!=null?+s.autoAvg.toFixed(1):null, leaveRate:+s.leave.toFixed(2), autoParkRate:+s.park.toFixed(2),
-    endParkPointsAvg:pts.park!=null?pts.park:null, pointsBySourceAvg:pts,
+    endParkPointsAvg:(()=>{ const v=l.filter(m=>isFinite(m.myPark!=null?+m.myPark:m.pts?+m.pts.park:NaN)); return v.length?+(v.reduce((x,m)=>x+(m.myPark!=null?+m.myPark:+m.pts.park),0)/v.length).toFixed(1):null; })(), pointsBySourceAvg:pts,   /* v74 T6: החניה שלי */
     foulsPerMatch:+s.fouls.toFixed(2), faultsPerMatch:+s.faults.toFixed(2),
     secondsBlockedByOpponentsPerMatch:coachAvg(l.map(m=>({b:(m.bl||[]).length*0.5})),"b"),
     winStreakNow:s.cur, longestWinStreak:s.bestRun,
@@ -17673,7 +17705,7 @@ function missionsBuild(){
   const l=all.filter(m=>m.kind!=="drill"&&m.kind!=="daily").slice(-20), n=l.length;
   const avg=(k,a)=>{ const v=(a||l).filter(m=>isFinite(+m[k])&&m[k]!=null); return v.length?v.reduce((x,m)=>x+(+m[k]),0)/v.length:null; };
   const acc=coachAcc(l), cyc=avg("avgCycle"), bins=coachBins(l), fouls=avg("fouls"), autoPts=avg("autoPts");
-  const parkPts=(()=>{ const v=l.filter(m=>m.pts&&isFinite(m.pts.park)); return v.length?v.reduce((x,m)=>x+m.pts.park,0)/v.length:null; })();
+  const parkPts=(()=>{ const pk=m=>m.myPark!=null?+m.myPark:m.pts?+m.pts.park:NaN; const v=l.filter(m=>isFinite(pk(m))); return v.length?v.reduce((x,m)=>x+pk(m),0)/v.length:null; })();   /* v74 T6 */
   const tot=bins?Object.keys(bins).filter(k=>k!=="matches"&&k!=="auto").reduce((a,k)=>a+bins[k],0):0;
   const pc=k=>bins&&tot?bins[k]/tot:0, P1=v=>Math.round(v*100)+"%";
   /* כל חולשה: חומרה (בערך — כמה נקודות היא עולה), התרגיל, והסיבה במספרים */
@@ -17781,6 +17813,7 @@ function v72tMatchBegin(){ DRILL.lastK=null; V72T.card=null; V72T.ver++; if(V72T
 function v72tCard(k,v,o){ o=o||{};
   if(typeof GEN!=="undefined"&&GEN.running) return null;
   const c={k, v:v==null?null:v, nb:!!o.nb, prev:o.prev, best:DRILL.best[k], left:o.left||null, daily:!!o.daily,
+    gain:v!=null&&DRILL.U[k]===" נק׳"&&DRILL.base!=null?v-DRILL.base:null,   /* v74 T8 */
     hist:(DRILL.hist[k]||[]).slice(-10).map(x=>x[1]).filter(x=>typeof x==="number"&&isFinite(x)), at:Date.now(), t0:simT, gone:false, sess:null};
   V72T.card=c; V72T.ver++;
   if(v72tSessOn()&&!c.daily) v72tSessStep(c);
@@ -17853,6 +17886,7 @@ function v72tCardText(c){ const u=v72tUnit(c.k);
   const big=c.v==null?T("לא הושלם")+(c.left?" ("+c.left+")":""):c.v+u;
   let sub=(c.daily?"🗓 "+T("אתגר יומי")+" · ":"")+T(DRILL.N[c.k]);
   if(c.v!=null&&!c.daily) sub+=" · "+(c.nb?T("🏅 שיא חדש!"):T("השיא")+" "+c.best+u);
+  if(c.gain!=null) sub+=" · "+(c.gain>=0?"+":"")+c.gain+" "+T("מעבר לניקוד הפתיחה");   /* v74 T8 */
   else if(c.v==null&&c.best!=null) sub+=" · "+T("השיא")+" "+c.best+u;
   return {big,sub}; }
 function v72tActHTML(kind){ const E=appEsc, B=(a,txt,cls)=>'<button data-bn="'+a+'"'+(cls?' class="'+cls+'"':'')+'>'+E(txt)+'</button>';
@@ -19168,6 +19202,233 @@ if(I18N.lang==="en") I18N.rules.push([/^לפני (\d+) שע׳$/,"$1 h ago"],[/^�
 { const X={onScreen72, aiBlockLine, robotDisposeTree, perimWalls:()=>perimWalls.slice(), hoardNear, bcNames, cmdkDraw,
     hoardCalls:()=>hoardNear._n|0, mouthFrame, muzzleWorld, aimHive:()=>aimHive(), RULE};
   if(window.__sim) Object.assign(window.__sim,{v72uiperf:X}); }
+/* ══════ v74 training ══════
+   T1/T5/T7/T8 — עזרים לתרגילים, ו-U6/U10 — ספריית שידורים חוזרים וגרף ניקוד בתחקיר.
+   הספרייה: 20 המאצ׳ים האחרונים + השיא + כל מה שסומן ⭐. כל שידור מכווץ (16 ביט, הפרשים בין פריימים, דחיסה) —
+   בדפדפן במאגר המקומי (IndexedDB, אותו מסד של ה-CAD, מאגר ״replays״), באפליקציה בקובץ לכל נהג (replays.json, לא נכנס לסנכרון).
+   רק במכשיר; ייצוא לקובץ רק בלחיצה. המפתח: at של רשומת העונה. */
+function v74DrillRestoreMT(){ const s=DRILL.mt0; if(!s) return false; DRILL.mt0=null;
+  MT.cd=s.cd; MT.auto=s.auto; MT.trans=s.trans; MT.tele=s.tele; for(let i=0;i<PH.length&&i<s.ph.length;i++) PH[i][1]=s.ph[i]; return true; }
+/* T1: מאץ׳ שמתחיל באמצע תרגיל או אתגר — עוצרים בלי לרשום, ומחזירים את הברית של המשתמש */
+function v74DrillAbortForMatch(){
+  drillAbort(); DRILL.last=null; DRILL.lastK=null;
+  if(DRILL.allyBack!=null){ SETUP.ally=DRILL.allyBack; DRILL.allyBack=null; try{ setupSave(); }catch(e){} }
+  try{ refToast(T("התרגיל נעצר — מתחילים מאץ׳ (התרגיל לא נרשם)")); }catch(e){} }
+/* T8: ״ניסית תרגיל״ — רק אחרי תזוזה או יריה בתרגיל */
+const V74TKEY="bbDrillTried1";
+function v74TriedGet(){ let o=null; try{ o=JSON.parse(localStorage.getItem(V74TKEY)||"null"); }catch(e){ o=null; }
+  if(!o||typeof o!=="object"||Array.isArray(o)){ o={};   /* פעם ראשונה: מה שכבר נוסה לפני v74 נשאר */
+    for(const k in DRILL.N) if(DRILL.best[k]!=null||(Array.isArray(DRILL.hist[k])&&DRILL.hist[k].length)) o[k]=1;
+    try{ localStorage.setItem(V74TKEY,JSON.stringify(o)); }catch(e){} }
+  return o; }
+function v74Tried(k){ if(!DRILL.N[k]) return; const o=v74TriedGet(); if(o[k]) return; o[k]=1; try{ localStorage.setItem(V74TKEY,JSON.stringify(o)); }catch(e){} }
+/* בכל צעד סימולציה (גם בהרצה מהירה): הנהג הזיז את הרובוט? — אותו עטיפה כמו v70DrillStep */
+{ const f0=debriefTick; debriefTick=function(dt){ f0(dt); if(!DRILL.on||DRILL.act||(typeof GEN!=="undefined"&&GEN.running)||!botBody) return;
+  const w=bot.cmdW||{x:0,z:0}; if(!(MATCH.on&&MATCH.phase==="AUTO")&&Math.hypot(w.x,w.z)>0.05){ DRILL.act=true; return; }
+  const x=I(botBody.position.x), z=I(botBody.position.z); if(!DRILL.p0) DRILL.p0={x,z}; else if(Math.hypot(x-DRILL.p0.x,z-DRILL.p0.z)>6) DRILL.act=true; }; }   /* גם האוטונומי שלי שנסע */
+
+/* ── U6: קידוד שידור ── */
+const RPL={be:null, idx:new Map(), MAX:20, FMAX:13500, VMAX:13500*270, FILE_MAX:6e6, ver:0};
+const rpWrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+const rpCl=v=>Math.max(-32767,Math.min(32767,Math.round(isFinite(v)?v:0)));
+function rpQ(i,v){
+  if(i===0) return 0; if(i===1||i===2) return rpCl(v*30); if(i===4) return rpCl(v*100);
+  if(i===7||i===8) return rpCl(rpWrap(v)*10000); if(i<10) return rpCl(v);
+  if(i<30){ const j=(i-10)%5; return j<2?rpCl(v*100):j===2?rpCl(rpWrap(v)*10000):rpCl(v); }
+  return (i-30)%4<3?rpCl(v*100):rpCl(v); }
+function rpDQ(i,q){
+  if(i===0) return NET_MAGIC; if(i===1||i===2) return q/30; if(i===4) return q/100;
+  if(i===7||i===8) return q/10000; if(i<10) return q;
+  if(i<30){ const j=(i-10)%5; return j<2?q/100:j===2?q/10000:q; }
+  return (i-30)%4<3?q/100:q; }
+/* פריימים → בתים: 16 ביט, הפרש מהפריים הקודם באותו מקום, ושני מישורים (בתים נמוכים ואז גבוהים) — הדחיסה אוהבת אפסים */
+function rpEncode(F){
+  let nv=0; for(const f of F) nv+=30+Math.max(0,Math.min(60,f[9]|0))*4;
+  const d=new Uint16Array(nv), prev=new Int32Array(270), t0=F.length?F[0][1]:0; let p=0;
+  for(const f of F){ const n=Math.max(0,Math.min(60,f[9]|0)), L=30+n*4;
+    for(let i=0;i<L;i++){ const q=i===9?n:rpQ(i,i===1?f[1]-t0:f[i]); d[p++]=(q-prev[i])&0xffff; prev[i]=q; } }
+  const u=new Uint8Array(nv*2); for(let i=0;i<nv;i++){ u[i]=d[i]&255; u[nv+i]=d[i]>>8; }
+  return {u, nv, nf:F.length}; }
+function rpDecode(u,nv,nf){
+  if(!(u instanceof Uint8Array)||u.length!==nv*2||nf<2||nf>RPL.FMAX||nv>RPL.VMAX) return null;
+  const prev=new Int32Array(270), F=[]; let p=0;
+  const rd=()=>{ const v=u[p]|(u[nv+p]<<8); p++; return v; };
+  for(let k=0;k<nf;k++){
+    if(p+30>nv) return null;
+    const head=new Array(30);
+    for(let i=0;i<30;i++){ const q=((prev[i]+rd())<<16)>>16; prev[i]=q; head[i]=q; }
+    const n=head[9]; if(n<0||n>60||p+n*4>nv) return null;
+    const f=new Float32Array(30+n*4);
+    for(let i=0;i<30;i++) f[i]=rpDQ(i,head[i]);
+    for(let i=30;i<30+n*4;i++){ const q=((prev[i]+rd())<<16)>>16; prev[i]=q; f[i]=rpDQ(i,q); }
+    if(k&&f[2]+1e-6<F[k-1][2]) return null;   /* הזמן לא חוזר אחורה */
+    if(f[3]<0||f[3]>5) return null;
+    F.push(f); }
+  return p===nv?F:null; }
+async function rpZip(u){ if(typeof CompressionStream!=="function") return null;
+  try{ return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); }catch(e){ return null; } }
+/* פתיחה עם תקרה — קובץ דחוס זדוני לא מנפח את הזיכרון */
+async function rpUnzip(z,lim){ if(typeof DecompressionStream!=="function") return null;
+  try{ const rd=new Blob([z]).stream().pipeThrough(new DecompressionStream("deflate-raw")).getReader(); const parts=[]; let n=0;
+    for(;;){ const {done,value}=await rd.read(); if(done) break; n+=value.length; if(n>lim){ try{ rd.cancel(); }catch(e){} return null; } parts.push(value); }
+    const o=new Uint8Array(n); let p=0; for(const c of parts){ o.set(c,p); p+=c.length; } return o; }catch(e){ return null; } }
+const rpB64=u=>{ let s=""; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); };
+const rpUnB64=s=>{ try{ const b=atob(s), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }catch(e){ return null; } };
+/* בדיקה קפדנית — לרשומה מהמאגר, מהאפליקציה ומקובץ של חבר (כמו ghostClean) */
+const RPKINDS=["match","quick","split","net","drill","daily"];
+function rpEvClean(a){ if(!Array.isArray(a)||a.length>400) return null; const out=[];
+  for(const e of a){ if(!e||typeof e!=="object"||typeof e.k!=="string"||!RPK[e.k]||typeof e.t!=="number"||!isFinite(e.t)||e.t<0||e.t>1000) return null;
+    const x={t:+e.t.toFixed(2),k:e.k,txt:netStr(e.txt,120),f:Math.max(0,Math.min(RPL.FMAX,e.f|0))}; if(e.me===1) x.me=1; out.push(x); }
+  return out; }
+function rpMetaClean(o){
+  if(!o||typeof o!=="object") return null;
+  const num=v=>typeof v==="number"&&isFinite(v);
+  if(!num(o.at)||o.at<=0||o.at>4102444800000||!num(o.nf)||!num(o.nv)||o.nf<2||o.nf>RPL.FMAX||o.nv<60||o.nv>RPL.VMAX||(o.nf|0)!==o.nf||(o.nv|0)!==o.nv) return null;
+  if(o.z!==0&&o.z!==1) return null;
+  const ev=rpEvClean(o.ev||[]); if(!ev) return null;
+  const m={v:1, at:Math.round(o.at), nf:o.nf, nv:o.nv, z:o.z, ev, hz:o.hz===15?15:15,
+    my:num(o.my)?Math.round(Math.max(-9999,Math.min(9999,o.my))):0, opp:num(o.opp)?Math.round(Math.max(-9999,Math.min(9999,o.opp))):0,
+    ally:o.ally==="blue"?"blue":"red", kind:RPKINDS.indexOf(o.kind)>=0?o.kind:"match", star:o.star?1:0,
+    names:Array.isArray(o.names)?o.names.slice(0,3).map(n=>netStr(n,24)):[]};
+  m.win=m.my>m.opp?1:m.my<m.opp?-1:0;
+  return m; }
+async function rpFrames(m,u){ const raw=m.z?await rpUnzip(u,m.nv*2):u; if(!raw||raw.length!==m.nv*2) return null; return rpDecode(raw,m.nv,m.nf); }
+/* מה נשמר: 20 האחרונים, השיא (הכי הרבה נקודות), וכל מה שסומן */
+function rpKeep(list,max){ const s=list.slice().sort((a,b)=>a.at-b.at), keep=new Set(s.slice(-max).map(m=>m.at));
+  let best=null; for(const m of s){ if(m.star) keep.add(m.at); if(!best||m.my>best.my) best=m; } if(best) keep.add(best.at);
+  return {keep, best:best?best.at:null}; }
+
+/* ── שני מקומות שמירה: האפליקציה (קובץ לנהג) או הדפדפן (IndexedDB) ── */
+function rpIdbReq(mode,fn){ return idb().then(d=>new Promise((res,rej)=>{ const t=d.transaction("replays",mode), st=t.objectStore("replays"); let out;
+  const q=fn(st); if(q) q.onsuccess=()=>{ out=q.result; }; t.oncomplete=()=>res(out); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); })); }
+const RPBE_IDB={
+  list:async()=>{ const a=await rpIdbReq("readonly",st=>st.getAll()); return (a||[]).map(r=>rpMetaClean(r&&r.m)).filter(Boolean); },
+  get:async at=>{ const r=await rpIdbReq("readonly",st=>st.get(at)); const m=r&&rpMetaClean(r.m); return m&&r.d instanceof Uint8Array?{m,u:r.d}:null; },
+  put:async(m,u)=>{ await rpIdbReq("readwrite",st=>{ st.put({m,d:u},m.at); return null; });
+    const L=await RPBE_IDB.list(), {keep}=rpKeep(L,RPL.MAX), del=L.filter(x=>!keep.has(x.at)).map(x=>x.at);
+    if(del.length) await rpIdbReq("readwrite",st=>{ for(const k of del) st.delete(k); return null; }); return true; },
+  star:async(at,on)=>{ const r=await RPBE_IDB.get(at); if(!r) return false; r.m.star=on?1:0; await rpIdbReq("readwrite",st=>{ st.put({m:r.m,d:r.u},at); return null; }); return true; },
+  clear:async()=>{ await rpIdbReq("readwrite",st=>{ st.clear(); return null; }); return true; }};
+const RPBE_APP={
+  list:async()=>{ const a=await bbApp.replayList(); return (Array.isArray(a)?a:[]).map(rpMetaClean).filter(Boolean); },
+  get:async at=>{ const r=await bbApp.replayGet(at); const m=r&&rpMetaClean(r); const u=m&&typeof r.d==="string"?rpUnB64(r.d):null; return u?{m,u}:null; },
+  put:async(m,u)=>!!(await bbApp.replayPut(Object.assign({},m,{d:rpB64(u)}))),
+  star:async(at,on)=>!!(await bbApp.replayStar(at,!!on)),
+  clear:async()=>!!(await bbApp.replayClear())};
+function rpBe(){ if(RPL.be) return RPL.be;
+  RPL.be=(window.bbApp&&typeof bbApp.replayList==="function")?RPBE_APP:(typeof indexedDB!=="undefined"?RPBE_IDB:null); return RPL.be; }
+async function rpRefresh(){ const be=rpBe(); if(!be) return; try{ const L=await be.list(); RPL.idx=new Map(L.map(m=>[m.at,m])); RPL.best=rpKeep(L,RPL.MAX).best; }catch(e){}
+  RPL.ver++; try{ rpLibUI(); }catch(e){} try{ const sb=$("statsBox"); if(sb&&(sb.open||!$("playModal").hidden)) statUI(); }catch(e){} }
+/* שומר את השידור של המאץ׳ שנגמר עכשיו (נקרא מסוף המאץ׳) */
+async function rpSave(sm){
+  const be=rpBe(); if(!be||!sm||!REPLAY.frames.length) return false;
+  const e=rpEncode(REPLAY.frames), z=await rpZip(e.u);
+  const m=rpMetaClean({at:sm.at, nf:e.nf, nv:e.nv, z:z?1:0, ev:REPLAY.ev, hz:REPLAY.hz, my:sm.my, opp:sm.opp, ally:sm.ally, kind:sm.kind, names:(REPLAY.meta&&REPLAY.meta.names)||[]});
+  if(!m) return false; RPL.lastSize=(z||e.u).length;
+  try{ await be.put(m,z||e.u); }catch(err){ return false; }
+  await rpRefresh(); return true; }
+function v74rpAfterMatch(sm,ok){
+  const me=REPLAY.meta; if(!ok||!sm||!me||me.sAt) return;   /* שידור קצר מדי לא נכנס — REPLAY.frames הוא עדיין של המאץ׳ הקודם */
+  me.sAt=sm.at; if(DEB.report){ DEB.report.at=sm.at; try{ renderDebrief(); }catch(e){} }
+  if(sm.kind!=="drill"&&sm.kind!=="daily") rpSave(sm);   /* תרגילים לא נכנסים לספרייה (נשארים בשידור החוזר המיידי) */
+}
+/* טוען שידור מהספרייה לשידור החוזר (אם הוא לא כבר בזיכרון) */
+async function rpLoad(at){
+  if(REPLAY.meta&&REPLAY.meta.sAt===at&&REPLAY.frames.length) return true;
+  const be=rpBe(); if(!be) return false; const r=await be.get(at); if(!r) return false;
+  const F=await rpFrames(r.m,r.u); if(!F){ refToast(T("השידור השמור פגום — אי אפשר לנגן"),"block"); return false; }
+  rpUse(F,r.m); return true; }
+function rpUse(F,m){ if(REPLAY.on) replayClose();
+  REPLAY.frames=F; REPLAY.ev=m.ev.slice(); REPLAY.meta={ally:m.ally, at:m.at, names:m.names, sAt:m.at, file:!!m.file}; }
+function rpTitle(m){ return T("שידור חוזר")+" · "+statDate(m.at)+" · "+(m.my|0)+":"+(m.opp|0); }
+async function rpPlay(at,opt){ opt=opt||{};
+  if(MATCH.on||MATCH.cd>0){ refToast(T("השידור החוזר נפתח אחרי שהמאץ׳ נגמר"),"block"); return false; }
+  if(!(await rpLoad(at))){ refToast(T("השידור הזה כבר לא שמור"),"block"); return false; }
+  try{ playModalClose(); }catch(e){} if(V72T.card) V72T.card.gone=true; HUD.endGone=true;
+  const m=RPL.idx.get(at)||{at,my:0,opp:0};
+  return replayOpen(Object.assign({title:rpTitle(m)},opt)); }
+/* ״העבירות שלי״: 3 שניות לפני העבירה, המצלמה עוקבת אחרי הרובוט שלי */
+async function rpFoul(at,i){
+  if(!(await rpLoad(at))) return false;
+  const L=REPLAY.ev.filter(e=>e.k==="foul"&&e.me), e=L[i]; if(!e) return false;
+  try{ playModalClose(); }catch(err){} HUD.endGone=true;
+  return replayOpen({t:Math.max(0,e.t-3), follow:0, speed:1, title:T("עבירה")+" · "+e.txt}); }
+async function rpStar(at){ const be=rpBe(), m=RPL.idx.get(at); if(!be||!m) return false; await be.star(at,!m.star); await rpRefresh(); return true; }
+/* ייצוא לקובץ — אותה דרך כמו הרוח */
+async function rpExportText(at){
+  const be=rpBe(); const r=be&&await be.get(at); if(!r) return null;
+  const m=r.m; return JSON.stringify({bb:"replay",v:1,at:m.at,my:m.my,opp:m.opp,ally:m.ally,kind:m.kind,hz:m.hz,names:m.names,ev:m.ev,nf:m.nf,nv:m.nv,z:m.z,data:rpB64(r.u)}); }
+async function rpExport(at){ const txt=await rpExportText(at); if(!txt){ refToast(T("השידור הזה כבר לא שמור"),"block"); return null; }
+  const d=new Date(at), pad=x=>String(x).padStart(2,"0");
+  ghostSaveFile("biobuzz-replay-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes())+".json",txt); return txt; }
+/* ייבוא: בדיקה מלאה (כולל פענוח כל הפריימים) לפני שמשהו נטען. הקובץ מנוגן — לא נשמר בספרייה */
+async function rpParse(txt){
+  const bad={err:"⚠ זה לא קובץ שידור תקין"};
+  if(typeof txt!=="string") return bad; if(txt.length>RPL.FILE_MAX) return {err:"⚠ הקובץ גדול מדי בשביל שידור"};
+  let o=null; try{ o=JSON.parse(txt); }catch(e){ o=null; }
+  if(!o||typeof o!=="object"||Array.isArray(o)||o.bb!=="replay"||o.v!==1||typeof o.data!=="string"||o.d!==undefined) return bad;
+  const m=rpMetaClean(o); if(!m) return {err:"⚠ בקובץ יש ערכים לא תקינים"};
+  const u=rpUnB64(o.data); if(!u) return bad;
+  const F=await rpFrames(m,u); if(!F) return {err:"⚠ בקובץ יש ערכים לא תקינים"};
+  const T1=F[F.length-1][2]; if(m.ev.some(e=>e.t>T1+2)) return {err:"⚠ בקובץ יש ערכים לא תקינים"};
+  m.star=0; m.file=true; return {m,F}; }
+async function rpImportText(txt){ const r=await rpParse(txt);
+  if(r.err){ refToast(r.err,"block"); return false; }
+  if(MATCH.on||MATCH.cd>0){ refToast(T("השידור החוזר נפתח אחרי שהמאץ׳ נגמר"),"block"); return false; }
+  rpUse(r.F,r.m); try{ playModalClose(); }catch(e){} HUD.endGone=true;
+  return replayOpen({title:"📂 "+rpTitle(r.m)}); }
+/* ── U10 + U6 בתחקיר: גרף ניקוד, ״▶ צפה במאץ׳״ ו״העבירות שלי״ ── */
+function rpGraphSVG(F,ev,ally){
+  if(!F||F.length<4) return "";
+  const W=300,H=96,P=4, tMax=Math.max(1,F[F.length-1][2]);
+  let mx=1; for(const f of F) mx=Math.max(mx,f[5],f[6]);
+  const step=Math.max(1,Math.floor(F.length/240)), X=t=>(P+(W-2*P)*t/tMax).toFixed(1), Y=v=>(H-P-(H-2*P-10)*Math.max(0,v)/mx).toFixed(1);
+  const line=(i,col,w)=>{ const pts=[]; for(let k=0;k<F.length;k+=step) pts.push(X(F[k][2])+","+Y(F[k][i])); const l=F[F.length-1]; pts.push(X(l[2])+","+Y(l[i]));
+    return '<polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col+'" stroke-width="'+w+'" stroke-linejoin="round"/>'; };
+  const ae=(ev||[]).find(e=>e.k==="phase"&&/אוטונומי/.test(e.txt));
+  let h='<svg class="v74Graph" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+appEsc(T("הניקוד לאורך המאץ׳"))+'">';
+  h+='<line x1="'+P+'" y1="'+(H-P)+'" x2="'+(W-P)+'" y2="'+(H-P)+'" stroke="var(--line,#38434e)"/>';
+  if(ae) h+='<line x1="'+X(ae.t)+'" y1="'+P+'" x2="'+X(ae.t)+'" y2="'+(H-P)+'" stroke="#8798a8" stroke-dasharray="3 3"/>';
+  h+=line(5,"#f2545b",ally==="red"?2.6:1.4)+line(6,"#4c9af5",ally==="blue"?2.6:1.4);
+  for(const e of (ev||[])) if(e.k==="foul"&&e.me) h+='<path d="M'+X(e.t)+' '+(H-P)+'l-3 -6h6z" fill="#ffb020"><title>'+appEsc(e.t.toFixed(0)+" · "+e.txt)+'</title></path>';
+  return h+'</svg>'; }
+function v74rpDebriefHTML(r){
+  if(!r||!r.at) return "";
+  const mem=REPLAY.meta&&REPLAY.meta.sAt===r.at&&REPLAY.frames.length, lib=RPL.idx.has(r.at);
+  if(!mem&&!lib) return "";
+  const E=x=>appEsc(T(x));
+  let h='<div class="v74Deb"><div class="v74DebH">'+E("הניקוד לאורך המאץ׳")+' <button data-rpplay="'+r.at+'">▶ '+E("צפה במאץ׳")+'</button></div>';
+  if(mem){ h+=rpGraphSVG(REPLAY.frames,REPLAY.ev,REPLAY.meta.ally);
+    const L=REPLAY.ev.filter(e=>e.k==="foul"&&e.me);
+    h+='<div class="v74Fouls"><b>'+E("העבירות שלי")+'</b> '+(L.length?L.map((e,i)=>'<button data-rpfoul="'+r.at+'|'+i+'" title="'+appEsc(e.txt)+'">'+e.t.toFixed(0)+' '+E("שנ׳")+' · '+appEsc(e.txt.split(" · ")[0])+'</button>').join(""):'<span>'+E("אין — משחק נקי")+'</span>')+'</div>'; }
+  return h+'</div>'; }
+/* ▶ בשורה בעונה (״המשחקים האחרונים״) */
+function v74rpRowBtn(at){ return RPL.idx.has(at)?' <button class="v74Play" data-rpplay="'+at+'" title="'+appEsc(T("צפה במאץ׳"))+'">▶</button>':""; }
+function rpLibUI(){ const el=$("rpLib"); if(!el) return;
+  const L=[...RPL.idx.values()].sort((a,b)=>b.at-a.at), E=x=>appEsc(T(x));
+  if(!L.length){ el.innerHTML='<p class="note">'+E("עוד אין — כל מאץ׳ שמסתיים נשמר כאן (20 האחרונים, השיא, ומה שסימנתם ⭐)")+'</p>'; return; }
+  el.innerHTML='<table class="v74Lib">'+L.map(m=>'<tr><td>'+(m.at===RPL.best?"🏅 ":"")+(m.star?"⭐ ":"")+appEsc(statDate(m.at))+' · '+E(STKIND[m.kind]||"מאץ׳")+'</td><td class="n">'+(m.my|0)+':'+(m.opp|0)+'</td><td>'+
+    '<button data-rpplay="'+m.at+'" title="'+E("צפה במאץ׳")+'">▶</button><button data-rpstar="'+m.at+'" aria-pressed="'+(m.star?"true":"false")+'" title="'+E("שמור תמיד")+'">'+(m.star?"★":"☆")+'</button><button data-rpexp="'+m.at+'" title="'+E("ייצא לקובץ")+'">⇩</button></td></tr>').join("")+'</table>'; }
+document.addEventListener("click",e=>{ const t=e.target&&e.target.closest; if(!t) return;
+  const p=e.target.closest("[data-rpplay]"); if(p){ e.preventDefault(); rpPlay(+p.dataset.rpplay); return; }
+  const f=e.target.closest("[data-rpfoul]"); if(f){ e.preventDefault(); const [a,i]=f.dataset.rpfoul.split("|"); rpFoul(+a,+i); return; }
+  const s=e.target.closest("[data-rpstar]"); if(s){ e.preventDefault(); rpStar(+s.dataset.rpstar); return; }
+  const x=e.target.closest("[data-rpexp]"); if(x){ e.preventDefault(); rpExport(+x.dataset.rpexp); return; } });
+on($("bRpImp"),()=>{ const f=$("rpFile"); if(f){ f.value=""; f.click(); } });
+{ const f=$("rpFile"); if(f) f.addEventListener("change",()=>{ const x=f.files&&f.files[0]; if(!x) return;
+    if(x.size>RPL.FILE_MAX){ refToast("⚠ הקובץ גדול מדי בשביל שידור","block"); return; }
+    const r=new FileReader(); r.onload=()=>rpImportText(String(r.result||"")); r.readAsText(x); }); }
+/* ״אפס הכול״ מוחק גם את השידורים השמורים */
+{ const a=bkResetAll, b=bkResetAllFull;
+  bkResetAll=function(opt){ const n=a(opt); if(n>=0){ const be=rpBe(); if(be) be.clear().catch(()=>{}); } return n; };
+  bkResetAllFull=async function(opt){ const be=rpBe(); if(be) try{ await be.clear(); }catch(e){} return b(opt); }; }
+setTimeout(()=>{ rpRefresh(); },300);
+/* v74 training · ווים לבדיקות */
+{ const X={v74DrillRestoreMT,v74DrillAbortForMatch,v74TriedGet,v74Tried,RPL,rpEncode,rpDecode,rpZip,rpUnzip,rpB64,rpUnB64,rpMetaClean,rpEvClean,rpKeep,rpBe,rpRefresh,rpSave,rpLoad,rpPlay,rpFoul,rpStar,
+    rpExportText,rpExport,rpParse,rpImportText,rpGraphSVG,v74rpDebriefHTML,rpLibUI,RPBE_IDB,idb,quick:()=>{ const b=$("ppQuick"); if(b) b.click(); },
+    assistBest:()=>uAssist(assistBest), assistAutoFire:()=>uAssist(assistAutoFire), ASSIST, achLive, missionsBuild:()=>missionsBuild(), coachSummary:()=>coachSummary(), renderDebrief:()=>renderDebrief(),
+    setupApply:()=>setupApply(), MT, PH, SETUP, DAILY, GEN, REPLAY, DEB};
+  if(window.__sim) Object.assign(window.__sim,{v74training:X}); }
 /* v72 training · ווים לבדיקות */
 { const X={V72T,v72tCard,v72tCardOn,v72tCardOff,v72tAgain,v72tDebrief,v72tSlowest,v72tWatchCycle,v72tSessStart,v72tSessNext,v72tGoalNum,v72tOdoTiming,v72tOdoHTML,v72tOdoCal,
     v72tTeamCmp,v72tTeamDrills,statIsMatch,statList:()=>statList(),appTeamHTML:()=>appTeamHTML(),drillTick:()=>drillTick(),drillAbort,achData,odoLoad,odoUI,pathRun,ODO,PATH,REPLAY,DEB,HUD,
