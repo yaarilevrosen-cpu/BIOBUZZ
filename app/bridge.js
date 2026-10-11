@@ -122,7 +122,9 @@ const PAD_OLD = "<!doctype html><meta charset=utf-8><meta name=viewport content=
   "<p dir=ltr style='color:#95A5B4'>This phone-pad link is old or wrong. In the simulator, open the phone QR code and scan it again.</p>";
 /* הגבלות */
 const LIM = { failsPerIp: 8, failWindow: 5 * 60e3, lockMs: 5 * 60e3, failsGlobal: 60, lockGlobalMs: 2 * 60e3,
-  joinPerMin: 20, wsPerIp: 12, smallPayload: 64 * 1024, bigPayload: 4 * 1024 * 1024, pingMs: 20000 };
+  joinPerMin: 20, wsPerIp: 12, smallPayload: 64 * 1024, bigPayload: 4 * 1024 * 1024, pingMs: 20000,
+  /* v74 net: N2 — אורח שלא קורא לא צובר תמונות בלי סוף; N7 — דלי הודעות לכל אורח (טיפול בחיבור בלבד) */
+  snapBuf: 256e3, gRate: 60, gBurst: 120, gOverMs: 10000 };
 
 class Bridge {
   constructor(opt) {
@@ -170,10 +172,12 @@ class Bridge {
     this.lan = lanIps(); this.code = this.lan.length ? roomCode(this.lan[0], this.port, this.key) : "";
   }
   info() { return { t: "info", lan: this.lan, port: this.port, key: this.key, code: this.code }; }
-  /* v63: בלי קוד חדר ובלי שמות/כתובות של אורחים. כתובות הרשת — רק למחשב הזה (קוד ה-QR של הטלפון) */
-  health(local) {
+  /* v63: בלי קוד חדר ובלי שמות/כתובות של אורחים.
+     v74 net N1/P6: כתובות הרשת ומפתח השלט — רק למחשב הזה ורק עם האסימון (/sim, או preload באפליקציה דרך bridgeStatus).
+     אתר זר ב-iframe בארגז חול (Origin: null) לא מקבל אותם */
+  health(local, tok) {
     const o = { ok: true, app: true, port: this.port, host: !!this.host, sims: this.sims.size, pad: this.pads.size > 0, guests: this.guests.size };
-    if (local) { o.lan = this.lan; o.pk = this.padKey; }   /* 1.12.5: מפתח השלט — רק למחשב הזה (קוד ה-QR) */
+    if (local && tok) { o.lan = this.lan; o.pk = this.padKey; }
     return o;
   }
   status() { return { on: this.on, port: this.port, error: this.error, code: this.code, lan: this.lan, pad: this.pads.size > 0,
@@ -183,7 +187,7 @@ class Bridge {
   /* ── ניסיונות שגויים ── */
   locked(ip) {
     const now = Date.now();
-    if (this.gLock > now) return true;
+    if (this.gLock > now && this.fails.has(ip)) return true;   /* v74 net N6: רק כתובות שכבר טעו */
     const f = this.fails.get(ip); return !!(f && f.until > now);
   }
   fail(ip) {
@@ -234,6 +238,9 @@ class Bridge {
         if (!["pad", "sim", "host", "guest"].includes(role)) return deny(400, "Bad Request");
         const hh = splitHost(q.headers.host); if (!hh || !hostOk(hh.host)) return deny(403);
         if (!originOk(q.headers.origin, q.headers.host, role)) return deny(403);
+        /* v74 net N1/P6: שלט רק מדף השלט של הגשר (אותו Host) או מלקוח בלי Origin — לא מ-iframe בארגז חול ולא מקובץ */
+        const ol = q.headers.origin === undefined ? null : String(q.headers.origin).toLowerCase();
+        if (role === "pad" && ol !== null && (ol === "null" || ol.startsWith("file:"))) return deny(403);
         if ((role === "sim" || role === "host") && (!isLocal(peer) || !this.tokOk(u.searchParams.get("t")))) return deny(403);
         /* 1.12.5: טלפון מהרשת — רק עם המפתח מקוד ה-QR (בכבל USB הכתובת היא המחשב הזה) */
         if (role === "pad" && !this.isLocal(peer) && !this.padOk(u.searchParams.get("p"))) return deny(403);
@@ -246,6 +253,7 @@ class Bridge {
         wss.handleUpgrade(q, sock, head, ws => {
           ws.role = role; ws.addr = peer; ws.name = String(u.searchParams.get("n") || "אורח").replace(/[\u0000-\u001f<>]/g, "").slice(0, 20) || "אורח";
           ws.alive = true; ws.on("pong", () => { ws.alive = true; });
+          ws.tb = this.lim.gBurst; ws.tbT = Date.now(); ws.overT0 = 0; ws.overLast = 0;
           this.conns.set(peer, (this.conns.get(peer) || 0) + 1);
           this.add(ws);
           ws.on("message", (data, isBin) => this.route(ws, isBin ? 2 : 1, data));
@@ -281,9 +289,9 @@ class Bridge {
     let u; try { u = new URL(q.url, "http://x"); } catch (e) { return this.send(r, 400, "bad url"); }
     const p = u.pathname.replace(/\/+$/, "") || "/";
     if (p === "/health") {
-      /* הסימולטור שנפתח מקובץ (Origin: null) קורא כאן את כתובת הרשת בשביל קוד ה-QR — רק הוא מקבל CORS */
+      /* הסימולטור שנפתח מקובץ (Origin: null) מקבל CORS — אבל pk/lan רק עם האסימון (v74 net N1/P6) */
       const o = String(q.headers.origin || "").toLowerCase(), cors = o === "null" || o.startsWith("file:");
-      return this.send(r, 200, JSON.stringify(this.health(isLocal(peer))), "application/json", cors ? { "Access-Control-Allow-Origin": "null", "Vary": "Origin" } : { "Vary": "Origin" });
+      return this.send(r, 200, JSON.stringify(this.health(isLocal(peer), this.tokOk(u.searchParams.get("t")))),"application/json", cors ? { "Access-Control-Allow-Origin": "null", "Vary": "Origin" } : { "Vary": "Origin" });
     }
     if (p === "/" && !this.isLocal(peer) && !this.padOk(u.searchParams.get("p"))) return this.send(r, 403, PAD_OLD);
     if (p === "/") { let b = null; try { b = this.padBody || (this.padBody = fs.readFileSync(this.padPath)); } catch (e) {} return b ? this.send(r, 200, b) : this.send(r, 404, "pad not found"); }
@@ -328,7 +336,8 @@ class Bridge {
       else if (s.includes('"t":"q"')) this.sendTxt(ws, s.replace('"t":"q"', '"t":"qr"'));
     } else if (r === "host") {
       if (ws !== this.host) return;
-      if (op === 2) { for (const g of this.guests.values()) { try { if (g.readyState === 1) g.send(data, { binary: true }); } catch (e) {} } return; }
+      /* v74 net N2: אורח שלא קורא (bufferedAmount גבוה) — מדלגים על התמונה במקום לצבור בזיכרון */
+      if (op === 2) { for (const g of this.guests.values()) { try { if (g.readyState === 1 && g.bufferedAmount <= this.lim.snapBuf) g.send(data, { binary: true }); } catch (e) {} } return; }
       let m; try { m = JSON.parse(data.toString("utf8")); } catch (e) { return; }
       if (!m || typeof m !== "object" || Array.isArray(m)) return;
       if (m.t === "info") { this.sendTxt(ws, JSON.stringify(this.info())); return; }
@@ -339,10 +348,24 @@ class Bridge {
     } else if (r === "guest") {
       /* v63: מפענחים ובונים מחדש — אורח לא יכול להוסיף ״id״ משלו ולהתחזות לאורח אחר */
       if (op !== 1 || data.length > 2000) return;
+      const rk = this.rateOk(ws);   /* v74 net N7 */
+      if (rk === null) { this.log("bridge: guest flooding — disconnected"); try { ws.close(); } catch (e) {} return; }
+      if (!rk) return;
       let m; try { m = JSON.parse(data.toString("utf8")); } catch (e) { return; }
       if (!m || typeof m !== "object" || Array.isArray(m)) return;
       if (this.host) this.sendTxt(this.host, JSON.stringify({ t: "g", id: ws.id, m }));
     }
+  }
+  /* v74 net N7: דלי אסימונים לאורח — gRate הודעות בשנייה, עד gBurst ברצף. true = להעביר, false = לזרוק,
+     null = חורג כבר gOverMs ברצף → לנתק. טיפול בחיבור בלבד, בלי לוגיקת משחק */
+  rateOk(ws) {
+    const now = Date.now(), L = this.lim;
+    if (ws.tb === undefined) { ws.tb = L.gBurst; ws.tbT = now; ws.overT0 = 0; ws.overLast = 0; }
+    ws.tb = Math.min(L.gBurst, ws.tb + (now - ws.tbT) / 1000 * L.gRate); ws.tbT = now;
+    if (ws.tb >= 1) { ws.tb -= 1; if (ws.overT0 && now - ws.overLast > 1000) ws.overT0 = 0; return true; }
+    if (!ws.overT0 || now - ws.overLast > 1000) ws.overT0 = now;
+    ws.overLast = now;
+    return now - ws.overT0 >= L.gOverMs ? null : false;
   }
   /* טלפון בכבל: adb reverse לבד — רק כשצריך (הסימולטור מחובר לגשר או יש חדר) */
   adbWatch() { this.adbWanted = true; this.adbSync(); }
