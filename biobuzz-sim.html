@@ -5866,14 +5866,14 @@ const GAME={full:false, randomRoles:true, randAuto:true, ghost:true,
    קבוצה מנוסה לקבוצת שנה ראשונה: כמה מהר הם נוסעים, כמה זמן לוקח להם
    בין ירייה לירייה, וכמה מדויק הם מכוונים לפני שהם לוחצים. */
 const SKILL=[
-  /* vErr הוא שגיאת מהירות היציאה. קבוצת שנה ראשונה לא מודדת מרחק ולא
-     מייצבת סל״ד, ולכן כל ירייה יוצאת קצת אחרת — זה מה שבאמת מפספס,
-     הרבה יותר מזווית. אלופה מכיילת ומקבלת פיזור קטן. */
-  {k:0, name:"שנה ראשונה", v:0.45, cycle:2.9, tol:0.090, vErr:0.040, think:1.6},
-  {k:1, name:"ממוצעת",      v:0.80, cycle:1.50,tol:0.040, vErr:0.014, think:0.6},
+  /* v74 B5 (החלטת בעלים): כל הבוטים חכמים — אותה מהירות, אותו קצב ירי ואותו זמן חשיבה כמו הרמה העליונה.
+     הרמה משנה רק פיזור קטן ואנושי: שגיאת כיוון שיורית (tol) ושגיאת מהירות יציאה (vErr). השותף תמיד ברמה העליונה */
+  {k:0, name:"שנה ראשונה", v:1.00, cycle:0.95,tol:0.030, vErr:0.008, think:0.0},
+  {k:1, name:"ממוצעת",      v:1.00, cycle:0.95,tol:0.024, vErr:0.005, think:0.0},
   {k:2, name:"אלופה",       v:1.00, cycle:0.95,tol:0.018, vErr:0.003, think:0.0}
 ];
-const skill=()=>SKILL[GAME.skill]||SKILL[1];
+/* v74 B5: עם בוט — השותף שלי (הברית שלי) תמיד ברמה העליונה; היריבים לפי הבחירה */
+const skill=b=>(b&&b.ally&&typeof myAlly==="function"&&b.ally===myAlly())?SKILL[2]:(SKILL[GAME.skill]||SKILL[1]);
 
 function aiColors(ally,role){
   return ally==="red"
@@ -6294,7 +6294,8 @@ function aiDriveTo(b,gx,gz,dt,speedCap){
   } else if(gd>6){
     b.navStill=(b.navStill||0)+dt; b.stallT=(b.stallT||0)+dt;
   } else { b.navStill=0; }
-  if(b.navStill>1.0){ b.navStill=0; b.nav.path=null; b.nav.age=9; b.nav.old=0; }
+  if(b.navStill>1.0){ b.navStill=0; b.nav.path=null; b.nav.age=9; b.nav.old=0; v74rbYieldCheck(b,gx,gz); }
+  if(b.yieldT>0){ b.yieldT-=dt; aiDrive(b,b.yieldX,b.yieldZ,dt,0.8); b.navLen=Infinity; return Math.hypot(gx-px,gz-pz); }   /* v74 B7 */
   const aim=navAim(b.nav,px,pz,gx,gz,navClrBot(),navDyn(b.body),dt,12);
   if(aim){ b.navLen=aim.len; aiDrive(b,aim.x,aim.z,dt,speedCap); }
   else { b.navLen=Infinity; aiDrive(b,gx,gz,dt,speedCap); }  /* אין דרך — לפחות מתקדמים */
@@ -6317,12 +6318,14 @@ function aiDrive(b,tx,tz,dt,speedCap){
       dx+=M(ox/od*k); dz+=M(oz/od*k); }
   }
   const d=Math.hypot(dx,dz);
-  const sk=skill();
+  const sk=skill(b);
   let cap=Math.min(speedCap===undefined?AIC.vMax:speedCap,AIC.vMax)*sk.v;
   /* 1.12.5: ליד רגלי המסגרת נוסעים לאט (מתחת לסף 1.2 של G417) — חצי אלכסון (12″) ועוד מרחק בלימה */
   if(cap>1.1&&legDist(I(b.body.position.x),I(b.body.position.z))<16) cap=1.1;
+  /* v74 B3a: גם ליד מסילת המסגרת (לא רק ליד הרגל) — המגע נשרק עד 16″ מהרגל, והבוט מגיע אליו מהצד */
+  if(cap>1.1&&v74rbRailCap(b)) cap=1.1;
   /* האטה לקראת היעד — שורש של שתיים כפול תאוצה כפול מרחק */
-  const vWant=d<1e-4?0:Math.min(cap,Math.sqrt(2*AIC.aMax*d));
+  const vWant=I(d)<1.5?0:Math.min(cap,Math.sqrt(2*AIC.aMax*d));   /* v74 B9: אזור מת של 1.5″ — לא ״דוחפים״ יעד שבתוך מבנה */
   const wx=d<1e-4?0:dx/d*vWant, wz=d<1e-4?0:dz/d*vWant;
   b.ivx=wx; b.ivz=wz; b.ivSet=true;   /* v64: הכוונה — לשופט ולמוח */
   /* תקרת תאוצה — הרובוט לא מחליף כיוון בפריים אחד */
@@ -6419,7 +6422,7 @@ function aiFire(b,second){
   if(!v) return false;
   b.vSol=v;
   if(hood&&v>bldBotCap(b)*1.002) return false;
-  const sk=skill();
+  const sk=skill(b);
   if(sk.vErr) v*=1+(Math.random()*2-1)*sk.vErr;
   if(botFault(b,"launch")) v*=0.94;                                 /* v67: גלגל תנופה איטי */
   let shotDir=aiForward(b);
@@ -6520,7 +6523,7 @@ function aiScoreStep(b,dt){
   if(b.ph==="lift"){ bldBotLiftStep(b,dt); return; }
   if(b.ph==="seek"){
     /* זמן תגובה: נהג מנוסה כבר יודע לאן הוא נוסע, מתחיל מהסס */
-    if(b.t<skill().think){ b.vx*=0.9; b.vz*=0.9;
+    if(b.t<skill(b).think){ b.vx*=0.9; b.vz*=0.9;
       b.body.velocity.x=b.vx; b.body.velocity.z=b.vz; return; }
     const lo=!!BLD&&bldLiftOnly(b);
     if(b.clip.length&&(!lo||bldBotWantsLift(b))){ b.ph=BLD&&bldBotWantsLift(b)?"lift":"aim"; b.t=0; }
@@ -6538,7 +6541,8 @@ function aiScoreStep(b,dt){
        אותו מתחת לעצמו — במקום שהחרטום לא מגיע אליו, והוא נשאר שם. */
     const off=fl.loose?aiLooseOff(b,fl)
       :(ax?{x:-Math.sign(fl.x)*12.5,z:0}:{x:0,z:-Math.sign(fl.z)*12.5});
-    aiFace(b,fl.x,fl.z,dt);
+    if(!fl.loose&&Math.hypot(fl.x+off.x-I(b.body.position.x),fl.z+off.z-I(b.body.position.z))>22) v74rbSquare(b,dt);   /* v74 B1 */
+    else aiFace(b,fl.x,fl.z,dt);
     const had=b.clip.length;
     const d=aiDriveTo(b,fl.x+off.x,fl.z+off.z,dt);
     if(d<14) aiIntake(b,dt);
@@ -6573,7 +6577,9 @@ function aiScoreStep(b,dt){
     b.spotT=(b.spotT||0)+dt;
     /* הכוורת התהפכה — הפתח זז, והעמדה הישנה כבר לא מכוונת אליו. חוזרים
        להתיישר מהעמדה החדשה במקום לירות לריק. */
-    if(b.spot&&brainSpots(h).indexOf(b.spot)<0){ b.spot=null; if(b.ph==="fire"){ b.ph="aim"; b.t=0; } }
+    if(b.spot&&brainSpots(h).indexOf(b.spot)<0){ b.spot=null;
+      /* v74 B8: העמדה החדשה קרובה (פחות מ-10″) — נשארים בשלב הירי ומתיישרים תוך כדי, בלי לחזור ל-aim */
+      if(b.ph==="fire"){ const ns=brainPickSpot(b); if(ns&&Math.hypot(ns.x-I(b.body.position.x),ns.z-I(b.body.position.z))<10){ b.spot=ns; b.spotT=0; } else { b.ph="aim"; b.t=0; } } }
     if(!b.spot||(b.ph==="aim"&&b.spotT>1.2)){ b.spot=brainPickSpot(b); b.spotT=0; }
     if(b.spot){ sx=b.spot.x; sz=b.spot.z; }
   }
@@ -6581,28 +6587,29 @@ function aiScoreStep(b,dt){
     if(!b.clip.length){ b.ph="seek"; b.t=0; return; }
     if(BLD&&bldBot(b).shoot==="none"){ b.ph=bldBotWantsLift(b)?"lift":"seek"; b.t=0; return; }
     const d=aiDriveTo(b,sx,sz,dt);
-    const tl=BLD?bldBotTol(b,skill().tol):skill().tol;
-    const lp=aiLeadPt(b,f);                          /* v74 U2: מכוונים ״מוביל״ — מפצים על התנועה */
-    const e=d>22?(v74rbSquare(b,dt),9):aiFace(b,lp.x,lp.z,dt,tl);   /* v74 B1: רחוק מהעמדה — מיושרים לצירים */
+    const tl=BLD?bldBotTol(b,skill(b).tol):skill(b).tol;
     /* v66: רובוט אחר עומד ליד העמדה (ההתחמקות לא נותנת להגיע ל-5″) — יורים מקרוב אחרי 2 שנ׳, לא מחכים 11 */
     const crowd=b.t>2&&(d<10||brainRobots().some(r=>r.ref!==b&&r.ally===b.ally&&Math.hypot(I(r.body.position.x)-I(b.body.position.x),I(r.body.position.z)-I(b.body.position.z))<28));
+    const lp=aiLeadPt(b,f);                          /* v74 U2: מכוונים ״מוביל״ — מפצים על התנועה */
+    const e=d>22&&!crowd?(v74rbSquare(b,dt),9):aiFace(b,lp.x,lp.z,dt,tl);   /* v74 B1: רחוק מהעמדה — מיושרים לצירים, לא באלכסון */
     if(((d<5)||crowd)&&e<=tl||b.t>11){ b.ph="fire"; b.t=0; }
     return;
   }
   if(b.ph==="fire"){
     aiDrive(b,sx,sz,dt,0.35);
-    const tl=BLD?bldBotTol(b,skill().tol):skill().tol;
+    const tl=BLD?bldBotTol(b,skill(b).tol):skill(b).tol;
     const lp=aiLeadPt(b,f);                          /* v74 U2 */
     const he=aiFace(b,lp.x,lp.z,dt,tl);
     if(he>tl*2.2&&b.t<3) return;    /* התיישר קודם */
-    if(b.t>skill().cycle){
+    if(Math.abs(b.yawRate||0)>0.6&&b.t<3) return;   /* v74 R3: עדיין מסתובב — הכדור יורש את הסיבוב. מחכים שיתייצב */
+    if(b.t>skill(b).cycle){
       /* רובוט עומד בקו: ירייה עכשיו פוגעת בו. זזים לעמדה אחרת — אבל רק
          פעמיים ברצף, כדי שבולם צמוד לא ישתק אותו לגמרי. */
       if(BRAIN.on&&(b.relocN||0)<2&&brainLineBlocked(b)){
         b.relocN=(b.relocN||0)+1; b.relocs=(b.relocs||0)+1;
         b.spot=null; b.ph="aim"; b.t=0; return; }
       /* כוורת באמצע היפוך, או שהפתח שלה פונה מטה — כדור שיורים עכשיו נתקע בתא התחתון. מחכים. */
-      if(!aiHiveOk(aiHive(b))){ b.t=skill().cycle*0.6; b.hiveWaits=(b.hiveWaits||0)+1; return; }
+      if(!aiHiveOk(aiHive(b))){ b.t=skill(b).cycle*0.6; b.hiveWaits=(b.hiveWaits||0)+1; return; }
       b.t=0; b.relocN=0;
       if(!aiFire(b)||!b.clip.length){ b.ph="seek"; b.target=null; b.spot=null; } }
   }
@@ -6705,6 +6712,7 @@ function aiDefendStep(b,dt){
   /* אף פעם לא נוסעים לתוך היריב: היעד נדחף החוצה מרדיוס בטוח */
   const sx=tx-fx, sz=tz-fz, sd=Math.hypot(sx,sz);
   if(sd<AIC.W+3){ const k=(AIC.W+3)/Math.max(0.5,sd); tx=fx+sx*k; tz=fz+sz*k; }
+  { const q=v74rbDefFree(fx,fz,tx,tz); tx=q.x; tz=q.z; }   /* v74 B4: יעד בתוך מבנה חסום — התא הפנוי הראשון על הקו */
   aiDriveTo(b,tx,tz,dt,fsp>0.5?AIC.vMax:AIC.vMax*0.8);
   aiFace(b,fx,fz,dt);
 }
@@ -6738,7 +6746,7 @@ function aiStep(b,dt){
   b.t+=dt;
   /* v63: המהירות שהבוט באמת משיג כשהוא נוסע (אחרי מגעים ובלימות) — לתכנון זמן החניה */
   { const cmd=Math.hypot((b.ivx!=null?b.ivx:b.vx)||0,(b.ivz!=null?b.ivz:b.vz)||0);
-    if(cmd>0.6*AIC.vMax*skill().v){ const sp=Math.hypot(b.body.velocity.x,b.body.velocity.z);
+    if(cmd>0.6*AIC.vMax*skill(b).v){ const sp=Math.hypot(b.body.velocity.x,b.body.velocity.z);
       b.vMeas=b.vMeas==null?sp:b.vMeas*0.98+sp*0.02; } }
   if(MATCH.on&&MATCH.phase==="AUTO"&&!b.leaveDone){
     const gp=Math.min(HALF-Math.abs(I(b.body.position.x)),HALF-Math.abs(I(b.body.position.z)));
@@ -6750,7 +6758,9 @@ function aiStep(b,dt){
      נשארת המהירות המבוקשת כמו עד v63 — אחרת בוטים נתקעים על רגלי הכוורת ועל שותף בדרך לחניה */
   let v0x=b.vx||0, v0z=b.vz||0;
   if(b.brkSub||botPushedByHuman(b)){ v0x=b.body.velocity.x; v0z=b.body.velocity.z; b.vx=v0x; b.vz=v0z; }   /* 1.12.5: brkSub — כבר נבלם בתת־הצעדים */
-  b.ivSet=false; aiStepDrive(b,dt);
+  const y74=b.yaw;
+  b.ivSet=false; if(!(typeof v74rbNudge==="function"&&v74rbNudge(b,dt))) aiStepDrive(b,dt);   /* v74 B10 */
+  b.yawRate=dt>0?Math.atan2(Math.sin(b.yaw-y74),Math.cos(b.yaw-y74))/dt:0;   /* v74 R3: לירושת המהירות המשיקית */
   /* v70: באוטונומי קיר רך בקו האמצע (G402) — הניווט עוקף כוורת או שותף שחוסם, ולפעמים מהצד של היריב.
      המרכז לא עובר יותר מ-2″ לצד השני; רכיב המהירות לכיוון היריב מתאפס, הנסיעה לאורך הקו נשארת */
   if(MATCH.on&&MATCH.phase==="AUTO"){ const sg=b.ally==="red"?-1:1, xs=I(b.body.position.x)*sg;
@@ -6762,7 +6772,7 @@ function aiStep(b,dt){
   if(!b.ivSet){ b.ivx=b.vx; b.ivz=b.vz; }   /* הכוונה (מה שהבוט רצה) — לשופט: הצמדה נמדדת לפי כוונה, לא לפי מה שהמגע השאיר */
   botFaultTick(b,dt);
   if(botFault(b,"radio")){ b.vx=0; b.vz=0; }                       /* מקלט מנותק — עוצר */
-  if(botFault(b,"batt")){ const sp=Math.hypot(b.vx,b.vz), mx=AIC.vMax*skill().v*0.93;   /* 1.12.5: 93% מהמהירות של הבוט עצמו (כמו אצלי) — 85% מ-1.45 לא נגע ברמות 0/1 */ if(sp>mx){ b.vx*=mx/sp; b.vz*=mx/sp; } }
+  if(botFault(b,"batt")){ const sp=Math.hypot(b.vx,b.vz), mx=AIC.vMax*skill(b).v*0.93;   /* 1.12.5: 93% מהמהירות של הבוט עצמו (כמו אצלי) — 85% מ-1.45 לא נגע ברמות 0/1 */ if(sp>mx){ b.vx*=mx/sp; b.vz*=mx/sp; } }
   { const dx=b.vx-v0x, dz=b.vz-v0z, dm=Math.hypot(dx,dz), cap=AIC.aMax*dt*(botFault(b,"grip")?0.45:1);
     if(dm>cap){ b.vx=v0x+dx/dm*cap; b.vz=v0z+dz/dm*cap; }
     b.body.velocity.x=b.vx; b.body.velocity.z=b.vz; }
@@ -7164,13 +7174,16 @@ function brainParkDue(b,tLeft,dt){
   if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
   /* v63: לפי המהירות הנמדדת (לא הנומינלית), ועם מרווח — בוט שנתקע בדרך עדיין מגיע */
   /* כמו ב-v62 (המהירות הנומינלית). ניסיון לפי מהירות נמדדת ב-v63 הקדים יציאה לחניה במחשבים מהירים */
-  const vIn=AIC.vMax*skill().v/IN;
-  return tLeft<d/(vIn*0.45)+8.5+skill().think;   /* v65: מרווח 8.5 (היה 6) — מאז שבוטים נדחפים באמת (v64) הם מתעכבים זה על זה בדרך לחניה */
+  const vIn=AIC.vMax*skill(b).v/IN;
+  b.parkTrav=d/(vIn*0.45);                                                    /* v74 B6 */
+  return tLeft<d/(vIn*0.45)+8.5+skill(b).think;   /* v65: מרווח 8.5 (היה 6) — מאז שבוטים נדחפים באמת (v64) הם מתעכבים זה על זה בדרך לחניה */
 }
 function brainParkNow(b,dt){
   if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2) return false;
   if(b.parkGo) return true;
-  if(brainParkDue(b,tEnd()-MATCH.t,dt)){ b.parkGo=true; b.parkS=null; brainParkSpot(b); return true; }
+  if(brainParkDue(b,tEnd()-MATCH.t,dt)){
+    if(v74rbFinishClip(b,tEnd()-MATCH.t)) return false;   /* v74 B6: מסיימים את המחסנית כשיש זמן */
+    b.parkGo=true; b.parkS=null; brainParkSpot(b); return true; }
   return false;
 }
 function aiParkStep(b,dt){
@@ -7181,8 +7194,15 @@ function aiParkStep(b,dt){
   const d0=Math.hypot(s.x-px,s.z-pz);
   if(inZ&&(d0<6||(near&&d0<24))){ b.vx*=0.6; b.vz*=0.6; b.body.velocity.x=b.vx; b.body.velocity.z=b.vz; b.ivx=b.ivz=0; b.ivSet=true; b.stallT=0; b.ph="park"; return; }
   /* 1.12.5: תקוע בדרך יותר משנייה וחצי — היעד הזה חסום; בוחרים z אחר בפס לחמש שניות */
-  if((b.stallT||0)>1.5&&d0>6){ b.parkBlk={z:s.z,until:simT+5}; b.stallT=0; if(b.parkS&&b.parkS.free) b.parkS=null; s=brainParkSpot(b); }
-  const d=aiDriveTo(b,s.x,s.z,dt);
+  /* v74 B2: תקוע — קודם נסיגה קצרה הרחק מהמגע, ורק אז יעד אחר; תקוע שוב — מהצד השני של המכשול (נקודת ביניים) */
+  if(v74rbParkBack(b,dt)) return;
+  if((b.stallT||0)>1.5&&d0>6){ b.parkStall=(b.parkStall||0)+1; b.stallT=0;
+    if(b.parkStall===1){ v74rbParkBackStart(b); return; }
+    b.parkBlk={z:s.z,until:simT+5}; if(b.parkS&&b.parkS.free) b.parkS=null; s=brainParkSpot(b);
+    if(b.parkStall>=2){ const sg=b.ally==="red"?-1:1; b.parkWp={x:s.x-sg*20,z:s.z,until:simT+4}; } }
+  if(b.parkWp&&(simT>b.parkWp.until||Math.hypot(b.parkWp.x-px,b.parkWp.z-pz)<5)) b.parkWp=null;
+  v74rbSquare(b,dt);                                   /* v74 B1: נוסעים לחניה מיושרים לצירים */
+  const d=b.parkWp?(aiDriveTo(b,b.parkWp.x,b.parkWp.z,dt),Math.hypot(s.x-px,s.z-pz)):aiDriveTo(b,s.x,s.z,dt);
   /* 1.12.5: צמוד לרובוט אחר בדרך — לא דוחפים לתוכו: רכיב המהירות לכיוונו מתאפס והנסיעה ממשיכה לאורכו באותה מהירות */
   for(const r of brainRobots()){ if(r.ref===b) continue;
     const ox=I(r.body.position.x)-px, oz=I(r.body.position.z)-pz, hs=AIC.L/2+robHalf(r)+1.5;
@@ -8838,6 +8858,7 @@ function debriefFinish(total,opt){
   const rec={score:Math.round(total),bins:Object.assign({},DEB.bins),
              cycles:cyc.length,avgCycle:+avg.toFixed(2),when:Date.now(),
              shots:shots,hits:hits,cycD:DEB.cycD.slice()};
+  if(typeof v74rbParkDebrief==="function"){ const pk=v74rbParkDebrief(); if(pk) rec.park4=pk; }   /* v74 U4 */
   if(SEASON.lastPos&&SEASON.lastPos.length) rec.pos=SEASON.lastPos;   /* v70: ״איפה הייתי״ בתחקיר */
   DEB.report=rec; if(isDrill) rec.drill=1;
   if(!isDrill) try{ localStorage.setItem(DKEY,JSON.stringify(rec)); }catch(e){}
@@ -8861,7 +8882,7 @@ function renderDebrief(){
   el.innerHTML=
     row("ניקוד",r.score+" נק׳"+(prev?"  (קודם "+prev.score+")":""),
         prev&&r.score>prev.score?"ok":prev&&r.score<prev.score?"bad":"hl")+
-    row("פגיעות",r.hits+" מתוך "+r.shots+" יריות")+
+    row("פגיעות",r.hits+" מתוך "+r.shots+" יריות")+(r.park4||"")+
     row("זמן מחזור ממוצע",r.avgCycle?r.avgCycle+" שנ׳ · "+r.cycles+" מחזורים":"—",
         prev&&prev.avgCycle&&r.avgCycle<prev.avgCycle?"ok":"")+
     '<div class="dbwrap">'+DBINS.map(([k,n])=>bar(k,n)).join("")+'</div>'+debriefBestHTML(r)+debriefCycHTML(r)+debriefPosHTML(r);
@@ -9320,7 +9341,7 @@ function matchStart(){
   refReset();
   MATCH.startedAtWall=true; MATCH.locked=MT.cd>0;
   if(MT.cd<=0){ MATCH.on=true; MATCH.t=0; MATCH.phase=PH[matchPhase(0)][0]; }
-  ghostArm(); debriefReset(); teachReset(); cueReset(); sndCtx();
+  ghostArm(); debriefReset(); teachReset(); cueReset(); sndCtx(); if(typeof v74rbParkReset==="function") v74rbParkReset();
   if(typeof v74rbWarm==="function") v74rbWarm(MT.cd>0);   /* v74 R5: חימום מטמונים — בספירה, או מיד כשאין ספירה */
   refreshGamePanel(); updateMatch(0); showBanner();
 }
@@ -10235,6 +10256,7 @@ function shotHud(dt){
     if(!reach&&lock) h+='<span class="warn">'+T(sol==null?"לא מגיע לפתח מכאן":"רחוק מדי — התקרבו")+'</span>'+(sm?"":' · '+mode);
     else h+=(sm?"":T("מהירות")+' ')+'<b>'+fmt(P.vAvg,1)+'</b> '+T("מ׳/ש׳")+' · '+mode+(reach?"":' · <span class="warn">'+T("לא מגיע")+'</span>');
   } }catch(e){ h=""; }
+  if(typeof v74rbParkHud==="function") h+=v74rbParkHud();   /* v74 U4: זמן לחנות */
   if(h!==AUTOV.sig){ AUTOV.sig=h; el.innerHTML=h; el.dataset.mode=lock?"auto":"manual"; }
   if(!lock) autoVManUI();
 }
@@ -12588,7 +12610,7 @@ function stepSim(dt){
     if(autoTip){ if(hiveRed&&!hiveRed.tipping&&cellContents(hiveRed).mass*1000>=P.tipMass) tip(hiveRed);
                  if(hiveBlue&&!hiveBlue.tipping&&cellContents(hiveBlue).mass*1000>=P.tipMass) tip(hiveBlue); } }
   if(aimT>(fastMode?1.0:0.12)){aimT=0;refreshAim();}
-  shotHud(dt);
+  shotHud(dt); v74rbParkTick(dt);   /* v74 U4 */
 }
 /* ══════════════ איכות וקצב פריימים ══════════════
    המודל התלת־ממדי של הזירה הוא 1.35 מיליון משולשים מול 48 אלף של המודל
@@ -14074,6 +14096,7 @@ function seasonEnd(){
     auto:c.autoName, autoPts:c.autoPts==null?null:c.autoPts|0, shots:shots|0, hits:hits|0,
     fouls:REF.log.filter(e=>e.team==="me"&&(e.pts||e.card)).length, leave:!!MATCH.leave, park:!!MATCH.autoPark,
     faults:c.faults, sh:c.sh.map(q=>[q.p[0],q.p[1],q.e&&q.e.hit?1:0]), bl:c.bl,
+    pv:2,   /* v74 R3: גרסת פיזיקה — מ-2 הכדור יורש את מהירות הרובוט (ירי בתנועה פחות מדויק; לא נסיגה) */
     kind:(typeof DAILY!=="undefined"&&DAILY.on)?"daily":(typeof DRILL!=="undefined"&&DRILL.on)?"drill":SPLIT.on?"split":NET.mode==="host"?"net":(typeof PP!=="undefined"&&PP.last==="quick")?"quick":"match", skill:GAME.skill|0};
   /* זמן מחזור (איסוף → ירי) — כדי לראות שיפור לאורך העונה */
   { const cyc=(DEB.cyc||[]).filter(v=>v>0.35&&v<45); if(cyc.length){ m.cycles=cyc.length; m.avgCycle=+(cyc.reduce((x,y)=>x+y,0)/cyc.length).toFixed(2); } }
@@ -17596,6 +17619,9 @@ function coachSummary(){
     winRate:+(s.W/s.n).toFixed(2), wins:s.W, losses:s.L, ties:s.T, avgPoints:+s.avg.toFixed(1), oppAvgPoints:+s.oppAvg.toFixed(1), best:s.best.my,
     trend:{last10AvgPoints:s.last!=null?+s.last.toFixed(1):null, prev10AvgPoints:s.prev!=null?+s.prev.toFixed(1):null,
       last10Accuracy:coachAcc(last), prev10Accuracy:prev.length?coachAcc(prev):null,
+      /* v74: משחקים לפני pv:2 — הכדור לא ירש את מהירות הרובוט. ירידה בדיוק מול משחקים כאלה היא שינוי פיזיקה, לא נסיגה */
+      accuracyComparable:!(last.some(m=>(m.pv|0)>=2)&&prev.some(m=>(m.pv|0)<2)),
+      physicsNote:(last.some(m=>(m.pv|0)>=2)&&prev.some(m=>(m.pv|0)<2))?"Matches before physics v2 (pv<2) ignored robot velocity when shooting; an accuracy drop vs them is a physics change, not a regression.":null,
       last10CycleSec:coachAvg(last,"avgCycle"), prev10CycleSec:prev.length?coachAvg(prev,"avgCycle"):null},
     accuracy:s.acc!=null?+s.acc.toFixed(3):null, shotsPerMatch:+(s.shots/s.n).toFixed(1), avgCycleSec:coachAvg(l,"avgCycle"),
     autoAvgPoints:s.autoAvg!=null?+s.autoAvg.toFixed(1):null, leaveRate:+s.leave.toFixed(2), autoParkRate:+s.park.toFixed(2),
@@ -18641,6 +18667,7 @@ function bldBotLiftStep(b,dt){
   const ax=Math.abs(fl.x)>Math.abs(fl.z), off=ax?{x:-Math.sign(fl.x)*12.5,z:0}:{x:0,z:-Math.sign(fl.z)*12.5};
   aiFace(b,fl.x,fl.z,dt);
   const d=aiDriveTo(b,fl.x+off.x,fl.z+off.z,dt,0.9);
+  if(d<3.5){ b.vx*=0.5; b.vz*=0.5; b.body.velocity.x=b.vx; b.body.velocity.z=b.vz; b.ivx=0; b.ivz=0; b.ivSet=true; }   /* v74 B9: צמוד לפרח — בלי כוונת דחיפה */
   let e=Math.atan2(M(fl.x)-b.body.position.x,M(fl.z)-b.body.position.z)-b.yaw; e=Math.abs(Math.atan2(Math.sin(e),Math.cos(e)));
   /* פולן קודם; הנקטר של הברית אחרון — העליון קובע את הבעלות */
   let k=b.clip.indexOf("pollen"); if(k<0&&bldEndgame()) k=b.clip.indexOf(b.ally);
@@ -19380,7 +19407,7 @@ const PTNSTEP={
     if(!h||!b.clip.length){ if(st.n&&st.lastStep){ if(st.et==null) st.et=st.t; if(st.t-st.et<1.1){ ptnHalt(b); return {}; } } return {done:true}; }
     const f=mouthFrame(h); ptnHalt(b,0.6); const lp=aiLeadPt(b,f); const e=aiFace(b,lp.x,lp.z,dt);   /* v74 U2 */
     st.ft=(st.ft==null?9:st.ft)+dt;
-    if(e<Math.max(0.02,skill().tol)&&st.ft>skill().cycle&&aiHiveOk(h)){ if(aiFire(b)){ st.n=(st.n||0)+1; st.ft=0; } }
+    if(e<Math.max(0.02,skill(b).tol)&&st.ft>skill(b).cycle&&aiHiveOk(h)){ if(aiFire(b)){ st.n=(st.n||0)+1; st.ft=0; } }
     return st.t>6?{done:true}:{}; },
   fireRaw(b,s,st,dt){ st.ft=(st.ft==null?9:st.ft)+dt; st.n=st.n||0; ptnHalt(b);
     if(st.n>=(s.n||1)||!b.clip.length) return {done:true};
@@ -19406,7 +19433,7 @@ function ptnBotStep(b,dt){
   if(R.park&&!R.parking&&MATCH.on){ R.chk-=dt;
     if(R.chk<=0){ R.chk=0.5; const s=brainParkSpot(b), px=I(b.body.position.x), pz=I(b.body.position.z);
       let d=navDist(px,pz,s.x,s.z,navClrBot(),navDyn(b.body)); if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
-      if(tAuto()-MATCH.t<d/(I(AIC.vMax*skill().v)*0.45)+4.5){ R.parking=true; R.prog=R.prog.slice(0,R.i).concat([{k:"park"}]); R.st=null; } } }
+      if(tAuto()-MATCH.t<d/(I(AIC.vMax*skill(b).v)*0.45)+4.5){ R.parking=true; R.prog=R.prog.slice(0,R.i).concat([{k:"park"}]); R.st=null; } } }
   let guard=0;
   while(R.i<R.prog.length&&guard++<6){
     const s=R.prog[R.i];
@@ -19878,6 +19905,160 @@ document.addEventListener("click",e=>{ const a=e.target&&e.target.closest&&e.tar
   legalAboutUI(); legalAgeUI();
   setTimeout(()=>{ try{ legalNoteShow(false); }catch(e){} },1500); }
 Object.assign(window.__sim||{},{TEAM,teamSet,teamLabel,tourStart,tourEnd,TOUR,bugOpen,bugPayload,bugSend,BUG,langSet});
+/* ══════ v74 rulesbots — חוקים, בוטים, ירי בתנועה, זמן לחנות ══════ */
+/* R3/U2: מהירות הלוע (מ׳/ש׳) — מהירות השלדה ועוד הסיבוב כפול המרחק של הלוע ממרכז הרובוט */
+function myMuzzleVel(p){
+  if(!botBody) return {x:0,z:0};
+  const c=botBody.position, w=bot.yawRate||0, v=botBody.velocity;
+  return {x:v.x+w*(p.z-c.z), z:v.z-w*(p.x-c.x)};
+}
+function aiMuzzleVel(b,p){
+  if(!b||!b.body) return {x:0,z:0};
+  const c=b.body.position, w=b.yawRate||0, v=b.body.velocity;
+  return {x:v.x+w*(p.z-c.z), z:v.z-w*(p.x-c.x)};
+}
+/* נקודת כיוון ״מובילה״ (באינץ׳): לאן להפנות את המשגר כדי שהכדור — עם מהירות הלוע — ייסע אל הפתח */
+function v74rbLead(f,p,vb,vSol){
+  const mx=I(f.c.x), mz=I(f.c.z);
+  if(!vb||vb.x*vb.x+vb.z*vb.z<1e-4) return {x:mx,z:mz};
+  const dx=f.c.x-p.x, dz=f.c.z-p.z, L=Math.hypot(dx,dz); if(L<1e-6) return {x:mx,z:mz};
+  const a=P.angle*Math.PI/180, ks=Math.max(0,1-P.slip), v=vSol&&isFinite(vSol)?vSol:6;
+  const ld=leadDir({x:dx/L,z:dz/L},vb,v*ks*Math.cos(a));
+  return {x:I(p.x+ld.x*L), z:I(p.z+ld.z*L)};
+}
+/* נקודת הכיוון מובילה רק לפי מהירות השלדה (לא לפי הסיבוב): הסיבוב הוא תוצאה של הכיוון עצמו, וכיוון שתלוי בו
+   רודף את עצמו. בזמן הירייה הסיבוב כבר כמעט אפס — והפתרון (solveAvg) כולל את שניהם */
+function myLeadPt(f,p){ const v=AIMST.need||P.vAvg; return v74rbLead(f,p,{x:botBody.velocity.x,z:botBody.velocity.z},v); }
+function aiLeadPt(b,f){ const p=aiMuzzle(b); return v74rbLead(f,p,{x:b.body.velocity.x,z:b.body.velocity.z},b.vSol||6); }
+
+/* B1: בנסיעה (לא בכיוון לירי) — מסובבים את הבוט אל כפולה של 90° בקצב המרבי. רק לשלדה שזזה הצידה */
+function v74rbSquare(b,dt){
+  if(BLD&&!BLD_DRIVE[bldBot(b).drive].strafe) return;
+  const q=Math.round(b.yaw/(Math.PI/2))*(Math.PI/2);
+  const e=Math.atan2(Math.sin(q-b.yaw),Math.cos(q-b.yaw)), mr=AIC.wMax*dt;
+  b.yaw+=Math.max(-mr,Math.min(mr,e));
+}
+/* B3a: מרחק ממרכז הבוט לקטע של מסילת המסגרת (בין שתי הרגליים באותו צד). סף: חצי אלכסון + 2 + מרחק בלימה ≈ 21″ */
+function v74rbRailDist(x,z){
+  const L=frameLegs(); let d=1e9;
+  for(const [a,c] of [[L[0],L[1]],[L[2],L[3]]]){
+    const vx=c.x-a.x, vz=c.z-a.z, L2=vx*vx+vz*vz||1e-6, t=Math.max(0,Math.min(1,((x-a.x)*vx+(z-a.z)*vz)/L2));
+    d=Math.min(d,Math.hypot(x-a.x-vx*t,z-a.z-vz*t)); }
+  return d;
+}
+function v74rbRailCap(b){
+  const vb=1.45, thr=navClrBot()+I(vb*vb/(2*AIC.aMax))+1.5;   /* ≈ 21″ */
+  return v74rbRailDist(I(b.body.position.x),I(b.body.position.z))<thr;
+}
+/* B4: יעד הבולם בתוך האזור החסום של מבנה — זזים לאורך הקו מהיריב אל היעד, אל התא הפנוי האחרון לפני המבנה */
+function v74rbDefFree(fx,fz,tx,tz){
+  const g=navStatic(navClrBot()).g, n=NAV.n, free=(x,z)=>{ const i=navIx(x), j=navIx(z); return navIn(i)&&navIn(j)&&!g[j*n+i]; };
+  if(free(tx,tz)) return {x:tx,z:tz};
+  for(let k=0.95;k>=0.15;k-=0.05){ const x=fx+(tx-fx)*k, z=fz+(tz-fz)*k; if(free(x,z)) return {x,z}; }
+  const c=navNearestFree(g,navIx(tx),navIx(tz)); return c?{x:navXc(c[0]),z:navXc(c[1])}:{x:tx,z:tz};
+}
+/* B7: מבוי סתום — רובוט אחר צמוד לפני הכיוון. בעל העדיפות הנמוכה (יריב לפני שותף, ואז לפי הסדר ב-BOTS) זז 14″ לימינו */
+function v74rbPrio(b){ return (b.ally===myAlly()?10:0)-BOTS.indexOf(b); }
+function v74rbYieldCheck(b,gx,gz){
+  if(b.hum) return;
+  const px=I(b.body.position.x), pz=I(b.body.position.z), ux=gx-px, uz=gz-pz, ul=Math.hypot(ux,uz); if(ul<6) return;
+  for(const r of brainRobots()){ if(r.ref===b) continue;
+    const ox=I(r.body.position.x)-px, oz=I(r.body.position.z)-pz, od=Math.hypot(ox,oz);
+    if(od>AIC.L+3||(ox*ux+oz*uz)/(od*ul||1)<0.5) continue;
+    const o=r.ref, iYield=!o||v74rbPrio(b)<v74rbPrio(o);
+    if(!iYield) continue;
+    const rx=-uz/ul, rz=ux/ul;   /* ימין לכיוון הנסיעה (כמו rgv ב-aiIntake) */
+    b.yieldX=px+rx*14; b.yieldZ=pz+rz*14; b.yieldT=0.9; b.yields=(b.yields||0)+1; return; }
+}
+/* B2: נסיגה קצרה הרחק מהמגע (או אחורה) לפני בחירת יעד חניה אחר */
+function v74rbParkBackStart(b){
+  let nx=0,nz=0;
+  for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o||balls.some(q=>q.body===o)) continue;
+    nx+=b.body.position.x-o.position.x; nz+=b.body.position.z-o.position.z; }
+  let L=Math.hypot(nx,nz); if(L<1e-6){ const f=aiForward(b); nx=-f.x; nz=-f.z; L=1; }
+  b.parkBack={x:I(b.body.position.x)+nx/L*8, z:I(b.body.position.z)+nz/L*8, until:simT+0.6};
+  b.parkBacks=(b.parkBacks||0)+1; b.parkStallAt=simT;
+}
+function v74rbParkBack(b,dt){
+  if(b.parkStall&&simT-(b.parkStallAt||0)>8) b.parkStall=0;
+  const k=b.parkBack; if(!k) return false;
+  if(simT>k.until){ b.parkBack=null; b.stallT=0; return false; }
+  aiDrive(b,k.x,k.z,dt,0.9); b.ph="toPark"; return true;
+}
+/* B6: יש כדורים במחסנית, הבוט כבר ליד עמדת הירי, ויש זמן לסיים ולהגיע — מסיימים לפני החניה */
+function v74rbFinishClip(b,tLeft){
+  if(b.role!=="score"||!b.clip.length||b.hum||(b.ph!=="fire"&&b.ph!=="aim")||!b.spot) return false;
+  if(BLD&&bldBot(b).shoot==="none") return false;
+  if(Math.hypot(b.spot.x-I(b.body.position.x),b.spot.z-I(b.body.position.z))>10) return false;
+  const need=(b.parkTrav||20)+5+b.clip.length*skill(b).cycle+1;
+  if(tLeft>need){ b.finishN=(b.finishN||0)+1; return true; }
+  return false;
+}
+/* B10: בוט שעומד (ממתין) מעל 3 כדורים או יותר — זז 10″ לפני ש-G411 נקרא */
+function v74rbNudge(b,dt){
+  if(b.hum||!MATCH.on||MATCH.cd>0||MATCH.locked||MATCH.phase==="סיום") { b.nudge=null; return false; }
+  const n=b.nudge;
+  if(n){ if(simT>n.until){ b.nudge=null; return false; } aiDrive(b,n.x,n.z,dt,0.7); b.ph="מפנה"; return true; }
+  const S=RULE.st&&RULE.st[b.name]; if(!S||S.hoardT<2.5) return false;
+  const px=I(b.body.position.x), pz=I(b.body.position.z); let cx=0,cz=0,k=0;
+  for(const q of balls){ const x=I(q.body.position.x), z=I(q.body.position.z); if(Math.hypot(x-px,z-pz)<14&&I(q.body.position.y)<6){ cx+=x; cz+=z; k++; } }
+  if(k<3) return false;
+  let dx=px-cx/k, dz=pz-cz/k, L=Math.hypot(dx,dz); if(L<0.5){ const f=aiForward(b); dx=-f.x; dz=-f.z; L=1; }
+  if(b.ph==="park"){ dx=0; dz=Math.sign(pz-cz/k)||1; L=1; }    /* חונה — זזים רק לאורך האזור */
+  b.nudge={x:px+dx/L*10, z:pz+dz/L*10, until:simT+1.2}; b.nudges=(b.nudges||0)+1; S.hoardT=0;
+  return false;
+}
+/* R5: חימום מטמונים — המפה הסטטית ועמדות הירי — בספירה לאחור (פריט אחד בכל פריים), או מיד כשאין ספירה.
+   בנוסף: בצעדים הראשונים כל בוט מתכנן בצעד אחר */
+const V74W={q:[]};
+function v74rbWarm(hasCd){
+  V74W.q=[()=>navStatic(navClrBot()),()=>navStatic(navClrMe()),()=>brainSpots(hiveRed),()=>brainSpots(hiveBlue)];
+  BOTS.forEach((b,i)=>{ b.warmK=i; b.parkStall=0; b.parkBack=null; b.parkWp=null; b.nudge=null; b.yieldT=0; b.vSol=null; });
+  if(!hasCd) while(V74W.q.length) v74rbWarmTick();
+}
+function v74rbWarmTick(){ const f=V74W.q.shift(); if(f) try{ f(); }catch(e){} }
+
+/* U4: ״זמן לחנות״ לנהג האנושי */
+const PARK4={goIn:null,goT:null,leftT:null,cand:null,prevD:null,chk:0,inLZ:false,sig:"",line:""};
+function v74rbParkReset(){ Object.assign(PARK4,{goIn:null,goT:null,leftT:null,cand:null,prevD:null,chk:0,inLZ:false,line:""}); }
+function v74rbParkActive(){ return MATCH.on&&!MATCH.netMirror&&matchPhase(MATCH.t)===2&&!RUN.on&&!(typeof auto!=="undefined"&&auto)&&botBody; }
+function v74rbParkTick(dt){
+  if(!v74rbParkActive()){ if(!MATCH.on&&MATCH.phase!=="סיום") PARK4.goIn=null; return; }
+  PARK4.chk-=dt; if(PARK4.chk>0) return; PARK4.chk=0.25;
+  const tLeft=tEnd()-MATCH.t; if(tLeft>60) { PARK4.goIn=null; return; }
+  const s=runParkSpot(), px=I(botBody.position.x), pz=I(botBody.position.z);
+  let d=navDist(px,pz,s.x,s.z,navClrMe(),navDyn(botBody)); if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
+  const trav=M(d)/(Math.max(0.4,CH.vMaxFwd||1.5)*0.6)+3;
+  PARK4.goIn=tLeft-trav; PARK4.inLZ=myInLZ();
+  if(PARK4.goIn<=0&&PARK4.goT==null){ PARK4.goT=MATCH.t;
+    cue("parkGo",()=>{ beep(988,0.12); setTimeout(()=>beep(988,0.12),170); setTimeout(()=>say("Time to park"),420); });
+    try{ const L=navigator.getGamepads?navigator.getGamepads():[];
+      for(const g of L) if(g&&g.connected&&!padClaimed(g.index)){ padRumble(g,0.9,0.6,450); break; } }catch(e){} }
+  /* מתי באמת יצאתי: הרגע שממנו המרחק לחניה רק יורד, עד שנכנסתי לאזור */
+  if(PARK4.leftT==null){
+    if(PARK4.inLZ){ PARK4.leftT=PARK4.cand!=null?PARK4.cand:MATCH.t; }
+    else if(PARK4.prevD!=null&&d<PARK4.prevD-1){ if(PARK4.cand==null) PARK4.cand=MATCH.t; }
+    else if(PARK4.prevD!=null&&d>PARK4.prevD+1) PARK4.cand=null; }
+  PARK4.prevD=d;
+}
+function v74rbParkHud(){
+  if(!v74rbParkActive()||PARK4.goIn==null) return "";
+  if(PARK4.inLZ) return ' · <span class="pk4 ok">🅿 '+T("בחניה ✓")+'</span>';
+  if(PARK4.goIn>20) return "";
+  if(PARK4.goIn<=0) return ' · <span class="pk4 go">🅿 '+T("לחניה עכשיו!")+'</span>';
+  const n=Math.ceil(PARK4.goIn), cls=n<=3?"go":n<=10?"warn":"";
+  return ' · <span class="pk4 '+cls+'">🅿 '+T("לצאת לחניה בעוד")+' <b>'+n+'</b> '+T("שנ׳")+'</span>';
+}
+/* בתחקיר: יצאת מאוחר/מוקדם ביחס לזמן שחושב */
+function v74rbParkDebrief(){
+  if(PARK4.goT==null) return "";
+  if(PARK4.leftT==null) return row("יציאה לחניה","לא הגעת לחניה","bad");
+  const dl=PARK4.leftT-PARK4.goT;
+  if(Math.abs(dl)<1) return row("יציאה לחניה","יצאת בזמן","ok");
+  return dl>0?row("יציאה לחניה","יצאת לחניה "+dl.toFixed(1)+" שנ׳ מאוחר מדי","bad")
+             :row("יציאה לחניה","יצאת לחניה "+(-dl).toFixed(1)+" שנ׳ מוקדם","hl");
+}
+Object.assign(window.__sim||{},{v74rb:{myMuzzleVel,aiMuzzleVel,leadDir,myLeadPt,aiLeadPt,v74rbRailDist,v74rbDefFree,v74rbYieldCheck,v74rbFinishClip,PARK4,v74rbParkHud,v74rbParkDebrief,v74rbParkTick,BLDC,aiDrive,aiParkStep,aiDefendStep,aiScoreStep,brainParkNow,refCard}});
 requestAnimationFrame(frame);
 setTimeout(resize,60);
 if(PHONE) setTimeout(()=>{ if(!camTouched) fitView(); applyCam(); },420);
