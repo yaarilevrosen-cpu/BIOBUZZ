@@ -14938,7 +14938,9 @@ async function phoneFindUrl(){
     let j=null;
     if(window.bbApp&&bbApp.bridgeStatus){ const b=await bbApp.bridgeStatus(); if(!b||!b.on) throw new Error("off"); j={lan:b.lan,port:b.port,pk:b.pk}; }
     else { const tk=window.BB_TOK||"";   /* v74 net N1: הגשר נותן את מפתח השלט ואת כתובת הרשת רק עם האסימון של /sim */
-      const r=await fetch("http://localhost:"+VPAD.port+"/health"+(tk?"?t="+encodeURIComponent(tk):""),{cache:"no-store"}); j=await r.json();
+      /* דף שהגשר הגיש (/sim) — אותו מקור, בלי CORS (גם כשנפתח מ-127.0.0.1 ולא מ-localhost) */
+      const base=tk&&/^https?:$/.test(location.protocol)&&+location.port===+VPAD.port?location.origin:"http://localhost:"+VPAD.port;
+      const r=await fetch(base+"/health"+(tk?"?t="+encodeURIComponent(tk):""),{cache:"no-store"}); j=await r.json();
       if(j&&j.ok&&!j.lan&&!tk){ PHN.url=""; PHN.err=T("כדי לקבל קוד QR פתחו את הסימולטור מהגשר: ")+"http://localhost:"+VPAD.port+"/sim"; PHN.busy=false; phoneUI(); return ""; } }
     /* 1.12.5: מפתח השלט בתוך הקישור — בלעדיו טלפון ברשת לא נוהג (גשר ישן בלי מפתח — קישור כמו קודם) */
     if(j&&j.lan&&j.lan.length) PHN.url="http://"+j.lan[0]+":"+(j.port||VPAD.port)+"/"+(typeof j.pk==="string"&&/^[A-Za-z0-9_-]{16,64}$/.test(j.pk)?"?p="+j.pk:"");
@@ -19427,7 +19429,7 @@ function psShapeBuild(){
   oprBindsBuild();
 })();
 /* v74 net · ווים לבדיקות */
-{ const X={humDrives,netStations,netStOk,v74Throttle,v74SkinLater,v74HoldSeat,v74HoldTick,v74Reconnect,padShape,padFine,padYawReset,
+{ const X={humDrives,netLocalPads,splitSet,padStudioOpen,setOri,padClaimed,netStations,netStOk,v74Throttle,v74SkinLater,v74HoldSeat,v74HoldTick,v74Reconnect,padShape,padFine,padYawReset,
     oprSet,oprPoll,oprPickIdx,oprBindReset,oprBindsBuild,psShapeBuild,padToCmd,netPadSeat,netSeatGuest,netAutoSeat,netGuestCam,netRoom,
     OPR:()=>OPR,OPRB:()=>OPRB,PSH:()=>PSH,PADYAW:()=>PADYAW,PHN:()=>PHN,NET_HOLD_MS,netOnMsg,netRefresh,netSeatInfo,phoneFindUrl};
   if(window.__sim) Object.assign(window.__sim,{v74net:X}); }
