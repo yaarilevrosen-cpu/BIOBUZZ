@@ -9292,7 +9292,7 @@ function matchStart(){
   if(typeof GEN!=="undefined"&&GEN.running&&!GEN.inEval){ refToast("המחולל רץ — חכה שיסיים או עצור אותו","block"); return; }
   /* v70: תרגיל חופשי (דיוק, מרחוק, חניה, עמדות משתנות, סיבוב פרחים) לא ממשיך לתוך מאץ׳ — אחרת המאץ׳ נרשם כתרגיל */
   if(typeof DRILL!=="undefined"&&DRILL.on&&!GEN.running&&["acc","far","park","moveshoot","circuit"].includes(DRILL.on)){ DRILL.on=null; DRILL.daily=false; try{ v70DrillClear(); }catch(e){} }
-  else if(typeof DRILL!=="undefined"&&DRILL.on&&!DRILL.starting&&!GEN.inEval&&!GEN.running) v74DrillAbortForMatch();   /* v74 T1: כניסה ישירה (מקש, שידור) באמצע תרגיל עם שעון או אתגר */
+  else if(typeof DRILL!=="undefined"&&DRILL.on&&DRILL.mt0&&!DRILL.starting&&!GEN.inEval&&!GEN.running) v74DrillAbortForMatch();   /* v74 T1: כניסה ישירה (מקש, שידור) באמצע תרגיל עם שעון או אתגר */
   /* 1.12.5: אחרי תרגיל עם שעון (60 שנ׳ לבד, בלי בוטים) — המאץ׳ הבא חוזר להגדרות שלך, גם ממקש ״מאץ׳״ או מ״התחל מאץ׳ בשידור״ */
   if(typeof DRILL!=="undefined"&&!DRILL.on&&!GEN.running){ DRILL.daily=false;
     if(DRILL.applied&&NET.mode!=="guest"&&!matchStart._re){ DRILL.applied=false; matchStart._re=true; try{ setupApply(); } finally{ matchStart._re=false; } return; }
@@ -19228,7 +19228,7 @@ function v74Tried(k){ if(!DRILL.N[k]) return; const o=v74TriedGet(); if(o[k]) re
   const x=I(botBody.position.x), z=I(botBody.position.z); if(!DRILL.p0) DRILL.p0={x,z}; else if(Math.hypot(x-DRILL.p0.x,z-DRILL.p0.z)>6) DRILL.act=true; }; }   /* גם האוטונומי שלי שנסע */
 
 /* ── U6: קידוד שידור ── */
-const RPL={be:null, idx:new Map(), MAX:20, FMAX:13500, VMAX:13500*270, FILE_MAX:6e6, ver:0};
+var RPL={be:null, idx:new Map(),   /* var: statUI/renderDebrief רצים כבר בטעינה, לפני הקטע הזה */ MAX:20, FMAX:13500, VMAX:13500*270, FILE_MAX:6e6, ver:0};
 const rpWrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const rpCl=v=>Math.max(-32767,Math.min(32767,Math.round(isFinite(v)?v:0)));
 /* כיווץ: רובוטים בעשירית אינץ׳, כדורים בחצי אינץ׳, זוויות באלפית רדיאן, זמן בשלושים לשנייה */
@@ -19392,7 +19392,7 @@ function rpGraphSVG(F,ev,ally){
   for(const e of (ev||[])) if(e.k==="foul"&&e.me) h+='<path d="M'+X(e.t)+' '+(H-P)+'l-3 -6h6z" fill="#ffb020"><title>'+appEsc(e.t.toFixed(0)+" · "+e.txt)+'</title></path>';
   return h+'</svg>'; }
 function v74rpDebriefHTML(r){
-  if(!r||!r.at) return "";
+  if(!r||!r.at||!RPL) return "";
   const mem=REPLAY.meta&&REPLAY.meta.sAt===r.at&&REPLAY.frames.length, lib=RPL.idx.has(r.at);
   if(!mem&&!lib) return "";
   const E=x=>appEsc(T(x));
@@ -19402,8 +19402,8 @@ function v74rpDebriefHTML(r){
     h+='<div class="v74Fouls"><b>'+E("העבירות שלי")+'</b> '+(L.length?L.map((e,i)=>'<button data-rpfoul="'+r.at+'|'+i+'" title="'+appEsc(e.txt)+'">'+e.t.toFixed(0)+' '+E("שנ׳")+' · '+appEsc(e.txt.split(" · ")[0])+'</button>').join(""):'<span>'+E("אין — משחק נקי")+'</span>')+'</div>'; }
   return h+'</div>'; }
 /* ▶ בשורה בעונה (״המשחקים האחרונים״) */
-function v74rpRowBtn(at){ return RPL.idx.has(at)?' <button class="v74Play" data-rpplay="'+at+'" title="'+appEsc(T("צפה במאץ׳"))+'">▶</button>':""; }
-function rpLibUI(){ const el=$("rpLib"); if(!el) return;
+function v74rpRowBtn(at){ return RPL&&RPL.idx.has(at)?' <button class="v74Play" data-rpplay="'+at+'" title="'+appEsc(T("צפה במאץ׳"))+'">▶</button>':""; }
+function rpLibUI(){ const el=$("rpLib"); if(!el||!RPL) return;
   const L=[...RPL.idx.values()].sort((a,b)=>b.at-a.at), E=x=>appEsc(T(x));
   if(!L.length){ el.innerHTML='<p class="note">'+E("עוד אין — כל מאץ׳ שמסתיים נשמר כאן (20 האחרונים, השיא, ומה שסימנתם ⭐)")+'</p>'; return; }
   el.innerHTML='<table class="v74Lib">'+L.map(m=>'<tr><td>'+(m.at===RPL.best?"🏅 ":"")+(m.star?"⭐ ":"")+appEsc(statDate(m.at))+' · '+E(STKIND[m.kind]||"מאץ׳")+'</td><td class="n">'+(m.my|0)+':'+(m.opp|0)+'</td><td>'+
