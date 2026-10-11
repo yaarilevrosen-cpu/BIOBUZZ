@@ -31,6 +31,7 @@ ok(r.g1y===1,'קלט של אורח שיושב עדיין עובר (y='+r.g1y+')'
 ok(r.row,'אצל המארח הצופה מופיע ברשימת העמדות עם 👁');
 
 r=await E(()=>{ const S=window.S, out=window.__out; out.length=0;
+  S.netOnMsg(JSON.stringify({t:"g",id:"g2",m:{t:"bye"}}));            // v74 net: יציאה מכוונת — בלי 15 שנ׳ לחיבור חוזר
   S.netOnMsg(JSON.stringify({t:"gl",id:"g2"}));                       // עמדה 2 מתפנה
   const free=S.netFreeSeat();
   S.netOnMsg(JSON.stringify({t:"gj",id:"g5",name:"👁נועה"}));         // ביקשה לצפות — לא תופסת את העמדה הפנויה

@@ -13292,7 +13292,7 @@ function netClose(why){
   if(why&&NET.mode!=="solo") netFailToast(why);
   try{ if(SKIN.remote||Object.keys(SKIN.net).length){ SKIN.remote=null; SKIN.net={}; setTimeout(skinApplyAll,0); } }catch(e){}
   try{ bldNetReset(); }catch(e){}
-  if(NET.sock){ try{ NET.sock.onclose=null; NET.sock.close(); }catch(e){} }
+  if(NET.sock){ try{ if(NET.mode==="guest") netSend({t:"bye"}); NET.sock.onclose=null; NET.sock.close(); }catch(e){} }   /* v74: יציאה מכוונת — המארח לא שומר את העמדה */
   NET.sock=null;
   if(NET.rc&&NET.rc.t){ clearTimeout(NET.rc.t); } NET.rc=null; NET.st=null;   /* v74 */
   for(const b of BOTS) if(b.hum&&b.hum.src==="net") humFree(b);
@@ -13412,9 +13412,10 @@ function netFromGuest(id,m){
   else if(m.t==="want"){ const s=+m.seat;
     /* 1.12.5: בתחרות אין החלפת עמדה / ברית באמצע מאץ׳ (גם לא מעבר לצפייה ובחזרה) */
     if(netSeatLock()){ netSend({to:id,t:"nowant"}); return; }
-    if(!v74Throttle(id,"want",500)) return;   /* v74 net N7: לכל היותר פעם בחצי שנייה */
-    if(s===-1){ if(netSpecRoom(id)) netSpecGuest(id); }        /* v70: ״👁 צפייה״ — מפנה את העמדה */
-    else if(netSeatInfo(s).kind==="bot"||v74HeldFor(id,s)) netSeatGuest(id,s); }
+    /* v74 net N7: החלפת עמדה (שמאפסת זירה לפני מאץ׳) — לכל היותר פעם בחצי שנייה לאורח; בקשה שנדחית לא נספרת */
+    if(s===-1){ if(netSpecRoom(id)&&v74Throttle(id,"want",500)) netSpecGuest(id); }        /* v70: ״👁 צפייה״ — מפנה את העמדה */
+    else if((netSeatInfo(s).kind==="bot"||v74HeldFor(id,s))&&v74Throttle(id,"want",500)) netSeatGuest(id,s); }
+  else if(m.t==="bye"){ if(NET.guests[id]) NET.guests[id].bye=true; }   /* v74: יציאה מכוונת */
   else if(m.t==="ping"){ if(!v74Throttle(id,"ping",333)) return; if(NET.guests[id]) NET.guests[id].rtt=+m.rtt||0; netSend({to:id,t:"pong",c:m.c}); }
   else if(m.t==="skin") v74SkinLater(id,String(m.s||""));   /* v74 net N7: מאוחד, 300 מ״ש */
   else if(m.t==="build") try{ bldFromGuest(id,m.b); }catch(e){}
@@ -19288,6 +19289,7 @@ function v74SkinLater(id,sk){
 /* ── חיבור חוזר: המארח שומר 15 שנ׳ את העמדה של אורח שהחיבור שלו נפל ── */
 const NET_HOLD_MS=15000, NET_RC_TRIES=3, NET_RC_MS=1500;
 function v74HoldSeat(id){
+  if(NET.guests[id]&&NET.guests[id].bye){ netUnseat(id,true); return; }   /* יצא בכוונה — לא מחכים לו */
   let held=false;
   for(const b of BOTS) if(b.hum&&b.hum.src==="net"&&b.hum.id===id){ b.hum.gone=performance.now(); b.hum.id=null; held=true; }
   if(!held) netUnseat(id,true);

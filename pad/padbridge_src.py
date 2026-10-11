@@ -200,6 +200,8 @@ LIM = {"fails_per_ip": 8, "fail_window": 300, "lock": 300, "fails_global": 60, "
        # v74 net: תור יוצא לכל חיבור (N2) ודלי הודעות לכל אורח (N7) — טיפול בחיבור בלבד, בלי לוגיקת משחק
        "outq": 64, "g_rate": 60, "g_burst": 120, "g_over": 10}
 
+_CLOSE = object()                                     # v74 net: סימן ״לסגור אחרי מה שבתור״
+
 # ── WebSocket מינימלי (RFC 6455) ──
 class WS:
     def __init__(self, sock, role, addr):
@@ -222,13 +224,28 @@ class WS:
     def _writer(self):
         while True:
             item = self.q.get()
-            if item is None or not self.alive:
+            if item is None:
+                break
+            if item is _CLOSE:                        # סגירה מסודרת: כל מה שלפניה כבר נשלח (למשל kick / deny)
+                self.close()
                 break
             try:
                 self.sock.sendall(item)
             except Exception:
                 self.close()
                 break
+
+    def close_after(self):
+        """סוגר אחרי שההודעות שכבר בתור נשלחו (לקוח תקוע — נסגר בכל מקרה אחרי 2 שניות)"""
+        if not self.alive:
+            return
+        try:
+            self.q.put_nowait(_CLOSE)
+        except queue.Full:
+            return self.close()
+        t = threading.Timer(2.0, self.close)
+        t.daemon = True
+        t.start()
 
     def rate_ok(self):
         """v74 net N7: דלי אסימונים לאורח — 60 הודעות בשנייה, עד 120 ברצף. True = להעביר.
@@ -456,14 +473,14 @@ class Room:
                 old = self.host
                 self.host = ws
                 if old:
-                    old.close()
+                    old.close_after()
             elif ws.role == "guest":
                 self.n += 1
                 ws.id = "g%d" % self.n
                 self.guests[ws.id] = ws
         for o in olds:
             o.send('{"t":"kick"}')
-            o.close()
+            o.close_after()
         if ws.role == "pad":
             self.to_sims('{"t":"pad","on":true}')
             say("● טלפון התחבר (%s)" % ws.addr, "* phone connected (%s)" % ws.addr)
@@ -547,7 +564,7 @@ class Room:
                 g = self.guests[to]
                 g.send(s)
                 if m.get("t") == "deny":
-                    g.close()
+                    g.close_after()
         elif r == "guest":
             # v63: מפענחים ובונים מחדש — אורח לא יכול להוסיף ״id״ משלו ולהתחזות לאורח אחר
             if op != 1 or len(data) > 2000:

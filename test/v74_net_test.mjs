@@ -92,11 +92,14 @@ r=await E(()=>{ const S=__sim, X=S.v74net; S.gameStart(true); S.NET.mode='host';
   X.netOnMsg(JSON.stringify({t:'gj',id:'g3',name:'noa'})); const back=S.NET.guests.g3&&S.NET.guests.g3.seat;
   // תוקף
   X.netOnMsg(JSON.stringify({t:'gl',id:'g3'})); const b=S.v72netapp?S.BOTS[seat-1]:null; b.hum.gone=performance.now()-X.NET_HOLD_MS-10; X.v74HoldTick(); const freed=S.netSeatInfo(seat).kind;
+  S.NET.guests.g9={name:'zz',spec:false}; X.netSeatGuest('g9',seat); X.netOnMsg(JSON.stringify({t:'g',id:'g9',m:{t:'bye'}})); X.netOnMsg(JSON.stringify({t:'gl',id:'g9'}));
+  const byeFree=S.netSeatInfo(seat).kind;
   S.NET.sock=s0; S.NET.mode='solo'; S.NET.guests={}; for(const q of S.BOTS) S.humFree(q);
-  return {seat,held:held.kind,gone:held.gone,otherSeat,back,freed}; });
+  return {seat,held:held.kind,gone:held.gone,otherSeat,back,freed,byeFree}; });
 ok(r.held==='net'&&r.gone,'חיבור חוזר: אורח שיצא — העמדה שלו נשמרת ומסומנת');
 ok(r.otherSeat!==r.seat&&r.back===r.seat,'חיבור חוזר: אורח חדש לא מקבל אותה; אותו שם שחזר — מקבל אותה (עמדה '+r.back+')');
 ok(r.freed==='bot','חיבור חוזר: אחרי 15 שנ׳ העמדה חוזרת לבוט');
+ok(r.byeFree==='bot','חיבור חוזר: אורח שיצא בכוונה (״bye״) — העמדה מתפנה מיד');
 // U5 — עקומה אחת
 r=await E(()=>{ const S=__sim, X=S.v74net, P=X.PSH(); const o={};
   o.d0=X.padShape(0.1); o.lin=+X.padShape(0.56).toFixed(3);
