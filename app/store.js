@@ -68,6 +68,7 @@ function cleanName(n) { return String(n == null ? "" : n).replace(/[\u0000-\u001
 
 /* 1.13: שיאי תרגילים (רשומות {kind:"drill", drill, dv}) — לטבלת הקבוצה; גבוה טוב, חוץ מתרגילי זמן */
 const DRILL_LOWER = { speed: 1, park: 1, load: 1, circuit: 1 };
+const REPLAY_KEEP = 20, REPLAY_MAX = 3e6;   /* v74 U6 */
 function drillBests(l) {
   const o = {};
   for (const m of l) { if (!m || typeof m.drill !== "string" || !/^[a-z]{1,12}$/.test(m.drill) || typeof m.dv !== "number" || !isFinite(m.dv)) continue;
@@ -430,6 +431,32 @@ class Store {
     try { writeAtomic(this.mfile(id), lines ? lines + "\n" : ""); } catch (e) {}
   }
   summary(id) { return summarize(this.matches(id, { lite: true })); }
+  /* ── v74 U6: שידורים חוזרים — קובץ לכל נהג (replays.json), רק במחשב הזה: לא בסנכרון לענן ולא בגיבויים.
+     נשמרים 20 האחרונים + השיא + המסומנים ⭐. הדף כבר כיווץ ודחס; כאן רק בודקים צורה וגודל */
+  rfile(id) { return path.join(this.dir(id), "replays.json"); }
+  replayRead(id) { if (!validId(id)) return []; const a = readJSON(this.rfile(id), []); return Array.isArray(a) ? a.filter(Store.replayOk) : []; }
+  static replayOk(r) {
+    const num = v => typeof v === "number" && isFinite(v);
+    return !!(r && typeof r === "object" && !Array.isArray(r) && num(r.at) && r.at > 0 && r.at <= 4102444800000 && num(r.nf) && num(r.nv) && r.nf >= 2 && r.nf <= 13500 && r.nv >= 60 && r.nv <= 13500 * 270
+      && (r.z === 0 || r.z === 1) && Array.isArray(r.ev) && r.ev.length <= 400 && typeof r.d === "string" && r.d.length <= REPLAY_MAX && /^[A-Za-z0-9+/]*={0,2}$/.test(r.d));
+  }
+  replayOwn(pid) { return validId(pid) && this.meta.list.some(p => p.id === pid) ? pid : null; }
+  replayList(pid) { const id = this.replayOwn(pid); if (!id) return []; return this.replayRead(id).map(r => { const o = Object.assign({}, r); delete o.d; return o; }); }
+  replayGet(pid, at) { const id = this.replayOwn(pid); if (!id) return null; return this.replayRead(id).find(r => r.at === +at) || null; }
+  replayPut(pid, rec) {
+    const id = this.replayOwn(pid); if (!id || !Store.replayOk(rec)) return false;
+    const keys = ["at", "nf", "nv", "z", "ev", "hz", "my", "opp", "ally", "kind", "star", "names", "win", "v", "d"], r = {};
+    for (const k of keys) if (rec[k] !== undefined) r[k] = rec[k];
+    let L = this.replayRead(id).filter(x => x.at !== r.at); L.push(r); L.sort((a, b) => a.at - b.at);
+    const keep = new Set(L.slice(-REPLAY_KEEP).map(x => x.at)); let best = null;
+    for (const x of L) { if (x.star) keep.add(x.at); if (!best || (+x.my || 0) > (+best.my || 0)) best = x; }
+    if (best) keep.add(best.at);
+    L = L.filter(x => keep.has(x.at));
+    fs.mkdirSync(this.dir(id), { recursive: true }); writeAtomic(this.rfile(id), JSON.stringify(L)); return true;
+  }
+  replayStar(pid, at, on) { const id = this.replayOwn(pid); if (!id) return false; const L = this.replayRead(id), r = L.find(x => x.at === +at); if (!r) return false;
+    r.star = on ? 1 : 0; writeAtomic(this.rfile(id), JSON.stringify(L)); return true; }
+  replayClear(pid) { const id = this.replayOwn(pid); if (!id) return false; try { fs.rmSync(this.rfile(id), { force: true }); } catch (e) { return false; } return true; }
   /* טבלת הקבוצה: הנהגים במחשב הזה + (אם יש) הנהגים של חברי הקבוצה מהענן, לקריאה בלבד */
   team(remote) {
     const mine = this.vis().map(p => ({ id: p.id, name: p.name, emoji: p.emoji, color: p.color, active: p.id === this.meta.active, sum: this.summary(p.id) }));
@@ -459,7 +486,7 @@ class Store {
     const tmp = dst + ".part";
     try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
     fs.mkdirSync(tmp, { recursive: true });
-    fs.cpSync(path.join(this.root, "profiles"), path.join(tmp, "profiles"), { recursive: true });
+    fs.cpSync(path.join(this.root, "profiles"), path.join(tmp, "profiles"), { recursive: true, filter: src => path.basename(src) !== "replays.json" });   /* v74 U6: שידורים לא נכנסים לגיבויים */
     fs.copyFileSync(this.pfile, path.join(tmp, "profiles.json"));
     fs.renameSync(tmp, dst);
   }
