@@ -19231,40 +19231,39 @@ function v74Tried(k){ if(!DRILL.N[k]) return; const o=v74TriedGet(); if(o[k]) re
 const RPL={be:null, idx:new Map(), MAX:20, FMAX:13500, VMAX:13500*270, FILE_MAX:6e6, ver:0};
 const rpWrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const rpCl=v=>Math.max(-32767,Math.min(32767,Math.round(isFinite(v)?v:0)));
+/* כיווץ: רובוטים בעשירית אינץ׳, כדורים בחצי אינץ׳, זוויות באלפית רדיאן, זמן בשלושים לשנייה */
 function rpQ(i,v){
   if(i===0) return 0; if(i===1||i===2) return rpCl(v*30); if(i===4) return rpCl(v*100);
-  if(i===7||i===8) return rpCl(rpWrap(v)*10000); if(i<10) return rpCl(v);
-  if(i<30){ const j=(i-10)%5; return j<2?rpCl(v*100):j===2?rpCl(rpWrap(v)*10000):rpCl(v); }
-  return (i-30)%4<3?rpCl(v*100):rpCl(v); }
+  if(i===7||i===8) return rpCl(rpWrap(v)*1000); if(i<10) return rpCl(v);
+  if(i<30){ const j=(i-10)%5; return j<2?rpCl(v*10):j===2?rpCl(rpWrap(v)*1000):rpCl(v); }
+  return (i-30)%4<3?rpCl(v*2):rpCl(v); }   /* כדורים: חצי אינץ׳ (קוטר כדור ~5″) */
 function rpDQ(i,q){
   if(i===0) return NET_MAGIC; if(i===1||i===2) return q/30; if(i===4) return q/100;
-  if(i===7||i===8) return q/10000; if(i<10) return q;
-  if(i<30){ const j=(i-10)%5; return j<2?q/100:j===2?q/10000:q; }
-  return (i-30)%4<3?q/100:q; }
-/* פריימים → בתים: 16 ביט, הפרש מהפריים הקודם באותו מקום, ושני מישורים (בתים נמוכים ואז גבוהים) — הדחיסה אוהבת אפסים */
+  if(i===7||i===8) return q/1000; if(i<10) return q;
+  if(i<30){ const j=(i-10)%5; return j<2?q/10:j===2?q/1000:q; }
+  return (i-30)%4<3?q/2:q; }
+/* פריימים → בתים: 16 ביט, עמודה אחרי עמודה (כל השדה לאורך המאץ׳), הפרש מהפריים הקודם, ושני מישורים (בתים נמוכים ואז גבוהים) —
+   כדור שעומד במקום הוא שורה של אפסים, והדחיסה אוהבת את זה */
 function rpEncode(F){
-  let nv=0; for(const f of F) nv+=30+Math.max(0,Math.min(60,f[9]|0))*4;
-  const d=new Uint16Array(nv), prev=new Int32Array(270), t0=F.length?F[0][1]:0; let p=0;
-  for(const f of F){ const n=Math.max(0,Math.min(60,f[9]|0)), L=30+n*4;
-    for(let i=0;i<L;i++){ const q=i===9?n:rpQ(i,i===1?f[1]-t0:f[i]); d[p++]=(q-prev[i])&0xffff; prev[i]=q; } }
+  const nf=F.length, N=F.map(f=>Math.max(0,Math.min(60,f[9]|0))); let nv=0; for(const n of N) nv+=30+n*4;
+  const d=new Uint16Array(nv), t0=nf?F[0][1]:0; let p=0;
+  { let pv=0; for(let k=0;k<nf;k++){ d[p++]=(N[k]-pv)&0xffff; pv=N[k]; } }   /* קודם מספר הכדורים בכל פריים */
+  for(let i=0;i<270;i++){ if(i===9) continue;
+    let pv=0; for(let k=0;k<nf;k++){ if(i>=30+N[k]*4) continue; const f=F[k], q=rpQ(i,i===1?f[1]-t0:f[i]); d[p++]=(q-pv)&0xffff; pv=q; } }
   const u=new Uint8Array(nv*2); for(let i=0;i<nv;i++){ u[i]=d[i]&255; u[nv+i]=d[i]>>8; }
-  return {u, nv, nf:F.length}; }
+  return {u, nv, nf}; }
 function rpDecode(u,nv,nf){
-  if(!(u instanceof Uint8Array)||u.length!==nv*2||nf<2||nf>RPL.FMAX||nv>RPL.VMAX) return null;
-  const prev=new Int32Array(270), F=[]; let p=0;
-  const rd=()=>{ const v=u[p]|(u[nv+p]<<8); p++; return v; };
-  for(let k=0;k<nf;k++){
-    if(p+30>nv) return null;
-    const head=new Array(30);
-    for(let i=0;i<30;i++){ const q=((prev[i]+rd())<<16)>>16; prev[i]=q; head[i]=q; }
-    const n=head[9]; if(n<0||n>60||p+n*4>nv) return null;
-    const f=new Float32Array(30+n*4);
-    for(let i=0;i<30;i++) f[i]=rpDQ(i,head[i]);
-    for(let i=30;i<30+n*4;i++){ const q=((prev[i]+rd())<<16)>>16; prev[i]=q; f[i]=rpDQ(i,q); }
-    if(k&&f[2]+1e-6<F[k-1][2]) return null;   /* הזמן לא חוזר אחורה */
-    if(f[3]<0||f[3]>5) return null;
-    F.push(f); }
-  return p===nv?F:null; }
+  if(!(u instanceof Uint8Array)||u.length!==nv*2||nf<2||nf>RPL.FMAX||nv>RPL.VMAX||nv<nf*30) return null;
+  let p=0; const rd=()=>{ const v=u[p]|(u[nv+p]<<8); p++; return v; };
+  const N=new Array(nf); let tot=0, pv=0;
+  for(let k=0;k<nf;k++){ pv=(pv+rd())&0xffff; const n=(pv<<16)>>16; if(n<0||n>60) return null; N[k]=n; tot+=30+n*4; }
+  if(tot!==nv) return null;
+  const F=N.map(n=>new Float32Array(30+n*4));
+  for(let i=0;i<270;i++){ if(i===9){ for(let k=0;k<nf;k++) F[k][9]=N[k]; continue; }
+    let q=0; for(let k=0;k<nf;k++){ if(i>=30+N[k]*4) continue; q=(q+rd())&0xffff; F[k][i]=rpDQ(i,(q<<16)>>16); } }
+  if(p!==nv) return null;
+  for(let k=0;k<nf;k++){ const f=F[k]; if(f[3]<0||f[3]>5) return null; if(k&&f[2]+1e-6<F[k-1][2]) return null; }   /* הזמן לא חוזר אחורה */
+  return F; }
 async function rpZip(u){ if(typeof CompressionStream!=="function") return null;
   try{ return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); }catch(e){ return null; } }
 /* פתיחה עם תקרה — קובץ דחוס זדוני לא מנפח את הזיכרון */
