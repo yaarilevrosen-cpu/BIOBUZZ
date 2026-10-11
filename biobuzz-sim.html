@@ -6684,7 +6684,7 @@ function aiDefendStep(b,dt){
   /* במה הוא עסוק? אם המחסנית שלו מלאה הוא הולך לירות — נחסום את הקו.
      אם היא ריקה הוא הולך לטעון — נשמור על הפרח. */
   const loaded=F.clip>0;
-  let tx,tz;
+  let tx,tz, ox74=fx, oz74=fz;   /* v74 B4: מוצא הקו שעליו היעד (היריב, או העמדה שלמדנו) */
   if(loaded&&foeHive){
     const mf=mouthFrame(foeHive);
     const pre=aiPredict(foe,0.45);
@@ -6694,7 +6694,7 @@ function aiDefendStep(b,dt){
     if(Lr&&Math.hypot(Lr.x-pre.x,Lr.z-pre.z)>20){
       const ux=I(mf.c.x)-Lr.x, uz=I(mf.c.z)-Lr.z, L2=Math.max(1,Math.hypot(ux,uz));
       const keep=Math.min(L2*0.5,26);
-      tx=Lr.x+ux/L2*keep; tz=Lr.z+uz/L2*keep;
+      tx=Lr.x+ux/L2*keep; tz=Lr.z+uz/L2*keep; ox74=Lr.x; oz74=Lr.z;
       b.ph="lane"; b.learnT=(b.learnT||0)+dt;
     } else {
       const ux=I(mf.c.x)-pre.x, uz=I(mf.c.z)-pre.z;
@@ -6722,7 +6722,7 @@ function aiDefendStep(b,dt){
   /* אף פעם לא נוסעים לתוך היריב: היעד נדחף החוצה מרדיוס בטוח */
   const sx=tx-fx, sz=tz-fz, sd=Math.hypot(sx,sz);
   if(sd<AIC.W+3){ const k=(AIC.W+3)/Math.max(0.5,sd); tx=fx+sx*k; tz=fz+sz*k; }
-  { const q=v74rbDefFree(fx,fz,tx,tz); tx=q.x; tz=q.z; }   /* v74 B4: יעד בתוך מבנה חסום — התא הפנוי הראשון על הקו */
+  { const q=v74rbDefFree(ox74,oz74,tx,tz); tx=q.x; tz=q.z; }   /* v74 B4: יעד בתוך מבנה חסום — התא הפנוי הראשון על הקו */
   aiDriveTo(b,tx,tz,dt,fsp>0.5?AIC.vMax:AIC.vMax*0.8);
   aiFace(b,fx,fz,dt);
 }
