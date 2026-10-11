@@ -2370,6 +2370,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="row"><button id="bFire">ירה</button><button id="bSolveDiff">פתור גם הפרש</button></div>
         <div class="row"><button id="bTable">בנה טבלת הפעלה</button></div>
         <div class="out" id="oTable"></div>
+        <div class="row"><label class="lbl" for="ltTpr">פעימות לסיבוב</label><input id="ltTpr" type="number" value="28" min="1" max="100000" step="1" inputmode="decimal" style="width:90px"><button id="bLaunchTbl">📋 ייצוא טבלת ירי</button></div>
+        <textarea id="ltOut" rows="6" spellcheck="false" hidden style="width:100%;font-family:var(--mono);font-size:10px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:6px;direction:ltr;text-align:left;resize:vertical"></textarea>
               <details class="sub"><summary>מנוע וגלגל תנופה</summary><div class="body">
         <label class="p" style="grid-template-columns:1fr"><span>מנוע משגר מהקטלוג</span></label>
         <select id="selMotor" class="sel"></select>
@@ -2456,6 +2458,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
             <label for="rrcW">maxAngVel <small>°/s</small></label><input id="rrcW" data-rrc="maxAngVel" type="number" step="5" inputmode="decimal">
             <label for="rrcWA">maxAngAccel <small>°/s²</small></label><input id="rrcWA" data-rrc="maxAngAccel" type="number" step="5" inputmode="decimal">
           </div>
+          <label class="check" for="kRrPace"><input type="checkbox" id="kRrPace" checked>נסיעה במגבלות RoadRunner (מסלול, מחולל, מתכנן, שותף וכרטיס לבור)</label>
           <p class="note">מההגדרות של MecanumDrive אצלכם. משמשות להערכת הזמן של RR (פרופיל טרפז על הקטעים המיוצאים), לזמן הפנוי במחולל ובמתכנן, ונכתבות בראש הקוד.</p>
         </details>
         <div class="row"><button id="bPathJava">ייצא קוד ג׳אווה</button><button id="bPathCopy">העתק</button></div>
@@ -2510,6 +2513,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="row"><label class="lbl" for="liveIp">כתובת</label><input id="liveIp" value="192.168.43.1" dir="ltr" style="flex:1"><label class="lbl" for="livePort">פורט</label><input id="livePort" type="number" value="8000" min="1" max="65535" style="width:80px"></div>
         <div class="row"><button id="bLiveConn">התחבר לרובוט</button><button id="bLiveRec" disabled>⏺ הקלט ריצה</button><button id="bLiveClr">נקה שובל</button></div>
         <label class="check" for="kLiveTrail"><input type="checkbox" id="kLiveTrail" checked>להראות את השובל של הרובוט האמיתי</label>
+        <div class="row"><label class="lbl" for="liveAng">כיוון</label><select id="liveAng" class="sel" style="flex:1"><option value="auto">לזהות לבד</option><option value="rad">רדיאנים</option><option value="deg">מעלות</option></select></div>
         <p class="note"><b>איך:</b> מחברים את המחשב לרשת האלחוטית של ה-Control Hub, מריצים אופמוד, ולוחצים ״התחבר״. הרובוט האמיתי (בתכלת) זז על הזירה ליד הסימולציה. המיקום נלקח מהטלמטריה — מפתחות <code>x</code>, <code>y</code>, <code>heading</code> (כמו ב-LocalizationTest של RoadRunner) — או מציור הרובוט של RoadRunner בדשבורד. ״הקלט ריצה״ ← ״עצור והשווה״ מעביר את הריצה ליומן למטה, מול המסלול שבעורך.</p>
       </div></details>
 
@@ -5011,7 +5015,28 @@ function runVec(ux,uz,v){
 }
 /* מהירות מותרת לפי מה שנשאר — פרופיל עצירה אמיתי */
 function runVmax(remainIn,scale){
-  return Math.min(P.speed*(scale||1),Math.sqrt(2*Math.max(0.5,P.speed*1.6)*M(Math.max(0,remainIn))));
+  const v=Math.min(P.speed*(scale||1),Math.sqrt(2*Math.max(0.5,P.speed*1.6)*M(Math.max(0,remainIn))));
+  /* v74 auto (U1): בקצב של RoadRunner — maxWheelVel ופרופיל ההאטה (minProfileAccel) */
+  if(runPaceOn()) return Math.min(v,M(RRC.maxWheelVel)*(scale||1)*(GEN.pertSpd||1),Math.sqrt(2*M(-RRC.minProfileAccel)*M(Math.max(0,remainIn))));
+  return v;
+}
+/* v74 auto (U1): נסיעה אוטונומית בקצב של RR — לא בהרצת ״מה שהוקלט״ (שם הקצב הוא של הנהג) */
+function runPaceOn(){ return typeof RRC!=="undefined"&&RRC.pace!==0&&RUN.on&&RUN.src!=="teach"; }
+/* תאוצה עד maxProfileAccel ופנייה עד maxAngVel (ותאוצה זוויתית maxAngAccel) — על הפקודה שיוצאת לשלדה */
+function runPaceCmd(c,dt,s){
+  if(!c||!runPaceOn()) { RUN.vCmd=null; return c; }
+  const se=Math.max(0.05,P.strafeEff||1), v=P.speed*Math.hypot(c.f||0,(c.r||0)/se);
+  if(s&&s.k==="intake"){ RUN.vCmd=v; return c; }   /* זחילת האיסוף — כמו בייצוא (pathIntakeCreep) */
+  const vPrev=RUN.vCmd==null?I(Math.hypot(botBody.velocity.x,botBody.velocity.z))*IN:RUN.vCmd, vMax=vPrev+M(RRC.maxProfileAccel)*dt;
+  if(v>vMax&&v>1e-6){ const k=vMax/v; c={f:c.f*k,r:c.r*k,turn:c.turn,tank:c.tank,spin:c.spin}; RUN.vCmd=vMax; } else RUN.vCmd=v;
+  const kw=Math.min(1,RRC.maxAngVel/Math.max(1,P.turn)), wPrev=RUN.wCmd==null?0:RUN.wCmd, dw=RRC.maxAngAccel/Math.max(1,P.turn)*dt;
+  let t=Math.max(-kw,Math.min(kw,c.turn||0));
+  /* רק ההאצה מוגבלת (כמו פרופיל): עצירה של הסיבוב מיידית — אחרת הכיוון מתנדנד סביב היעד */
+  if(Math.abs(t)>Math.abs(wPrev)&&Math.sign(t)===Math.sign(wPrev||t)) t=Math.sign(t)*Math.min(Math.abs(t),Math.abs(wPrev)+dw);
+  else if(Math.sign(t)!==Math.sign(wPrev)&&wPrev) t=Math.sign(t)*Math.min(Math.abs(t),dw);
+  RUN.wCmd=t;
+  if(t!==c.turn) c=Object.assign({},c,{turn:t});
+  return c;
 }
 function runStart(prog,src,opt){
   opt=opt||{};
@@ -5020,6 +5045,7 @@ function runStart(prog,src,opt){
   RUN.err=0; RUN.res=null; RUN.parkGuard=!!opt.park; RUN.parking=false; RUN.parkS=null; RUN.limit=opt.limit||0;
   RUN.chk=0; RUN.shots0=shots; RUN.hits0=hits; RUN.why=""; RUN.trail=[];
   RUN.shotPoses=[]; RUN.sig=opt.sig||null;   /* 1.13 (U1): איפה הרובוט באמת ירה, ולאיזה מסלול זה שייך */
+  RUN.vCmd=null; RUN.wCmd=null;   /* v74 auto (U1) */
   auto=RUN; runUI();
 }
 function runStop(why,done){
@@ -5099,7 +5125,7 @@ function runCmd(dt){
     }
     if(out.fail){ runStop(out.fail,false); return {f:0,r:0,turn:0}; }
     if(out.done){ RUN.i++; RUN.st=null; continue; }
-    return out.cmd||{f:0,r:0,turn:0};
+    return runPaceCmd(out.cmd||{f:0,r:0,turn:0},dt,s);   /* v74 auto (U1) */
   }
   if(RUN.i>=RUN.prog.length) runStop("הושלם",true);
   return {f:0,r:0,turn:0};
@@ -7624,6 +7650,8 @@ function pathDraw(){
     if(i===sm.length||bad[i]!==bad[a]){ mk(Math.max(0,a-1),i-1,bad[a]?0xf2545b:0x4ec9a0,bad[a]?0.95:0.85); a=i; }
   }
   PATH.bad=bad.some(Boolean);
+  /* v74 auto (A7): חצי רובוט מעבר לקו האמצע (G402) — אזהרה בלוח ובקוד */
+  { const sg=myAlly()==="red"?-1:1, half=Math.max(P.botW||16,P.botL||16)/2; PATH.mid=sm.some(q=>q.x*sg-half<0); }
   /* עקבה של ההרצה האחרונה — איפה הרובוט באמת נסע */
   const tr=(RUN.on&&RUN.trail)||(PATH.run&&PATH.run.trail);
   if(tr&&tr.length>1){
@@ -7653,6 +7681,8 @@ function pathInfo(){
     (PATH.teachT&&R&&R.done?row("הוקלט · שוחזר",PATH.teachT.toFixed(1)+" · "+fmt(R.t,1)+" שנ׳",Math.abs(R.t-PATH.teachT)<=PATH.teachT*0.15+0.5?"ok":"hl"):"")+
     (R?row("תוצאה",R.done?"הושלם"+(R.shots?" · "+R.hits+"/"+R.shots+" פגיעות":""):(R.why||"לא הושלם"),R.done?"ok":"bad"):"")+
     (PATH.bad?row("אזהרה","המסלול נכנס למבנה (בקו האדום) — הרובוט ייתקע שם","bad"):"")+
+    (PATH.mid&&PATH.pts.length>1?row("אזהרה","המסלול חוצה את קו האמצע (G402) — באוטונומי זו עבירה","bad"):"")+   /* v74 auto (A7) */
+    (rr&&rr.over?row("אזהרה",T("לא נגמר ב-RR")+" ("+fmt(rr.full,1)+" "+T("שנ׳")+")","bad"):rr&&rr.cut?row("הערה",T("בקוד: שומר החניה מדלג על")+" "+rr.cut+" "+T("פעולות")+" (RR ≈ "+fmt(rr.full,1)+" "+T("שנ׳")+")","hl"):"")+   /* v74 auto (A2) */
     (PATH.warn?row("הערה",pathEsc(PATH.warn),"hl"):"")+
     (PATH.cur?row("מסלול",pathEsc(pathCurName())):"")+
     row("במאץ׳",MYAUTO.lvl==="path"?"ירוץ באוטונומי שלי":"לא נבחר — ״השתמש במאץ׳״",MYAUTO.lvl==="path"?"ok":"")+
@@ -7800,6 +7830,13 @@ function rrMapText(){
 const RRC_KEY="bbRRcons1", RRC_DEF={maxWheelVel:50, minProfileAccel:-30, maxProfileAccel:50, maxAngVel:180, maxAngAccel:180};
 const RRC=Object.assign({},RRC_DEF);
 try{ const o=JSON.parse(localStorage.getItem(RRC_KEY)||"null"); if(o&&typeof o==="object") for(const k in RRC_DEF){ const v=+o[k]; if(isFinite(v)&&v!==0) RRC[k]=v; } }catch(e){}
+/* v74 auto (U1): ״נסיעה במגבלות RoadRunner״ — דלוק כברירת מחדל, נשמר ב-bbRRcons1 (pace) */
+RRC.pace=1; try{ const o=JSON.parse(localStorage.getItem(RRC_KEY)||"null"); if(o&&o.pace===0) RRC.pace=0; }catch(e){}
+function rrcPaceSet(on){ on=on?1:0; if(RRC.pace===on) return false; RRC.pace=on;
+  try{ localStorage.setItem(RRC_KEY,JSON.stringify(RRC)); }catch(e){}
+  /* תוצאות המחולל והמתכנן נמדדו בקצב אחר — לא ברות השוואה: נשמרות בצד לפי המפתח (genResKey) */
+  try{ genKeySync(); genUI(1); optUI(0); }catch(e){}
+  return true; }
 function rrcSet(k,v){ if(!(k in RRC_DEF)) return false; v=+v;
   const lim={maxWheelVel:[1,300],minProfileAccel:[-500,-1],maxProfileAccel:[1,500],maxAngVel:[10,1440],maxAngAccel:[10,2880]}[k];
   if(!isFinite(v)) v=RRC_DEF[k]; RRC[k]=Math.max(lim[0],Math.min(lim[1],v));
@@ -7967,9 +8004,11 @@ function rrTrap(L,v,a,d){ L=Math.abs(L); if(L<1e-6) return 0; a=Math.abs(a); d=M
   if(L>=da+dd) return v/a+v/d+(L-da-dd)/v;
   const vp=Math.sqrt(2*L*a*d/(a+d)); return vp/a+vp/d; }
 /* זמן הפעולות בקוד המיוצא (הערכה): ירי — ארבעה כדורים בקצב של המשגר */
-function rrActTime(m){
+function rrActTime(m,mag){
   const p=m.p||{};
-  if(m.a==="shoot") return 4*Math.max(0.3,((typeof MOT!=="undefined"&&MOT.trec)||0.25)*1.3);
+  /* v74 auto (U1): ShootAction יורה את מה שבמחסנית — 4 בהתחלה, עד 3 אחרי פרח, עד 4 אחרי איסוף (כמו בסימולטור) */
+  /* הירייה הראשונה מיד (הגלגל כבר בסל״ד), כל אחת אחריה — בקצב ההתאוששות של המשגר, ועוד רגע לכוון */
+  if(m.a==="shoot") return (Math.max(1,mag==null?4:mag)-1)*Math.max(0.3,((typeof MOT!=="undefined"&&MOT.trec)||0.25)*1.3)+0.15;
   if(m.a==="intake") return +p.sec||1.2;
   if(m.a==="flower") return 1.5;
   if(m.a==="lift") return 2.5;
@@ -7981,7 +8020,7 @@ function rrActTime(m){
    ותאוצות הפרופיל; סיבוב במקום בטרפז זוויתי; ועוד זמן הפעולות. לא מודל עקמומיות — חסם תחתון סביר */
 function pathRrTime(plan){
   const V=RRC.maxWheelVel, A=RRC.maxProfileAccel, D=-RRC.minProfileAccel, W=RRC.maxAngVel*Math.PI/180, WA=RRC.maxAngAccel*Math.PI/180;
-  let T=0, L=0, rot=0, drive=0, acts=0, grp=[];
+  let T=0, L=0, rot=0, drive=0, acts=0, grp=[], mag=4;
   /* v74 auto (A2): כל תנועה מקבלת m.tE — הזמן המצטבר כשהיא נגמרת (קבוצת ספליינים רציפה — סוף הקבוצה) */
   const flush=()=>{ if(L>0||rot>0){ const t=Math.max(rrTrap(L,V,A,D),rot/W); T+=t; drive+=t; } L=0; rot=0; grp.forEach(q=>q.tE=+T.toFixed(2)); grp=[]; };
   let head=plan.st;
@@ -7997,7 +8036,8 @@ function pathRrTime(plan){
       continue; }
     flush();
     if(m.k==="turn"){ const t=rrTrap(Math.abs(pathAngD(head,m.h)),W,WA,WA); T+=t; drive+=t; head=m.h; }
-    if(m.k==="act"){ const t=rrActTime(m); T+=t; acts+=t; }
+    if(m.k==="act"){ const t=rrActTime(m,mag); T+=t; acts+=t;
+      if(m.a==="shoot"||m.a==="fire") mag=m.a==="fire"?Math.max(0,mag-(+(m.p&&m.p.n)||1)):0; else if(m.a==="flower") mag=Math.max(mag,3); else if(m.a==="intake") mag=4; }
     m.tE=+T.toFixed(2);
   }
   flush();
@@ -8130,6 +8170,63 @@ function pathHdrV74(pts,cutR){
   if(pk&&!pathInLZPt(+pk.x,+pk.z)) L.push("// ⚠ "+T("נקודת החניה שצוירה מחוץ לאזור הטעינה — הקוד נוסע למשבצת באזור, כמו הסימולטור"));
   return L;
 }
+/* ── v74 auto (U3): טבלת משגר לפי מרחק, לקוד של הרובוט ──
+   לאורך הקו מהפתח (כמו ״בנה טבלת הפעלה״): 18–96″ בקפיצות של 6. בכל מרחק solveAvg (מהירות פני הגלגל),
+   ← סל״ד גלגל = v / (π·D) · 60 (ביורה הוד ×2 — כמו wheelCap) ← סל״ד מנוע ×ratio ← פעימות לשנייה = סל״ד מנוע · TPR / 60.
+   מתחת ל-24″ או קפיצה של יותר מ-25% מהשכן — ״קרוב מדי״ (הפתרון לא יציב) */
+const LT={tpr:28};
+try{ const v=+localStorage.getItem("bbLtTpr1"); if(isFinite(v)&&v>0) LT.tpr=v; }catch(e){}
+function launchTable(){
+  const hv=aimHive(), f=hv?mouthFrame(hv):null; if(!f) return null;
+  const h=new THREE.Vector3(f.n.x,0,f.n.z); if(h.lengthSq()<1e-6) return null; h.normalize();
+  const D=P.wheelD/1000, hood=bldHood(), cap=wheelCap(), rows=[];
+  for(let r=18;r<=96;r+=6){
+    const o=new THREE.Vector3(f.c.x+h.x*M(r),M(P.muzzle),f.c.z+h.z*M(r)), d=new THREE.Vector3(-h.x,0,-h.z);
+    const v=solveAvg(o,d,f,vdMe());
+    const wr=v?v/(Math.PI*D)*60*(hood?2:1):null;
+    rows.push({d:r, v:v!=null?+v.toFixed(3):null, wheel:wr!=null?Math.round(wr):null, motor:wr!=null?Math.round(wr*P.ratio):null,
+      tps:wr!=null?Math.round(wr*P.ratio*LT.tpr/60):null, over:v!=null&&v>cap*1.002});
+  }
+  rows.forEach((q,i)=>{ const n=rows[i+1]; q.close=q.v==null||q.d<24||(n&&n.v&&q.v&&q.v>n.v*1.25); });
+  /* ״קרוב מדי״ — רק בהתחלה (עד הראשון היציב), שלא יסומנו מרחקים רחוקים */
+  let ok=false; rows.forEach(q=>{ if(!q.close) ok=true; else if(ok&&q.v!=null) q.close=false; });
+  return {rows, hood, ratio:P.ratio, wheelD:P.wheelD, tpr:LT.tpr, angle:P.angle, ball:BALLSETS[kind].name, cap:+cap.toFixed(2)};
+}
+function launchJava(t){
+  t=t||launchTable(); if(!t) return "// "+T("אין כוורת יעד");
+  const good=t.rows.filter(q=>!q.close&&q.v!=null&&!q.over);
+  const arr=(k,dp)=>good.map(q=>dp?(+q[k]).toFixed(dp):String(q[k])).join(", ");
+  let o="// ── "+T("טבלת ירי")+" · BIOBUZZ ──\n";
+  o+="// "+T("זווית")+" "+t.angle+"° · "+T("גלגל")+" "+t.wheelD+" mm"+(t.hood?" · "+T("יורה הוד (סל״ד גלגל ×2)"):"")+" · ratio "+t.ratio+" · TPR "+t.tpr+" · "+t.ball+"\n";
+  o+="// "+T("מרחק = מהפתח של הכוורת, לאורך הקו שמולו (אינץ׳)")+"\n";
+  t.rows.filter(q=>q.close||q.over||q.v==null).forEach(q=>{ o+="// "+q.d+"″: "+(q.v==null?T("אין פתרון"):q.over?T("מעבר למהירות המרבית של הגלגל"):T("קרוב מדי — לא לירות מכאן"))+"\n"; });
+  o+="public static final double[] DIST_IN   = { "+arr("d")+" };\n";
+  o+="public static final double[] WHEEL_RPM = { "+arr("wheel")+" };\n";
+  o+="public static final double[] MOTOR_TPS = { "+arr("tps")+" };   // DcMotorEx.setVelocity(...)\n";
+  o+="public static final double MIN_DIST_IN = "+(good.length?good[0].d:0)+";\n\n";
+  o+="/** "+T("פעימות לשנייה לפי מרחק — אינטרפולציה ליניארית, מחוץ לטבלה: הקצה")+" */\n";
+  o+="public static double tpsForDistance(double distIn) {\n";
+  o+="    if (DIST_IN.length == 0) return 0;\n";
+  o+="    if (distIn <= DIST_IN[0]) return MOTOR_TPS[0];\n";
+  o+="    for (int i = 1; i < DIST_IN.length; i++) {\n";
+  o+="        if (distIn <= DIST_IN[i]) {\n";
+  o+="            double u = (distIn - DIST_IN[i - 1]) / (DIST_IN[i] - DIST_IN[i - 1]);\n";
+  o+="            return MOTOR_TPS[i - 1] + u * (MOTOR_TPS[i] - MOTOR_TPS[i - 1]);\n";
+  o+="        }\n    }\n    return MOTOR_TPS[MOTOR_TPS.length - 1];\n}\n";
+  o+="public static boolean tooClose(double distIn) { return distIn < MIN_DIST_IN; }\n";
+  return o;
+}
+/* לכרטיס לבור: טבלה קטנה */
+function pitLaunchHTML(){
+  let t=null; try{ t=launchTable(); }catch(e){} if(!t) return "";
+  const E=x=>appEsc(T(x));
+  return '<h3>'+E("טבלת ירי")+'</h3><table><tr><th>'+E("מרחק")+'</th><th>'+E("סל״ד גלגל")+'</th><th>'+E("פעימות לשנייה")+'</th><th></th></tr>'+
+    t.rows.map(q=>'<tr><td class="n">'+q.d+'″</td><td class="n">'+(q.wheel!=null?q.wheel:"—")+'</td><td class="n">'+(q.tps!=null?q.tps:"—")+'</td><td>'+(q.v==null?E("אין פתרון"):q.close?E("קרוב מדי"):q.over?E("מעבר לגלגל"):"")+'</td></tr>').join("")+'</table>'+
+    '<p class="mut">TPR '+appEsc(String(t.tpr))+' · ratio '+appEsc(String(t.ratio))+(t.hood?' · '+E("יורה הוד (סל״ד גלגל ×2)"):'')+'</p>';
+}
+{ const b=$("bLaunchTbl"), ti=$("ltTpr");
+  if(ti){ ti.value=String(LT.tpr); ti.addEventListener("change",()=>{ let v=+ti.value; if(!isFinite(v)||v<=0) v=28; LT.tpr=Math.min(100000,v); ti.value=String(LT.tpr); try{ localStorage.setItem("bbLtTpr1",String(LT.tpr)); }catch(e){} }); }
+  if(b) on(b,()=>{ const o=$("ltOut"); if(!o) return; o.value=javaEn(launchJava()); o.hidden=false; try{ o.select(); }catch(e){} }); }
 /* ══════ מסלולים שמורים ══════
    כמה מסלולים עם שמות, שמורים בדפדפן. אחרון שנטען או נשמר עולה לבד בפתיחה
    הבאה — ככה ״המסלול שלי״ במאץ׳ הוא תמיד מה שעבדת עליו. בין מחשבים עוברים
@@ -10931,6 +11028,7 @@ on($("bPathJava"),()=>{ const ta=$("pathOut"); if(ta) ta.value=javaEn(pathJava()
 document.querySelectorAll("#rrcBox input[data-rrc]").forEach(x=>{ x.value=String(RRC[x.dataset.rrc]);
   x.addEventListener("change",()=>{ x.value=String(rrcSet(x.dataset.rrc,x.value)); pathInfo();
     const ta=$("pathOut"); if(ta&&ta.value&&/actionBuilder/.test(ta.value)) ta.value=javaEn(pathJava()); }); });
+{ const k=$("kRrPace"); if(k){ k.checked=RRC.pace!==0; k.addEventListener("change",()=>{ rrcPaceSet(k.checked); pathInfo(); }); } }   /* v74 auto (U1) */
 on($("bPathFreeze"),()=>{ pathFreezeShots(); const ta=$("pathOut"); if(ta&&ta.value&&/actionBuilder/.test(ta.value)) ta.value=javaEn(pathJava()); });
 on($("bPathSave"),()=>{ const nm=$("pathName"); pathSave(nm?nm.value:""); });
 on($("bPathLoad"),()=>{ const sel=$("pathLibSel"); if(sel&&sel.value) pathLoad(sel.value); });
@@ -14438,6 +14536,12 @@ function odoAlign(pts){
 }
 function odoPlanned(){
   if(!PATH.pts||PATH.pts.length<2) return null;
+  /* v74 auto (A6): מול מה שהקוד המיוצא נוסע — אותה תוכנית (pathPlanCut: עמדות ירי שנרשמו, חניה, שומר החניה);
+     catmull של העורך רק כגיבוי */
+  try{ const sh=pathShotsFor(PATH.pts), c=pathPlanCut(PATH.pts,sh,{autoPark:PATH.autoPark!==false&&!PATH.pts.some(p=>!p.auto&&p.act==="park")}), out=[];
+    for(const m of c.plan.mv){ if(m.k==="spl") rrQuintic(m.a,m.a.t,m,m.tan,12).forEach((q,i)=>{ if(i||!out.length) out.push(q); });
+      else if(m.k==="str"){ if(!out.length) out.push({x:m.a.x,z:m.a.z}); out.push({x:m.x,z:m.z}); } }
+    if(out.length>=2){ out.src="plan"; return out; } }catch(e){}
   return catmull(PATH.pts,14);
 }
 function odoDev(p,pl){
@@ -14463,8 +14567,9 @@ function odoLoad(txt,opt){
     const dv=pts.map(p=>odoDev(p,pl)); pts.forEach((p,i)=>p.d=dv[i]);
     let mi=0; dv.forEach((d,i)=>{ if(d>dv[mi]) mi=i; });
     st.max=dv[mi]; st.at=pts[mi]; st.mean=dv.reduce((a,b)=>a+b,0)/dv.length;
-    const e=PATH.pts[PATH.pts.length-1], l=pts[pts.length-1];
-    st.endErr=Math.hypot(l.x-e.x,l.z-e.z);
+    const e0=PATH.pts[PATH.pts.length-1], pe=pl.src==="plan"?pl[pl.length-1]:null, l=pts[pts.length-1];
+    const e=pe?{x:pe.x,z:pe.z,h:e0.h}:e0;   /* v74 auto (A6): הסוף של התוכנית המיוצאת (חניה = המשבצת) */
+    st.endErr=Math.hypot(l.x-e.x,l.z-e.z); st.vsPlan=pl.src==="plan";
     if(e.h!=null){ let dh=l.yaw-e.h; st.endYaw=Math.abs(Math.atan2(Math.sin(dh),Math.cos(dh)))*180/Math.PI; }
     const firstBad=pts.find(p=>p.d>4); st.firstBad=firstBad||null;
   }
@@ -14620,7 +14725,7 @@ function genEvalEnd(sv){
   BOTS.forEach((b,i)=>b.on=sv.bots[i]); MT.cd=sv.cd; GAME.randAuto=sv.ra; FAULT.on=sv.fault;
   PATH.pts=sv.pts; PATH.cur=sv.cur; PATH.autoPark=sv.ap; MYAUTO.lvl=sv.lvl; PATH.run=sv.run; PATH.shots=sv.shots;
   if(sv.mt){ MT.auto=sv.mt[0]; MT.trans=sv.mt[1]; PH[0][1]=sv.mt[2]; PH[1][1]=sv.mt[3]; }
-  GEN.pertIn=0; if(sv.pspd!=null) P.speed=sv.pspd;   /* 1.13 */
+  GEN.pertIn=0; GEN.pertSpd=1; if(sv.pspd!=null) P.speed=sv.pspd;   /* 1.13 */
   stageMatch(); homeRobot(); pathDraw(); pathInfo();
   return r;
 }
@@ -14651,7 +14756,7 @@ async function genRun(opt){
   opt=opt||{};
   if(GEN.running||(MATCH.on||MATCH.cd>0)) return false;
   if(typeof drillAbort==="function") drillAbort();   /* 1.12.5: תרגיל חופשי פתוח לא נרשם מהריצות של המחולל */
-  genKeySync(); GEN.key=genKey();   /* 1.13: התוצאות שייכות לפינה ולברית */
+  genKeySync(); GEN.key=genResKey();   /* 1.13: התוצאות שייכות לפינה ולברית · v74: ולקצב */
   GEN.res=[]; GEN.done=false; GEN.stop=false;
   const list=(opt.only||GEN_SEQ.map((q,i)=>i)).map(i=>GEN_SEQ[i]);
   GEN.n=list.length;
@@ -16374,7 +16479,9 @@ function liveParse(pkt){
     else if(y==null&&/^(pose[ _.]?)?y( ?\(in(ch(es)?)?\))?$/.test(kk)) y=liveNum(d[k]);
     else if(h==null&&/^(pose[ _.]?)?(heading|h|theta|yaw)( ?\((deg|degrees|rad|radians)\))?$/.test(kk)){ h=liveNum(d[k]); hdeg=/deg/.test(kk); } }
   if(x!=null&&y!=null){
-    if(h==null) h=0; else if(hdeg||Math.abs(h)>6.4) h=h*Math.PI/180;
+    /* v74 auto (A9): ״כיוון״ — לזהות לבד / רדיאנים / מעלות (מפתח בלי יחידה במעלות קטן מ-6.4 נקרא קודם כרדיאנים) */
+    const ua=LIVE.ang||"auto";
+    if(h==null) h=0; else if(ua==="deg"||(ua==="auto"&&(hdeg||Math.abs(h)>6.4))) h=h*Math.PI/180;
     return {x,y,h,src:"טלמטריה"}; }
   /* אין מפתחות — מחפשים את ציור הרובוט של RoadRunner: עיגול ברדיוס 9 וקו כיוון אחריו */
   const ops=pkt&&pkt.fieldOverlay&&pkt.fieldOverlay.ops||[];
@@ -16481,6 +16588,9 @@ function liveWire(){
   on($("bLiveRec"),liveRecToggle);
   on($("bLiveClr"),()=>{ LIVE.trail=[]; liveTrailDraw(); });
   const k=$("kLiveTrail"); if(k){ k.checked=LIVE.showTrail; k.addEventListener("change",()=>{ LIVE.showTrail=k.checked; liveTrailDraw(); }); }
+  /* v74 auto (A9) */
+  try{ const v=localStorage.getItem("bbLiveAng1"); if(v==="rad"||v==="deg") LIVE.ang=v; }catch(e){}
+  const la=$("liveAng"); if(la){ la.value=LIVE.ang||"auto"; la.addEventListener("change",()=>{ LIVE.ang=la.value; try{ localStorage.setItem("bbLiveAng1",la.value); }catch(e){} }); }
   on($("bOdoAdb"),odoAdbPull);
   liveUI();
 }
@@ -19345,9 +19455,11 @@ function spotSet(n){
 }
 /* תוצאות המחולל/המתכנן שייכות לברית ולפינה. החלפה שומרת את הישנות בצד ומחזירה את של הפינה החדשה */
 function genKey(){ return myAlly()+":"+mySpot(); }
+/* v74 auto (U1): תוצאות המחולל/המתכנן — לפי ברית, פינה וקצב (RR או חופשי) */
+function genResKey(){ return genKey()+(typeof RRC!=="undefined"&&RRC.pace!==0?"":":free"); }
 function genKeySync(){
   if(GEN.running||OPT.running) return;
-  const k=genKey(); if(GEN.key===undefined){ GEN.key=k; return; } if(GEN.key===k) return;
+  const k=genResKey(); if(GEN.key===undefined){ GEN.key=k; return; } if(GEN.key===k) return;
   GEN.resBy=GEN.resBy||{}; GEN.resBy[GEN.key]={res:GEN.res, best:OPT.best, start:OPT.start, x:OPT.x, msg:OPT.msg};
   const o=GEN.resBy[k]||{res:[]}; GEN.res=o.res||[]; OPT.best=o.best||null; OPT.start=o.start||null; OPT.x=o.x||null; OPT.msg=o.msg||"";
   GEN.key=k; GEN.done=GEN.res.length>0;
@@ -19363,6 +19475,7 @@ function optPertApply(q,sv){
   const s=autoStartPose(), inw=s.x<0?1:-1;
   setPose2(s.x+inw*q.din, s.z+q.dz, s.h*180/Math.PI+q.dyaw);
   if(q.spd&&q.spd!==1){ sv.pspd=P.speed; P.speed=P.speed*q.spd; }
+  GEN.pertSpd=q.spd||1;   /* v74 auto (U1): גם תקרת RR מואטת */
   GEN.pertIn=q.intake||0;
 }
 function optRobustScore(ev,scs,tots,sls){
@@ -19387,7 +19500,16 @@ function ptnNorm(pts){
   if(Math.hypot(p.x-s.x,p.z-s.z)<6){ p.x=+s.x.toFixed(1); p.z=+s.z.toFixed(1); p.h=h; p.start=true; return pts; }
   pts.unshift({x:+s.x.toFixed(1),z:+s.z.toFixed(1),h,act:"none",start:true}); return pts;
 }
-function ptnSetPts(pts,name,src){ PTN.pts=ptnNorm(pts); PTN.name=String(name||"").slice(0,30); PTN.src=src||""; PTN.res=null; ptnDraw(); ptnUI(); return true; }
+function ptnSetPts(pts,name,src){ PTN.pts=ptnNorm(pts); PTN.name=String(name||"").slice(0,30); PTN.src=src||""; PTN.res=null; PTN.key=genKey(); ptnDraw(); ptnUI(); return true; }
+/* v74 auto (A5): אחרי החלפת ברית או פינה — מסלול השותף עובר במראה לברית שלי ומתחיל מהפינה השנייה (של עכשיו).
+   ההתחלה הישנה (הפינה שהייתה של השותף) מוחלפת, כדי שלא תישאר נקודה בפינה שלי */
+function ptnRenorm(){
+  if(!PTN.pts||PTN.pts.length<2) return false;
+  const k=genKey(); if(PTN.key===k) return false;
+  const a=pathAllyOf(PTN.pts); if(a&&a!==myAlly()) pathMirror(PTN.pts);
+  if(PTN.pts[0].start&&PTN.pts.length>2) PTN.pts.shift();
+  ptnNorm(PTN.pts); PTN.key=k; PTN.res=null; try{ ptnDraw(); }catch(e){} return true;
+}
 /* טקסט של ״העתק כטקסט״ (או מערך נקודות) → נקודות בברית שלי. לא נוגע בעורך */
 function ptnParse(txt){
   let o=null; try{ o=JSON.parse(String(txt||"").trim()); }catch(e){}
@@ -19535,6 +19657,7 @@ async function ptnRun(opt){
   opt=opt||{};
   if(PTN.busy||GEN.running||OPT.running||MATCH.on||MATCH.cd>0){ PTN.msg="הבדיקה רצה בין מאצ׳ים — עצור קודם מה שרץ"; ptnUI(); return null; }
   if(!PTN.pts||PTN.pts.length<2){ PTN.msg="קודם מייבאים את המסלול של השותף"; ptnUI(); return null; }
+  ptnRenorm();   /* v74 auto (A5) */
   const mine=(opt.mine||PATH.pts).filter(p=>!p.auto).map(p=>Object.assign({},p));
   if(mine.length<2){ PTN.msg="אין מסלול בעורך — צריך את המסלול שלי"; ptnUI(); return null; }
   pathNormStart(mine);
@@ -19570,6 +19693,7 @@ function ptnDraw(){
 }
 const PTNK={hit:"מגע בין הרובוטים", flower:"אותו פרח בהפרש של פחות מ-3 שנ׳", shoot:"עמדות ירי חופפות"};
 function ptnUI(){
+  if(!PTN.busy) ptnRenorm();   /* v74 auto (A5) */
   const o=$("oPtn"); if(!o) return;
   const r=PTN.res;
   let h=row("עמדות",T("אני")+": "+autoCornerShort()+" · "+T("השותף")+": "+autoCornerShort(mySpot()===2?1:2))+
@@ -19608,10 +19732,18 @@ function pitAutoInfo(){
   if(v.indexOf("sv:")===0){ const n=v.slice(3), e=pathLib()[n]; if(!e) return {name:n+" ("+T("לא נמצא")+")", lv:"leave"};
     const pts=pathUnpack(e.pts); if(e.ally&&e.ally!==myAlly()) pathMirror(pts); pathNormStart(pts);
     return {name:n, pts, park:PATH.autoPark!==false, other:(+e.spot||1)!==mySpot()}; }
-  const m=PATH.bySpot&&PATH.bySpot[mySpot()], cur=(PIT.sp0==null||mySpot()===PIT.sp0)?PATH.pts:(m&&m.pts)||[];   /* הפינה של עכשיו — העורך; האחרת — מה שנשמר בצד */
+  const m=PATH.bySpot&&PATH.bySpot[mySpot()], cur=(PIT.sp0==null||mySpot()===PIT.sp0)?PATH.pts:(m&&m.pts)||pitLastOf();   /* הפינה של עכשיו — העורך; האחרת — מה שנשמר בצד, ואם לא ביקרו בה — ״האחרון״ שלה מהדפדפן (v74 auto A8) */
   const pts=(cur||[]).filter(p=>!p.auto).map(p=>Object.assign({},p));
   if(pts.length<2) return {name:T("אין מסלול — רק יציאה"), lv:"leave"};
   pathNormStart(pts); return {name:T("מה שבעורך"), pts, park:PATH.autoPark!==false};
+}
+/* v74 auto (A8): ״המסלול האחרון״ של הפינה (bb_path_cur / bb_path_cur2) — כמו ש-spotSet טוען אותו */
+function pitLastOf(){
+  let cur=""; try{ cur=localStorage.getItem(pcurKey())||""; }catch(e){}
+  if(!cur) return [];
+  if(cur.indexOf("ex:")===0){ const pts=autoExample(cur.slice(3)); return pts||[]; }
+  const e=pathLib()[cur]; if(!e||!pathValid(e.pts)) return [];
+  const pts=pathUnpack(e.pts); if(e.ally&&e.ally!==myAlly()) pathMirror(pts); pathNormStart(pts); return pts;
 }
 function pitEval(info){
   return new Promise(resolve=>{
@@ -19636,7 +19768,9 @@ async function pitCardBuild(opt){
       const info=pitAutoInfo(), pose=mySpotPose();
       const ev=opt.noEval||info.lv==="none"?null:await pitEval(info);
       const len=info.pts?info.pts.reduce((a,p,i,A)=>i?a+Math.hypot(p.x-A[i-1].x,p.z-A[i-1].z):0,0):null;
-      pages.push({n, pose, info, ev, len, rr:rrFromSim(pose.x,pose.z,pose.yaw*Math.PI/180), ptn:PTN.last[genKey()]||null});
+      /* v74 auto (A9): הערכת RR לפינה (עם שומר החניה של הקוד) */
+      let rrT=null; if(info.pts) try{ const c=pathPlanCut(info.pts,null,{autoPark:!!info.park&&!info.pts.some(p=>p.act==="park")}); rrT={t:c.rr.t, full:c.full, cut:c.cut?c.cut.skipped.length:0}; }catch(e){}
+      pages.push({n, pose, info, ev, len, rr:rrFromSim(pose.x,pose.z,pose.yaw*Math.PI/180), ptn:PTN.last[genKey()]||null, rrT, lt:pitLaunchHTML()});
     }
   } finally { SETUP.spot=sp0; PIT.sp0=null; PIT.busy=false; if(!RUN.on) homeRobot(); }
   const html=pitCardHTML(pages); PIT.last={pages, html}; return html;
@@ -19662,18 +19796,19 @@ function pitCardHTML(pages){
       '<h2>'+appEsc(T(myAlly()==="red"?"אדום":"כחול"))+' · '+appEsc(autoCornerShort(p.n))+'</h2><p class="mut">'+E("השותף")+': '+appEsc(autoCornerShort(other))+'</p>'+
       '<h3>'+E("האוטונומי לפינה הזאת")+'</h3><p class="big">'+appEsc(netStr(p.info.name,60))+(p.info.other?' <em>('+E("נשמר לפינה האחרת")+')</em>':'')+'</p>'+
       '<div class="tiles">'+tile("נקודות צפויות",ev?N(ev.total):"—")+tile("פגיעות",ev?N(ev.hits+"/"+ev.shots):"—")+tile("זמן פנוי",ev?N(ev.slack)+" "+E("שנ׳"):"—")+
-        tile("יציאה · חניה",ev?(ev.leave?"✓":"✗")+" · "+(ev.park?"✓":"✗"):"—")+tile("ריצה משוערת",appEsc(run))+tile("אורך",p.len!=null?N(Math.round(p.len))+"″":"—")+'</div>'+
+        tile("יציאה · חניה",ev?(ev.leave?"✓":"✗")+" · "+(ev.park?"✓":"✗"):"—")+tile("ריצה משוערת",appEsc(run))+tile("אורך",p.len!=null?N(Math.round(p.len))+"″":"—")+
+        tile("RR ≈",p.rrT?N(p.rrT.full)+" "+E("שנ׳")+(p.rrT.full>tAuto()?' <em class="warn">⚠ '+E("מעל 30 שנ׳")+(p.rrT.cut?" · "+E("הקוד מדלג על")+" "+N(p.rrT.cut):"")+'</em>':""):"—")+'</div>'+
       '<p class="mut">'+E("נמדד עכשיו: 30 שנ׳ אוטונומי בסימולטור, בלי יריבים")+'</p>'+
       '<h3>RoadRunner</h3><p>'+E("כיוון הזירה")+': <b>'+N(RR_ROT)+'°</b> · <code dir="ltr">'+appEsc(rrMapText())+'</code></p>'+
       '<p><code dir="ltr">Pose2d start = new Pose2d('+N(p.rr.x.toFixed(1))+', '+N(p.rr.y.toFixed(1))+', Math.toRadians('+N((p.rr.h*180/Math.PI).toFixed(1))+'));</code></p>'+
       '<p class="mut">'+E("זמן ההפקה")+': '+appEsc(ts)+'</p>'+
-      '<h3>'+E("בדיקת התאמה עם השותף")+'</h3><p>'+ptnTxt+'</p>'+
+      '<h3>'+E("בדיקת התאמה עם השותף")+'</h3><p>'+ptnTxt+'</p>'+(p.lt||"")+
       '<h3>'+E("10 המאצ׳ים האחרונים")+'</h3>'+mt+'</section>';
   }).join("");
   return '<!doctype html><html lang="'+(en?"en":"he")+'" dir="'+(en?"ltr":"rtl")+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+E("כרטיס לבור")+' · BIOBUZZ</title><style>'+
     'body{font:14px/1.45 system-ui,Arial,sans-serif;color:#111;background:#fff;margin:0;padding:16px}.pg{max-width:780px;margin:0 auto 28px;border:1px solid #ccc;border-radius:10px;padding:16px 20px}'+
     'header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid #111;margin-bottom:8px}h1{font-size:20px;margin:4px 0}h2{font-size:18px;margin:8px 0 2px}h3{font-size:14px;margin:14px 0 4px;text-transform:uppercase;letter-spacing:.03em;color:#444}'+
-    '.big{font-size:17px;font-weight:600;margin:2px 0}.mut{color:#555;font-size:12px;margin:2px 0}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.t{border:1px solid #bbb;border-radius:8px;padding:6px 8px}.t span{display:block;font-size:11px;color:#555}.t b{font-size:17px}'+
+    '.big{font-size:17px;font-weight:600;margin:2px 0}.mut{color:#555;font-size:12px;margin:2px 0}.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.t{border:1px solid #bbb;border-radius:8px;padding:6px 8px}.t span{display:block;font-size:11px;color:#555}.t b{font-size:17px}.t em.warn{display:block;font-size:11px;color:#b00;font-style:normal}'+
     'table{border-collapse:collapse;width:100%;font-size:12px}th,td{border-bottom:1px solid #ddd;padding:3px 5px;text-align:start}td.n{font-family:monospace}code{font-size:11.5px;background:#f2f2f2;padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}'+
     '#pr{position:fixed;top:10px;inset-inline-end:10px;padding:6px 12px;font-size:14px}'+
     '@media print{#pr{display:none}body{padding:0}.pg{border:none;max-width:none;margin:0;page-break-after:always;break-after:page}.pg:last-child{page-break-after:auto;break-after:auto}}'+
