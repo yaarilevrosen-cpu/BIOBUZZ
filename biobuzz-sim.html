@@ -1617,7 +1617,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
 <div id="padStudio" hidden role="dialog" aria-modal="true" aria-labelledby="psTitle">
   <div class="psHead"><h2 id="psTitle">🎮 <em>סטודיו</em> השלט</h2><span class="psChip" id="psChip">אין שלט מחובר</span><button id="psX" aria-label="סגור">✕ סגור</button></div>
   <div class="psMain"><div class="psStage"><svg id="psSvg" viewBox="0 0 1000 470" role="img" aria-label="השלט — לחצו על כפתור כדי לשנות מה הוא עושה"></svg></div>
-    <div class="psPick" id="psPick"></div></div>
+    <div class="psPick" id="psPick"></div><div id="psShape"></div></div>
   <div class="psFoot"><button id="psReset">↺ איפוס לברירת המחדל</button><button id="psKb">⌨ מקשי המקלדת</button><button id="psDone" class="primary">✓ סיום</button></div>
 </div>
 <div id="playModal" hidden role="dialog" aria-modal="true" aria-labelledby="pmTitle"><div class="pmCard">
@@ -2157,6 +2157,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="out" id="oPad"></div>
         <div id="padBinds"></div>
         <div class="row"><button id="bPadReset">החזר מיפוי ברירת מחדל</button></div>
+        <div class="v74opr"><label><input type="checkbox" id="kOpr"> 🎮🎮 נהג + מפעיל — שלט 2 מפעיל את החרטום, הירי, הסיוע, היפוך הכוורת, המעלית והצריח</label>
+          <div id="oprBinds" hidden></div><div class="row" id="oprResetRow" hidden><button id="bOprReset">החזר מיפוי ברירת מחדל לשלט 2</button></div></div>
         <p class="note"><b>איך זה עובד:</b> הדימוי מראה בזמן אמת מה לחוץ. לכל פקד יש שורה משלו: מה הוא עושה, ובאיזה מצב. <b>לחיצה</b> — קורה פעם אחת. <b>מתג</b> — נדלק ונכבה. <b>החזקה</b> — פעיל כל עוד מחזיקים. המצבים שמוצעים תלויים בפעולה: ״עמדת פתיחה״ היא רק לחיצה, ״חרטום״ יכול להיות מתג או החזקה, ו״ירי״ יכול להיות לחיצה בודדת או ירי רצוף.</p>
         <p class="note"><b>מצב דיוק</b> על הדק הוא אנלוגי — ככל שלוחצים עמוק יותר הרובוט איטי יותר. על כפתור רגיל הוא פשוט האטה מלאה כל עוד מחזיקים.</p>
         <p class="note">הסטיקים קבועים: שמאל נוסע, ימין מסובב. השמות על הדימוי משתנים לפי השלט שזוהה — <b>הדפדפן מדווח על כולם באותה פריסה סטנדרטית</b>, ולכן אותו מיפוי עובד גם על שלט הטלפון.</p>
@@ -2689,6 +2691,18 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/meshopt_decoder.js"></script>
+<style id="css_v74net">
+  body.netguest #ppSplit, body.netguest #splitSeg{display:none!important}   /* v74 net N5 */
+  .v74idle{color:var(--warn,#f5b921); font-size:11px}
+  .v74opr{margin:10px 0 4px; padding:8px 10px; border:1px solid var(--line2,rgba(255,255,255,.12)); border-radius:10px}
+  .v74opr label{display:flex; gap:8px; align-items:flex-start; font-size:13px}
+  #oprBinds{margin-top:8px}
+  #psShape{max-width:1200px; width:100%; margin:0 auto 18px; padding:0 20px; box-sizing:border-box; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px}
+  #psShape .psGrp label{display:block; font-size:12.5px; color:#cfd8e2; margin:6px 0 2px}
+  #psShape .psGrp label b{float:left; color:var(--accent); font-family:var(--mono,monospace); font-weight:500}
+  #psShape input[type=range]{width:100%}
+  #psShape .psOpr.on{background:var(--accent); color:#111; border-color:var(--accent)}
+</style>
 <style id="css_v72uiperf">
   /* v72 uiperf */
   /* 1.12.5 UI1: טלפון 360 — הכותרת לא עולה על עצמה: השעון יורד לשורה שנייה, סיור ובאג דרך החיפוש וההגדרות */
@@ -2864,6 +2878,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_v72rules" data-i18n>{"היריב נפסל — כרטיס אדום": "Opponent disqualified — red card", "יציאה / חניה · הברית": "Leave / park · alliance", "התרומה שלי — יציאה / חניה": "My contribution — leave / park", "סך הכול · הברית": "Total · alliance"}</script>
 <script type="application/json" id="i18nX_v72uiperf" data-i18n>{"מהיר מהמנוע שמוגדר": "is faster than the configured motor allows", "מ׳/ש׳) — בדקו סל״ד, קוטר גלגל ותמסורת בלשונית השלדה": "m/s) — check RPM, wheel diameter and gearing on the Chassis tab", "גם באחיזה מרבית הסימולטור איטי מהמדידה": "Even at maximum grip the simulator is slower than measured", "שנ׳ מול": "s vs", "המנוע מגביל: בדקו מומנט, תמסורת או סוללה": "the motor is the limit: check torque, gearing or battery", "גם באחיזה הכי נמוכה הסימולטור מהיר מהמדידה": "Even at the lowest grip the simulator is faster than measured", "שנ׳) — מדדו גם את המהירות המרבית": "s) — measure the top speed too", "שנמדדו": "measured", "הצידה": "Sideways", "גם בנצילות מלאה הסימולטור איטי מהמדידה": "Even at full efficiency the simulator is slower than measured", "גם בנצילות הכי נמוכה הסימולטור מהיר מהמדידה": "Even at the lowest efficiency the simulator is faster than measured", "גם בתקרה מרבית הסימולטור מסתובב לאט מהמדידה": "Even at the maximum cap the simulator turns slower than measured", "המנוע מגביל": "the motor is the limit", "הזמן שנמדד ארוך מדי לסיבוב שלם": "The measured time is too long for a full turn", "לא נמצא קטע ישר מעמידה באורך": "No straight run from a standstill of", "מיפוי צירים (סיבוב": "axis mapping (rotation", "לכיוון הכחול": "toward blue", "לכיוון הקהל": "toward the audience", "נגד כיוון השעון": "counter-clockwise", "הזירה אצלכם מסובבת? משנים את ״כיוון הזירה״ בסימולטור — סיבוב בלבד, פנייה שמאלה נשארת שמאלה": "Is your field rotated? Change “Field orientation” in the simulator — rotation only, a left turn stays a left turn", "שמרתי": "Saved", "נק׳ (היה": "pts (was", "השווית": "tied", "חסרות": "short by", "יותר": "More", "שנ׳ — רובו": "s — mostly", "אזור הטעינה תפוס — השחקן האנושי מחכה שיתפנה": "The loading zone is occupied — the human player waits until it clears", "בתחרות הכוורת מתהפכת לבד בסף — זה חלק מהזירה": "In competition the hive flips by itself at the threshold — it is part of the field", "כל העמדות תפוסות בשחקנים — אין מקום לשחקן": "All positions are taken by players — no room for player", "המחולל לא החזיר מסלול": "The generator returned no path", "ניסיון": "Try", "משופר": "Improved", "נעצר — מה שנמצא עד עכשיו בראש הרשימה": "Stopped — the best found so far is at the top of the list", "התחלה": "start", "שנ׳ (התחלה": "s (start", "המתכנן רץ בין מאצ׳ים — עצור קודם את המאץ׳": "The planner runs between matches — stop the match first", "סנכרון": "Sync", "המתכנן רץ — חכה שיסיים או עצור אותו": "The planner is running — wait for it to finish or stop it", "לפני": "ago", "הרבה פספוסים — כדאי לתרגל גם מרחוק": "Many misses — practice from far away too", "חסום": "Blocked", "שנ׳ במשחק": "s per match", "עבירות במשחק": "fouls per match", "חניה בסוף רק": "Endgame parking only", "נק׳ בממוצע": "pts on average", "בפעם האחרונה": "Last time", "אפשר לפתוח דיווח בגיטהאב": "You can open a report on GitHub", "מה השתבש?": "What went wrong?", "איך לשחזר?": "How to reproduce?", "מערכת": "System", "מול המחולל": "vs the generator", "שנ׳ פנויות": "s free", "סימולטור שדה ל": "a field simulator for", "תוצאות": "Results", "אפשר להחליף בכל רגע מכפתור השפה (EN) למעלה.": "You can switch any time with the language button at the top."}</script>
 <script type="application/json" id="i18nX_v72training" data-i18n>{"האימון של היום נעצר": "Today's session stopped", "אין תוכנית אימון — ״🎯 משימות בשבילי״ בונה אחת": "No training plan — “🎯 Missions for me” builds one", "כל הימים בתוכנית כבר סומנו ✓": "Every day in the plan is already ticked ✓", "האימון של היום": "Today's session", "חימום דיוק, ואז": "accuracy warm-up, then", "השידור החוזר נפתח אחרי שהמאץ׳ נגמר": "The replay opens after the match ends", "10 התוצאות האחרונות": "Last 10 results", "סיכום": "summary", "חימום דיוק": "Accuracy warm-up", "היום סומן בתוכנית": "Day ticked in the plan", "שוב": "Again", "המחזור האיטי שלי": "Watch my slowest cycle", "זמנים — אמיתי מול סימולטור": "Timing — real robot vs sim", "הרץ את המסלול בסימולטור להשוואת זמנים": "Run the path in the sim to compare times", "עד סוף המסלול": "To the end of the path", "אמיתי": "Real", "סימולטור": "sim", "נקודה": "Point", "לא עבר ליד הנקודה": "did not pass the point", "פיגור": "lag", "קטעים ישרים": "Straights", "האמיתי איטי ב-": "Real robot is slower by ", "האמיתי מהיר ב-": "Real robot is faster by ", "כייל נהיגה מהיומן והרץ שוב": "Calibrate drive from the log and run again", "כיול מהיומן": "Calibration from the log", "ערכים עודכנו": "values updated", "שיא בתרגיל": "Drill best", "התחל את האימון של היום": "Start today's session", "חימום דיוק + התרגיל של היום ×3": "Accuracy warm-up + today's drill ×3", "▶ שידור חוזר של המחזור הזה": "▶ Replay this cycle", "אין תרגילים בטווח הזה.": "No drills in this range.", "🎯 תרגילים": "🎯 Drills", "משחקים בלבד, או רק תרגילים ואתגרים": "Matches only, or only drills and challenges", "🔁 עוד משחק": "🔁 Play again"}</script>
+<script type="application/json" id="i18nX_v74net" data-i18n>{"איפוס כיוון (ציר המגרש)": "Reset heading (field-centric)", "כדי לקבל קוד QR פתחו את הסימולטור מהגשר:": "To get a QR code, open the simulator from the bridge:", "מחכים לחיבור חוזר": "waiting to reconnect", "בוט (האורח לא מגיב)": "bot (guest not responding)", "מסך מפוצל לא זמין כשמחוברים כאורח — פתחו חדר במחשב הזה": "Split screen isn't available while you're a guest — host a room on this computer", "🎮🎮 נהג + מפעיל פועל — כבו אותו לפני מסך מפוצל": "🎮🎮 Driver + operator is on — turn it off before split screen", "🎮🎮 נהג + מפעיל פועל — שלט 2 כבר משמש מפעיל": "🎮🎮 Driver + operator is on — gamepad 2 is already the operator", "מישהו אחר נוהג ברובוט הזה — בחרו עמדה אחרת לשלט": "Someone else is driving that robot — pick another seat for the gamepad", "📱 הטלפון חזר לרובוט שלי": "📱 The phone is back on my robot", "מתחבר מחדש…": "Reconnecting…", "החיבור למארח נפל — מתחבר מחדש…": "Lost the connection to the host — reconnecting…", "מחובר שוב": "Connected again", "🧭 הכיוון אופס — ״קדימה״ הוא לאן שהרובוט פונה עכשיו": "🧭 Heading reset — \"forward\" is where the robot faces now", "נהג + מפעיל לא זמין כשמחוברים כאורח": "Driver + operator isn't available while you're a guest", "נהג + מפעיל לא עובד יחד עם מסך מפוצל — כבו את המסך המפוצל קודם": "Driver + operator doesn't work with split screen — turn split screen off first", "נהג + מפעיל לא עובד יחד עם שלט שתופס עמדה — החזירו את העמדה לבוט קודם": "Driver + operator doesn't work with a gamepad that holds a seat — give that seat back to the bot first", "🎮🎮 נהג + מפעיל: שלט 1 נוהג, שלט 2 מפעיל": "🎮🎮 Driver + operator: gamepad 1 drives, gamepad 2 operates", "🎮 נהג + מפעיל כבוי — שלט אחד עושה הכול": "🎮 Driver + operator off — one gamepad does everything", "🕹 תגובת הסטיק — כל השלטים": "🕹 Stick response — all gamepads", "אזור מת": "Deadzone", "עקומה (שלישית)": "Curve (cubic)", "מהירות במצב דיוק": "Speed in precision mode", "מהירות מרבית": "Max speed", "חל על הנהג, על שחקן 2 במסך מפוצל, על אורח ברשת ועל שלט בעמדה. ״איפוס כיוון״ — בבחירת פעולה לכפתור, או בכפתור ״בחירה״ בשלט נוסף.": "Applies to the driver, to player 2 in split screen, to a network guest and to a gamepad in a seat. \"Reset heading\" — pick it as a button action, or press \"Select\" on an extra gamepad.", "🎮🎮 נהג + מפעיל": "🎮🎮 Driver + operator", "פועל — לחצו לכיבוי": "On — click to turn off", "כבוי — לחצו להפעלה": "Off — click to turn on", "כמו בתחרות: שלט 1 נוהג, שלט 2 מפעיל את החרטום, הירי, הסיוע, היפוך הכוורת, המעלית והצריח. המיפוי של שלט 2 — בלשונית השלט במצב בדיקות.": "Like at competition: gamepad 1 drives, gamepad 2 runs the intake, shooting, aim assist, hive flip, lift and turret. Gamepad 2's mapping is in the gamepad panel in Lab mode.", "🎮🎮 נהג + מפעיל — שלט 2 מפעיל את החרטום, הירי, הסיוע, היפוך הכוורת, המעלית והצריח": "🎮🎮 Driver + operator — gamepad 2 runs the intake, shooting, aim assist, hive flip, lift and turret", "החזר מיפוי ברירת מחדל לשלט 2": "Restore gamepad 2's default mapping"}</script>
 <script type="application/json" id="i18nX_v72netapp" data-i18n>{"🔒 אי אפשר להחליף עמדה באמצע מאץ׳ בתחרות — אחרי המאץ׳": "🔒 You can't switch seats in the middle of a competition match — wait until it ends", "🌐 המארח יצא מהחדר — מחכים שיחזור (או צאו מהחדר)": "🌐 The host left the room — waiting for them to come back (or leave the room)", "📱 מישהו אחר נוהג ברובוט הזה — בחרו רובוט אחר לטלפון": "📱 Someone else is driving that robot — pick another robot for the phone", "🔒 העמדות נעולות עד סוף המאץ׳ (תחרות)": "🔒 Seats are locked until the match ends (competition)"}</script>
 <script type="application/json" id="i18nX_v72export" data-i18n>{"X ב-RoadRunner (אינץ׳)": "X in RoadRunner (inches)", "Y ב-RoadRunner (אינץ׳)": "Y in RoadRunner (inches)", "כיוון ב-RoadRunner במעלות — ריק: לאורך הנסיעה": "Heading in RoadRunner, degrees — empty: along the path", "פונה לכוורת": "Face the hive", "פעולה": "Action", "מספר לא תקין": "Invalid number", "אין במסלול נקודות ״ירי מעמדת הירי״": "The path has no \"Shoot from the shooting spot\" points", "באמצע מאץ׳ — הקפאה בין מאצ׳ים": "Mid-match — freeze between matches", "בהרצה לא נורתה אף ירייה מעמדת הירי — אין מה להקפיא": "The run fired no shot from a shooting spot — nothing to freeze", "עמדות ירי שהוקפאו": "Shooting spots frozen", "המסלול שבעורך הועבר לברית השנייה": "The editor path was moved to the other alliance", "עמדות ירי": "Shooting spots", "מההרצה": "from the run", "יחושבו בהרצה": "computed during the run", "כל ״ירי מעמדת הירי״ הופך ל״ירי״ בעמדה שממנה הסימולטור באמת ירה": "Every \"Shoot from the shooting spot\" becomes \"Shoot\" at the spot the simulator actually shot from", "הקפא עמדות ירי": "Freeze shoot spots", "📌 הקפא עמדות ירי": "📌 Freeze shoot spots", "מגבלות הנסיעה של RoadRunner": "RoadRunner drive constraints", "מההגדרות של MecanumDrive אצלכם. משמשות להערכת הזמן של RR (פרופיל טרפז על הקטעים המיוצאים), לזמן הפנוי במחולל ובמתכנן, ונכתבות בראש הקוד.": "From your MecanumDrive settings. Used for the RR time estimate (trapezoid profile over the exported segments), for the free time in the generator and planner, and written at the top of the code.", "פרופיל טרפז על הקטעים המיוצאים": "trapezoid profile over the exported segments", "אצלכם. משמשות להערכת הזמן של": "settings. Used for the time estimate of", "מההגדרות של": "From your", "לזמן הפנוי במחולל ובמתכנן, ונכתבות בראש הקוד": "for the free time in the generator and planner, and written at the top of the code"}</script>
 <script type="application/json" id="i18nX_v72corner" data-i18n>{"עמדת הפתיחה שלי": "My starting position", "פינה": "Corner", "פינת הפתיחה": "Starting corner", "השותף": "Partner", "השותף מתחיל ב": "Partner starts in ", "לכל פינה אוטונומי משלה": "each corner has its own autonomous", "העורך, המסלול האחרון, המחולל והמתכנן — לפינה הזאת": "Editor, last path, generator and planner — for this corner", "השותף ב": "partner in ", "אי אפשר להחליף פינה באמצע מאץ׳ או ריצה": "Can't switch corners during a match or a run", "הוחלפה פינה": "Corner switched", "נשמר לפינה": "saved for corner", "הכי גרוע": "worst", "זמן פנוי": "free time", "עמיד": "Robust", "ריצות עם שגיאות": "runs with errors", "עמיד · 3 ריצות עם שגיאות": "Robust · 3 runs with errors", "מתכנן עמיד — כל מועמד 3 פעמים עם שגיאות (עמדה ±1″/±2°, מהירות 90%, איסוף +0.3 שנ׳)": "Robust planner — each candidate 3 times with errors (start ±1″/±2°, speed 90%, intake +0.3 s)", "בדיקת התאמה — האוטונומי שלי והשותף יחד": "Compatibility check — my autonomous and my partner's together", "ייבא את המסלול של השותף": "Import partner's path", "מהחצים בלוח האסטרטגיה": "From the strategy board arrows", "אם יש התנגשות — לנסות המתנה בהתחלה (1–3 שנ׳)": "If there's a conflict — try waiting at the start (1–3 s)", "▶ בדוק יחד (30 שנ׳)": "▶ Check together (30 s)", "נקה סימון": "Clear marker", "המסלול שבעורך רץ אצלי, ומסלול השותף רץ על הבוט השותף מהפינה השנייה — אותה תוכנית צעדים, אותה פיזיקה, בלי יריבים. נבדק: מגע בין שני הרובוטים, שניהם באותו פרח בהפרש של פחות מ-3 שנ׳, ועמדות ירי שחופפות. ההתנגשות הראשונה מסומנת על הזירה בטבעת אדומה. השותף מייבא את הטקסט ש״העתק כטקסט״ נותן במחשב שלו.": "The path in the editor runs on my robot, and the partner's path runs on the partner bot from the other corner — same step program, same physics, no opponents. Checked: contact between the two robots, both at the same flower less than 3 s apart, and overlapping shooting spots. The first conflict is marked on the field with a red ring. The partner's path is the text \"Copy as text\" gives on their computer.", "🧾 כרטיס לבור — יום תחרות": "🧾 Pit card — match day", "כרטיס לבור": "Pit card", "האוטונומי לכל פינה, להדפסה": "Autonomous for each corner, printable", "כרטיס לבור — האוטונומי לכל פינה, להדפסה": "Pit card — autonomous for each corner, printable", "מסלול השותף": "Partner's path", "⚠ המסלול של השותף נבנה לאותה פינה כמו שלי — הוא יתחיל מהפינה השנייה": "⚠ The partner's path was built for my corner — it will start from the other corner", "המסלול של השותף נבנה לאותה פינה כמו שלי — הוא יתחיל מהפינה השנייה": "The partner's path was built for my corner — it will start from the other corner", "אין חץ שיוצא מהשותף בלוח האסטרטגיה": "No arrow starts at the partner on the strategy board", "מלוח האסטרטגיה": "From the strategy board", "הבדיקה רצה בין מאצ׳ים — עצור קודם מה שרץ": "The check runs between matches — stop what's running first", "קודם מייבאים את המסלול של השותף": "Import the partner's path first", "אין מסלול בעורך — צריך את המסלול שלי": "No path in the editor — my path is needed", "בודק…": "Checking…", "עמדות": "Positions", "עוד לא יובא": "not imported yet", "הודעה": "Message", "נקודות יחד": "Points together", "התנגשויות": "Conflicts", "אין ✓": "None ✓", "הראשונה": "First", "מגע בין הרובוטים": "Contact between the robots", "אותו פרח בהפרש של פחות מ-3 שנ׳": "Same flower less than 3 s apart", "עמדות ירי חופפות": "Overlapping shooting spots", "המתנה בהתחלה": "Wait at start", "המתנה של": "A wait of", "שנ׳ מבטלת את ההתנגשויות": "s removes the conflicts", "לא עזרה — צריך לשנות את אחד המסלולים": "didn't help — change one of the paths", "מה שבעורך": "What's in the editor", "תאריך": "Date", "עוד אין מאצ׳ים (תרגילים לא נספרים)": "No matches yet (drills don't count)", "לא הסתיים ב-30 שנ׳": "didn't finish in 30 s", "לא הסתיים ב": "didn't finish in", "בלי התנגשויות ✓": "No conflicts ✓", "נק׳ יחד": "pts together", "עוד לא נבדק מול השותף": "Not checked against the partner yet", "האוטונומי לפינה הזאת": "Autonomous for this corner", "נשמר לפינה האחרת": "saved for the other corner", "נקודות צפויות": "Expected points", "יציאה · חניה": "Leave · park", "ריצה משוערת": "Estimated run", "נמדד עכשיו: 30 שנ׳ אוטונומי בסימולטור, בלי יריבים": "Measured now: 30 s of autonomous in the simulator, no opponents", "זמן ההפקה": "Generated at", "בדיקת התאמה עם השותף": "Compatibility check with the partner", "10 המאצ׳ים האחרונים": "Last 10 matches", "המאצ׳ים האחרונים": "last matches", "הדפס": "Print", "🖨 הדפס": "🖨 Print", "הכרטיס נבנה בין מאצ׳ים — עצור קודם מה שרץ": "The card is built between matches — stop what's running first", "בונה את הכרטיס — מודד את האוטונומי בכל פינה…": "Building the card — measuring the autonomous at each corner…", "הכרטיס ירד — פותחים ומדפיסים": "Card downloaded — open it and print", "🧾 כרטיס לבור": "🧾 Pit card"}</script>
@@ -6753,7 +6768,7 @@ function aiStep(b,dt){
 function myBraked(dr,kt){ return dr<0.02&&Math.abs(kt)<0.02&&!RUN.on&&!ASSIST.job&&!(MATCH.on&&MATCH.phase==="AUTO"); }
 /* 1.12.5: רובוט בשליטת אדם בלי פקודת נסיעה — הגלגלים בבלימה, כמו אצלי */
 function humBraked(b){
-  if(!b.hum||!(humLive(b)||b.hum.src!=="net")) return false;
+  if(!b.hum||!humDrives(b)) return false;   /* v74 net N8 */
   if(MATCH.cd>0||MATCH.locked||MATCH.phase==="סיום"||(MATCH.on&&MATCH.phase==="AUTO")) return false;
   const c=b.hum.cmd; return !humLive(b)||(Math.abs(c.x)<0.02&&Math.abs(c.y)<0.02);
 }
@@ -6778,7 +6793,7 @@ function aiStepDrive(b,dt){
   if(MATCH.cd>0||MATCH.locked||MATCH.phase==="סיום"){ b.vx=b.vz=0;
     b.body.velocity.x=0; b.body.velocity.z=0; b.ph="ממתין"; }
   else if(MATCH.on&&MATCH.phase==="AUTO") aiAutoStep(b,dt);
-  else if(b.hum&&(humLive(b)||b.hum.src!=="net")) humStep(b,dt);
+  else if(b.hum&&humDrives(b)) humStep(b,dt);   /* v74 net N8: אורח שותק — בלימה 5 שניות לפני שהבוט לוקח */
   else if(brainParkNow(b,dt)) aiParkStep(b,dt);
   else if(b.role==="score") aiScoreStep(b,dt); else aiDefendStep(b,dt);
 }
@@ -6842,7 +6857,7 @@ function brainReset(){
   for(const b of BOTS){ b.roleT=0; b.spot=null; b.spotT=0; b.foe=null; b.foeT=0; b.parkS=null; b.parkBlk=null;
     b.parkGo=false; b.parkA=false; b.parkChk=0; b.learnT=0; b.relocs=0; b.relocN=0; }
 }
-function brainHuman(b){ return !!(b&&b.hum&&(humLive(b)||b.hum.src!=="net")); }
+function brainHuman(b){ return !!(b&&b.hum&&humDrives(b)); }
 /* כל הרובוטים בזירה בתיאור אחד. ix/iz = לאן הנהג מנסה לנסוע (0..1) —
    אצל בוטים ואצל שחקנים אנושיים זו המהירות המבוקשת, לא מה שהפיזיקה נתנה. */
 function brainRobots(){
@@ -10610,6 +10625,7 @@ on($("bCamChase"),()=>camPick("chase"));
 on($("bCamTop"),  ()=>camPick("top"));
 function setOri(fieldMode){
   fieldCentric=!!fieldMode;
+  if(!fieldCentric&&typeof PADYAW!=="undefined"&&PADYAW) PADYAW.on=false;   /* v74 net U5 */
   const c=$("kFC"); if(c) c.checked=fieldCentric;
   refreshOri(); syncBar();
 }
@@ -11653,7 +11669,9 @@ const PADACT={
   turretR:{label:"צריח ימינה", kind:"bool", get:()=>!!(BLD&&BLD.tur.cmd<0), set:v=>bldTurCmd(-1,v)},
   turretAuto:{label:"צריח — מכוון לבד", kind:"bool", get:()=>!!(BLD&&BLD.tur.auto), set:v=>bldTurAuto(v)},
   lift:   {label:"מעלית — להפקיד בפרח", kind:"edge", run:()=>bldLiftGo()},
-  builder:{label:"בונה רובוטים", kind:"edge", run:()=>bldOpen()}
+  builder:{label:"בונה רובוטים", kind:"edge", run:()=>bldOpen()},
+  /* v74 net U5: כמו איפוס חיישן הכיוון באמצע מאץ׳ — הכיוון שהרובוט פונה אליו עכשיו הוא ״קדימה״ בציר המגרש */
+  yawReset:{label:"איפוס כיוון (ציר המגרש)", kind:"edge", run:()=>padYawReset()}
 };
 const MODEOK={edge:["press"], bool:["toggle","hold"], fire:["press","hold"], fine:["hold"]};
 const MODENAME={press:"לחיצה", toggle:"מתג", hold:"החזקה"};
@@ -11674,6 +11692,17 @@ const PADDEF={
   12:{a:"best",m:"press"},    13:{a:"park",m:"press"},    14:{a:"flower",m:"press"},
   15:{a:"axis",m:"toggle"},   16:{a:"none",m:"press"}
 };
+/* ══════ v74 net — מצב השלט (U5) ונהג + מפעיל (U8). var: קיים לפני הקריאה הראשונה של padPoll ══════ */
+var PSH={expo:0, slow:0.28, max:100};          /* עקומה שלישית 0..1, מהירות במצב דיוק מלא, אחוז מהירות מרבית */
+try{ const o=JSON.parse(localStorage.getItem("bbPadShape1")||"null");
+  if(o){ const f=(v,lo,hi,d)=>isFinite(+v)?Math.max(lo,Math.min(hi,+v)):d;
+    PSH.expo=f(o.expo,0,1,0); PSH.slow=f(o.slow,0.1,1,0.28); PSH.max=f(o.max,30,100,100); } }catch(e){}
+var PADYAW={on:false, yaw:0};                  /* ״איפוס כיוון״: ״קדימה״ של ציר המגרש = הכיוון שהרובוט פנה אליו */
+var OPR={on:false, idx:null, prev:{}, fireT:99};
+var OPR_ACTS=["fire","autofire","intake","assist","tip","lift","turretL","turretR","turretAuto"];
+var OPRDEF={7:{a:"fire",m:"press"},6:{a:"autofire",m:"press"},5:{a:"intake",m:"toggle"},4:{a:"assist",m:"toggle"},
+  3:{a:"tip",m:"press"},0:{a:"lift",m:"press"},2:{a:"turretAuto",m:"toggle"},14:{a:"turretL",m:"hold"},15:{a:"turretR",m:"hold"},1:{a:"fire",m:"hold"}};
+var OPRB={};
 const PADBKEY="bbPadBind1";
 let PADB={};
 function padBindReset(save){
@@ -11696,7 +11725,7 @@ function padBtnName(i){
 }
 let padLive=null;
 /* שלט שתפוס על ידי שחקן אחר (מסך מפוצל או עמדה) לא נוהג ברובוט שלי */
-function padClaimed(i){ return (typeof SPLIT!=="undefined"&&SPLIT.on&&SPLIT.padIdx===i)||
+function padClaimed(i){ return (typeof OPR!=="undefined"&&OPR.on&&OPR.idx===i)||(typeof SPLIT!=="undefined"&&SPLIT.on&&SPLIT.padIdx===i)||
   (typeof NET!=="undefined"&&netPadTaken(i)); }
 function padPoll(dt){
   PAD.lastDt=dt||0;
@@ -11713,8 +11742,7 @@ function padPoll(dt){
     PADT.name=PADMAP[PADT.kind].name; updatePadBadge();
     /* שלט חדש מסוג אחר — שמות הכפתורים בטבלה משתנים לשמות שלו */
     if(PADT.kind!==wasKind) padBindsBuild(); }
-  const dead=P.padDead===undefined?PAD.dead:P.padDead;
-  const dz=v=>Math.abs(v)<dead?0:(v-Math.sign(v)*dead)/(1-dead);
+  const dz=padShape;   /* v74 net U5: אזור מת, עקומה שלישית ומהירות מרבית — אותה פונקציה לכל השלטים */
   const btn=i=>!!(g.buttons[i]&&g.buttons[i].pressed);
   const val=i=>g.buttons[i]?g.buttons[i].value:0;
   PAD.trigL=val(6); PAD.trigR=val(7);
@@ -11725,7 +11753,7 @@ function padPoll(dt){
   for(const c of PADCTRL){ const bd=PADB[c.i];
     if(bd&&PADACT[bd.a]&&PADACT[bd.a].kind==="fine")
       PAD.fineV=Math.max(PAD.fineV,(c.i===6||c.i===7)?val(c.i):(btn(c.i)?1:0)); }
-  const fine=1-0.72*PAD.fineV;
+  const fine=padFine(PAD.fineV);
   touch.x= dz(g.axes[0]||0)*fine;
   touch.y=-dz(g.axes[1]||0)*fine;
   touch.turn=-dz(g.axes[2]||0)*fine;
@@ -11734,7 +11762,7 @@ function padPoll(dt){
   if(typeof PS!=="undefined"&&PS.open){ psListen(g); for(const c of PADCTRL) PAD.prev[c.i]=btn(c.i); touch.x=0; touch.y=0; touch.turn=0; PAD.fire=false; return; }
   for(const c of PADCTRL){
     const i=c.i, bd=PADB[i]; if(!bd) continue;
-    const A=PADACT[bd.a]; if(!A||bd.a==="none"){ PAD.prev[i]=btn(i); continue; }
+    const A=PADACT[bd.a]; if(!A||bd.a==="none"||(OPR.on&&OPR_ACTS.indexOf(bd.a)>=0)){ PAD.prev[i]=btn(i); continue; }   /* v74 net U8: פעולות המפעיל — רק בשלט 2 */
     const analog=(i===6||i===7);
     const now=analog?(val(i)>0.35):btn(i);
     const was=!!PAD.prev[i];
@@ -11754,6 +11782,7 @@ function padPoll(dt){
     if(PAD.fireT>=gap&&bot.mag>0){ PAD.fireT=0; if(uFire()) padRumble(g,0.55,0.25,90); }
   } else PAD.fireT=99;
   PAD.fire=PAD.fireHold;
+  oprPoll(dt);   /* v74 net U8: שלט 2 — המפעיל */
 }
 
 /* ══════ דימוי השלט ══════
@@ -11816,16 +11845,20 @@ function padPicSync(force){
   document.querySelectorAll("#padBinds .brow").forEach(r=>{
     const i=+r.dataset.b; r.classList.toggle("dn",!!(g&&g.buttons[i]&&g.buttons[i].pressed)); });
 }
-function padBindsBuild(){
+function padBindsBuild(o){
+  /* v74 net U8: אותו עורך גם למיפוי של שלט 2 (המפעיל) — o={host,B,save,acts,id} */
+  o=o||{};
+  if(!o.host){ try{ oprBindsBuild(); }catch(e){} }
   padPicSync._off=false;
-  const host=$("padBinds"); if(!host) return;
-  const acts=Object.keys(PADACT);
+  const host=o.host||$("padBinds"); if(!host) return;
+  const B=o.B||PADB, sv=o.save||padBindSave, rb=()=>padBindsBuild(o);
+  const acts=o.acts||Object.keys(PADACT), pfx=o.id||"";
   let h="", grp="";
   for(const c of PADCTRL){
-    const i=c.i, bd=PADB[i]||{a:"none",m:"press"};
+    const i=c.i, bd=B[i]||{a:"none",m:"press"};
     if(c.g!==grp){ grp=c.g; h+='<div class="bgrp">'+grp+'</div>'; }
     const ok=MODEOK[PADACT[bd.a]?PADACT[bd.a].kind:"edge"];
-    h+='<div class="brow'+(padSel===i?" sel":"")+'" id="brow'+i+'" data-b="'+i+'">'+
+    h+='<div class="brow'+(!pfx&&padSel===i?" sel":"")+'" id="brow'+pfx+i+'" data-b="'+i+'">'+
        '<b>'+padBtnName(i)+'</b>'+
        '<select data-act="'+i+'">'+acts.map(k=>'<option value="'+k+'"'+
          (k===bd.a?" selected":"")+'>'+PADACT[k].label+'</option>').join("")+'</select>'+
@@ -11836,11 +11869,11 @@ function padBindsBuild(){
   host.innerHTML=h;
   host.querySelectorAll("select[data-act]").forEach(e=>e.addEventListener("change",()=>{
     const i=+e.dataset.act, a=e.value, A=PADACT[a];
-    PADB[i]={a:a,m:MODEOK[A.kind].indexOf(PADB[i].m)>=0?PADB[i].m:MODEOK[A.kind][0]};
-    padBindSave(); padBindsBuild(); }));
+    B[i]={a:a,m:MODEOK[A.kind].indexOf(B[i].m)>=0?B[i].m:MODEOK[A.kind][0]};
+    sv(); rb(); }));
   host.querySelectorAll("button[data-mode]").forEach(e=>on(e,()=>{
-    const i=+e.dataset.mode; PADB[i]={a:PADB[i].a,m:e.dataset.m};
-    padBindSave(); padBindsBuild(); }));
+    const i=+e.dataset.mode; B[i]={a:B[i].a,m:e.dataset.m};
+    sv(); rb(); }));
 }
 
 
@@ -11848,8 +11881,8 @@ function padBindsBuild(){
 const PSICO={none:"⊘",fire:"🎯",fine:"🐢",intake:"🌀",assist:"🧲",axis:"🧭",chase:"🎥",ref:"🧑‍⚖️",slow:"🐌",pause:"⏸",
   qual:"⚙️",route:"〰️",traj:"⤴️",tip:"🔄",home:"🏠",cancel:"✋",autofire:"🔥",best:"⭐",flower:"🌸",park:"🅿️",
   match:"▶️",driver:"👁",camtop:"🛰",nectar:"🍯",dump:"🗑",demo:"🤖",sound:"🔇",
-  turretL:"↶",turretR:"↷",turretAuto:"🎯",lift:"🛗",builder:"🛠"};
-const PSGRP=[["נהיגה",["fire","fine","intake","assist","axis","dump"]],
+  turretL:"↶",turretR:"↷",turretAuto:"🎯",lift:"🛗",builder:"🛠",yawReset:"🧭"};
+const PSGRP=[["נהיגה",["fire","fine","intake","assist","axis","yawReset","dump"]],
   ["✨ קסם",["best","flower","autofire","park","cancel","tip","home","nectar","demo"]],
   ["🛠 מערכות",["turretAuto","turretL","turretR","lift","builder"]],
   ["מצלמה",["chase","driver","camtop"]],
@@ -11955,7 +11988,7 @@ function psAssign(a){
 function psAfter(){ psSync(true); try{ padBindsBuild(); }catch(e){} }
 function padStudioOpen(){
   const m=$("padStudio"); if(!m) return;
-  PS.open=true; PS.prev={}; m.hidden=false; psBuild();
+  PS.open=true; PS.prev={}; m.hidden=false; psBuild(); try{ psShapeBuild(); }catch(e){}   /* v74 net U5/U8 */
   if(PS.sel==null) psPick();
   (function loop(){ if(!PS.open) return; psSync(false); requestAnimationFrame(loop); })();
 }
@@ -12296,7 +12329,7 @@ addEventListener("orientationchange",()=>setTimeout(resize,260));
 let last=performance.now(),hudT=0,aimT=0,simT=0,clkT=0,tipT=0,fastMode=false;
 let physAcc=0;   /* v63: זמן פיזיקה שעוד לא נצעד (תת־צעדים של 1/120) */
 const upV=new CANNON.Vec3(0,1,0);
-const _sF=new THREE.Vector3(), _sR=new THREE.Vector3(), _sDR=new THREE.Vector3(), _sUP=new THREE.Vector3(0,1,0),
+const _sF2=new THREE.Vector3(), _sF=new THREE.Vector3(), _sR=new THREE.Vector3(), _sDR=new THREE.Vector3(), _sUP=new THREE.Vector3(0,1,0),
       _sMouth=new THREE.Vector3(), _sRel=new THREE.Vector3(), _sCam=new THREE.Vector3();
 function stepSim(dt){
   /* v63: השהיה עוצרת הכול — שעון, בוטים, שופט, שחקן אנושי, כוורות. הקלט עדיין נקרא
@@ -12347,7 +12380,7 @@ function stepSim(dt){
     /* ״קדימה״ נמדד מעמדת הנהג ולא מהמצלמה. ברובוט אמיתי ה-IMU מאופס
        לכיוון הקיר של הברית בתחילת המאץ׳, והוא לא מסתובב כשהמצלמה זזה —
        אחרת כל שינוי תצוגה היה משנה לנהג את משמעות הסטיק באמצע נסיעה. */
-    dF=driverFwd();
+    dF=PADYAW.on?_sF2.set(Math.sin(PADYAW.yaw),0,Math.cos(PADYAW.yaw)):driverFwd();   /* v74 net U5: ״איפוס כיוון״ */
     dR=_sDR.copy(dF).cross(_sUP).normalize();
   }
   // הפיקוד מגיע ממערכת הצירים של המצלמה או של הרובוט, ומתורגם לצירי הגוף
@@ -12681,7 +12714,7 @@ function sceneTris(){
    יתרון לאף אחד: אותה שלדה, אותו חרטום, אותו משגר.
    cmd: x ימינה, y קדימה (שניהם −1..1), t סיבוב שמאלה חיובי,
         fire / intake / aim בוליאניים, fc = ציר הנהג (true) או ציר הרובוט. */
-const HUM={staleMs:900};
+const HUM={staleMs:900, netGraceMs:5000};   /* v74 net N8: אורח שותק — 5 שניות בלימה לפני שהבוט לוקח */
 function humSeat(b,src,label){
   b.hum={src:src, label:label||"", cmd:{x:0,y:0,t:0,fire:false,intake:false,aim:false,fc:true},
          at:performance.now(), prevFire:false, fireT:99, fired:0};
@@ -12694,11 +12727,13 @@ function humFeed(b,cmd){
   c.x=cl(cmd.x); c.y=cl(cmd.y); c.t=cl(cmd.t);
   c.fire=!!cmd.fire; c.intake=!!cmd.intake; c.aim=!!cmd.aim;
   if(cmd.fc!==undefined) c.fc=!!cmd.fc;
+  if(cmd.yr) b.hum.yaw0=b.yaw;   /* v74 net U5: כפתור ״בחירה/שיתוף״ — איפוס כיוון */
   b.hum.at=performance.now();
 }
 function humLive(b){ return !!(b&&b.hum&&performance.now()-b.hum.at<HUM.staleMs); }
 /* הכיוון ״קדימה״ של הנהג: מהעמדה שלו אל מרכז הזירה */
-function humDriverFwd(b){ const d=humStation(b); const v=new THREE.Vector3(-d.x,0,-d.z);
+function humDriverFwd(b){ if(b.hum&&b.hum.yaw0!=null) return new THREE.Vector3(Math.sin(b.hum.yaw0),0,Math.cos(b.hum.yaw0));   /* v74 net U5: איפוס כיוון */
+  const d=humStation(b); const v=new THREE.Vector3(-d.x,0,-d.z);
   if(v.lengthSq()<1e-9) v.set(1,0,0); return v.normalize(); }
 /* עמדת הנהג של רובוט: לפי הברית שלו, והעמדה שהשחקן הראשון לא תופס */
 function humStation(b){
@@ -12882,12 +12917,13 @@ function splitPoll(){
   SPLIT.padIdx=g?g.index:null;
   let cmd;
   if(g){
-    const dead=0.12, dz=v=>Math.abs(v)<dead?0:(v-Math.sign(v)*dead)/(1-dead);
+    const dz=padShape;   /* v74 net U5 */
     const btn=i=>!!(g.buttons[i]&&g.buttons[i].pressed), val=i=>g.buttons[i]?g.buttons[i].value:0;
-    const fine=1-0.72*val(6);
+    const fine=padFine(val(6));
     const lb=btn(4); if(lb&&!SPLIT.prevLB) SPLIT.intakeOn=!SPLIT.intakeOn; SPLIT.prevLB=lb;
+    const bk=btn(8), yr=bk&&!SPLIT.prevBk; SPLIT.prevBk=bk;
     cmd={x:dz(g.axes[0]||0)*fine, y:-dz(g.axes[1]||0)*fine, t:-dz(g.axes[2]||0)*fine,
-         fire:val(7)>0.35||btn(0), intake:SPLIT.intakeOn||btn(5), aim:btn(3), fc:SPLIT.fc};
+         fire:val(7)>0.35||btn(0), intake:SPLIT.intakeOn||btn(5), aim:btn(3), fc:SPLIT.fc, yr:yr?1:0};
   } else {
     const k=keys;
     const sl=!!k.Slash; if(sl&&!SPLIT.prevSlash) SPLIT.intakeOn=!SPLIT.intakeOn; SPLIT.prevSlash=sl;
@@ -12918,12 +12954,14 @@ function splitSet(v,opt){
   if(opt.side) SPLIT.side=opt.side;
   if(opt.fc!==undefined) SPLIT.fc=!!opt.fc;
   const was=SPLIT.on;
+  if(v&&!was&&!v74SplitOk()) return;   /* v74 net N5 (אורח) · U8 (נהג + מפעיל) */
   if(v!==undefined) SPLIT.on=!!v&&!PHONE;
   if(!B_BLUE1) buildOpp();
   if(SPLIT.on){
-    /* v63: לא לוקחים עמדה של אורח ברשת (הוא היה ממשיך לשלוח קלט בלי לדעת שהרובוט כבר לא שלו) */
+    /* v63: לא לוקחים עמדה של אורח ברשת (הוא היה ממשיך לשלוח קלט בלי לדעת שהרובוט כבר לא שלו)
+       v74 net N4: וגם לא של הטלפון או של שלט בעמדה */
     { const cur=splitBot();
-      if(cur&&cur.hum&&cur.hum.src==="net"){
+      if(cur&&cur.hum&&cur.hum.src!=="split"){
         const alt=BOTS.findIndex(o=>o&&!o.hum);
         if(alt>=0) SPLIT.seat=alt;
         else { SPLIT.on=false; try{ refToast("כל העמדות תפוסות בשחקנים — אין מקום לשחקן 2","block"); }catch(e){}
@@ -13198,10 +13236,10 @@ function netSeatInfo(s){
   if(s===0) return {kind:"host", name:NET.name||"המארח", ally:myAlly()};
   const b=netSeatBot(s); if(!b) return {kind:"none"};
   const h=b.hum;
-  if(h&&h.src==="net") return {kind:"net", name:h.label, id:h.id, ally:b.ally};
+  if(h&&h.src==="net") return {kind:"net", name:h.label, id:h.id, ally:b.ally, idle:h.gone?false:!humDrives(b), gone:!!h.gone};
   if(h&&h.src==="pad") return {kind:"pad", name:"שלט "+(h.padIdx+1), pad:h.padIdx, ally:b.ally};
   if(h&&h.src==="split") return {kind:"split", name:"שחקן 2 · מסך מפוצל", ally:b.ally};
-  if(h&&h.src==="phone") return {kind:"pad", name:"טלפון עם קוד QR", ally:b.ally};
+  if(h&&h.src==="phone") return {kind:"pad", name:"טלפון עם קוד QR", ally:b.ally, phone:true};   /* v74 net N4 */
   return {kind:"bot", name:b.on?b.name:"כבוי", ally:b.ally};
 }
 /* עמדת הנהג של כל עמדה: לכל ברית שתי עמדות, והראשון בסדר העמדות מקבל
@@ -13218,18 +13256,20 @@ function netStationOf(s,allies){
 function netPadSeat(s,padIdx){
   const b=netSeatBot(s); if(!b) return;
   if(padIdx===null||padIdx===undefined){ if(b.hum&&b.hum.src==="pad") humFree(b); netRefresh(); return; }
+  if(!v74PadSeatOk(b)) return;   /* v74 net N4 · U8 */
   for(const o of BOTS) if(o.hum&&o.hum.src==="pad"&&o.hum.padIdx===padIdx) humFree(o);
   gameJoinSeat(b);
   b.on=true; humSeat(b,"pad","שלט "+(padIdx+1)); b.hum.padIdx=padIdx; b.hum.intakeOn=false;
   netRefresh();
 }
 function padToCmd(g,st){
-  const dead=0.12, dz=v=>Math.abs(v)<dead?0:(v-Math.sign(v)*dead)/(1-dead);
+  const dz=padShape;   /* v74 net U5: אותה עקומה לכל השלטים */
   const btn=i=>!!(g.buttons[i]&&g.buttons[i].pressed), val=i=>g.buttons[i]?g.buttons[i].value:0;
-  const fine=1-0.72*val(6);
+  const fine=padFine(val(6));
   const lb=btn(4); if(lb&&!st.prevLB) st.intakeOn=!st.intakeOn; st.prevLB=lb;
+  const bk=btn(8), yr=bk&&!st.prevBk; st.prevBk=bk;
   return {x:dz(g.axes[0]||0)*fine, y:-dz(g.axes[1]||0)*fine, t:-dz(g.axes[2]||0)*fine,
-          fire:val(7)>0.35||btn(0), intake:!!st.intakeOn||btn(5), aim:btn(3), fc:true};
+          fire:val(7)>0.35||btn(0), intake:!!st.intakeOn||btn(5), aim:btn(3), fc:true, yr:yr?1:0};
 }
 function netLocalPads(){
   if(typeof phoneFeed==="function") phoneFeed();
@@ -13254,8 +13294,9 @@ function netClose(why){
   if(why&&NET.mode!=="solo") netFailToast(why);
   try{ if(SKIN.remote||Object.keys(SKIN.net).length){ SKIN.remote=null; SKIN.net={}; setTimeout(skinApplyAll,0); } }catch(e){}
   try{ bldNetReset(); }catch(e){}
-  if(NET.sock){ try{ NET.sock.onclose=null; NET.sock.close(); }catch(e){} }
+  if(NET.sock){ try{ if(NET.mode==="guest") netSend({t:"bye"}); NET.sock.onclose=null; NET.sock.close(); }catch(e){} }   /* v74: יציאה מכוונת — המארח לא שומר את העמדה */
   NET.sock=null;
+  if(NET.rc&&NET.rc.t){ clearTimeout(NET.rc.t); } NET.rc=null; NET.st=null;   /* v74 */
   for(const b of BOTS) if(b.hum&&b.hum.src==="net") humFree(b);
   const wasGuest=NET.mode==="guest";
   if(NET.spec) netSpecView(false); NET.specs=[];   /* v70 */
@@ -13268,9 +13309,9 @@ function netOpenSock(url,onOpen){
   let s=null;
   try{ s=new WebSocket(url); }catch(e){ NET.err="הדפדפן חסם את החיבור — פתחו את הסימולטור מהגשר"; netRefresh(); return null; }
   s.binaryType="arraybuffer";
-  s.onopen=()=>{ NET.err=""; onOpen&&onOpen(); netRefresh(); };
+  s.onopen=()=>{ NET.err=""; s._open=true; onOpen&&onOpen(); netRefresh(); };
   s.onerror=()=>{ if(!NET.err) NET.err="אין גשר בכתובת הזאת"; };
-  s.onclose=()=>{ if(NET.sock===s) netClose(NET.err||"החיבור נסגר"); };
+  s.onclose=()=>{ if(NET.sock===s&&!v74Reconnect(s)) netClose(NET.err||"החיבור נסגר"); };   /* v74: אורח — 3 ניסיונות חיבור חוזר */
   s.onmessage=e=>netOnMsg(e.data);
   /* כתובת שלא עונה — לא נתקעים על ״מתחבר…״ לנצח */
   setTimeout(()=>{ if(NET.sock===s&&s.readyState===0){ NET.err="לא הצלחתי להתחבר — המחשבים באותה רשת? הגשר פועל?"; try{ s.close(); }catch(e){} netClose(NET.err); } },8000);
@@ -13296,6 +13337,7 @@ function netJoin(txt,name,opt){
   NET.wantSpec=!!(opt&&opt.spec);
   const u="ws://"+r.host+":"+r.port+"/ws?role=guest&k="+r.key+"&n="+encodeURIComponent((NET.wantSpec?NET_SPEC_MARK:"")+(NET.name||"אורח"));
   /* נכנסים למצב אורח רק כשהחיבור באמת נפתח */
+  NET.rc={url:u,n:0,seat:null,t:0}; NET.rcNo=false;   /* v74: לחיבור חוזר */
   netOpenSock(u,()=>netGuestEnter());
   netRefresh(); return true;
 }
@@ -13310,23 +13352,23 @@ function netOnMsg(data){
       NET.key=(+m.key>>>0)||0; NET.code=netStr(m.code,24);
       NET.port=(+m.port>0&&+m.port<65536)?+m.port|0:NET.port; }
     else if(m.t==="gj"){ const g=netGuestNew(m.name); NET.guests[m.id]=g; netAutoSeat(m.id); try{ brdNetJoin(m.id); }catch(e){} }  /* v70: 👁 בתחילת השם = ביקש לצפות · הלוח נשלח לכל מי שנכנס */
-    else if(m.t==="gl"){ netUnseat(m.id); delete NET.guests[m.id]; }
+    else if(m.t==="gl"){ v74HoldSeat(m.id); delete NET.guests[m.id]; netRoom(); }   /* v74: העמדה נשמרת 15 שנ׳ לחיבור חוזר */
     else if(m.t==="g"&&m.m) netFromGuest(m.id,m.m);
     netRefresh();
   } else if(NET.mode==="guest"){
     if(m.t==="seat"){ NET.err=""; NET.hostGone=false;   /* 1.12.5: המארח חזר — ההערה הישנה יורדת */
-      NET.seat=(m.seat|0)===m.seat&&m.seat>=0&&m.seat<=3?m.seat:null; if(NET.spec) netSpecView(false); m.allies=netAlliesOk(m.allies); netGuestCam(m.allies); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
+      NET.seat=(m.seat|0)===m.seat&&m.seat>=0&&m.seat<=3?m.seat:null; if(NET.spec) netSpecView(false); m.allies=netAlliesOk(m.allies); netStOk(m.st); netGuestCam(m.allies); v74RcSeated(); try{ netSend({t:"skin",s:SKIN.me}); }catch(e){}
       try{ netSend({t:"build",b:bldPack(bldById(BLD.sel.me))}); }catch(e){} }
-    else if(m.t==="spec"){ NET.seat=null; NET.stationK=null; netSpecView(true); netRefresh(); }   /* v70: נכנסתי כצופה */
+    else if(m.t==="spec"){ NET.seat=null; NET.stationK=null; netSpecView(true); v74RcSeated(); netRefresh(); }   /* v70: נכנסתי כצופה */
     else if(m.t==="builds"){ try{ bldFromHost(m); }catch(e){} }
     else if(m.t==="skins"){ SKIN.remote={me:String(m.me||""),bots:Array.isArray(m.bots)?m.bots.map(String):[]}; skinApplyAll(); }
     else if(m.t==="room"){ NET.seats=(Array.isArray(m.seats)?m.seats.slice(0,4):[]).map(x=>({
-        kind:NET_KINDOK[x&&x.kind]?x.kind:"bot", name:netStr(x&&x.name,20), ally:netAllyOk(x&&x.ally)}));
+        kind:NET_KINDOK[x&&x.kind]?x.kind:"bot", name:netStr(x&&x.name,20), ally:netAllyOk(x&&x.ally), idle:!!(x&&x.idle), gone:!!(x&&x.gone)}));
       NET.hostName=netStr(m.host,20); m.allies=netAlliesOk(m.allies);
       NET.specs=(Array.isArray(m.specs)?m.specs.slice(0,NET_SPEC_MAX):[]).map(x=>netStr(x,20));   /* v70: רשימת הצופים */
-      if(m.allies) NET.allies=m.allies; if(NET.seat!==null) netGuestCam(m.allies);
+      if(m.allies) NET.allies=m.allies; netStOk(m.st); if(NET.seat!==null) netGuestCam(m.allies);
       netRoomExtra(m); netRefresh(); }
-    else if(m.t==="deny"){ NET.err=netStr(m.why,80)||"החדר סירב"; netRefresh(); }
+    else if(m.t==="deny"){ NET.err=netStr(m.why,80)||"החדר סירב"; NET.rcNo=true; netRefresh(); }   /* v74: סירוב — לא מתחברים מחדש */
     else if(m.t==="nohost"){ NET.err="הגשר פתוח אבל אין מארח שפתח חדר"; netHostGone(); netRefresh(); }
     else if(m.t==="nowant"){ try{ refToast(T("🔒 אי אפשר להחליף עמדה באמצע מאץ׳ בתחרות — אחרי המאץ׳"),"block"); }catch(e){} }
     else if(m.t==="pong"){ const r=Math.max(0,performance.now()-(+m.c||0));
@@ -13349,7 +13391,7 @@ function netFreeSeat(){
   return null;
 }
 /* v70: אורח שביקש לצפות, או שכל העמדות תפוסות — נכנס כצופה (עד NET_SPEC_MAX). רק כשגם הצפייה מלאה — מסרבים */
-function netAutoSeat(id){ const g=NET.guests[id], s=g&&g.wantSpec?null:netFreeSeat();
+function netAutoSeat(id){ const g=NET.guests[id], s=g&&g.wantSpec?null:(v74HeldSeatByName(g&&g.name)||netFreeSeat());
   if(s===null){ if(netSpecRoom(id)) netSpecGuest(id); else netSend({to:id,t:"deny",why:"כל העמדות וכל מקומות הצפייה תפוסים"}); return; }
   netSeatGuest(id,s); }
 function netSeatGuest(id,s){
@@ -13358,7 +13400,7 @@ function netSeatGuest(id,s){
   gameJoinSeat(b);
   b.on=true; humSeat(b,"net",(NET.guests[id]&&NET.guests[id].name)||"אורח"); b.hum.id=id;
   NET.guests[id]&&(NET.guests[id].seat=s,NET.guests[id].spec=false);
-  netSend({to:id,t:"seat",seat:s,ally:b.ally,allies:netAllies()});
+  netSend({to:id,t:"seat",seat:s,ally:b.ally,allies:netAllies(),st:netStations()});   /* v74 net N3 */
   netRoom();
 }
 function netUnseat(id,quiet){
@@ -13368,14 +13410,16 @@ function netUnseat(id,quiet){
 function netFromGuest(id,m){
   if(NET.guests[id]&&NET.guests[id].spec&&m.t!=="want"&&m.t!=="ping") return;   /* v70: צופה לא נוהג ולא משנה כלום */
   const b=BOTS.find(o=>o.hum&&o.hum.src==="net"&&o.hum.id===id);
-  if(m.t==="in"&&b) humFeed(b,{x:m.x,y:m.y,t:m.r,fire:m.f,intake:m.i,aim:m.a,fc:m.fc!==0});
+  if(m.t==="in"&&b) humFeed(b,{x:m.x,y:m.y,t:m.r,fire:m.f,intake:m.i,aim:m.a,fc:m.fc!==0,yr:m.yr===1});
   else if(m.t==="want"){ const s=+m.seat;
     /* 1.12.5: בתחרות אין החלפת עמדה / ברית באמצע מאץ׳ (גם לא מעבר לצפייה ובחזרה) */
     if(netSeatLock()){ netSend({to:id,t:"nowant"}); return; }
-    if(s===-1){ if(netSpecRoom(id)) netSpecGuest(id); }        /* v70: ״👁 צפייה״ — מפנה את העמדה */
-    else if(netSeatInfo(s).kind==="bot") netSeatGuest(id,s); }
-  else if(m.t==="ping"){ if(NET.guests[id]) NET.guests[id].rtt=+m.rtt||0; netSend({to:id,t:"pong",c:m.c}); }
-  else if(m.t==="skin") skinFromGuest(id,String(m.s||""));
+    /* v74 net N7: החלפת עמדה (שמאפסת זירה לפני מאץ׳) — לכל היותר פעם בחצי שנייה לאורח; בקשה שנדחית לא נספרת */
+    if(s===-1){ if(netSpecRoom(id)&&v74Throttle(id,"want",500)) netSpecGuest(id); }        /* v70: ״👁 צפייה״ — מפנה את העמדה */
+    else if((netSeatInfo(s).kind==="bot"||v74HeldFor(id,s))&&v74Throttle(id,"want",500)) netSeatGuest(id,s); }
+  else if(m.t==="bye"){ if(NET.guests[id]) NET.guests[id].bye=true; }   /* v74: יציאה מכוונת */
+  else if(m.t==="ping"){ if(!v74Throttle(id,"ping",333)) return; if(NET.guests[id]) NET.guests[id].rtt=+m.rtt||0; netSend({to:id,t:"pong",c:m.c}); }
+  else if(m.t==="skin") v74SkinLater(id,String(m.s||""));   /* v74 net N7: מאוחד, 300 מ״ש */
   else if(m.t==="build") try{ bldFromGuest(id,m.b); }catch(e){}
   else if(m.t==="brd") try{ brdNetIn(m,id); }catch(e){}
 }
@@ -13400,11 +13444,11 @@ function netHostGone(){
 }
 function netRoom(){
   if(NET.mode!=="host") return;
-  const seats=[0,1,2,3].map(s=>{ const i=netSeatInfo(s); return {kind:i.kind,name:i.name,ally:i.ally}; });
+  const seats=[0,1,2,3].map(s=>{ const i=netSeatInfo(s); const o={kind:i.kind,name:i.name,ally:i.ally}; if(i.idle) o.idle=1; if(i.gone) o.gone=1; return o; });   /* v74 net N8 · חיבור חוזר */
   /* 1.12.5: אורכי השלבים (שעון האורח), שמות השידור מנקודת המבט של המארח, ונעילת עמדות בתחרות */
   let bc=null; try{ bc=bcNames(); }catch(e){}
   netSend({to:"*",t:"room",seats,host:NET.name||"המארח",allies:netAllies(),specs:netSpecNames(),
-    mt:[MT.auto,MT.trans,MT.tele],bc,lk:netSeatLock()?1:0});
+    mt:[MT.auto,MT.trans,MT.tele],bc,lk:netSeatLock()?1:0,st:netStations()});   /* v74 net N3: עמדת הנהג של כל עמדה — המארח קובע */
   try{ skinNetClean(); skinNet(); }catch(e){}
   try{ bldNetClean(); bldNet(); }catch(e){}
 }
@@ -13431,7 +13475,7 @@ function netPack(){
 function netHostTick(dt){
   if(NET.mode!=="host"||!NET.sock||NET.sock.readyState!==1) return;
   NET.txT+=dt; NET.roomT+=dt;
-  if(NET.roomT>0.5){ NET.roomT=0; netRoom(); }
+  if(NET.roomT>0.5){ NET.roomT=0; v74HoldTick(); netRoom(); }
   if(fastMode) return;                       /* צעדי בדיקה דטרמיניסטיים לא משדרים */
   if(NET.txT<1/NET_HZ) return; NET.txT=0;
   const a=netPack();
@@ -13443,6 +13487,9 @@ function netGuestEnter(){
   /* אורח ברשת צריך את לוח המשחק המשותף — הוא בבדיקות */
   /* אורח נשאר במצב שבו הוא — במשחק רואים לוח אורח פשוט */
   clearBalls(); if(!B_BLUE1) buildOpp();
+  if(SPLIT.on) splitSet(false);   /* v74 net N5 */
+  if(typeof OPR!=="undefined"&&OPR.on) oprSet(false,true);   /* v74 net U8 */
+  if(PHN.seat>=0) PHN.seat=-1;
   for(const b of BOTS){ humFree(b); }
   NET.snaps.length=0; NET.seat=null; NET.stationK=null;
   if(typeof traj!=="undefined") traj.visible=false;
@@ -13478,7 +13525,8 @@ function netOnState(buf){
 }
 function netGuestCam(allies){
   if(NET.seat===null) return;
-  const d=netStationOf(NET.seat,allies||NET.allies);
+  /* v74 net N3: המארח קובע את עמדת הנהג (st). מארח ישן בלי st — לפי סדר העמדות כמו קודם */
+  const d=(NET.st&&DRIVERS.find(x=>x.k===NET.st[NET.seat]))||netStationOf(NET.seat,allies||NET.allies);
   if(d&&NET.stationK!==d.k){ NET.stationK=d.k; setDriver(d.k); }
 }
 /* השהיה: פינג פעם בשנייה, והאורח מדווח למארח מה הוא מדד — ככה שניהם רואים */
@@ -13498,14 +13546,15 @@ function netGuestInput(dt){
   let f=kbHeld("fire"), aim=kbHeld("assist");
   const iK=kbHeld("intake"); if(iK&&!NET.prevI) NET.intakeOn=!NET.intakeOn; NET.prevI=iK;
   let intake=NET.intakeOn;
-  let g=null; if(navigator.getGamepads){ const L=navigator.getGamepads();
+  let g=null, yr=0; if(navigator.getGamepads){ const L=navigator.getGamepads();
     for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected){ g=L[i]; break; } }
   if(VPAD.on&&VPAD.pad) g=VPAD.pad;
-  if(g){ const c=padToCmd(g,NET);
+  if(g){ const c=padToCmd(g,NET); yr=c.yr;
     if(Math.abs(c.x)+Math.abs(c.y)+Math.abs(c.t)>0){ x=c.x; y=c.y; r=c.t; }
     f=f||c.fire; aim=aim||c.aim; intake=c.intake; }
   x+=touch.x; y+=touch.y; r+=touch.turn;
-  netSend({t:"in",x:+x.toFixed(3),y:+y.toFixed(3),r:+r.toFixed(3),f:f?1:0,i:intake?1:0,a:aim?1:0,fc:1});
+  const o={t:"in",x:+x.toFixed(3),y:+y.toFixed(3),r:+r.toFixed(3),f:f?1:0,i:intake?1:0,a:aim?1:0,fc:1}; if(yr) o.yr=1;   /* v74 net U5 */
+  netSend(o);
 }
 function netBallMesh(i,kind){
   let m=NET.pool[i];
@@ -13612,10 +13661,10 @@ function netRefresh(){
       const KN={host:"מארח",net:"רשת",pad:"שלט",split:"מפוצל",bot:"בוט",none:"—"};
       const gr=!guest&&inf.kind==="net"&&NET.guests[inf.id]&&NET.guests[inf.id].rtt;
       const who='<i class="kb '+kd+'">'+(KN[kd]||"")+'</i>'+(kd==="bot"?"":appEsc(inf.name))+
-        (gr?' <small class="rtt">'+Math.round(gr)+' מ״ש</small>':"");
+        (gr?' <small class="rtt">'+Math.round(gr)+' מ״ש</small>':"")+v74SeatMark(inf);   /* v74 net N8 · חיבור חוזר */
       let act="";
       if(guest&&inf.kind==="bot"&&s!==NET.seat&&!NET.seatLock) act='<button data-want="'+s+'">לשבת כאן</button>';   /* 1.12.5: לא באמצע מאץ׳ בתחרות */
-      if(!guest&&s>0&&NET.mode!=="guest"&&(inf.kind==="bot"||inf.kind==="pad")){
+      if(!guest&&s>0&&NET.mode!=="guest"&&(inf.kind==="bot"||inf.kind==="pad")&&!inf.phone){   /* v74 net N4: לא על הטלפון */
         act='<select data-padseat="'+s+'"><option value="">בוט</option>'+
           pads.map(g=>'<option value="'+g.index+'"'+(inf.kind==="pad"&&inf.pad===g.index?" selected":"")+
                    '>שלט '+(g.index+1)+'</option>').join("")+'</select>';
@@ -14891,7 +14940,11 @@ async function phoneFindUrl(){
   try{
     let j=null;
     if(window.bbApp&&bbApp.bridgeStatus){ const b=await bbApp.bridgeStatus(); if(!b||!b.on) throw new Error("off"); j={lan:b.lan,port:b.port,pk:b.pk}; }
-    else { const r=await fetch("http://localhost:"+VPAD.port+"/health",{cache:"no-store"}); j=await r.json(); }
+    else { const tk=window.BB_TOK||"";   /* v74 net N1: הגשר נותן את מפתח השלט ואת כתובת הרשת רק עם האסימון של /sim */
+      /* דף שהגשר הגיש (/sim) — אותו מקור, בלי CORS (גם כשנפתח מ-127.0.0.1 ולא מ-localhost) */
+      const base=tk&&/^https?:$/.test(location.protocol)&&+location.port===+VPAD.port?location.origin:"http://localhost:"+VPAD.port;
+      const r=await fetch(base+"/health"+(tk?"?t="+encodeURIComponent(tk):""),{cache:"no-store"}); j=await r.json();
+      if(j&&j.ok&&!j.lan&&!tk){ PHN.url=""; PHN.err=T("כדי לקבל קוד QR פתחו את הסימולטור מהגשר: ")+"http://localhost:"+VPAD.port+"/sim"; PHN.busy=false; phoneUI(); return ""; } }
     /* 1.12.5: מפתח השלט בתוך הקישור — בלעדיו טלפון ברשת לא נוהג (גשר ישן בלי מפתח — קישור כמו קודם) */
     if(j&&j.lan&&j.lan.length) PHN.url="http://"+j.lan[0]+":"+(j.port||VPAD.port)+"/"+(typeof j.pk==="string"&&/^[A-Za-z0-9_-]{16,64}$/.test(j.pk)?"?p="+j.pk:"");
     else PHN.err="הגשר פועל, אבל לא מצא רשת אלחוטית. חבר את המחשב לאותה רשת של הטלפון.";
@@ -14915,7 +14968,7 @@ function phoneSetSeat(s){
 }
 function phoneFeed(){
   if(PHN.seat<0) return;
-  const b=BOTS[PHN.seat]; if(!b||!b.hum||b.hum.src!=="phone") return;
+  const b=BOTS[PHN.seat]; if(!b||!b.hum||b.hum.src!=="phone"){ v74PhoneLost(); return; }   /* v74 net N4 */
   if(VPAD.on&&VPAD.pad) humFeed(b,padToCmd(VPAD.pad,b.hum));
 }
 function phoneUI(){
@@ -19182,6 +19235,214 @@ if(I18N.lang==="en") I18N.rules.push([/^לפני (\d+) שע׳$/,"$1 h ago"],[/^�
     showBanner:()=>showBanner(),ghostCap,genRun:o=>genRun(o),STAT,PP,GHOST,
     setAppTeam:t=>{ APP.team=t; }, setAppOn:v=>{ APP.on=!!v; }};
   if(window.__sim) Object.assign(window.__sim,{v72training:X}); }
+
+/* ══════ v74 net ══════
+   N3 עמדת נהג שהמארח קובע · N4 אף אחד לא לוקח בשקט את הרובוט של הטלפון · N5 אורח בלי מסך מפוצל ·
+   N7 השהיות אצל המארח · N8 חמש שניות בלימה לפני שבוט לוקח אורח שותק · חיבור חוזר לאורח ·
+   U5 עקומת שלט אחת לכל השלטים · U8 נהג + מפעיל (שני שלטים לרובוט אחד) */
+/* ── N8 ── */
+function humDrives(b){
+  const h=b&&b.hum; if(!h) return false;
+  return humLive(b)||h.src!=="net"||performance.now()-h.at<HUM.netGraceMs;
+}
+function v74SeatMark(inf){
+  if(!inf) return "";
+  if(inf.gone) return ' <small class="v74idle">⟳ '+appEsc(T("מחכים לחיבור חוזר"))+'</small>';
+  if(inf.idle) return ' <small class="v74idle">🤖 '+appEsc(T("בוט (האורח לא מגיב)"))+'</small>';
+  return "";
+}
+/* ── N3 ── */
+function netStations(){
+  return [0,1,2,3].map(s=>{ if(s===0) return driverAt().k; const b=netSeatBot(s); return b?humStation(b).k:null; });
+}
+function netStOk(st){
+  if(!Array.isArray(st)||st.length!==4) return;   /* מארח ישן — נשאר כמו שהיה (לפי סדר העמדות) */
+  const ks=DRIVERS.map(d=>d.k);
+  if(st.every(k=>k===null||ks.indexOf(k)>=0)) NET.st=st.slice();
+}
+/* ── N4 / N5 / U8: מי יכול לקחת רובוט ── */
+function v74SplitOk(){
+  if(NET.mode==="guest"){ try{ refToast(T("מסך מפוצל לא זמין כשמחוברים כאורח — פתחו חדר במחשב הזה"),"block"); }catch(e){} return false; }
+  if(OPR.on){ try{ refToast(T("🎮🎮 נהג + מפעיל פועל — כבו אותו לפני מסך מפוצל"),"block"); }catch(e){} return false; }
+  return true;
+}
+function v74PadSeatOk(b){
+  if(OPR.on){ try{ refToast(T("🎮🎮 נהג + מפעיל פועל — שלט 2 כבר משמש מפעיל"),"block"); }catch(e){} netRefresh(); return false; }
+  if(b.hum&&b.hum.src!=="pad"){ try{ refToast(T("מישהו אחר נוהג ברובוט הזה — בחרו עמדה אחרת לשלט"),"block"); }catch(e){} netRefresh(); return false; }
+  return true;
+}
+function v74PhoneLost(){
+  if(PHN.seat<0) return;
+  PHN.seat=-1;
+  try{ refToast(T("📱 הטלפון חזר לרובוט שלי")); }catch(e){}
+  try{ phoneUI(); }catch(e){}
+}
+/* ── N7: השהיות אצל המארח ── */
+function v74Throttle(id,k,ms){
+  const g=NET.guests[id]; if(!g) return true;
+  const t=performance.now(), th=g.th||(g.th={});
+  if(t-(th[k]==null?-1e9:th[k])<ms) return false;
+  th[k]=t; return true;
+}
+/* סקין מאורח: הראשון מוחל מיד, ואחריו לכל היותר פעם ב-300 מ״ש (האחרון מנצח) */
+function v74SkinLater(id,sk){
+  const now=performance.now();
+  NET.skinQ=NET.skinQ||{}; NET.skinQ[id]=sk;
+  const flush=()=>{ NET.skinT=0; NET.skinAt=performance.now(); const q=NET.skinQ; NET.skinQ={};
+    for(const k in q) skinFromGuest(k,q[k]); };
+  if(NET.skinT) return;
+  const wait=300-(now-(NET.skinAt||-1e9));
+  if(wait<=0) flush(); else NET.skinT=setTimeout(flush,wait);
+}
+/* ── חיבור חוזר: המארח שומר 15 שנ׳ את העמדה של אורח שהחיבור שלו נפל ── */
+const NET_HOLD_MS=15000, NET_RC_TRIES=3, NET_RC_MS=1500;
+function v74HoldSeat(id){
+  if(NET.guests[id]&&NET.guests[id].bye){ netUnseat(id,true); return; }   /* יצא בכוונה — לא מחכים לו */
+  let held=false;
+  for(const b of BOTS) if(b.hum&&b.hum.src==="net"&&b.hum.id===id){ b.hum.gone=performance.now(); b.hum.id=null; held=true; }
+  if(!held) netUnseat(id,true);
+}
+function v74HoldTick(){
+  const now=performance.now();
+  for(const b of BOTS) if(b.hum&&b.hum.src==="net"&&b.hum.gone&&now-b.hum.gone>NET_HOLD_MS){ humFree(b); b.vx=b.vz=0; }
+}
+function v74HeldSeatByName(name){
+  for(let s=1;s<=BOTS.length;s++){ const b=netSeatBot(s); if(b&&b.hum&&b.hum.src==="net"&&b.hum.gone&&b.hum.label===name) return s; }
+  return null;
+}
+function v74HeldFor(id,s){
+  const b=netSeatBot(s), g=NET.guests[id];
+  return !!(b&&g&&b.hum&&b.hum.src==="net"&&b.hum.gone&&b.hum.label===g.name);
+}
+/* צד האורח: החיבור נפל — שלושה ניסיונות, כל 1.5 שנ׳, ואז מבקשים שוב את אותה עמדה */
+function v74Reconnect(s){
+  const R=NET.rc;
+  if(NET.mode!=="guest"||!R||NET.rcNo) return false;
+  if(!R.active&&!s._open) return false;          /* חיבור ראשון שלא נפתח — הודעת שגיאה רגילה */
+  if(R.n>=NET_RC_TRIES) return false;
+  if(!R.active){ R.active=true; R.want=NET.spec?-1:NET.seat; }
+  R.n++;
+  NET.err=T("מתחבר מחדש…")+" ("+R.n+"/"+NET_RC_TRIES+")";
+  if(R.n===1){ try{ refToast("🌐 "+T("החיבור למארח נפל — מתחבר מחדש…"),"block"); }catch(e){} }
+  netRefresh();
+  R.t=setTimeout(()=>{ if(NET.rc!==R||NET.mode!=="guest") return; R.t=0;
+    netOpenSock(R.url,()=>{ netGuestEnter(); }); },NET_RC_MS);
+  return true;
+}
+function v74RcSeated(){
+  const R=NET.rc; if(!R||!R.active) return;
+  const w=R.want; R.active=false; R.n=0; R.want=null;
+  if(w!=null&&w>=0&&w!==NET.seat) netSend({t:"want",seat:w});
+  try{ refToast("🌐 "+T("מחובר שוב")); }catch(e){}
+}
+/* ── U5: עקומת שלט אחת — הנהג, מסך מפוצל, אורח ברשת ושלט בעמדה ── */
+function padShape(v){
+  v=+v||0;
+  const dead=P.padDead===undefined?PAD.dead:P.padDead, a=Math.abs(v);
+  if(a<dead) return 0;
+  const x=Math.min(1,(a-dead)/Math.max(1e-6,1-dead)), e=PSH.expo;
+  return Math.sign(v)*((1-e)*x+e*x*x*x)*(PSH.max/100);
+}
+function padFine(f){ return 1-(1-PSH.slow)*Math.max(0,Math.min(1,+f||0)); }
+function padShapeSave(){ try{ localStorage.setItem("bbPadShape1",JSON.stringify(PSH)); }catch(e){} }
+function padYawReset(){
+  if(!fieldCentric) setOri(true);
+  PADYAW.on=true; PADYAW.yaw=bot.yaw;
+  try{ ASSIST.note=T("🧭 הכיוון אופס — ״קדימה״ הוא לאן שהרובוט פונה עכשיו"); refToast(ASSIST.note); syncBar(); }catch(e){}
+}
+/* ── U8: נהג + מפעיל ── */
+function oprBindReset(save){ OPRB={}; for(const c of PADCTRL){ const d=OPRDEF[c.i]; OPRB[c.i]=d?{a:d.a,m:d.m}:{a:"none",m:"press"}; } if(save!==false) oprBindSave(); }
+function oprBindSave(){ try{ localStorage.setItem("bbPadBind2",JSON.stringify(OPRB)); }catch(e){} }
+function oprBindLoad(){
+  oprBindReset(false);
+  try{ const o=JSON.parse(localStorage.getItem("bbPadBind2")||"null");
+    if(o) for(const k in o){ if(!OPRB[k]||!o[k]) continue; const a=o[k].a;
+      if(a!=="none"&&OPR_ACTS.indexOf(a)<0) continue; const A=PADACT[a]; if(!A) continue;
+      OPRB[k]={a, m:MODEOK[A.kind].indexOf(o[k].m)>=0?o[k].m:MODEOK[A.kind][0]}; } }catch(e){}
+}
+oprBindLoad();
+function oprBindsBuild(){
+  const host=$("oprBinds"), rr=$("oprResetRow"), k=$("kOpr");
+  if(k) k.checked=OPR.on;
+  if(!host) return;
+  host.hidden=!OPR.on; if(rr) rr.hidden=!OPR.on;
+  if(OPR.on) padBindsBuild({host, B:OPRB, save:oprBindSave, acts:["none"].concat(OPR_ACTS), id:"o"});
+}
+/* שלט 2 של המפעיל: השני שמחובר (או הראשון, כשהטלפון נוהג ברובוט שלי) */
+function oprPickIdx(){
+  if(!navigator.getGamepads) return null;
+  const L=navigator.getGamepads(), c=[]; for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected) c.push(i);
+  const phoneDrives=VPAD.on&&VPAD.pad&&!(PHN.seat>=0);
+  return phoneDrives?(c[0]!=null?c[0]:null):(c[1]!=null?c[1]:null);
+}
+function oprSet(v,quiet){
+  v=!!v;
+  if(v){
+    let why="";
+    if(NET.mode==="guest") why="נהג + מפעיל לא זמין כשמחוברים כאורח";
+    else if(SPLIT.on) why="נהג + מפעיל לא עובד יחד עם מסך מפוצל — כבו את המסך המפוצל קודם";
+    else if(BOTS.some(b=>b.hum&&b.hum.src==="pad")) why="נהג + מפעיל לא עובד יחד עם שלט שתופס עמדה — החזירו את העמדה לבוט קודם";
+    if(why){ if(!quiet) try{ refToast("🎮🎮 "+T(why),"block"); }catch(e){} OPR.on=false; oprBindsBuild(); try{ psShapeBuild(); }catch(e){} return false; }
+  }
+  OPR.on=v; OPR.prev={}; OPR.fireT=99; OPR.idx=v?oprPickIdx():null;
+  if(!v) try{ bldTurCmd(1,false); bldTurCmd(-1,false); }catch(e){}
+  if(!quiet) try{ refToast(v?T("🎮🎮 נהג + מפעיל: שלט 1 נוהג, שלט 2 מפעיל"):T("🎮 נהג + מפעיל כבוי — שלט אחד עושה הכול")); }catch(e){}
+  oprBindsBuild(); try{ psShapeBuild(); }catch(e){} try{ netRefresh(); }catch(e){}
+  return true;
+}
+function oprPoll(dt){
+  if(!OPR.on) return;
+  if(SPLIT.on){ oprSet(false,true); return; }
+  OPR.idx=oprPickIdx();
+  const L=navigator.getGamepads?navigator.getGamepads():[], g=OPR.idx==null?null:L[OPR.idx];
+  if(!g||!g.connected) return;
+  if(typeof PS!=="undefined"&&PS.open) return;
+  const btn=i=>!!(g.buttons[i]&&g.buttons[i].pressed), val=i=>g.buttons[i]?g.buttons[i].value:0;
+  let hold=false;
+  for(const c of PADCTRL){
+    const i=c.i, bd=OPRB[i]; if(!bd) continue;
+    const A=PADACT[bd.a], now=(i===6||i===7)?val(i)>0.35:btn(i), was=!!OPR.prev[i];
+    OPR.prev[i]=now;
+    if(!A||bd.a==="none") continue;
+    if(A.kind==="fire"){ if(bd.m==="hold"){ if(now) hold=true; } else if(now&&!was){ if(bot.mag>0&&uFire()) padRumble(g,0.55,0.25,90); } }
+    else if(bd.m==="hold"){ if(now!==was) A.set(now); }
+    else if(now&&!was){ if(bd.m==="toggle"&&A.kind==="bool") A.set(!A.get()); else if(A.run) A.run(); }
+  }
+  if(hold){ OPR.fireT+=dt||0; const gap=Math.max(P.feedTime||0.35,MOT.trec||0.35);
+    if(OPR.fireT>=gap&&bot.mag>0){ OPR.fireT=0; if(uFire()) padRumble(g,0.55,0.25,90); } }
+  else OPR.fireT=99;
+  if(hold) PAD.fire=true;
+}
+/* ── סטודיו השלט: עקומה, מצב דיוק, מהירות מרבית, ונהג + מפעיל ── */
+function psShapeBuild(){
+  const host=$("psShape"); if(!host) return;
+  const dead=P.padDead===undefined?PAD.dead:P.padDead;
+  const sl=(id,lab,v,lo,hi,st,fmt)=>'<label for="'+id+'">'+appEsc(T(lab))+' <b id="'+id+'V">'+fmt(v)+'</b></label><input type="range" id="'+id+'" min="'+lo+'" max="'+hi+'" step="'+st+'" value="'+v+'">';
+  const pc=v=>Math.round(v*100)+"%";
+  host.innerHTML='<div class="psGrp"><h3>'+appEsc(T("🕹 תגובת הסטיק — כל השלטים"))+'</h3>'+
+    sl("psDead","אזור מת",dead,0,0.45,0.01,pc)+sl("psExpo","עקומה (שלישית)",PSH.expo,0,1,0.05,pc)+
+    sl("psSlow","מהירות במצב דיוק",PSH.slow,0.1,1,0.01,pc)+sl("psMax","מהירות מרבית",PSH.max,30,100,1,v=>Math.round(v)+"%")+
+    '<p class="note">'+appEsc(T("חל על הנהג, על שחקן 2 במסך מפוצל, על אורח ברשת ועל שלט בעמדה. ״איפוס כיוון״ — בבחירת פעולה לכפתור, או בכפתור ״בחירה״ בשלט נוסף."))+'</p></div>'+
+    '<div class="psGrp"><h3>'+appEsc(T("🎮🎮 נהג + מפעיל"))+'</h3>'+
+    '<button class="psAct psOpr'+(OPR.on?" on":"")+'" id="psOpr">'+appEsc(T(OPR.on?"פועל — לחצו לכיבוי":"כבוי — לחצו להפעלה"))+'</button>'+
+    '<p class="note">'+appEsc(T("כמו בתחרות: שלט 1 נוהג, שלט 2 מפעיל את החרטום, הירי, הסיוע, היפוך הכוורת, המעלית והצריח. המיפוי של שלט 2 — בלשונית השלט במצב בדיקות."))+'</p></div>';
+  const bind=(id,fn,fmt)=>{ const e=$(id); if(!e) return; e.addEventListener("input",()=>{ fn(+e.value); const o=$(id+"V"); if(o) o.textContent=fmt(+e.value); }); };
+  bind("psDead",v=>{ setP("padDead",v); try{ saveParams(); }catch(e){} },pc);
+  bind("psExpo",v=>{ PSH.expo=v; padShapeSave(); },pc);
+  bind("psSlow",v=>{ PSH.slow=v; padShapeSave(); },pc);
+  bind("psMax",v=>{ PSH.max=v; padShapeSave(); },v=>Math.round(v)+"%");
+  on($("psOpr"),()=>oprSet(!OPR.on));
+}
+(function v74netWire(){
+  const k=$("kOpr"); if(k) k.addEventListener("change",()=>oprSet(k.checked));
+  on($("bOprReset"),()=>{ oprBindReset(); oprBindsBuild(); });
+  oprBindsBuild();
+})();
+/* v74 net · ווים לבדיקות */
+{ const X={humDrives,netLocalPads,splitSet,padStudioOpen,setOri,padClaimed,netStations,netStOk,v74Throttle,v74SkinLater,v74HoldSeat,v74HoldTick,v74Reconnect,padShape,padFine,padYawReset,
+    oprSet,oprPoll,oprPickIdx,oprBindReset,oprBindsBuild,psShapeBuild,padToCmd,netPadSeat,netSeatGuest,netAutoSeat,netGuestCam,netRoom,
+    OPR:()=>OPR,OPRB:()=>OPRB,PSH:()=>PSH,PADYAW:()=>PADYAW,PHN:()=>PHN,NET_HOLD_MS,netOnMsg,netRefresh,netSeatInfo,phoneFindUrl};
+  if(window.__sim) Object.assign(window.__sim,{v74net:X}); }
 /* 1.12.5 · ווים לבדיקות — רשת (netapp) */
 { const X={MT_NET:()=>MT_NET,mtCur,netRoomExtra,netHostGone,netSeatLock,bldHas,bldNorm,phoneSeatBusy,PHN:()=>PHN,phoneFindUrl,bcNames,netSend,netUnseat};
   if(window.__sim) Object.assign(window.__sim,{v72netapp:X}); }

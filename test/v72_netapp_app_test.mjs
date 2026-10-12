@@ -162,7 +162,7 @@ srv.close();
   const pk=fs.readFileSync(path.join(D,'.pad-key'),'utf8').trim();
   ok(/^[A-Za-z0-9_-]{16,64}$/.test(pk)&&pk===b.padKey,'P9 מפתח השלט נוצר ונשמר');
   const b2=new Bridge({port:PORT+1,dataDir:D}); ok(b2.padKey===pk,'P9 אותו מפתח בהפעלה הבאה (קישור שמור ממשיך לעבוד)');
-  const h=await (await fetch('http://127.0.0.1:'+PORT+'/health')).json(); ok(h.pk===pk&&b.status().pk===pk,'P9 /health מקומי + bridgeStatus מחזירים את המפתח');
+  const h=await (await fetch('http://127.0.0.1:'+PORT+'/health?t='+encodeURIComponent(b.token))).json(); ok(h.pk===pk&&b.status().pk===pk,'P9 /health מקומי (עם האסימון — v74 net N1) + bridgeStatus מחזירים את המפתח');
   const wsOpen=q=>new Promise(res=>{ const w=new WebSocket('ws://127.0.0.1:'+PORT+'/ws?'+q); w.msgs=[]; w.on('message',d=>w.msgs.push(d.toString())); w.on('open',()=>res(w)); w.on('error',()=>res(null)); w.on('unexpected-response',()=>res(null)); });
   remote=true;
   const old=await fetch('http://127.0.0.1:'+PORT+'/'); const ot=await old.text();

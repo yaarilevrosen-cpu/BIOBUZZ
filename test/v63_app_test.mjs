@@ -95,7 +95,7 @@ const get = (port, p, headers) => new Promise(res => {
   for (const x of many) try { x.close(); } catch (e) {}
   await wait(150);
   // הודעה ענקית מטלפון — החיבור נסגר (תקרה קטנה לטלפונים ולאורחים)
-  const pbig = await wsOpen(U('role=pad'), { origin: 'null' });
+  const pbig = await wsOpen(U('role=pad'), { origin: 'http://127.0.0.1:' + port });   /* v74 net N1: שלט רק מהדף של הגשר (לא Origin: null) */
   const closed = new Promise(res => pbig.on('close', c => res(c)));
   pbig.send('x'.repeat(200 * 1024));
   ok(await Promise.race([closed, wait(3000).then(() => 0)]) === 1009, 'הודעה של 200 ק״ב מטלפון — החיבור נסגר (1009)');

@@ -14,7 +14,7 @@ padbridge — גשר ושרת חדר לסימולטור BIOBUZZ של אפולו 
        python padbridge.py --sim BIOBUZZ-lab.html
 """
 import argparse, base64, hashlib, hmac, ipaddress, json, os, re, secrets, socket, struct
-import subprocess, sys, threading, time
+import queue, subprocess, sys, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, quote
 
@@ -196,7 +196,11 @@ def load_pad_key():
 
 # ── הגבלות (v63) ──
 LIM = {"fails_per_ip": 8, "fail_window": 300, "lock": 300, "fails_global": 60, "lock_global": 120,
-       "join_per_min": 20, "ws_per_ip": 12, "small": 64 * 1024, "big": 4 * 1024 * 1024}
+       "join_per_min": 20, "ws_per_ip": 12, "small": 64 * 1024, "big": 4 * 1024 * 1024,
+       # v74 net: תור יוצא לכל חיבור (N2) ודלי הודעות לכל אורח (N7) — טיפול בחיבור בלבד, בלי לוגיקת משחק
+       "outq": 64, "g_rate": 60, "g_burst": 120, "g_over": 10}
+
+_CLOSE = object()                                     # v74 net: סימן ״לסגור אחרי מה שבתור״
 
 # ── WebSocket מינימלי (RFC 6455) ──
 class WS:
@@ -210,6 +214,54 @@ class WS:
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         # חיבור מת (טלפון שנכבה) לא נשאר לנצח: הגשר שולח פינג כל 20 שניות, ו-60 שניות בלי כלום = נסגר
         sock.settimeout(60)
+        # v74 net N2: כל חיבור כותב בחוט משלו מתוך תור. לקוח שלא קורא (מחשב במצב שינה) לא עוצר את כל החדר:
+        # תמונות מצב (בינארי) נזרקות כשהתור מלא, והודעת טקסט/בקרה שלא נכנסת לתור = לקוח תקוע → נסגר
+        self.q = queue.Queue(maxsize=LIM["outq"])
+        self.dropped = 0
+        self.tb, self.tb_t, self.over_t0, self.over_last = float(LIM["g_burst"]), time.time(), 0.0, 0.0
+        threading.Thread(target=self._writer, daemon=True).start()
+
+    def _writer(self):
+        while True:
+            item = self.q.get()
+            if item is None:
+                break
+            if item is _CLOSE:                        # סגירה מסודרת: כל מה שלפניה כבר נשלח (למשל kick / deny)
+                self.close()
+                break
+            try:
+                self.sock.sendall(item)
+            except Exception:
+                self.close()
+                break
+
+    def close_after(self):
+        """סוגר אחרי שההודעות שכבר בתור נשלחו (לקוח תקוע — נסגר בכל מקרה אחרי 2 שניות)"""
+        if not self.alive:
+            return
+        try:
+            self.q.put_nowait(_CLOSE)
+        except queue.Full:
+            return self.close()
+        t = threading.Timer(2.0, self.close)
+        t.daemon = True
+        t.start()
+
+    def rate_ok(self):
+        """v74 net N7: דלי אסימונים לאורח — 60 הודעות בשנייה, עד 120 ברצף. True = להעביר.
+        None = חורג כבר 10 שניות ברצף → לנתק"""
+        now = time.time()
+        self.tb = min(float(LIM["g_burst"]), self.tb + (now - self.tb_t) * LIM["g_rate"])
+        self.tb_t = now
+        if self.tb >= 1:
+            self.tb -= 1
+            if self.over_t0 and now - self.over_last > 1:
+                self.over_t0 = 0.0
+            return True
+        if not self.over_t0 or now - self.over_last > 1:
+            self.over_t0 = now
+        self.over_last = now
+        return None if now - self.over_t0 >= LIM["g_over"] else False
 
     def _recv(self, n):
         buf = b""
@@ -261,16 +313,28 @@ class WS:
             hdr = struct.pack(">BBH", 0x80 | op, 126, n)
         else:
             hdr = struct.pack(">BBQ", 0x80 | op, 127, n)
+        if not self.alive:
+            return False
+        # תמונות מצב תופסות לכל היותר חצי תור — תמיד נשאר מקום להודעות החדר (room/seat/ev)
+        if op == 2 and self.q.qsize() >= LIM["outq"] // 2:
+            self.dropped += 1
+            return False
         try:
-            with self.lock:
-                self.sock.sendall(hdr + payload)
+            self.q.put_nowait(hdr + payload)
             return True
-        except Exception:
-            self.alive = False
+        except queue.Full:
+            if op == 2:                               # תמונת מצב — מוותרים עליה, הבאה תגיע
+                self.dropped += 1
+                return False
+            self.close()                              # טקסט או בקרה לא נכנס = לקוח תקוע
             return False
 
     def close(self):
         self.alive = False
+        try:
+            self.q.put_nowait(None)                   # עוצר את החוט הכותב
+        except Exception:
+            pass
         try:                                          # 1.12.5: shutdown משחרר גם recv שחוסם בחוט אחר
             self.sock.shutdown(socket.SHUT_RDWR)
         except Exception:
@@ -311,21 +375,23 @@ class Room:
     def info(self):
         return {"t": "info", "lan": self.lan, "port": self.port, "key": self.key, "code": self.code}
 
-    def health(self, local):
-        # v63: בלי קוד חדר ובלי שמות/כתובות של אורחים. כתובות הרשת — רק למחשב הזה (קוד QR לטלפון)
+    def health(self, local, tok=False):
+        # v63: בלי קוד חדר ובלי שמות/כתובות של אורחים.
+        # v74 net N1: כתובות הרשת ומפתח השלט — רק למחשב הזה ורק עם האסימון של /sim (אתר זר ב-iframe לא מקבל אותם)
         with self.lock:
             o = {"ok": True, "host": self.host is not None, "sims": len(self.sims),
                  "pad": len(self.pads) > 0, "guests": len(self.guests), "port": self.port}
-        if local:
+        if local and tok:
             o["lan"] = self.lan
-            o["pk"] = self.pad_key                    # 1.12.5: רק למחשב הזה — נכנס לקוד ה-QR
+            o["pk"] = self.pad_key                    # 1.12.5: נכנס לקוד ה-QR
         return o
 
     # ── ניסיונות שגויים ──
     def locked(self, ip):
         now = time.time()
         with self.lock:
-            if self.glock > now:
+            # v74 net N6: הנעילה הגלובלית חוסמת רק כתובות שכבר טעו — אורח חדש עם הקוד הנכון נכנס
+            if self.glock > now and ip in self.fails:
                 return True
             f = self.fails.get(ip)
             return bool(f and f[2] > now)
@@ -407,14 +473,14 @@ class Room:
                 old = self.host
                 self.host = ws
                 if old:
-                    old.close()
+                    old.close_after()
             elif ws.role == "guest":
                 self.n += 1
                 ws.id = "g%d" % self.n
                 self.guests[ws.id] = ws
         for o in olds:
             o.send('{"t":"kick"}')
-            o.close()
+            o.close_after()
         if ws.role == "pad":
             self.to_sims('{"t":"pad","on":true}')
             say("● טלפון התחבר (%s)" % ws.addr, "* phone connected (%s)" % ws.addr)
@@ -498,10 +564,17 @@ class Room:
                 g = self.guests[to]
                 g.send(s)
                 if m.get("t") == "deny":
-                    g.close()
+                    g.close_after()
         elif r == "guest":
             # v63: מפענחים ובונים מחדש — אורח לא יכול להוסיף ״id״ משלו ולהתחזות לאורח אחר
             if op != 1 or len(data) > 2000:
+                return
+            ok = ws.rate_ok()                         # v74 net N7
+            if ok is None:
+                say("! %s שולח יותר מדי הודעות — נותק" % ws.name, "! %s sent too many messages — disconnected" % ws.name)
+                ws.close()
+                return
+            if not ok:
                 return
             try:
                 m = json.loads(data.decode("utf-8"))
@@ -612,7 +685,7 @@ class H(BaseHTTPRequestHandler):
         if path == "/health":
             o = (self.headers.get("Origin") or "").lower()
             cors = {"Access-Control-Allow-Origin": "null", "Vary": "Origin"} if (o == "null" or o.startswith("file:")) else {"Vary": "Origin"}
-            return self._send(200, json.dumps(ROOM.health(is_local(peer))), "application/json", cors)
+            return self._send(200, json.dumps(ROOM.health(is_local(peer), ROOM.tok_ok((q.get("t") or [""])[0]))), "application/json", cors)
         if path == "/":
             # 1.12.5: טלפון ברשת צריך את המפתח מקוד ה-QR (בכבל USB / מהמחשב הזה — לא צריך)
             if not is_local(peer) and not ROOM.pad_ok((q.get("p") or [""])[0]):
@@ -639,16 +712,21 @@ class H(BaseHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if not origin_ok(origin, self.headers.get("Host"), role):
             return self._send(403, "bad origin")
+        # v74 net N1: שלט רק מדף השלט שהגשר מגיש (אותו Host) או מלקוח בלי דפדפן — לא מ-iframe בארגז חול (Origin: null) ולא מקובץ
+        ol = (origin or "").lower()
+        if role == "pad" and origin is not None and (ol == "null" or ol.startswith("file:")):
+            return self._send(403, "bad origin")
         if role == "pad" and not is_local(peer) and not ROOM.pad_ok((q.get("p") or [""])[0]):
             return self._send(403, "scan the QR code again")
         if role in ("sim", "host") and not is_local(peer):
             return self._send(403, "local only")
-        # מארח צריך את האסימון הסודי (מוזרק לדף /sim). ״sim״ (שלט הטלפון בסימולטור) מותר גם מסימולטור שנפתח מקובץ
+        # מארח צריך את האסימון הסודי (מוזרק לדף /sim).
+        # v74 net N1: גם ״sim״ (קורא את קלט הטלפון) — בלי אסימון רק מלקוח בלי Origin בכלל, לא מדף עם Origin: null
         tok = ROOM.tok_ok((q.get("t") or [""])[0])
         if role == "host" and not tok:
             return self._send(403, "open the simulator from the bridge: http://localhost:%d/sim" % ROOM.port)
-        if role == "sim" and not tok and not (origin is None or origin.lower() == "null" or origin.lower().startswith("file:")):
-            return self._send(403, "bad token")
+        if role == "sim" and not tok and origin is not None:
+            return self._send(403, "open the simulator from the bridge: http://localhost:%d/sim" % ROOM.port)
         if ROOM.conn(peer, 0) >= LIM["ws_per_ip"]:
             return self._send(429, "too many connections")
         if role == "guest":

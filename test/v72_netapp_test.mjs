@@ -104,7 +104,7 @@ const BP=String(+(process.env.BB_PORT||8905)+900);   // 8905 → 9805
 const br=spawn('python3',[path.join(D,'padbridge.py'),'--port',BP,'--no-adb','--key','1234','--sim',path.join(D,'simi.html')],{stdio:'ignore',cwd:D});
 await wait(1500);
 const PK=fs.readFileSync(path.join(D,'.pad-key'),'utf8').trim();
-const LAN=JSON.parse(await (await fetch('http://127.0.0.1:'+BP+'/health')).text()).lan||[];
+const LAN=JSON.parse(await (await fetch('http://127.0.0.1:'+BP+'/health?t='+encodeURIComponent((/BB_TOK="([^"]+)"/.exec(await (await fetch('http://127.0.0.1:'+BP+'/sim')).text())||[])[1]||''))).text()).lan||[];
 const ip=LAN[0]||'';
 const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--proxy-server=direct://','--proxy-bypass-list=*']});
 const errs=[];
@@ -119,8 +119,10 @@ async function mk(url,tag){
   return page; }
 try{
   ok(/^[A-Za-z0-9_-]{16,64}$/.test(PK),'P9 הגשר יצר מפתח שלט ושמר אותו');
-  const hj=JSON.parse(await (await fetch('http://127.0.0.1:'+BP+'/health')).text());
-  ok(hj.pk===PK,'P9 /health (רק מהמחשב הזה) מחזיר את המפתח לקוד ה-QR');
+  /* v74 net N1: המפתח רק עם האסימון של /sim (אתר זר במחשב הזה לא מקבל אותו) */
+  const TOK=(/BB_TOK="([^"]+)"/.exec(await (await fetch('http://127.0.0.1:'+BP+'/sim')).text())||[])[1];
+  const hj=JSON.parse(await (await fetch('http://127.0.0.1:'+BP+'/health?t='+encodeURIComponent(TOK))).text());
+  ok(hj.pk===PK,'P9 /health (רק מהמחשב הזה, עם האסימון) מחזיר את המפתח לקוד ה-QR');
   if(ip){
     const r0=await fetch('http://'+ip+':'+BP+'/'); const t0=await r0.text();
     ok(r0.status===403&&/סרקו שוב/.test(t0)&&/scan it again/.test(t0),'P9 קישור ישן (בלי מפתח) מהרשת → הודעה ברורה ('+r0.status+')');
