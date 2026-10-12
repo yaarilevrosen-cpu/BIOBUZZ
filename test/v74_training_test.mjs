@@ -1,6 +1,6 @@
 // v74 training — T1–T8 מסקירת האימון, ו-U6 (ספריית שידורים חוזרים) ו-U10 (גרף ניקוד בתחקיר)
 import {open,ok,done,realErrs} from './h.mjs';
-const PORT=process.env.PORT||process.env.BB_PORT||'8904';
+const PORT=process.env.PORT||process.env.BB_PORT||'8899';
 let {browser,page,errs}=await open({noraf:true,url:'http://127.0.0.1:'+PORT+'/sim.html?nocad=1'});
 const E=(f,a)=>page.evaluate(f,a);
 const toEnd=async()=>{ for(let k=0;k<80;k++){ const on=await E(()=>{ const S=__sim; for(let i=0;i<10&&(S.MATCH.on||S.MATCH.cd>0);i++) S.advance(0.5,1/30); return S.MATCH.on||S.MATCH.cd>0; }); if(!on) break; } };
@@ -107,7 +107,8 @@ r=await E(async()=>{ const S=__sim, X=S.v74training; await X.rpRefresh(); const 
   let err=0; for(let i=0;i<F0.length;i+=7){ for(const j of [2,5,6,10,11,12]){ let d=F0[i][j]-F[i][j]; if(j===12) d=Math.atan2(Math.sin(d),Math.cos(d)); err=Math.max(err,Math.abs(d)); } }
   return {at, has:!!L, size:X.RPL.lastSize, nf:F0.length, nf2:F.length, err, my:L&&L.my, deb:X.DEB.report&&X.DEB.report.at}; });
 ok(r.has&&r.my!=null,'U6: המאץ׳ נשמר בספרייה (IndexedDB) עם המפתח at של רשומת העונה');
-ok(r.size<45000,'U6: גודל שידור של מאץ׳ מלא אחרי כיווץ ודחיסה: '+(r.size/1024).toFixed(1)+' KB ('+r.nf+' פריימים)');
+// v74 מיזוג: הבוטים כולם ברמה העליונה (B5) — יותר תנועה, שידור גדול קצת יותר (~47KB). 20 שידורים ≈ 1MB
+ok(r.size<60000,'U6: גודל שידור של מאץ׳ מלא אחרי כיווץ ודחיסה: '+(r.size/1024).toFixed(1)+' KB ('+r.nf+' פריימים)');
 ok(r.nf===r.nf2&&r.err<0.06,'U6: פענוח מחזיר את אותם פריימים (שגיאה מרבית '+r.err.toFixed(3)+')');
 ok(r.deb===r.at,'U6: התחקיר יודע איזה שידור הוא שלו');
 const AT=r.at;

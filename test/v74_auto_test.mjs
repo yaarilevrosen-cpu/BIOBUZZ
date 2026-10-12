@@ -4,7 +4,7 @@
 // בדיקת הקבלה: 5 דוגמאות + 12 רצפי מחולל × 2 בריתות × 2 פינות × מכאנום/StarterBot — RR ו-Pedro נדגמים בחזרה לצירי הסימולטור
 // ונבדקים: בלי מבנים, בלי קו אמצע, בלי קיר, כיוון = משיק בטנק, מספר היריות, חניה באזור, RR ≤ 30 או מסומן.
 import {open,ok,done,realErrs} from './h.mjs';
-const PORT=process.env.PORT||process.env.BB_PORT||'8903';
+const PORT=process.env.PORT||process.env.BB_PORT||'8899';
 let {browser,page,errs}=await open({noraf:true,url:'http://127.0.0.1:'+PORT+'/sim.html?nocad=1'});
 page.setDefaultTimeout(0);
 const E=(f,a)=>page.evaluate(f,a);

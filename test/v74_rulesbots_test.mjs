@@ -1,6 +1,6 @@
 // v74 rulesbots — R1–R5 (חוקים), B1–B10 (בוטים), U2 (ירי בתנועה), U4 (זמן לחנות)
 import {open,ok,done,realErrs} from './h.mjs';
-process.env.BB_PORT=process.env.BB_PORT||process.env.PORT||'8902';
+process.env.BB_PORT=process.env.BB_PORT||process.env.PORT||'8899';
 const {browser,page,errs}=await open({noraf:true});
 const E=(f,a)=>page.evaluate(f,a);
 let r;

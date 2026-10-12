@@ -1,12 +1,12 @@
 // v74 net — רשת, גשרים ושלטים: N1–N8 (+P6), חיבור חוזר, U5 (עקומת שלט אחת), U8 (נהג + מפעיל)
-// PORT (ברירת מחדל 8905) — שרת הבדיקות; BB_BRIDGE_PORT (ברירת מחדל 9675) — הגשרים
+// PORT (ברירת מחדל 8899) — שרת הבדיקות; BB_BRIDGE_PORT (ברירת מחדל 9675) — הגשרים
 import {open,ok,done,realErrs} from './h.mjs';
 import { chromium } from 'playwright';
 import {spawn} from 'child_process';
 import net from 'net'; import crypto from 'crypto';
 import fs from 'fs'; import os from 'os'; import path from 'path'; import { fileURLToPath } from 'url'; import { createRequire } from 'module';
 const HERE=path.dirname(fileURLToPath(import.meta.url)); const require=createRequire(import.meta.url);
-const HP=process.env.PORT||process.env.BB_PORT||'8905', U0='http://127.0.0.1:'+HP+'/sim.html?nocad=1';
+const HP=process.env.PORT||process.env.BB_PORT||'8899', U0='http://127.0.0.1:'+HP+'/sim.html?nocad=1';
 const BP=+(process.env.BB_BRIDGE_PORT||9675);
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
