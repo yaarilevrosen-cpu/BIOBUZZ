@@ -40,6 +40,12 @@ contextBridge.exposeInMainWorld("bbApp", {
   firstRunDone: () => ipcRenderer.invoke("bb:firstRunDone"),
   matchAdd: m => ipcRenderer.invoke("bb:matchAdd", m, PID),
   matches: id => ipcRenderer.invoke("bb:matches", id),
+  /* v74 U6: שידורים חוזרים של הנהג הזה — רק במחשב */
+  replayList: () => ipcRenderer.invoke("bb:replayList", PID),
+  replayGet: at => ipcRenderer.invoke("bb:replayGet", PID, +at),
+  replayPut: rec => ipcRenderer.invoke("bb:replayPut", PID, rec),
+  replayStar: (at, on) => ipcRenderer.invoke("bb:replayStar", PID, +at, !!on),
+  replayClear: () => ipcRenderer.invoke("bb:replayClear", PID),
   team: () => ipcRenderer.invoke("bb:team"),
   openData: () => ipcRenderer.invoke("bb:openData"),
   backupNow: () => ipcRenderer.invoke("bb:backupNow"),

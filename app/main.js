@@ -238,6 +238,12 @@ function reg() {
   handle("bb:firstRunDone", () => { store.firstRun = false; return true; });
   handle("bb:matchAdd", (e, m, pid) => { const r = store.pageMatchAdd(m, pidOf(pid)); soonSync(); return r; });
   handle("bb:matches", (e, id) => store.matches(id, { lite: true }));
+  /* v74 U6: שידורים חוזרים — לנהג שבשבילו הדף נטען, בקובץ מקומי (לא בסנכרון) */
+  handle("bb:replayList", (e, pid) => store.replayList(pidOf(pid) || store.meta.active));
+  handle("bb:replayGet", (e, pid, at) => store.replayGet(pidOf(pid) || store.meta.active, +at));
+  handle("bb:replayPut", (e, pid, rec) => rec && typeof rec === "object" ? store.replayPut(pidOf(pid) || store.meta.active, rec) : false);
+  handle("bb:replayStar", (e, pid, at, on) => store.replayStar(pidOf(pid) || store.meta.active, +at, on === true));
+  handle("bb:replayClear", (e, pid) => store.replayClear(pidOf(pid) || store.meta.active));
   handle("bb:team", () => store.team(sync && sync.status().loggedIn ? sync.team : null));
   handle("bb:openData", () => shell.openPath(DATA));
   /* 1.12.5: ״גבה עכשיו״ עושה עותק חדש (עם שעה), גם אם כבר יש גיבוי של היום */
