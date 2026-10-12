@@ -59,6 +59,8 @@ function matchData(m) {
   return Buffer.byteLength(j) <= MATCH_MAX ? o : null;
 }
 /* דחייה של השרת (לא תקלת רשת / אסימון) — השורה עצמה לא תקינה */
+/* v74 (P8): כמה פעמים מנסים מחיקת נהג שהשרת דוחה לפני שמוותרים */
+const TOMB_TRIES = 5;
 const rejected = e => e && e.status >= 400 && e.status < 500 && e.status !== 401 && e.status !== 408 && e.status !== 429;
 /* שדות הסיכום של מאץ׳ של חבר קבוצה (store.summarize) — לא את כל המאץ׳ */
 /* 1.13: גם סוג המשחק (תרגיל/אתגר לא נספרים בסיכום), רמת הבוטים, ושיא תרגיל (drill + dv) */
@@ -131,7 +133,8 @@ class Sync {
       /* 1.14 (legalfix): גרסת המסמכים הנוכחית; כשהחשבון לא אישר אותה — הסנכרון והקבוצה מושהים (המחיקה וההורדה עובדות) */
       tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "" };
   }
-  tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") !== this.tosNeed); }
+  /* v74 (P4): ״ישן יותר מ־״ ולא ״שונה מ־״ — גרסת אפליקציה ישנה לא נתקעת (ולא מורידה את ההסכמה) כשהחשבון אישר גרסה חדשה יותר. ISO — השוואה מילונית */
+  tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") < this.tosNeed); }
   /* ── רשת ── */
   async http(method, url, body, headers, timeoutMs) {
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeoutMs || 20000);
@@ -278,7 +281,11 @@ class Sync {
       if (t.owner && r && !r.deleted) {
         try { await this.rest("POST", "bb_profiles?on_conflict=owner,id", [{ id: t.id, deleted: true, kv: {}, meta_at: t.at, kv_at: t.at, name: "" }],
           { Prefer: "resolution=merge-duplicates,return=minimal" }); r.deleted = true; }
-        catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: t.id, why: "tomb: " + String(e.message || e.status).slice(0, 100) }); }
+        catch (e) { if (!rejected(e)) throw e; res.skipped.push({ id: t.id, why: "tomb: " + String(e.message || e.status).slice(0, 100) });
+          /* v74 (P8): השרת דחה — הרשומה נשארת ומנסים שוב בסנכרון הבא (עד TOMB_TRIES פעמים), כדי שהנהג לא ״יקום לתחייה״ */
+          t.fails = (+t.fails || 0) + 1;
+          if (t.fails < TOMB_TRIES) continue;
+          res.skipped.push({ id: t.id, why: "tomb: gave up after " + t.fails }); }
       }
       S.meta.tombs = S.meta.tombs.filter(x => x.id !== t.id);
     }
@@ -286,7 +293,9 @@ class Sync {
     /* מחיקות מהענן → כאן */
     for (const r of rows) if (r.deleted) { if (S.meta.list.some(p => p.id === r.id && this.mine(p))) { if (S.removeFromRemote(r.id)) res.profilesChanged = true; } }
     /* נהגים שיש רק בענן → כאן */
-    for (const r of live) if (!S.meta.list.some(p => p.id === r.id)) { if (S.applyRemoteMeta(r, K)) { res.profilesChanged = true; res.pulledProfiles++; } }
+    /* v74 (P8): נהג עם מחיקה ממתינה (השרת דחה) — לא חוזר מהענן; וגם מחיקה שעלתה עכשיו (r.deleted) לא חוזרת באותו סנכרון */
+    const pendTomb = new Set(S.meta.tombs.map(t => t.id));
+    for (const r of live) if (!r.deleted && !S.meta.list.some(p => p.id === r.id) && !pendTomb.has(r.id)) { if (S.applyRemoteMeta(r, K)) { res.profilesChanged = true; res.pulledProfiles++; } }
     /* השוואה אחד מול אחד. ההגדרות — איחוד לפי מפתח (v63) */
     const push = [];
     for (const p of S.meta.list.filter(q => this.mine(q))) {
@@ -417,6 +426,8 @@ class Sync {
   async tosAccept(v, meta) {
     if (!this.sess) return { ok: false, why: "לא מחוברים" };
     v = String(v || ""); if (!TOSV.test(v)) return { ok: false, why: "?" };
+    /* v74 (P4): לא מורידים רישום הסכמה לגרסה ישנה יותר ממה שהחשבון כבר אישר */
+    if (v < (this.sess.user.tos_v || "")) return { ok: true, tos: this.sess.user.tos_v, kept: true };
     const data = { tos_v: v, tos_at: new Date().toISOString() };
     if (!this.sess.user.age) {
       const m = signupMeta(Object.assign({}, meta && typeof meta === "object" ? meta : {}, { tos_v: v }));

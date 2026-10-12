@@ -98,7 +98,9 @@ class AI {
     this.key = ""; this.mem = false;
     /* 1.14 (v73 legal): אישור ״18 ומעלה + התנאים של Gemini API״ — בלעדיו אין שמירת מפתח, בדיקה או שאלה (גם למפתח שכבר שמור) */
     this.ackFile = path.join(dataDir, "ai-ack.json");
-    this.ack = (o => o && isFinite(o.at) ? { at: +o.at } : null)(readJSON(this.ackFile, null));
+    /* v74 (P9): האישור שייך לחשבון שאישר (uid; ריק = בלי חשבון). תקף רק כשאותו חשבון מחובר — התנתקות לא ״יורשת״ אישור של מנטור */
+    this.ackRec = (o => o && isFinite(o.at) ? { at: +o.at, uid: typeof o.uid === "string" ? o.uid : "" } : null)(readJSON(this.ackFile, null));
+    this.uid = ""; this.ack = null; this.ackBind();
     this.st = readJSON(this.stFile, null) || { checkedAt: 0, ok: false, models: [], pick: { fast: "", strong: "" } };
     try { if (fs.existsSync(this.keyFile)) this.key = this.dec(fs.readFileSync(this.keyFile, "utf8")) || ""; } catch (e) { this.key = ""; }
     this.busy = null; this.gen = 0; this.ctl = null;
@@ -114,10 +116,14 @@ class AI {
   }
   /* 1.14: מאשרים / מבטלים את האישור (ביטול עוצר בדיקה שרצה; המפתח נשאר שמור) */
   ack18(on) {
-    if (on) { this.ack = { at: Date.now() }; try { writeAtomic(this.ackFile, JSON.stringify(this.ack)); } catch (e) {} }
-    else { this.cancel(); this.ack = null; try { fs.unlinkSync(this.ackFile); } catch (e) {} }
+    if (on) { this.ackRec = { at: Date.now(), uid: this.uid || "" }; try { writeAtomic(this.ackFile, JSON.stringify(this.ackRec)); } catch (e) {} }
+    else { this.cancel(); this.ackRec = null; try { fs.unlinkSync(this.ackFile); } catch (e) {} }
+    this.ackBind();
     return this.status();
   }
+  /* v74 (P9): החשבון המחובר עכשיו (ריק = בלי חשבון) */
+  setUid(uid) { uid = typeof uid === "string" ? uid : ""; if (uid === this.uid) return; this.uid = uid; const had = !!this.ack; this.ackBind(); if (had && !this.ack) this.cancel(); }
+  ackBind() { const r = this.ackRec; this.ack = r && (r.uid || "") === (this.uid || "") ? r : null; }
   static NOACK() { return "קודם מאשרים בהגדרות: אני בן/בת 18 ומעלה ומסכים/ה לתנאים של Gemini API"; }
   saveSt() { try { writeAtomic(this.stFile, JSON.stringify(this.st)); } catch (e) {} }
   scrub(msg) { msg = String(msg || ""); if (this.key) msg = msg.split(this.key).join("•••"); return msg.replace(/key=[A-Za-z0-9_.\-]{10,}/g, "key=•••").slice(0, 240); }

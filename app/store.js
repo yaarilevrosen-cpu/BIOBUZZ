@@ -223,7 +223,49 @@ class Store {
     if (!this.meta.list.length) { const p = this.addProfile("נהג 1", { quiet: true, owner: null }); this.meta.active = p.id; }
     if (!this.meta.list.some(p => p.id === this.meta.active)) this.meta.active = this.meta.list[0].id;
     this.saveMeta(); this.loadKv();
-    return { ok: true, n: gone.length };
+    /* v74 (P1): גם מהגיבויים (יומיים ועותקים עם שעה) — התיקיות של הנהגים ושורות החשבון ב-profiles.json */
+    const backups = this.purgeOwnerFromBackups(uid, gone.map(p => p.id));
+    return { ok: true, n: gone.length, backups };
+  }
+  /* v74 (P1): בכל גיבוי — מוחקים את backups/<t>/profiles/<id> לכל נהג של החשבון (גם כאלה שכבר לא ברשימה הנוכחית),
+     ומסננים מ-profiles.json של הגיבוי את list/tombs של אותו uid. מחזיר כמה גיבויים השתנו */
+  purgeOwnerFromBackups(uid, ids) {
+    if (typeof uid !== "string" || !uid) return 0;
+    let k = 0;
+    for (const t of this.backupsList()) {
+      const bd = path.join(this.root, "backups", t), pf = path.join(bd, "profiles.json");
+      const m = readJSON(pf, null);
+      const del = new Set((ids || []).filter(validId));
+      if (m && Array.isArray(m.list)) for (const p of m.list) if (p && p.owner === uid && validId(p.id)) del.add(p.id);
+      let changed = false;
+      for (const id of del) { const d = path.join(bd, "profiles", id); if (fs.existsSync(d)) { try { fs.rmSync(d, { recursive: true, force: true }); changed = true; } catch (e) {} } }
+      if (m && typeof m === "object") {
+        const n0 = (Array.isArray(m.list) ? m.list.length : 0) + (Array.isArray(m.tombs) ? m.tombs.length : 0);
+        if (Array.isArray(m.list)) m.list = m.list.filter(p => !(p && (p.owner === uid || del.has(p.id))));
+        if (Array.isArray(m.tombs)) m.tombs = m.tombs.filter(x => !(x && x.owner === uid));
+        if (Array.isArray(m.list) && m.list.length && !m.list.some(p => p && p.id === m.active)) m.active = m.list[0].id;
+        if (((Array.isArray(m.list) ? m.list.length : 0) + (Array.isArray(m.tombs) ? m.tombs.length : 0)) !== n0) {
+          try { writeAtomic(pf, JSON.stringify(m, null, 1)); changed = true; } catch (e) {} }
+      }
+      if (changed) k++;
+    }
+    return k;
+  }
+  /* v74 (P3): ״לא, להשאיר״ אחרי מחיקת חשבון — הנהגים של החשבון שנמחק הופכים למקומיים (בלי owner), כדי שלא ״יחנו״ לתמיד */
+  orphanOwner(uid) {
+    if (typeof uid !== "string" || !uid) return { ok: false, n: 0 };
+    let n = 0;
+    for (const p of this.meta.list) if (p && p.owner === uid) { delete p.owner; p.local = true; p.metaAt = Date.now(); n++; }
+    this.meta.tombs = this.meta.tombs.filter(t => t.owner !== uid);
+    this.saveMeta();
+    return { ok: true, n };
+  }
+  /* v74 (P2): ״אפס הכול — כולל הגיבויים״ — גם ארכיון המשחקים של הנהג (matches.jsonl ריק) */
+  wipeMatches(pid) {
+    if (!validId(pid) || !this.meta.list.some(p => p.id === pid)) return { ok: false, n: 0 };
+    const n = this.matches(pid, { lite: true }).length;
+    try { writeAtomic(this.mfile(pid), ""); } catch (e) { return { ok: false, n: 0, why: String(e.message || e).slice(0, 120) }; }
+    return { ok: true, n };
   }
   switchTo(id) {
     const p = this.meta.list.find(x => x.id === id);

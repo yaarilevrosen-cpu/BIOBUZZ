@@ -12,7 +12,8 @@ BIOBUZZ has two optional AI features in the desktop app: the **AI coach**, which
 - They are meant for **adult mentors, aged 18 or over**. Google's [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) say you must be 18 or older to use the API.
 - **If you are under 18, do not turn them on** and do not enter an API key. Everything else in BIOBUZZ works without AI.
 - To turn them on, an adult must confirm they are 18 or over and that they have read Google's terms and this notice. The app will not save or use a key without that confirmation.
-- If you are signed in with an account whose age group is **13–17**, the AI features are **hidden completely** and cannot be used, even if a key was saved on that computer earlier.
+- If you are signed in with an account whose age group is **13–17**, the AI features are **hidden completely** and cannot be used, even if a key was saved on that computer earlier. Signing in with such an account also erases the 18+ confirmation saved on that computer.
+- The 18+ confirmation belongs to the account that gave it (or to "no account" if it was given while signed out). After signing out or switching to another account, the AI features stay off until an adult confirms again.
 
 ## How it works
 
