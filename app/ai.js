@@ -123,8 +123,9 @@ class AI {
   }
   /* v74 (P9): החשבון המחובר עכשיו (ריק = בלי חשבון) */
   setUid(uid) { uid = typeof uid === "string" ? uid : ""; if (uid === this.uid) return; this.uid = uid; const had = !!this.ack; this.ackBind(); if (had && !this.ack) this.cancel(); }
-  ackBind() { const r = this.ackRec; this.ack = r && (r.uid || "") === (this.uid || "") ? r : null; }
-  static NOACK() { return "קודם מאשרים בהגדרות: אני בן/בת 18 ומעלה ומסכים/ה לתנאים של Gemini API"; }
+  /* 1.16: בלי חסימת גיל — הבינה המלאכותית זמינה לכל חשבון. האישור נשאר רק לתאימות לאחור, ותמיד תקף */
+  ackBind() { const r = this.ackRec; this.ack = r && (r.uid || "") === (this.uid || "") ? r : { at: 0, uid: this.uid || "", auto: true }; }
+  static NOACK() { return "הבינה המלאכותית לא זמינה כרגע"; }
   saveSt() { try { writeAtomic(this.stFile, JSON.stringify(this.st)); } catch (e) {} }
   scrub(msg) { msg = String(msg || ""); if (this.key) msg = msg.split(this.key).join("•••"); return msg.replace(/key=[A-Za-z0-9_.\-]{10,}/g, "key=•••").slice(0, 240); }
   async setKey(k) {

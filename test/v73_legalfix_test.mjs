@@ -72,19 +72,17 @@ for(const en of [false,true]){
   ok(s.call&&s.call[1][0]===VER&&JSON.stringify(s.call[1][1])==='{"age_bracket":"13-17","guardian_ok":true}'&&!s.ask,'['+L+'] אישור: acctTos('+VER+', {age_bracket, guardian_ok}), והבקשה נעלמת — '+JSON.stringify(s.call&&s.call[1]));
   await ctx.close();
 }
-/* ── דרישה 5: חשבון של 13–17 — הבינה המלאכותית מוסתרת לגמרי ── */
+/* ── 1.16: הבינה המלאכותית זמינה בכל גיל (חסימת 13–17 בוטלה) ── */
 for(const en of [false,true]){
   const L=en?'en':'he';
   for(const age of ['13-17','18+']){
     const minor=age==='13-17';
-    const {ctx,page,E}=await openPage({en,app:{acct:{loggedIn:true,name:'Maya',email:'m@x.dev',tos:VER,tosNeed:VER,tosWait:false,age},ai:{has:true,ok:!minor,ack18:true,minor,tail:'abcd',pick:{fast:'f',strong:'s'},models:[]}}});
+    const {ctx,page,E}=await openPage({en,app:{acct:{loggedIn:true,name:'Maya',email:'m@x.dev',tos:VER,tosNeed:VER,tosWait:false,age},ai:{has:true,ok:true,ack18:true,tail:'abcd',pick:{fast:'f',strong:'s'},models:[]}}});
     await E(async()=>{ const X=__sim.v73legalfix; X.acc().st=await bbApp.acctStatus(); X.AIST().st=await bbApp.aiStatus(); X.aiRender(); X.coachBarUI(); });
     const s=await E(()=>{ const g=document.getElementById('setAI'); __sim.cmdkOpen(); document.getElementById('cmdkIn').value='gemini key'; __sim.cmdkDraw&&__sim.cmdkDraw();
       const r={minor:__sim.v73legalfix.aiMinor(), on:__sim.v73legalfix.aiOn(), hidden:!!g.hidden||getComputedStyle(g).display==='none', set:document.getElementById('aiSet').innerText,
         bar:document.getElementById('coachBar').innerHTML, key:__sim.CMDK.list.filter(c=>!c.when||c.when()).some(c=>c.id==='ai-key')}; __sim.cmdkClose(); return r; });
-    if(minor) ok(s.minor&&!s.on&&s.hidden&&!s.set&&!/data-coach="(key|me|team)"/.test(s.bar)&&!s.key,'['+L+'] 13–17: אין בינה מלאכותית — ההגדרות מוסתרות, אין ״נתח אותי״, אין הזמנה להוסיף מפתח, ולא בחיפוש');
-    else ok(!s.minor&&s.on&&!s.hidden&&/data-coach="me"/.test(s.bar)&&s.key,'['+L+'] 18+: הבינה המלאכותית זמינה כרגיל');
-    if(minor){ const c=await E(()=>{ __sim.v73legalfix.chatOpen('hi'); return document.getElementById('aiChat').hidden; }); ok(c,'['+L+'] 13–17: העוזר לא נפתח'); }
+    ok(!s.minor&&s.on&&!s.hidden&&/data-coach="me"/.test(s.bar)&&s.key,'['+L+'] '+age+': הבינה המלאכותית זמינה כרגיל');
     await ctx.close();
   }
 }

@@ -126,20 +126,15 @@ const filesUnder=d=>{ const out=[]; const walk=x=>{ let l=[]; try{ l=fs.readdirS
   for(let i=0;i<5;i++) await sy.syncNow();
   ok(!st.meta.tombs.some(x=>x.id===e.id)&&S.tombRej===94,'אחרי 5 דחיות — מוותרים (לא מנסים לנצח); '+(99-S.tombRej)+' ניסיונות');
 }
-/* ── P9: אישור 18+ שייך לחשבון ── */
+/* ── P9 → 1.16: אין יותר שער גיל — הבינה המלאכותית תקפה בכל חשבון ובלי חשבון ── */
 {
   const D=T('bb74p9-'); const A=new AI(D,{canEnc:()=>false});
-  A.setUid(ME); A.ack18(true);
-  ok(A.status().ack18&&JSON.parse(fs.readFileSync(path.join(D,'ai-ack.json'),'utf8')).uid===ME,'אישור בזמן שמחוברים — נשמר עם ה-uid');
-  A.setUid(''); ok(!A.status().ack18,'התנתקות — האישור לא תקף (הבינה המלאכותית כבויה)');
-  A.setUid(OTHER); ok(!A.status().ack18,'חשבון אחר — לא תקף');
-  A.setUid(ME); ok(A.status().ack18,'אותו חשבון חוזר — תקף שוב');
-  const B=new AI(D,{canEnc:()=>false}); ok(!B.status().ack18,'הפעלה מחדש בלי חשבון — לא תקף'); B.setUid(ME); ok(B.status().ack18,'…ועם החשבון — תקף');
-  B.setUid(''); B.ack18(true); ok(B.status().ack18&&JSON.parse(fs.readFileSync(path.join(D,'ai-ack.json'),'utf8')).uid==='','אישור בלי חשבון — תקף רק בלי חשבון'); B.setUid(ME); ok(!B.status().ack18,'…ולא כשמתחברים');
-  fs.writeFileSync(path.join(D,'ai-ack.json'),JSON.stringify({at:Date.now()})); const L=new AI(D,{canEnc:()=>false});
-  ok(L.status().ack18&&(L.setUid(ME),!L.status().ack18),'קובץ ישן (בלי uid) — שייך ל״בלי חשבון״');
+  ok(A.status().ack18,'בלי חשבון ובלי אישור — תקף');
+  A.setUid(ME); ok(A.status().ack18,'מחובר — תקף');
+  A.setUid(OTHER); ok(A.status().ack18,'חשבון אחר — תקף');
+  A.setUid(''); A.ack18(false); ok(A.status().ack18,'ביטול אישור ישן — עדיין תקף');
   const m=fs.readFileSync(APP+'/main.js','utf8');
-  ok(/st\.age === "13-17" && ai\.ackRec\) ai\.ack18\(false\)/.test(m)&&/afterLogin = r => \{ if \(r\.ok\) \{ aiBind\(\)/.test(m),'main.js: התחברות של חשבון 13–17 מוחקת את האישור (aiBind)');
+  ok(!/st\.age === "13-17"/.test(m)&&/function aiMinor\(\) \{ return false; \}/.test(m),'main.js: אין חסימה של חשבון 13–17');
 }
 /* ── P10: SQL ── */
 {
@@ -152,7 +147,7 @@ const filesUnder=d=>{ const out=[]; const walk=x=>{ let l=[]; try{ l=fs.readdirS
 {
   let c=0; try{ execFileSync('python3',[ROOT+'/tools/legal_embed.py','--check'],{stdio:'pipe'}); }catch(e){ c=e.status||1; }
   const en=fs.readFileSync(ROOT+'/legal/privacy.en.md','utf8'), he=fs.readFileSync(ROOT+'/legal/privacy.he.md','utf8'), ai=fs.readFileSync(ROOT+'/legal/ai.en.md','utf8'), aih=fs.readFileSync(ROOT+'/legal/ai.he.md','utf8');
-  ok(c===0&&/removes file paths/.test(en)&&/נתיבי קבצים/.test(he)&&/match archive/.test(en)&&/ארכיון המשחקים/.test(he)&&/belongs to the account/.test(ai)&&/שייך לחשבון/.test(aih),'legal/ (he+en) מעודכן ו-legal_embed.py --check עובר');
+  ok(c===0&&/removes file paths/.test(en)&&/נתיבי קבצים/.test(he)&&/match archive/.test(en)&&/ארכיון המשחקים/.test(he)&&/available to every user/.test(ai)&&/זמינות לכל משתמש/.test(aih),'legal/ (he+en) מעודכן ו-legal_embed.py --check עובר');
 }
 
 /* ══ האפליקציה עצמה (Electron) ══ */
@@ -216,9 +211,9 @@ if(!process.env.BB_NO_ELECTRON){
   let pr=await win.evaluate(()=>bbApp.profiles());
   ok(pr.length&&pr.every(p=>p.synced===true),'נהגים של החשבון: synced=true');
   let ai=await win.evaluate(async()=>(await bbApp.aiAck18(true)).status);
-  ok(ai.ack18===true,'מבוגר מחובר מאשר 18+');
+  ok(ai.ack18===true,'מחובר — הבינה המלאכותית תקפה');
   await win.evaluate(()=>bbApp.acctSignOut()); await acc();
-  ai=await win.evaluate(()=>bbApp.aiStatus()); ok(ai.ack18===false,'P9: אחרי התנתקות — האישור לא תקף (הבינה המלאכותית כבויה)');
+  ai=await win.evaluate(()=>bbApp.aiStatus()); ok(ai.ack18===true,'1.16: גם אחרי התנתקות — תקף');
   const off=await win.evaluate(()=>bbApp.profileAdd('Offline74',undefined,undefined,false));
   await win.evaluate(()=>bbApp.acctSignIn('maya@example.com','pw123456')); await wait(1500); await acc();
   ai=await win.evaluate(()=>bbApp.aiStatus()); ok(ai.ack18===true,'אותו חשבון חוזר — האישור תקף שוב');
@@ -235,9 +230,9 @@ if(!process.env.BB_NO_ELECTRON){
   ok(fs.existsSync(path.join(DATA,'ai-ack.json')),'(אישור בלי חשבון נשמר)');
   await win.evaluate(()=>bbApp.acctSignIn('maya@example.com','pw123456')); await wait(800); await acc();
   ai=await win.evaluate(()=>bbApp.aiStatus());
-  ok(!fs.existsSync(path.join(DATA,'ai-ack.json'))&&ai.minor===true&&ai.ack18===false,'P9: חשבון 13–17 מתחבר — ai-ack.json נמחק');
+  ok(!ai.minor&&ai.ack18===true,'1.16: חשבון 13–17 מתחבר — הבינה המלאכותית זמינה');
   await win.evaluate(()=>bbApp.acctSignOut());
-  ai=await win.evaluate(()=>bbApp.aiStatus()); ok(ai.ack18===false,'…וגם אחרי התנתקות אין אישור (צריך מבוגר שיאשר שוב)');
+  ai=await win.evaluate(()=>bbApp.aiStatus()); ok(ai.ack18===true,'…וגם אחרי התנתקות');
   S.meta.age_bracket='18+'; delete S.meta.guardian_ok;
 
   /* P2: ״אפס הכול — כולל הגיבויים״ — גם ארכיון המשחקים */

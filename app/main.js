@@ -53,13 +53,13 @@ function legalVersion() {
 }
 /* 1.14 (legalfix): חשבון של בן/בת 13–17 — הבינה המלאכותית מוסתרת לגמרי (גם כאן, לא רק בדף) */
 const MINOR_AI = "הבינה המלאכותית לא זמינה בחשבון של מתחת לגיל 18";
-function aiMinor() { aiBind(); return acctStatus().age === "13-17"; }
+/* 1.16: יערי ביטל את חסימת הגיל — הבינה המלאכותית זמינה לכל החשבונות. הפונקציה נשארת כדי שהקריאות לא ישתנו */
+function aiMinor() { return false; }
 function aiSt() { aiBind(); const s = ai.status(); return aiMinor() ? Object.assign(s, { ok: false, minor: true }) : s; }
 /* v74 (P9): אישור 18+ שייך לחשבון שאישר. חשבון 13–17 שמתחבר — האישור במחשב נמחק */
 function aiBind() {
   if (!ai || !ai.setUid) return;
   const st = acctStatus(); ai.setUid(st.loggedIn && sync ? sync.uid() : "");
-  if (st.age === "13-17" && ai.ackRec) ai.ack18(false);
 }
 const send = (ch, d) => { try { if (win && !win.isDestroyed()) win.webContents.send(ch, d); } catch (e) {} };
 

@@ -1,9 +1,9 @@
-﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-10-09)
+﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-10-14)
 
 BIOBUZZ TERMS OF USE
 ====================
 
-Version: 2026-10-09
+Version: 2026-10-14
 
 These terms are the rules for using BIOBUZZ: the desktop app, the single-file browser version, the phone controller page, the website and the optional cloud service (accounts, sync and teams). By using BIOBUZZ you agree to them. If you are under 18, please read them with a parent, guardian or mentor.
 
@@ -22,7 +22,7 @@ Who may use BIOBUZZ
 -------------------
   * Anyone may use the simulator locally on their own device, without an account.
   * Accounts (cloud sync and teams) are only for people aged 13 or over. If you are 13 to 17, you need permission from a parent or legal guardian to create an account (in EU countries where the age of digital consent is higher, the same rule applies until that age).
-  * AI features are for adults 18 or over only.
+  * AI features are available to everyone; Google's terms apply to the key owner (see the AI section).
   * When you sign up, you confirm your age group truthfully. If we learn that an account belongs to a child under 13, we will delete it.
 
 Your account
@@ -58,7 +58,7 @@ Teams
 AI features
 -----------
 
-The optional AI coach and helper use Google's Gemini API with your own API key. Using them means you also agree to Google's API terms (https://developers.google.com/terms) and Gemini API Additional Terms (https://ai.google.dev/gemini-api/terms), which require you to be 18 or over. You are responsible for your key and for any cost on your Google account. AI answers can be wrong — see the AI Notice.
+The optional AI coach and helper use Google's Gemini API with your own API key. Using them means you also agree to Google's API terms (https://developers.google.com/terms) and Gemini API Additional Terms (https://ai.google.dev/gemini-api/terms), which require the key owner to be 18 or over. Under 18 — only with a key an adult created and allowed you to use. The key owner is responsible for your key and for any cost on your Google account. AI answers can be wrong — see the AI Notice.
 
 Robot safety — please read
 --------------------------
@@ -117,7 +117,7 @@ If any part of these terms is found invalid, the rest still applies. These terms
 תנאי השימוש ב־BIOBUZZ
 =====================
 
-גרסה: 9 באוקטובר 2026 (2026-10-09)
+גרסה: 14 באוקטובר 2026 (2026-10-14)
 
 התנאים האלה הם הכללים לשימוש ב־BIOBUZZ: אפליקציית המחשב, גרסת הדפדפן בקובץ אחד, דף השלט בטלפון, האתר ושירות הענן הרשותי (חשבונות, סנכרון וקבוצות). מי שמשתמש ב־BIOBUZZ מסכים להם. אם אתם מתחת לגיל 18, קראו אותם יחד עם הורה, אפוטרופוס או מנטור.
 
@@ -136,7 +136,7 @@ BIOBUZZ חינמי. אנחנו נותנים לכם רישיון אישי, לא �
 --------------
   * כל אחד רשאי להשתמש בסימולטור במכשיר שלו, בלי חשבון.
   * חשבונות (סנכרון וקבוצות) מיועדים רק לבני 13 ומעלה. בגילאי 13 עד 17 צריך רשות של הורה או אפוטרופוס כדי לפתוח חשבון (במדינות האיחוד האירופי שבהן גיל ההסכמה הדיגיטלית גבוה יותר, אותו כלל חל עד הגיל הזה).
-  * בינה מלאכותית — למבוגרים בני 18 ומעלה בלבד.
+  * בינה מלאכותית — זמינה לכולם; התנאים של גוגל חלים על בעל המפתח (ראו סעיף הבינה המלאכותית).
   * בהרשמה אתם מאשרים את קבוצת הגיל שלכם, בכנות. אם נגלה שחשבון שייך לילד מתחת לגיל 13, נמחק אותו.
 
 החשבון שלכם
@@ -172,7 +172,7 @@ BIOBUZZ חינמי. אנחנו נותנים לכם רישיון אישי, לא �
 בינה מלאכותית
 -------------
 
-המאמן והעוזר החכמים, שהם רשות, משתמשים בממשק ג׳מיני של גוגל עם מפתח גישה שלכם. מי שמשתמש בהם מסכים גם לתנאי הממשקים של גוגל (https://developers.google.com/terms) ולתנאים הנוספים של ממשק ג׳מיני (https://ai.google.dev/gemini-api/terms), שמחייבים גיל 18 ומעלה. אתם אחראים למפתח שלכם ולכל עלות בחשבון הגוגל שלכם. תשובות של בינה מלאכותית יכולות להיות שגויות — ראו את ההודעה על בינה מלאכותית.
+המאמן והעוזר החכמים, שהם רשות, משתמשים בממשק ג׳מיני של גוגל עם מפתח גישה שלכם. מי שמשתמש בהם מסכים גם לתנאי הממשקים של גוגל (https://developers.google.com/terms) ולתנאים הנוספים של ממשק ג׳מיני (https://ai.google.dev/gemini-api/terms), שמחייבים את בעל המפתח להיות בן 18 ומעלה. מתחת לגיל 18 — רק עם מפתח שמבוגר יצר ואישר. בעל המפתח אחראי למפתח שלכם ולכל עלות בחשבון הגוגל שלכם. תשובות של בינה מלאכותית יכולות להיות שגויות — ראו את ההודעה על בינה מלאכותית.
 
 בטיחות הרובוט — חשוב לקרוא
 --------------------------

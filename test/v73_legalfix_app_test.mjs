@@ -170,7 +170,7 @@ const dirs=[];
   const m=fs.readFileSync(APP+'/main.js','utf8'), p=fs.readFileSync(APP+'/preload.js','utf8');
   ok(/handle\("bb:wipeBackups"/.test(m)&&p.includes('"bb:wipeBackups"'),'bb:wipeBackups — דרך handle() (בדיקת השולח) ונחשף ב-preload');
   ok(/tosNeed: legalVersion\(\)/.test(m)&&/process\.resourcesPath && path\.join\(process\.resourcesPath, "legal"\)/.test(m),'הגרסה הנדרשת מ-legal/VERSION (גם באפליקציה הארוזה)');
-  ok(['bb:aiSetKey','bb:aiCheck','bb:aiAsk'].every(c=>new RegExp('handle\\("'+c+'"[^\\n]*aiMinor\\(\\)').test(m))&&/age === "13-17"/.test(m),'13–17: setKey/check/ask מסרבים בתהליך הראשי, לא רק בדף');
+  ok(/function aiMinor\(\) \{ return false; \}/.test(m)&&!/age === "13-17"/.test(m),'1.16: אין שער גיל לבינה המלאכותית בתהליך הראשי');
   ok(/acctTos: \(v, meta\)/.test(p)&&/age_bracket: String\(meta\.age_bracket/.test(p),'preload: acctTos מעביר רק טווח גיל והסכמת הורה');
 }
 srv.close(); for(const d of dirs) try{ fs.rmSync(d,{recursive:true,force:true}); }catch(e){}

@@ -1,6 +1,6 @@
 # BIOBUZZ Privacy Policy
 
-**Version:** 2026-10-09
+**Version:** 2026-10-14
 
 This policy explains, in plain language, what information the BIOBUZZ field simulator uses, where it goes, how long we keep it and how you can see, download or delete it. It covers the BIOBUZZ desktop app (Windows, macOS, Linux), the single-file browser version, the phone controller page and the BIOBUZZ website on GitHub Pages.
 
@@ -68,9 +68,9 @@ The report form shows you a preview of exactly what will be sent before you pres
 
 Please don't write personal information in a bug report that isn't needed. If you choose "Open on GitHub" instead, the report is posted publicly on GitHub under your own GitHub account.
 
-### AI features (optional, adults 18+ only)
+### AI features (optional)
 
-The AI coach and helper use Google's Gemini service with **your own** Google API key. They are off by default and are meant for adult mentors (18+) only. The key is stored encrypted on your computer and is never sent to us. What you type, and the summaries the AI coach sends, go **directly from your computer to Google**, never through us. Before anything is sent, the app replaces driver and team names it knows with nicknames ("Driver 1", "Team X") and puts the real names back only on your computer. Accounts for ages 13–17 do not see the AI features at all. We do not receive or store your AI questions or answers. Google's terms apply to that data. See the separate **AI Notice** for details.
+The AI coach and helper use Google's Gemini service with **your own** Google API key. They stay off until you add a key and are available to every account. Google's terms apply to the key owner and require them to be 18+; under 18, only use a key an adult created and allowed you to use. The key is stored encrypted on your computer and is never sent to us. What you type, and the summaries the AI coach sends, go **directly from your computer to Google**, never through us. Before anything is sent, the app replaces driver and team names it knows with nicknames ("Driver 1", "Team X") and puts the real names back only on your computer. We do not receive or store your AI questions or answers. Google's terms apply to that data. See the separate **AI Notice** for details.
 
 ### Network play, phone controller and spectators
 
@@ -95,7 +95,7 @@ Playing together on a local network, using your phone as a controller, or showin
 - **To fix bugs you report and contact you if you asked us to** — our legitimate interest in keeping the software working (GDPR Art. 6(1)(f)); sending a report is always your choice.
 - **To keep the service secure and fair** (hashed IP for rate limits, quotas, failed-code counters) — our legitimate interest in preventing abuse (GDPR Art. 6(1)(f)).
 - **To record your age group and acceptance of the terms** — to meet our legal obligations and to show that permission was given (GDPR Art. 6(1)(c) and (f)).
-- **AI features** — only if you turn them on and confirm you are 18+ (your consent, GDPR Art. 6(1)(a)); the data goes directly to Google.
+- **AI features** — only if you add a key and use them (your consent, GDPR Art. 6(1)(a)); the data goes directly to Google.
 
 We use data only for these purposes. We don't use it to profile you or for anything unrelated to running BIOBUZZ.
 
@@ -148,7 +148,7 @@ FIRST Tech Challenge is for students, so we expect many users to be under 18. We
 
 - **Under 13:** you can use the whole simulator **locally**, with no account. Accounts are not available under 13, and nothing about you leaves your device (unless a bug report is sent — please ask a parent or mentor first).
 - **13 to 17:** you may create an account **only with the permission of a parent or legal guardian**. This also covers EU countries where the age of digital consent is 14, 15 or 16.
-- **AI features:** for adults **18 and over only**. If you are under 18, do not turn them on. This is required by Google's terms. In an account for ages 13–17 the AI features are hidden completely.
+- **AI features:** available to every account. Google's terms require the key owner to be 18+ — under 18, use only a key an adult created and allowed you to use, and do not type personal information to the helper.
 - **If we learn that a child under 13 has an account,** we will delete the account and its cloud data. If you are a parent and think this has happened, contact us and we will act quickly.
 
 ## How we protect data

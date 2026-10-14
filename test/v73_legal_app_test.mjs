@@ -98,23 +98,19 @@ const {D,st,sy}=mk();
   ok(!s2.wipeOwner('').ok,'בלי uid — לא נוגע בכלום');
   [D2,D3].forEach(x=>fs.rmSync(x,{recursive:true,force:true}));
 }
-/* ── 6. בינה מלאכותית: 18+ ── */
+/* ── 6. בינה מלאכותית: 1.16 — בלי שער גיל ── */
 {
   const G={n:0}; const g=http.createServer((q,s)=>{ let b=''; q.on('data',c=>b+=c); q.on('end',()=>{ G.n++; s.writeHead(200,{'content-type':'application/json'});
     if(q.method==='GET') return s.end(JSON.stringify({models:[{name:'models/gemini-9-flash',displayName:'F',supportedGenerationMethods:['generateContent']}]}));
     s.end(JSON.stringify({candidates:[{content:{parts:[{text:'OK'}]},finishReason:'STOP'}]})); }); });
   await new Promise(r=>g.listen(0,'127.0.0.1',r)); process.env.BIOBUZZ_GEMINI_BASE='http://127.0.0.1:'+g.address().port;
   const AD=tmp('bb73ai-'); let A=new AI(AD,{canEnc:()=>false});
-  ok(A.status().ack18===false&&!A.status().ok,'ברירת מחדל: בלי אישור 18+ (כבוי)');
-  let r=await A.setKey('AIza'+'k'.repeat(35)); ok(!r.ok&&r.needAck&&/18/.test(r.why)&&G.n===0&&!A.status().has,'שמירת מפתח בלי אישור — נדחית, בלי פנייה לגוגל');
-  r=await A.ask('helper',{messages:[{role:'user',text:'hi'}]}); ok(!r.ok&&r.needAck&&G.n===0,'שאלה בלי אישור — סירוב ברור ('+r.why+')');
-  r=await A.check(); ok(!r.ok&&r.needAck&&G.n===0,'בדיקה בלי אישור — סירוב');
-  A.ack18(true); ok(fs.existsSync(path.join(AD,'ai-ack.json'))&&new AI(AD,{canEnc:()=>false}).status().ack18===true,'האישור נשמר במחשב (ai-ack.json) ונשאר אחרי הפעלה מחדש');
-  r=await A.setKey('AIza'+'k'.repeat(35)); ok(r.ok&&A.status().ok&&G.n>0,'עם אישור — המפתח נבדק ועובד');
-  r=await A.ask('helper',{messages:[{role:'user',text:'hi'}]}); ok(r.ok,'עם אישור — שאלה עובדת');
-  /* מפתח שכבר שמור (מגרסה קודמת) — הבינה כבויה עד שמאשרים */
-  A.ack18(false); const n0=G.n; r=await A.ask('helper',{messages:[{role:'user',text:'hi'}]});
-  ok(!A.status().ok&&A.status().has&&!r.ok&&r.needAck&&G.n===n0,'ביטול האישור: המפתח נשאר, אבל הכול כבוי ושום בקשה לא יוצאת');
+  /* 1.16: בלי חסימת גיל — אין צורך באישור 18+ */
+  ok(A.status().ack18===true&&!A.status().ok&&!A.status().has,'ברירת מחדל: אין מפתח (כבוי), אבל אין צורך באישור גיל');
+  let r=await A.setKey('AIza'+'k'.repeat(35)); ok(r.ok&&A.status().ok&&G.n>0,'שמירת מפתח בלי אישור — נבדק ועובד');
+  r=await A.ask('helper',{messages:[{role:'user',text:'hi'}]}); ok(r.ok,'שאלה עובדת בלי אישור');
+  r=await A.check(); ok(r.ok,'בדיקה עובדת בלי אישור');
+  A.ack18(false); r=await A.ask('helper',{messages:[{role:'user',text:'hi'}]}); ok(A.status().ok&&r.ok,'ביטול אישור ישן לא מכבה (אין יותר שער גיל)');
   g.close(); delete process.env.BIOBUZZ_GEMINI_BASE; fs.rmSync(AD,{recursive:true,force:true});
 }
 /* ── 7. ערוצי IPC: הכול דרך handle() (בדיקת השולח), וה-preload חושף רק פונקציות ── */

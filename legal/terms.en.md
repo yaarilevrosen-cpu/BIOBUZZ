@@ -1,6 +1,6 @@
 # BIOBUZZ Terms of Use
 
-**Version:** 2026-10-09
+**Version:** 2026-10-14
 
 These terms are the rules for using BIOBUZZ: the desktop app, the single-file browser version, the phone controller page, the website and the optional cloud service (accounts, sync and teams). By using BIOBUZZ you agree to them. If you are under 18, please read them with a parent, guardian or mentor.
 
@@ -18,7 +18,7 @@ You may not sell BIOBUZZ, charge money for access to it, bundle it in a paid pro
 
 - **Anyone** may use the simulator locally on their own device, without an account.
 - **Accounts (cloud sync and teams)** are only for people aged **13 or over**. If you are **13 to 17**, you need permission from a parent or legal guardian to create an account (in EU countries where the age of digital consent is higher, the same rule applies until that age).
-- **AI features** are for adults **18 or over** only.
+- **AI features** are available to everyone; Google's terms apply to the key owner (see the AI section).
 - When you sign up, you confirm your age group truthfully. If we learn that an account belongs to a child under 13, we will delete it.
 
 ## Your account
@@ -52,7 +52,7 @@ Your drivers, matches, settings, paths and team data stay yours. You give us per
 
 ## AI features
 
-The optional AI coach and helper use Google's Gemini API with **your own** API key. Using them means you also agree to [Google's API terms](https://developers.google.com/terms) and [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms), which require you to be 18 or over. You are responsible for your key and for any cost on your Google account. AI answers can be wrong — see the AI Notice.
+The optional AI coach and helper use Google's Gemini API with **your own** API key. Using them means you also agree to [Google's API terms](https://developers.google.com/terms) and [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms), which require the key owner to be 18 or over. Under 18 — only with a key an adult created and allowed you to use. The key owner is responsible for your key and for any cost on your Google account. AI answers can be wrong — see the AI Notice.
 
 ## Robot safety — please read
 

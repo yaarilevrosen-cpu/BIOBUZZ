@@ -129,8 +129,8 @@ for(const en of [false,true]){
   /* אודות */
   { const a=await E(()=>{ __sim.v73legal.aboutUI(); return document.getElementById('aboutBox').innerText; });
     ok(/v70/.test(a)&&/2\d{3}-\d\d-\d\d/.test(a)&&/not affiliated/.test(a)&&!/@/.test(a)&&(!en||!HE.test(a)),'['+L+'] אודות: גרסה, גרסת מסמכים, הצהרה, בלי מייל (CONTACT_EMAIL ריק)'+(en?' ובלי עברית':'')); }
-  /* בינה מלאכותית בדפדפן — מסומן כ-18+ */
-  { const t=await E(()=>document.getElementById('aiSet').innerText); ok(/18/.test(t)&&(!en||!HE.test(t)),'['+L+'] הגדרות הבינה המלאכותית בדפדפן: ״18 ומעלה בלבד״'); }
+  /* 1.16: בינה מלאכותית בדפדפן — בלי חסימת גיל, עם קישור לפרטים */
+  { const t=await E(()=>({t:document.getElementById('aiSet').innerText, l:!!document.querySelector('#aiSet [data-legal="ai"]')})); ok(!/18/.test(t.t)&&t.l&&(!en||!HE.test(t.t)),'['+L+'] הגדרות הבינה המלאכותית בדפדפן: בלי ״18 ומעלה״, עם ״פרטים״'); }
   /* דיווח באג: מה נשלח, 12 חודשים, וצילום מסך רק אם מסמנים */
   { const r=await E(async()=>{ await __sim.bugOpen(); await new Promise(r=>setTimeout(r,200)); document.getElementById('bugWhat').value='abc def';
       const p=__sim.bugPayload(); const n=document.getElementById('bugNote').innerText; const sh=document.getElementById('bugShot').checked;
@@ -245,22 +245,19 @@ for(const [en,delMissing] of [[false,true],[true,false]]){
   await ctx.close();
 }
 
-/* ── 7. בינה מלאכותית: 18+ ואישור התנאים של גוגל ── */
+/* ── 7. 1.16: בינה מלאכותית בלי חסימת גיל — אין תיבת ״18 ומעלה״, ומפתח תקין מדליק גם בלי אישור ישן ── */
 for(const en of [false,true]){
   const L=en?'en':'he';
-  const {ctx,page,E}=await openPage({en,app:{acct:{loggedIn:false},ai:{has:true,ok:false,ack18:false}}});
+  const {ctx,page,E}=await openPage({en,app:{acct:{loggedIn:false},ai:{has:true,ok:true,ack18:false}}});
   await page.click('#appNav [data-nav="settings"]'); await page.waitForTimeout(400);
-  let r=await E(()=>({t:document.getElementById('aiSet').innerText, cb:!!document.getElementById('aiAck18'), chk:(document.getElementById('aiAck18')||{}).checked, aion:document.documentElement.classList.contains('aion'), on:__sim.aiOn()}));
-  ok(r.cb&&!r.chk&&!r.aion&&!r.on&&/18/.test(r.t)&&/Gemini/.test(r.t),'['+L+'] מפתח שמור בלי אישור: כבוי, ותיבת ״18 ומעלה + התנאים של Gemini״ לא מסומנת');
+  let r=await E(()=>({t:document.getElementById('aiSet').innerText, cb:!!document.getElementById('aiAck18'), aion:document.documentElement.classList.contains('aion'), on:__sim.aiOn()}));
+  ok(!r.cb&&r.aion&&r.on&&!/18/.test(r.t),'['+L+'] אין תיבת ״18 ומעלה״, והבינה המלאכותית דולקת עם מפתח תקין');
   if(en) ok(!HE.test(r.t),'[en] הגדרות הבינה המלאכותית בלי עברית: '+(r.t.match(/.{0,20}[֐-׿].{0,20}/)||[''])[0]);
-  await page.fill('#aiKeyIn','AIza'+'x'.repeat(35)); await page.click('[data-ai="save"]'); await page.waitForTimeout(100);
-  r=await E(()=>({n:window.__calls.filter(c=>c[0]==='setKey').length, m:document.getElementById('aiMsg').innerText}));
-  ok(r.n===0&&/18/.test(r.m),'['+L+'] ״שמור ובדוק״ בלי אישור — לא נשלח, הודעה ברורה: '+r.m);
+  await page.fill('#aiKeyIn','AIza'+'x'.repeat(35)); await page.click('[data-ai="save"]'); await page.waitForTimeout(150);
+  r=await E(()=>({n:window.__calls.filter(c=>c[0]==='setKey').length}));
+  ok(r.n===1,'['+L+'] ״שמור ובדוק״ — נשלח לתהליך הראשי בלי אישור גיל');
   await page.click('#aiSet [data-legal="ai"]'); await page.waitForTimeout(80);
   let s=await legalState(E); ok(s.open&&s.sel[0]==='ai','['+L+'] ״פרטים״ פותח את מסמך הבינה המלאכותית'); await escClose(page,E);
-  await page.check('#aiAck18'); await page.waitForTimeout(200);
-  r=await E(()=>({ack:window.__calls.filter(c=>c[0]==='ack18').map(c=>c[1]), on:__sim.aiOn(), aion:document.documentElement.classList.contains('aion')}));
-  ok(r.ack.length===1&&r.ack[0]===true&&r.on&&r.aion,'['+L+'] מסמנים — נשמר בתהליך הראשי (aiAck18) והבינה המלאכותית נדלקת');
   await ctx.close();
 }
 

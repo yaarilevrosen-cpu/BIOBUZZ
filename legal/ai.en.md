@@ -1,19 +1,17 @@
 # BIOBUZZ AI Notice
 
-**Version:** 2026-10-09
+**Version:** 2026-10-14
 
 BIOBUZZ has two optional AI features in the desktop app: the **AI coach**, which looks at match statistics and suggests what to practise, and the **AI helper**, which answers questions about using the simulator and explains planner results. They use Google's **Gemini API** with an API key that **you** create in your own Google account.
 
 ---
 
-## For adults (18+) only
+## Who can use them
 
-- The AI features are **off by default**.
-- They are meant for **adult mentors, aged 18 or over**. Google's [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) say you must be 18 or older to use the API.
-- **If you are under 18, do not turn them on** and do not enter an API key. Everything else in BIOBUZZ works without AI.
-- To turn them on, an adult must confirm they are 18 or over and that they have read Google's terms and this notice. The app will not save or use a key without that confirmation.
-- If you are signed in with an account whose age group is **13–17**, the AI features are **hidden completely** and cannot be used, even if a key was saved on that computer earlier. Signing in with such an account also erases the 18+ confirmation saved on that computer.
-- The 18+ confirmation belongs to the account that gave it (or to "no account" if it was given while signed out). After signing out or switching to another account, the AI features stay off until an adult confirms again.
+- The AI features stay **off until you add a Google API key** in Settings.
+- They are **available to every user and every account**, with no age limit in the app.
+- Google's [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms) apply to **whoever created the key** in their Google account, and Google requires that person to be 18 or older. **If you are under 18, only use a key that an adult (a parent or mentor) created and allowed you to use.** The key owner is responsible for following Google's terms.
+- Everything else in BIOBUZZ works without AI.
 
 ## How it works
 
