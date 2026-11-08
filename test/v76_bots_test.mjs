@@ -89,15 +89,21 @@ ok(r.seen.every(x=>x==='preload'||x==='cycle')&&r.seen.length===2,'יריבים:
 // 8 — טנק: נסיגה של 0.6 שנ׳ ואז תכנון מחדש, בכל שלב
 r=await E(()=>{ const S=__sim, X=S.v76b; S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true);
   S.bldSet(0,'starter',true); S.matchStart(); const B=S.BOTS[0], O=S.BOTS[1]; for(const o of S.BOTS) o.on=o===B||o===O; S.setMatchT(50); S.advance(0.05,1/60);
-  B.parkGo=false; B.parkA=false; B.v76Back=null; B.v76BackN=0; B.stallT=1.3;
-  const free=X.v76TankBack(B,40,1/60);                       /* בלי מגע — לא נסיגה */
+  B.role='score'; B.lvBlock=false; B.parkGo=false; B.parkA=false; B.v76Back=null; B.v76BackN=0; B.stallT=1.3;
+  B.body.position.set(S.M(20),0,S.M(0)); O.body.position.set(S.M(90),0,S.M(90)); S.world.step(1/120); B.stallT=1.3;
+  const free=X.v76TankBack(B,40,1/60);                       /* רק רצפה — לא נסיגה */
   B.body.position.set(S.M(20),0,S.M(0)); O.body.position.set(S.M(20+S.AIC.L-0.3),0,S.M(0)); S.world.step(1/120);
   B.stallT=1.3; const a=X.v76TankBack(B,40,1/60), had=!!B.v76Back; S.advance(0.7,1/60); B.stallT=0; const after=X.v76TankBack(B,40,1/60);
   const out={a,had,after,free,n:B.v76Backs};
+  /* מגע עם רובוט של היריב — לא נסוגים (כל דחיפה חוזרת נספרת כהצמדה) */
+  const Pp=S.BOTS[2]; Pp.on=true; Pp.body.position.set(S.M(20-S.AIC.L+0.3),0,S.M(0)); O.body.position.set(S.M(90),0,S.M(90)); S.world.step(1/120);
+  B.v76Back=null; B.v76BackN=0; B.stallT=1.3; out.foe=X.v76TankBack(B,40,1/60);
+  B.role='defend'; B.stallT=1.3; out.def=X.v76TankBack(B,40,1/60); B.role='score';
   S.bldSet(1,'classic',true); const C=S.BOTS[1]; C.on=true; C.stallT=1.3; C.v76Back=null; out.mec=X.v76TankBack(C,40,1/60);
   S.matchStop(); for(const o of S.BOTS) o.on=true; return out; });
 ok(!r.free&&r.a&&r.had&&!r.after&&r.n>=1,'טנק תקוע במגע — נסיגה ('+r.n+') ואז ממשיך; בלי מגע — לא');
 ok(!r.mec,'מכאנום — בלי נסיגה גנרית');
+ok(!r.foe&&!r.def,'מול רובוט של היריב, או כבולם — בלי נסיגה (G421)');
 
 // 9 — קריאות לשותף: מקלדת, שלט, סטודיו, ״השותף מדבר״
 r=await E(()=>{ const S=__sim, X=S.v76b; S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true); S.matchStart();

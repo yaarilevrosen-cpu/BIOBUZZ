@@ -21697,6 +21697,10 @@ function v76TankBack(b,gd,dt){
   if((b.stallT||0)<1.2||gd<8||(b.v76BackN||0)>=2) return false;
   let nx=0,nz=0,hit=0;
   for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o||balls.some(q=>q.body===o)) continue;
+    if(c.ni&&Math.abs(c.ni.y)>0.7) continue;           /* הרצפה — לא מכשול */
+    /* מגע עם רובוט של היריב — לא נסוגים וחוזרים לדחוף אותו: כל דחיפה חוזרת נספרת אצל השופט כהצמדה (G421).
+       שם מטפלים הפינוי (B7) והוויתור על היעד */
+    const foe=(o===botBody&&myAlly()!==b.ally)||BOTS.some(q=>q.body===o&&q.on&&q.ally!==b.ally); if(foe) return false;
     nx+=b.body.position.x-o.position.x; nz+=b.body.position.z-o.position.z; hit++; }
   if(!hit) return false;                               /* בלי מגע זה לא ״תקוע״ — הניווט עצמו מתכנן מחדש */
   let L=Math.hypot(nx,nz); if(L<1e-6){ const f=aiForward(b); nx=-f.x; nz=-f.z; L=1; }

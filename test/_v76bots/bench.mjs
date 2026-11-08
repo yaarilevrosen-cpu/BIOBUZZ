@@ -6,7 +6,7 @@ const PORT=process.env.BB_PORT||8921;
 const builds=process.env.BUILDS?process.env.BUILDS.split(','):['classic','starter','double','lift','turret','starterMec'];
 const browser=await chromium.launch({args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
 const errs=[]; const agg=[];
-for(let m=0;m<N;m++){
+for(let m=+(process.env.M0||0);m<N;m++){
   const page=await browser.newPage({viewport:{width:1200,height:800}});
   page.on('pageerror',e=>errs.push(String(e)));
   await page.addInitScript((seed)=>{ window.requestAnimationFrame=()=>0; let s=seed>>>0||1; Math.random=()=>{ s^=s<<13; s>>>=0; s^=s>>>17; s^=s<<5; s>>>=0; return s/4294967296; };
