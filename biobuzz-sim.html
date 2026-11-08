@@ -18276,24 +18276,34 @@ function brdTplBuild(k){ const red=myAlly()==="red", my=brdMine(), pt=my^1, tok=
   const lz=LZONE.red, park=[{x:-62,z:-44},{x:-62,z:-27}];
   const mine=i=>{ const q=tok[i]; return red?{x:q[0],z:q[1]}:{x:-q[0],z:-q[1]}; };   /* העמדה בצירים של האדומה */
   let seq=0; const id=()=>BRD.sid+"-t"+(++seq)+Date.now().toString(36).slice(-3);
-  const arr=(a,b,c)=>({id:id(),k:"a",c:c==null?cid:c,p:[...P_(a.x,a.z),...P_(b.x,b.z)]});
+  /* נקודה בתוך מבנה (פרח, כוורת) — למקום הפנוי הקרוב, כמו בעורך */
+  const W_=(x,z)=>{ const w=P_(x,z); try{ if(pathBlocked(w[0],w[1])){ const q=pathSnap(w[0],w[1]); if(q) return [brdN(q.x),brdN(q.z)]; } }catch(e){} return w; };
+  /* מסלול של חצים דרך נקודות (בצירי האדומה), עם עקיפה סביב מבנים כמו בעורך: navPlan, ואז קיצורים כל עוד הקטע פנוי */
+  const via=(a,b)=>{ try{ if(!pathSegBlocked(a,b)) return []; const pl=navPlan(a.x,a.z,b.x,b.z,navClrMe(),null); if(!pl||pl.length<=2) return [];
+      const q=pl.map(v=>({x:v[0],z:v[1]})), out=[]; let c=0;
+      while(c<q.length-1){ let j=q.length-1; while(j>c+1&&pathSegBlocked(q[c],q[j])) j--; if(j<q.length-1) out.push({x:brdN(q[j].x),z:brdN(q[j].z)}); c=j; }
+      return out.slice(0,6); }catch(e){ return []; } };
+  const route=(L,c)=>{ const W=L.map(q=>{ const w=W_(q.x,q.z); return {x:w[0],z:w[1]}; }), pts=[W[0]];
+    for(let i=1;i<W.length;i++){ pts.push(...via(pts[pts.length-1],W[i]),W[i]); }
+    const out=[]; for(let i=1;i<pts.length;i++) if(Math.hypot(pts[i].x-pts[i-1].x,pts[i].z-pts[i-1].z)>=3) out.push({id:id(),k:"a",c:c==null?cid:c,p:[pts[i-1].x,pts[i-1].z,pts[i].x,pts[i].z]});
+    return out; };
   const zone=(pts,c)=>({id:id(),k:"p",f:1,c:c==null?cid:c,p:[].concat(...pts.map(q=>P_(q.x,q.z)))});
   const txt=(q,t)=>({id:id(),x:P_(q.x,q.z)[0],z:P_(q.x,q.z)[1],t:netStr(T(t),BRD_TXL),c:cid});
   const circ=(c,r)=>Array.from({length:10},(_,j)=>({x:c.x+r*Math.cos(j/10*2*Math.PI), z:c.z+r*Math.sin(j/10*2*Math.PI)}));
   const A=mine(my), B=mine(pt), aF=Math.abs(A.z-flA.z)<Math.abs(A.z-flB.z)?flA:flB, bF=aF===flA?flB:flA;
   const fr=(s,it,n)=>({tok:tok.map(q=>q.slice()),th:th.slice(),s,it:it||[],b:[],n:n||""});
   if(k==="leave"){ const a1={x:A.x+22,z:A.z-(A.z>0?8:-8)}, b1={x:B.x+22,z:B.z-(B.z>0?8:-8)};
-    const f1=fr([arr(A,a1),arr(B,b1)],[],T("יציאה")); const f2=brdNextFrame(f1); f2.n=T("חניה");
+    const f1=fr([...route([A,a1]),...route([B,b1])],[],T("יציאה")); const f2=brdNextFrame(f1); f2.n=T("חניה");
     const pa=A.z>0?park[1]:park[0], pb=pa===park[0]?park[1]:park[0];
     f2.s=[zone([{x:-72,z:lz.z0},{x:-60,z:lz.z0},{x:-60,z:lz.z1},{x:-72,z:lz.z1}]),
-      arr({x:f2.tok[my][0]*(red?1:-1),z:f2.tok[my][1]*(red?1:-1)},pa),arr({x:f2.tok[pt][0]*(red?1:-1),z:f2.tok[pt][1]*(red?1:-1)},pb)];
+      ...route([{x:f2.tok[my][0]*(red?1:-1),z:f2.tok[my][1]*(red?1:-1)},pa]),...route([{x:f2.tok[pt][0]*(red?1:-1),z:f2.tok[pt][1]*(red?1:-1)},pb])];
     f2.it=[txt({x:-52,z:(lz.z0+lz.z1)/2},"חניה")]; return {fr:[f1,f2],cur:0}; }
   if(k==="cycle"){ const a1=inF(aF,13), s1=shoot(A.z>0?14:-14), b1=inF(bF,13), s2=shoot(B.z>0?14:-14);
-    return {fr:[fr([arr(A,a1),arr(a1,s1),arr(s1,a1,cid),arr(B,b1),arr(b1,s2)],[txt({x:s1.x,z:s1.z+(A.z>0?9:-9)},"ירי")])],cur:0}; }
+    return {fr:[fr([...route([A,a1,s1,a1]),...route([B,b1,s2])],[txt({x:s1.x,z:s1.z+(A.z>0?9:-9)},"ירי")])],cur:0}; }
   if(k==="flowers"){ const a1=inF(aF,13), b1=inF(bF,13);
-    return {fr:[fr([zone(circ(a1,13)),zone(circ(b1,13)),arr(A,a1),arr(B,b1)],[txt({x:a1.x+(a1.x<-55?18:0),z:a1.z+(a1.z<-55?18:0)},"הפרח שלי"),txt({x:b1.x+(b1.x<-55?18:0),z:b1.z+(b1.z<-55?18:0)},"הפרח של השותף")])],cur:0}; }
+    return {fr:[fr([zone(circ(a1,13)),zone(circ(b1,13)),...route([A,a1]),...route([B,b1])],[txt({x:a1.x+(a1.x<-55?18:0),z:a1.z+(a1.z<-55?18:0)},"הפרח שלי"),txt({x:b1.x+(b1.x<-55?18:0),z:b1.z+(b1.z<-55?18:0)},"הפרח של השותף")])],cur:0}; }
   if(k==="defense"){ const a1=inF(aF,13), s1=shoot(A.z>0?14:-14), d1={x:Math.abs(H.x)+24,z:B.z>0?10:-10};
-    return {fr:[fr([zone([{x:16,z:-26},{x:44,z:-26},{x:44,z:26},{x:16,z:26}],1-cid),arr(A,a1),arr(a1,s1),arr(B,{x:-8,z:B.z/2}),arr({x:-8,z:B.z/2},d1)],[txt({x:30,z:32},"הגנה")])],cur:0}; }
+    return {fr:[fr([zone([{x:16,z:-26},{x:44,z:-26},{x:44,z:26},{x:16,z:26}],1-cid),...route([A,a1,s1]),...route([B,{x:-8,z:B.z/2},d1])],[txt({x:30,z:32},"הגנה")])],cur:0}; }
   return null; }
 function brdTpl(k){ if(brdReadOnly()) return false; const t=brdTplBuild(k); if(!t) return false;
   const u=brdUnpack({tok:t.fr[0].tok,s:t.fr[0].s,th:t.fr[0].th,it:t.fr[0].it,b:[],fr:t.fr.length>1?t.fr:null,cur:t.cur}); if(!u) return false;
