@@ -2930,7 +2930,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   .brdLib button{width:auto; flex:0 0 auto}
   #ppBoard.brdNew i{position:relative} #ppBoard.brdNew i::after{content:""; position:absolute; top:-2px; inset-inline-end:-4px; width:9px; height:9px; border-radius:50%; background:var(--accent)}
 </style>
-<script type="application/json" id="i18nX_v76ui" data-i18n>{"חסם את קו הירי": "Blocked the shooting line", "סה״כ": "Total", "כוכב המאץ׳": "Match star", "⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור": "⏸ The host switched to another tab — the game is paused until they return", "⏸ המשחק הושהה כשעברתם ללשונית אחרת — P או ״המשך״ כדי להמשיך": "⏸ The game was paused when you switched tabs — press P or “Continue” to resume", "▶ המארח חזר — ממשיכים": "▶ The host is back — resuming", "▴ פחות": "▴ Less", "⋯ עוד אפשרויות": "⋯ More options", "שלושת ההישגים הבאים": "Your next three achievements", "▶ שחקו מאץ׳ ראשון": "▶ Play your first match", "📊 מדדים": "📊 Metrics", "טלמטריה ורשימת המקשים — שכבה אחת, נפתחת בלחיצה": "Telemetry and the key list — one layer, opens on click", "גרפיקה ותצוגה": "Graphics and display", "איזה רובוט": "Which robot", "לעמדות": "To your positions", "סוף משחק": "Endgame", "כדורים בתא": "balls in the cell", "יציאה וחניה": "Leave and park", "שיא אישי חדש": "New personal best", "מחזור ממוצע": "Average cycle"}</script>
+<script type="application/json" id="i18nX_v76ui" data-i18n>{"חסם את קו הירי": "Blocked the shooting line", "סה״כ": "Total", "כוכב המאץ׳": "Match star", "⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור": "⏸ The host switched to another tab — the game is paused until they return", "⏸ המשחק הושהה כשעברתם ללשונית אחרת — P או ״המשך״ כדי להמשיך": "⏸ The game was paused when you switched tabs — press P or “Continue” to resume", "▶ המארח חזר — ממשיכים": "▶ The host is back — resuming", "▴ פחות": "▴ Less", "⋯ עוד אפשרויות": "⋯ More options", "שלושת ההישגים הבאים": "Your next three achievements", "▶ שחקו מאץ׳ ראשון": "▶ Play your first match", "📊 מדדים": "📊 Metrics", "טלמטריה ורשימת המקשים — שכבה אחת, נפתחת בלחיצה": "Telemetry and the key list — one layer, opens on click", "גרפיקה ותצוגה": "Graphics and display", "איזה רובוט": "Which robot", "לעמדות": "To your positions", "סוף משחק": "Endgame", "כדורים בתא": "balls in the cell", "יציאה וחניה": "Leave and park", "שיא אישי חדש": "New personal best", "מחזור ממוצע": "Average cycle", "המארח עבר ללשונית אחרת": "The host switched to another tab"}</script>
 <style id="css_v76ui">
   /* ══ v76 ui — חלות דבש, פס תוצאה, כרטיס סיום, מסך נקי ══ */
   :root{ --v76hex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0 32V66' fill='none' stroke='%23FFB020' stroke-opacity='.055' stroke-width='1.2'/%3E%3C/svg%3E");
@@ -2943,7 +2943,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   #v76Score{position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:9; display:flex; align-items:stretch;
     border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06); font-family:var(--display);
     pointer-events:none; animation:v76sbIn .35s ease-out}
-  @keyframes v76sbIn{from{opacity:0; transform:translate(-50%,-10px)}}
+  @keyframes v76sbIn{from{opacity:0}}
   #v76Score .sbT{display:flex; align-items:center; gap:10px; padding:4px 16px; min-width:112px}
   #v76Score .sbT.red{background:linear-gradient(90deg,#9a2f35,#c9434a)}
   #v76Score .sbT.blue{background:linear-gradient(270deg,#1f4f86,#3a7fd0)}
@@ -2966,9 +2966,9 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   #v76Score.cd .sbMid b{color:var(--accent)}
   @keyframes v76pulse{50%{opacity:.5}}
   /* כשפס התוצאה גלוי — השעון והניקוד בכותרת לא כפולים (העצירה נשארת) */
-  body.v76sb #clkPhase, body.v76sb #clkTime, body.v76sb #clkNote, body.v76sb #clkBar, body.v76sb #clockWrap .cends, body.v76sb #cScore{display:none!important}
+  body.v76sb:not(.hud-chips) #clkPhase, body.v76sb:not(.hud-chips) #clkTime, body.v76sb:not(.hud-chips) #clkNote, body.v76sb:not(.hud-chips) #clkBar, body.v76sb:not(.hud-chips) #clockWrap .cends, body.v76sb:not(.hud-chips) #cScore{display:none!important}
   body.replay #v76Score, body.bcast #v76Score, body.hud-chips #v76Score{display:none!important}
-  body.ph #v76Score{top:calc(52px + var(--safeT, 0px)); border-radius:11px}
+  body.ph #v76Score{top:calc(56px + var(--safeT, 0px)); border-radius:11px}
   body.ph #v76Score .sbT{min-width:62px; padding:2px 9px; gap:6px} body.ph #v76Score .sbT b{font-size:24px} body.ph #v76Score .sbT i{font-size:9.5px}
   body.ph #v76Score .sbMid{min-width:72px; padding:2px 10px 5px} body.ph #v76Score .sbMid b{font-size:18px} body.ph #v76Score .sbMid span{font-size:9px; letter-spacing:.06em}
   @media (max-width:760px){ body:not(.ph) #v76Score .sbT{min-width:70px; padding:3px 10px} body:not(.ph) #v76Score .sbT b{font-size:28px}
@@ -2992,7 +2992,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   body.pplive:not(.v76more) #ppCam, body.pplive:not(.v76more) #ppKeys, body.pplive:not(.v76more) #playPanel>.v76ppH, body.pplive:not(.v76more) #ppDrills,
   body.pplive:not(.v76more) #ppHowD{display:none!important}
   /* הודעות הניקוד יורדות מתחת לפס התוצאה */
-  body.v76sb #scorePops{top:86px} body.ph.v76sb #scorePops{top:calc(106px + var(--safeT, 0px))}
+  body.v76sb #scorePops{top:86px} body.ph.v76sb #scorePops{top:calc(112px + var(--safeT, 0px))}
   body.pplive:not(.v76more) #ppStatus>div:not([data-r]){display:none}
   body.pplive .ppNow{margin-top:4px}
 
@@ -13378,7 +13378,7 @@ function v76DprWant(base,w,h){ w=w||stage.clientWidth; h=h||stage.clientHeight;
   return Math.max(Math.min(base,floor),Math.min(base,Math.round(cap*100)/100)); }
 /* v76: צל רק לגדולים ולחשובים — רובוטים, כוורות, פרחים וכדורים. ברגים, גלגלות, מרצפות, קירות ההיקף והמסגרת לא מטילים.
    עובר רק על רשתות חדשות (מסומנות), ולכן זול גם כשהוא נקרא פעמיים בשנייה: רובוט שנבנה מחדש נבדק בפעם הבאה. */
-const V76SH={minBot:1.5, minField:1.2, bigField:6, n:0, off:0, _v:null};
+const V76SH={minBot:1.5, minHive:2.5, minFlower:5, bigField:6, n:0, off:0, _v:null};
 function v76ShR(o){ const g=o.geometry; if(!g) return 0; if(!g.boundingSphere) g.computeBoundingSphere();
   const v=V76SH._v||(V76SH._v=new THREE.Vector3()); o.getWorldScale(v);
   return (g.boundingSphere?g.boundingSphere.radius:0)*Math.max(v.x,v.y,v.z)/M(1); }
@@ -13397,10 +13397,10 @@ function v76ShadowTrim(){
       if(!o.castShadow) return;
       let keep;
       if(isBot) keep=v76ShR(o)>=V76SH.minBot;
-      else if(isField){ let q=o.parent, inK=false;
-        /* בכוורת ובפרח: כל מה שמעל 1.2 אינץ׳. בשאר הזירה רק הגדולים באמת (קורות המסגרת) */
-        while(q&&q!==fieldRoot){ if(keepF.has(q)||q.userData.v76flower){ inK=true; break; } q=q.parent; }
-        const r=v76ShR(o); keep=(inK&&r>=V76SH.minField)||r>=V76SH.bigField; }
+      else if(isField){ let q=o.parent, lim=V76SH.bigField;
+        /* בכוורת: כל מה שמעל 2.5 אינץ׳ (קירות התא, הזרועות). בפרח: הצינורות והלוחות הגדולים (5+). בשאר הזירה: קורות המסגרת (6+) */
+        while(q&&q!==fieldRoot){ if(keepF.has(q)){ lim=V76SH.minHive; break; } if(q.userData.v76flower){ lim=V76SH.minFlower; break; } q=q.parent; }
+        keep=v76ShR(o)>=lim; }
       else keep=balls.some(b=>b.mesh===o);
       if(!keep){ o.castShadow=false; V76SH.off++; }
     });
@@ -14184,7 +14184,9 @@ function netOnMsg(data){
     else if(m.t==="nowant"){ try{ refToast(T("🔒 אי אפשר להחליף עמדה באמצע מאץ׳ בתחרות — אחרי המאץ׳"),"block"); }catch(e){} }
     else if(m.t==="pong"){ const r=Math.max(0,performance.now()-(+m.c||0));
       NET.rtt=NET.rtt?NET.rtt*0.7+r*0.3:r; }
-    else if(m.t==="ev"){ m.txt=netStr(m.txt,160); refToast(m.txt,m.k==="foul"?"foul":"coach");
+    else if(m.t==="ev"){ m.txt=netStr(m.txt,160);
+      if(m.bg===1||m.bg===0){ try{ m.txt=v76GuestBg(m.bg===1); }catch(e){} }   /* v76: המארח ברקע — טקסט בשפה של האורח ותג קבוע */
+      refToast(m.txt,m.k==="foul"?"foul":"coach");
       const g=netGuestPad(); if(g) padRumble(g,0.7,0.4,260);
       (HUM.log||(HUM.log=[])).push({t:simT,who:"net",txt:m.txt,kind:m.k==="foul"?"foul":"coach"}); }
     else if(m.t==="sum"){ mpSumShow(m); }
@@ -14339,7 +14341,7 @@ function netOnState(buf){
 }
 /* v76: השהיית האינטרפולציה של האורח — פי 1.5 מהפער הממוצע, לא פחות ממרווח שידור אחד ולא יותר מרבע שנייה.
    קודם קבוע 40 מ״ש: מארח איטי (15–20 הרץ) השאיר את האורח בלי תמונה הבאה ברבע מהפריימים */
-function netInterpDelay(){ const g=NET.gapMs||1000/NET_HZ; return Math.max(1000/NET_HZ,Math.min(250,g*1.5)); }
+function netInterpDelay(){ const g=NET.gapMs; if(!g) return 1000/NET_HZ; return Math.max(1000/NET_HZ,Math.min(250,g*1.5)); }
 function netGuestCam(allies){
   if(NET.seat===null) return;
   /* v74 net N3: המארח קובע את עמדת הנהג (st). מארח ישן בלי st — לפי סדר העמדות כמו קודם */
@@ -20572,6 +20574,7 @@ function v76Tick(dt){
     const sig=String(MATCH.endT||"")+"|"+MATCH.final.red+"|"+MATCH.final.blue;
     if(V76.endSig!==sig){ V76.endSig=sig; try{ V76.end=v76EndCalc(); }catch(e){ V76.end=null; } } }
   v76SbTick(false);
+  if(V76.gbg&&NET.mode!=="guest"){ V76.gbg=false; try{ v76GuestBg(false); }catch(e){} }
 }
 /* כוכב המאץ׳: מי מארבעת הרובוטים תרם הכי הרבה — כדורים בתא (2 כל אחד), יציאה וחניה, וזמן בקו הירי של היריב.
    הכול ממה שכבר נמדד: hits/shots לכל רובוט, leaveDone/autoPark, botInLZ, blockT */
@@ -20696,7 +20699,7 @@ function v76OccTick(now){
 }
 /* ── פתיחה: המצלמה מחליקה מלמעלה לעמדה הרגילה. כל מקש, לחיצה או גלגלת — מדלגים ── */
 function v76GlideStart(){
-  if(V76.glide||navigator.webdriver||(window.bbApp&&bbApp.test)||BC.on||UI.mode!=="play"||camView!=="free"||camUser) return false;
+  if(V76.glide||(navigator.webdriver&&!window.__v76glide)||(window.bbApp&&bbApp.test)||BC.on||UI.mode!=="play"||camView!=="free"||camUser) return false;
   try{ if(sessionStorage.getItem("bbGlide76")) return false; sessionStorage.setItem("bbGlide76","1"); }catch(e){}
   try{ if(matchMedia("(prefers-reduced-motion:reduce)").matches) return false; }catch(e){}
   const to={th:cam.theta, ph:cam.phi, d:cam.dist};
@@ -20732,6 +20735,13 @@ function v76Vis(){
       netSend({to:"*",t:"ev",k:"coach",bg:0,txt:"▶ המארח חזר — ממשיכים"}); }
     try{ syncBar(); }catch(e){}
   } }
+/* אצל האורח: תג ״⏸ מושהה״ קבוע כל עוד המארח ברקע (ההודעה עצמה נעלמת אחרי שלוש שניות) */
+function v76GuestBg(on){
+  const tg=$("pauseTag"), sp=tg&&tg.querySelector("span");
+  V76.gbg=!!on;
+  if(tg&&sp){ if(on){ if(sp.dataset.v76==null) sp.dataset.v76=sp.textContent; sp.textContent=T("המארח עבר ללשונית אחרת"); tg.hidden=false; }
+    else { if(sp.dataset.v76!=null){ sp.textContent=sp.dataset.v76; delete sp.dataset.v76; } tg.hidden=!paused; } }
+  return on?T("⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור"):T("▶ המארח חזר — ממשיכים"); }
 /* ── לוח ״המשחק עכשיו״ בזמן מאץ׳: רק תוצאה, שלב, כדורים, שידור חוזר ועצירה ── */
 function v76MoreSet(v){ V76.more=!!v; document.body.classList.toggle("v76more",V76.more);
   const b=$("v76More"); if(b){ b.textContent=V76.more?T("▴ פחות"):T("⋯ עוד אפשרויות"); b.setAttribute("aria-expanded",V76.more?"true":"false"); } }
@@ -20784,7 +20794,7 @@ function v76Wire(){
 try{ v76Wire(); }catch(e){ console.error(e); }
 { const X={V76, metOn:v76MetOn, metSet:v76MetSet, sbTick:()=>v76SbTick(true), endCalc:v76EndCalc, star:v76Star, stat:v76Stat, endCard:v76EndCard, hit:v76Hit,
     confetti:v76Confetti, lightTick:v76LightTick, occTick:v76OccTick, occClear:v76OccClear, frame:v76Frame, glideStart:v76GlideStart, glideEnd:v76GlideEnd, vis:v76Vis,
-    moreSet:v76MoreSet, skinUI:v76SkinUI, shadowTrim:v76ShadowTrim, V76SH, dprWant:v76DprWant, padList, PADL, interpDelay:netInterpDelay, NET};
+    moreSet:v76MoreSet, skinUI:v76SkinUI, guestBg:v76GuestBg, camAt:()=>({view:camView, th:cam.theta, ph:cam.phi, d:cam.dist}), rim:()=>rimL, camera:()=>camera, setCamView:v=>setCamView(v), applyCam:()=>applyCam(), shadowTrim:v76ShadowTrim, V76SH, dprWant:v76DprWant, padList, PADL, interpDelay:netInterpDelay, NET};
   if(window.__sim) window.__sim.v76=X; }
 /* ══════ סוף v76 ui ══════ */
 /* ══════ v72 uiperf — נגישות וביצועים ══════ */
