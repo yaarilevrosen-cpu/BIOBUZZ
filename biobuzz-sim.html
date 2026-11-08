@@ -17914,7 +17914,7 @@ function brdDraw(){
   const g=cv.getContext("2d"), W=cv.width, pl=BRD.play;
   if(pl){ const at=brdPlayAt(pl.t); brdRender(g,W,at.st,{pose:at.pose}); }
   else brdRender(g,W,BRD,{draft:BRD.draft, ghost:BRD.fr&&BRD.cur>0?BRD.fr[BRD.cur-1]:null, pick:BRD.pick, edit:BRD.drag&&BRD.drag.edit});
-  try{ brdFeasUI(); }catch(e){}
+  if(!pl) try{ brdFeasUI(); }catch(e){}   /* בניגון — לא מחשבים היתכנות בכל תמונה */
   try{ brdFrUI(); }catch(e){}
 }
 /* ── קלט: עכבר ומגע (אירועי מצביע) ── */
@@ -18067,6 +18067,7 @@ function brdUI(){
   brdLibUI($("brdSel")&&$("brdSel").value);
 }
 function brdOpen(){ const m=$("brdBox"); if(!m) return false; brdEnsure();
+  try{ if(BRD3.on) brd3Close(false); }catch(e){}   /* v76: הלוח נפתח — התלת־ממד נסגר */
   m.hidden=false; BRD.open=true; const b=$("ppBoard"); if(b) b.classList.remove("brdNew");
   brdUI(); brdDraw(); requestAnimationFrame(()=>{ if(BRD.open) brdDraw(); }); return true; }
 /* v76: Esc סוגר קודם את מה שפתוח בתוך הלוח — עריכת טקסט, התפריט, הקוד לשיתוף — ורק אחר כך את הלוח */
@@ -18344,7 +18345,7 @@ async function brdShareCopy(){ const ta=$("brdCode"); if(!ta) return false; let 
   brdMsg(ok?"הקוד הועתק — מדביקים אותו בשורת השם בספרייה":"מסמנים את הקוד ומעתיקים (Ctrl+C)"); return ok; }
 /* הדבקה של קוד בשורת השם */
 function brdFromCode(v){ const u=brdDecode(v); if(!u){ brdMsg("הקוד לא תקין — צריך קוד שמתחיל ב-BB1."); return false; }
-  brdSetAll(u); brdMsg(T("הלוח נטען מהקוד")+(u.fr?" · "+u.fr.length+" "+T("שלבים"):"")+(brdNetOn()?" · "+T("נשלח לכל מי שבחדר"):"")); return true; }
+  if(!brdSetAll(u)) return false; brdMsg(T("הלוח נטען מהקוד")+(u.fr?" · "+u.fr.length+" "+T("שלבים"):"")+(brdNetOn()?" · "+T("נשלח לכל מי שבחדר"):"")); return true; }
 /* ── הדפסה: עמוד עם תמונה לכל שלב והערות ── */
 function brdFeasText(f){ const x=brdFeas(f); if(!x.n) return T("אין חץ שיוצא מ״אני״");
   return T("המסלול שלי")+" "+Math.round(x.L)+"″ · ≈ "+x.t.toFixed(1)+" "+T("שנ׳")+" · "+(x.t<=x.lim-2?T("נכנס באוטונומי"):T("ארוך מדי לאוטונומי"))+" · "+
