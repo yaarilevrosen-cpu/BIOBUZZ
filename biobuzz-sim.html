@@ -22160,8 +22160,9 @@ try{ v76Wire(); }catch(e){ console.error(e); }
    · צבע קבוע לכל מערכת (SYSC, וב-CSS ‎--sys*) — במוסך, בתצוגה החיה וברובוטים בזירה: פס דק בצבע המערכת על האיסוף, היורה, המעלית, ההעברה וההנעה.
      הרובוטים נשארים מופשטים — הפסים רק אומרים ״כאן האיסוף, כאן הירי״.
    · החיפוש (Ctrl+K) מכיר את מה שנוסף ב-1.17, ובכל תוצאה כתוב איפה היא. */
-const V77U={mat:null};
-const SYSC={drive:0x7d9bc1, intake:0x35d6a4, xfer:0x2ec4c4, shoot:0xffb020, lift:0xa77bff};
+/* var ולא const: הרובוטים נבנים בעליית הדף, לפני שהשורה הזאת רצה */
+var V77U, SYSC;
+function v77Sysc(){ return SYSC||(SYSC={drive:0x7d9bc1, intake:0x35d6a4, xfer:0x2ec4c4, shoot:0xffb020, lift:0xa77bff}); }
 /* ── ״⋯״ בתוך החלון: אם התפריט יוצא מהחלון — מזיזים אותו פנימה ── */
 function v77MenuFit(mn){ if(!mn||mn.hidden) return 0; mn.style.transform="";
   const r=mn.getBoundingClientRect(), w=(mn.closest(".skWin")||document.body).getBoundingClientRect(), pad=8;
@@ -22176,7 +22177,8 @@ function v77BrdLib(on){ const L=$("brdLib"), b=document.querySelector('#brdBox [
   on=on==null?L.hidden:!!on; L.hidden=!on; if(b) b.setAttribute("aria-expanded",on?"true":"false");
   if(on){ const n=$("brdName"); if(n) try{ n.focus({preventScroll:true}); }catch(e){} } return on; }
 /* ── צבעי המערכות על הרובוטים ── */
-function v77SysMat(k){ V77U.mat=V77U.mat||{}; return V77U.mat[k]||(V77U.mat[k]=new THREE.MeshStandardMaterial({color:SYSC[k], emissive:SYSC[k], emissiveIntensity:.45, roughness:.5, metalness:.05})); }
+function v77SysMat(k){ V77U=V77U||{}; V77U.mat=V77U.mat||{}; const c=v77Sysc()[k];
+  return V77U.mat[k]||(V77U.mat[k]=new THREE.MeshStandardMaterial({color:c, emissive:c, emissiveIntensity:.3, roughness:.5, metalness:.05})); }
 /* פס דק (באינץ׳, במערכת של ההורה). הגאומטריה המשותפת מהמטמון — לא משתחררת עם הרובוט */
 function v77Strip(k,par,x,y,z,w,h,d){ if(!par) return null; const m=new THREE.Mesh(box(1,1,1),v77SysMat(k)); m.scale.set(w,h,d); m.position.set(M(x),M(y),M(z));
   m.castShadow=false; m.receiveShadow=false; m.userData.v77sys=k; par.add(m); return m; }
@@ -22185,7 +22187,7 @@ function v77SysBot(b){ if(!b||!b.group) return 0; const g=b.group, W=AIC.W, L=AI
   let n=0; const S=(...a)=>{ if(v77Strip(...a)) n++; };
   for(const sx of[-1,1]) S("drive",g,sx*(W/2+0.15),3.5,0,0.3,0.45,L-7);
   if(!B||B.intake!=="none"){ S("intake",g,0,P.intakeH+0.75,L/2+0.6,W-6,0.3,2.5); if(B&&B.sides===2) S("intake",g,0,P.intakeH+0.75,-L/2-0.6,W-6,0.3,2.5); }
-  for(const sg of [b.shootG,b.shootG2]) if(sg) S("shoot",sg,0,P.muzzle+2.95,L/2-2.2,W-9,0.25,5.6);
+  for(const sg of [b.shootG,b.shootG2]) if(sg) S("shoot",sg,0,P.muzzle+2.95,L/2-0.2,W-9,0.25,1.2);   /* קצה המכסה, מעל הלוע */
   if(B&&B.xfer&&B.xfer!=="direct") S("xfer",g,0,H-0.85,-(L/2-4),W-8,0.25,1.4);
   if(b.liftCar){ S("lift",b.liftCar,0,0.35,0,5.6,0.3,3.6); for(const sx of[-1,1]) S("lift",g,sx*3,9.5,L/2-2.6+0.46,0.5,16,0.12); }
   return n; }
@@ -22236,7 +22238,7 @@ function v77Wire(){
   addEventListener("resize",()=>{ const mn=$("brdMenu"); if(mn&&!mn.hidden) v77MenuFit(mn); });
 }
 try{ v77Wire(); }catch(e){ console.error(e); }
-{ const X={V77U, SYSC, menuFit:v77MenuFit, fitK:v77FitK, brdUi:v77BrdUi, brdLib:v77BrdLib, sysBot:v77SysBot, sysMe:v77SysMe, cmdk:v77Cmdk, garGo:v77GarGo, preSnap:()=>v77PreSnap()};
+{ const X={V77U:()=>V77U, SYSC:v77Sysc(), T76:t=>v76T(t), teamBadge:()=>teamBadge(), BUILD_VER, menuFit:v77MenuFit, fitK:v77FitK, brdUi:v77BrdUi, brdLib:v77BrdLib, sysBot:v77SysBot, sysMe:v77SysMe, cmdk:v77Cmdk, garGo:v77GarGo, preSnap:()=>v77PreSnap()};
   if(window.__sim) window.__sim.v77ux=X; }
 /* ══════ סוף v77 ux ══════ */
 /* ══════ v72 uiperf — נגישות וביצועים ══════ */
