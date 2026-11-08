@@ -3,6 +3,7 @@ import {open,ok,done,realErrs} from './h.mjs';
 import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const MATCH=fs.readFileSync(path.join(HERE,'fixtures/scout04-match.json'),'utf8');
+const EVENT=fs.readFileSync(path.join(HERE,'fixtures/scout04-event.json'),'utf8');
 const {browser,page,errs}=await open({noraf:true,play:true});
 const E=(f,a)=>page.evaluate(f,a);
 
@@ -24,6 +25,15 @@ ok(r,'״נקה״ מאפס את b.sb');
 r=await E(()=>{ const S=__sim; localStorage.setItem('a9662-sim-cfg','{"url":"https://x.supabase.co","key":"k"}'); localStorage.setItem('a9662-sim-cache:E1','{}');
   S.bk.resetAll({noReload:true}); const k=[]; for(let i=0;i<localStorage.length;i++) k.push(localStorage.key(i)); return k.filter(x=>/^a9662/.test(x)); });
 ok(r.length===0,'״איפוס הכול״ מוחק גם את a9662 ('+r.join()+')');
+// 5. המאץ׳ הבא שלנו לבד (current_match), ורשימה של המאצ׳ים שלנו בלבד
+r=await E(t=>{ const S=__sim; S.sctClear(); S.SCT.ours='90002'; const o=JSON.parse(t); o.schedule['3']={red:[90003,90005],blue:[90006,90007]};
+  o.current_match=1; S.sctLoadText(JSON.stringify(o)); const a=S.SCT.pack.matches[S.SCT.mi].n;
+  S.sctOpen(); const opts=[...document.querySelectorAll('#sctMatch option')].map(x=>x.textContent);
+  /* 90002 רק במאץ׳ 1 — אז ״כל המאצ׳ים״ */
+  S.SCT.ours='90001'; o.current_match=2; S.sctLoadText(JSON.stringify(o)); const b=S.SCT.pack.matches[S.SCT.mi].n; S.sctUI(); const opts2=[...document.querySelectorAll('#sctMatch option')].map(x=>x.textContent);
+  document.querySelector('#sctBox [data-sct="allm"]').click(); const opts3=document.querySelectorAll('#sctMatch option').length; S.sctClose();
+  return {a,b,n1:opts.length,opts2,opts3,noApply:!document.querySelector('#sctBox [data-sct="apply"]')}; },EVENT);
+ok(r.a===1&&r.b===2&&r.opts2.length===2&&/^⏭ מאץ׳ 2/.test(r.opts2[1])&&r.opts3===3&&r.noApply,'current_match: נבחר לבד המאץ׳ הבא שלנו (⏭), הרשימה רק שלנו, ״כל המאצ׳ים״ מראה הכול ('+JSON.stringify(r)+')');
 ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,3).join(' | '));
 await browser.close();
 done('v77_scout');
