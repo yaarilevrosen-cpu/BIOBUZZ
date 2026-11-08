@@ -3070,7 +3070,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   .skMain #skinRows{flex:1 1 auto; min-width:0}
   .skMain .skSw{display:grid; grid-template-columns:repeat(6,40px); gap:8px}
   .skMain .skSw button{width:40px; height:32px; flex:none; transition:transform .12s} .skMain .skSw button:hover:not(:disabled){transform:translateY(-2px)}
-  .skMain .skLab>b, .skMain .skLab>.skA{display:none} .skMain .skLab em{font-style:normal; color:var(--accent)}
+  .skMain .skLab{justify-content:flex-start} .skMain .skLab>b, .skMain .skLab>.skA{display:none} .skMain .skLab em{font-style:normal; color:var(--accent); margin:0}
   @media (max-width:520px){ .skMain{flex-direction:column; align-items:stretch} .skPrev{flex:0 0 auto; flex-direction:row; justify-content:center} .skPrev svg{width:80px; height:80px} }
 
   /* ── אוטונומי: הבורר ״הרובוט שלי״ (חמש אפשרויות) בשורה מלאה ── */
@@ -20530,6 +20530,8 @@ Object.assign(window.__sim||{},{WZ,wzOpen,wzClose,wzSkip,wzGo,wzFinish,wzMeasure
    · ביצועים: מארח שעבר ללשונית אחרת משהה ומודיע לאורחים, וחוזר כשחוזרים. */
 const V76={lastT:0, skinTab:-1, more:false, sbAt:-1, sb:{}, auto:null, endSig:"", end:null, confAt:"", glow:null, glowT0:0,
   light:null, lightK:"", occT:0, occ:new Map(), occMat:new WeakMap(), glide:null, bg:null, hits:0};
+/* תרגום שמתחיל באות גדולה (באנגלית ״auto״ ← ״Auto״) */
+function v76T(t){ const x=T(t); return x.replace(/[a-z]/,c=>c.toUpperCase()); }
 /* ── מעבדה: ״מדדים״ — טלמטריה ומקשים כשכבה אחת ── */
 function v76MetOn(){ return !(HUD.off.telem&&HUD.off.keys); }
 function v76MetSet(v){ HUD.off.telem=!v; HUD.off.keys=!v; hudApply(); }
@@ -20546,13 +20548,13 @@ function v76SbTick(force){
   if(el.hidden){ el.hidden=false; document.body.classList.add("v76sb"); }
   const [r,b]=v76Scores(), my=NET.mode==="guest"&&NET.seat!=null&&NET.allies?NET.allies[NET.seat]:myAlly();
   let clk, ph, cls;
-  if(MATCH.cd>0){ clk=String(Math.max(0,Math.ceil(MATCH.cd-1))); ph=T("לעמדות"); cls="cd"; }
+  if(MATCH.cd>0){ clk=String(Math.max(0,Math.ceil(MATCH.cd-1))); ph=v76T("לעמדות"); cls="cd"; }
   else { const i=matchPhase(MATCH.t), left=tEnd()-MATCH.t;
     clk=fmtClock(phaseEnd(i)-MATCH.t);
-    if(i===0){ ph=T("אוטונומי"); cls="auto"; }
-    else if(i===1){ ph=T("מעבר"); cls="trans"; }
-    else if(left<=30){ ph=T("סוף משחק"); cls="end30"; }
-    else { ph=T("טלאופ"); cls="tele"; } }
+    if(i===0){ ph=v76T("אוטונומי"); cls="auto"; }
+    else if(i===1){ ph=v76T("מעבר"); cls="trans"; }
+    else if(left<=30){ ph=v76T("סוף משחק"); cls="end30"; }
+    else { ph=v76T("טלאופ"); cls="tele"; } }
   const prog=Math.max(0,Math.min(100,100*(MATCH.cd>0?0:MATCH.t/Math.max(1,tEnd())))).toFixed(1)+"%";
   const S=V76.sb, set=(id,k,v)=>{ if(S[k]!==v){ S[k]=v; const e=$(id); if(e) e.textContent=v; } };
   set("v76R","r",String(r)); set("v76B","b",String(b)); set("v76Clk","c",clk); set("v76Ph","p",ph);
@@ -20607,13 +20609,13 @@ function v76Stat(){
   const m=all[all.length-1];
   if(m&&statIsMatch(m)&&Date.now()-m.at<60e3){ const prior=all.slice(0,-1).filter(statIsMatch);
     const best=prior.reduce((a,q)=>Math.max(a,+q.my||0),-1);
-    if(prior.length&&m.my>best) return {pb:true, t:"🏅 "+T("שיא אישי חדש")+" — "+m.my+" "+T("נק׳")}; }
+    if(prior.length&&m.my>best) return {pb:true, t:"🏅 "+v76T("שיא אישי חדש")+" — "+m.my+" "+T("נק׳")}; }
   const cyc=(DEB.cyc||[]).filter(v=>v>0.35&&v<45), meStar=!!(V76.end&&V76.end.star&&V76.end.star.me);
-  const cycT=cyc.length?{t:"⏱ "+T("מחזור ממוצע")+" "+(cyc.reduce((a,b)=>a+b,0)/cyc.length).toFixed(1)+" "+T("שנ׳")}:null;
+  const cycT=cyc.length?{t:"⏱ "+v76T("מחזור ממוצע")+" "+(cyc.reduce((a,b)=>a+b,0)/cyc.length).toFixed(1)+" "+T("שנ׳")}:null;
   if(meStar&&cycT) return cycT;   /* הדיוק כבר מופיע בשורת הכוכב */
-  if(shots>=3) return {t:"🎯 "+T("דיוק")+" "+Math.round(100*hits/shots)+"% ("+hits+"/"+shots+")"};
+  if(shots>=3) return {t:"🎯 "+v76T("דיוק")+" "+Math.round(100*hits/shots)+"% ("+hits+"/"+shots+")"};
   if(cycT) return cycT;
-  if(V76.end&&V76.end.brk[myAlly()].auto>0) return {t:"🤖 "+T("אוטונומי")+" "+V76.end.brk[myAlly()].auto+" "+T("נק׳")};
+  if(V76.end&&V76.end.brk[myAlly()].auto>0) return {t:"🤖 "+v76T("אוטונומי")+" "+V76.end.brk[myAlly()].auto+" "+T("נק׳")};
   return null; }
 /* נקרא מ-showBanner: ממלא את הכרטיס במצב ״סוף מאץ׳״ ומנקה אותו בכל מצב אחר */
 function v76EndCard(key){
@@ -20625,7 +20627,7 @@ function v76EndCard(key){
   if(el.dataset.sig===sig&&!el.hidden) return; el.dataset.sig=sig;
   let h="";
   if(d){ const R=d.brk.red, B=d.brk.blue, row=(n,a,b,c)=>'<div'+(c?' class="'+c+'"':'')+'><span>'+E(n)+'</span><b class="r">'+a+'</b><b class="b">'+b+'</b></div>';
-    h+='<div class="v76Brk">'+row("",E(T("אדום")),E(T("כחול")),"hd")+row(T("אוטונומי"),R.auto,B.auto)+row(T("טלאופ"),R.tele,B.tele)+row(T("סוף משחק"),R.end,B.end)+row(T("סה״כ"),R.total,B.total,"tot")+'</div>';
+    h+='<div class="v76Brk">'+row("",E(v76T("אדום")),E(v76T("כחול")),"hd")+row(v76T("אוטונומי"),R.auto,B.auto)+row(v76T("טלאופ"),R.tele,B.tele)+row(v76T("סוף משחק"),R.end,B.end)+row(v76T("סה״כ"),R.total,B.total,"tot")+'</div>';
     if(d.star) h+='<div class="v76Star"><i aria-hidden="true">⭐</i><div><small>'+E(T("כוכב המאץ׳"))+'</small><b><i class="dot '+d.star.ally+'"></i>'+E(d.star.name)+'</b><em>'+E(d.star.why)+'</em></div></div>'; }
   if(st) h+='<div class="v76Stat'+(st.pb?" pb":"")+'">'+E(st.t)+'</div>';
   el.innerHTML=h; el.hidden=!h;
