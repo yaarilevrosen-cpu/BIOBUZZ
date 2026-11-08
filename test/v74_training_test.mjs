@@ -113,6 +113,8 @@ ok(r.nf===r.nf2&&r.err<0.06,'U6: פענוח מחזיר את אותם פריימ�
 ok(r.deb===r.at,'U6: התחקיר יודע איזה שידור הוא שלו');
 const AT=r.at;
 r=await E(async at=>{ const S=__sim, X=S.v74training;
+  /* v76: עבירה אמיתית שלי במאץ׳ המוקלט (קורה לפעמים באוטונומי) הייתה נכנסת לפני זו של הבדיקה — מוציאים עבירות אמיתיות */
+  for(let i=X.REPLAY.ev.length-1;i>=0;i--) if(X.REPLAY.ev[i].k==='foul') X.REPLAY.ev.splice(i,1);
   X.REPLAY.ev.push({t:40,k:'foul',txt:'G417 · אנחנו · +5',f:600,me:1}); X.REPLAY.ev.push({t:50,k:'foul',txt:'G417 · כחול 1',f:750});
   X.renderDebrief(); const el=document.getElementById('oDebrief');
   const o={graph:!!el.querySelector('.v74Graph polyline'), lines:el.querySelectorAll('.v74Graph polyline').length, play:!!el.querySelector('[data-rpplay]'), fouls:el.querySelectorAll('[data-rpfoul]').length};

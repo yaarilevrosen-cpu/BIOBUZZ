@@ -169,7 +169,7 @@ if(OLD){ r=await E(()=>{ const sent=[]; S.setNetMode('host',{readyState:1,send:m
 
 // 11. רשת: אורח — frs מהמארח; בקשת שלב בלי תשובה; טעינת לוח רב־שלבי בקצב
 r=await E(async()=>{ const sent=[]; S.setNetMode('guest',{readyState:1,send:m=>{ if(typeof m==='string') sent.push({m:JSON.parse(m),t:performance.now()}); }});
-  const F=S.brdFrames(); const ok1=S.brdNetIn({o:'frs',cur:1,fr:F}); const st={n:S.BRD.fr&&S.BRD.fr.length, cur:S.BRD.cur};
+  const F=S.brdFrames(); const dbg={mode:S.NET&&S.NET.mode, nF:F.length, bad0:S.BRD.bad}; const ok1=S.brdNetIn({o:'frs',cur:1,fr:F}); dbg.bad1=S.BRD.bad; dbg.mode1=S.NET&&S.NET.mode; const st={n:S.BRD.fr&&S.BRD.fr.length, cur:S.BRD.cur};
   S.brdFrame('add'); const req=sent.map(x=>x.m.o).join(); const stillN=S.BRD.fr.length;
   await new Promise(res=>setTimeout(res,2700)); const msg=document.getElementById('brdMsg').textContent;
   /* לוח של 8 שלבים × 6 חצים */
@@ -180,9 +180,9 @@ r=await E(async()=>{ const sent=[]; S.setNetMode('guest',{readyState:1,send:m=>{
   /* חלון של חצי שנייה עם הכי הרבה הודעות */
   let mx=0; for(const a of sent){ const n=sent.filter(b=>b.t>=a.t&&b.t<a.t+500).length; if(n>mx) mx=n; }
   const kinds=sent.map(x=>x.m.o), maxLen=Math.max(...sent.map(x=>JSON.stringify(x.m).length));
-  S.setNetMode('solo',null); return {ok1:!!ok1, st, req, stillN, msg, first, total:sent.length, mx, frm:kinds.filter(k=>k==='frm').length, maxLen, noTo:sent.every(x=>!('to' in x.m))}; });
-ok(r.ok1&&r.st.n===2&&r.st.cur===1,'אורח: frs מהמארח קובע את כל השלבים');
-ok(r.req==='frm'&&r.stillN===2&&/גרסה ישנה/.test(r.msg),'אורח: ״＋ שלב״ שולח בקשה למארח בלבד; בלי תשובה — הודעה שהמארח ישן');
+  S.setNetMode('solo',null); return {dbg, ok1:!!ok1, st, req, stillN, msg, first, total:sent.length, mx, frm:kinds.filter(k=>k==='frm').length, maxLen, noTo:sent.every(x=>!('to' in x.m))}; });
+ok(r.ok1&&r.st.n===r.dbg.nF&&r.dbg.nF>=2&&r.st.cur===1,'אורח: frs מהמארח קובע את כל השלבים ('+JSON.stringify({ok1:r.ok1,st:r.st,dbg:r.dbg})+')');
+ok(r.req==='frm'&&r.stillN===r.dbg.nF&&/גרסה ישנה/.test(r.msg),'אורח: ״＋ שלב״ שולח בקשה למארח בלבד; בלי תשובה — הודעה שהמארח ישן ('+JSON.stringify({req:r.req,stillN:r.stillN,msg:r.msg})+')');
 ok(r.first===20&&r.mx<=20&&r.total===17+8*17&&r.frm===1+7+8+1&&r.noTo&&r.maxLen<2000,'אורח שטוען 8 שלבים: '+r.total+' הודעות, לכל היותר '+r.mx+' בחצי שנייה (בהתחלה '+r.first+'), הכי ארוכה '+r.maxLen+' בתים');
 
 /* ── חלק ב׳: תלת־ממד במצב משחק (עם ציור) ── */
