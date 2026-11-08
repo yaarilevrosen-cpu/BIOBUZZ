@@ -73,7 +73,8 @@ console.log('APP_DIR=' + APP);
   const p = st.addProfile('בוב', { local: false });
   await y.signUp('bob@x.io', 'pw123456', META); const rs = await y.syncNow(); if (!rs.ok) console.log('    (sync:', rs.why, ')');
   const q = st.meta.list.find(x => x.id === p.id);
-  ok(q && q.owner === B, '[סיבה 4] הנהג ״עם מייל״ שנוצר לפני ההרשמה שייך ל-B אחרי הסנכרון (owner=' + (q && q.owner) + ')');
+  /* v75: בכוונה לא משנים — לפי ההחלטה מ-v74 (P5), נהג שנוצר בלי חיבור לא נלקח לחשבון בשקט; מוסיפים לו מייל ידנית */
+  ok(!q || q.owner !== A, '[סיבה 4] הנהג שנוצר בלי חיבור לא עלה לחשבון של A (owner=' + (q && q.owner) + ')');
 }
 // 5. Supabase עם אישור מייל (ברירת המחדל): ההרשמה לא מחליפה חשבון — A נשאר מחובר, וה-UI לא אומר את זה
 { const { y } = fresh();

@@ -263,7 +263,7 @@ class Sync {
        אחרת — רק נהג שכבר קיים בחשבון הזה, או שנוצר בזמן שהחשבון הזה מחובר. */
     const claimAll = !S.meta.acctSeen && (this.sessAtBoot || !this.hadAcct);
     let claimed = false;
-    for (const p of S.meta.list) if (!p.local && !p.owner && (claimAll || R.has(p.id) || p.claim)) { p.owner = uid; delete p.claim; claimed = true; }
+    for (const p of S.meta.list) if (!p.local && !p.owner && (claimAll || R.has(p.id))) { p.owner = uid; claimed = true; }
     for (const t of S.meta.tombs) if (!t.owner && claimAll) { t.owner = uid; claimed = true; }
     if (!S.meta.acctSeen || claimed) { S.meta.acctSeen = true; S.saveMeta(); }
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */
