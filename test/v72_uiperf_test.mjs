@@ -100,7 +100,12 @@ ok(!code0.includes('מהכפתור 🌐 למעלה')&&code0.includes('מכפתו
       spin:Math.max(...fl.filter(b=>b.body.sleepState!==2).map(b=>b.body.angularVelocity.length()),0)}; });
   ok(r.fl>10&&r.asleep>=0.8*r.fl,`PF1: ${r.asleep}/${r.fl} כדורים על הרצפה ישנים אחרי 18 שנ׳ שקטות (קודם ~7/34) · ${r.ms} מ״ש לתת־צעד`);
   /* כדור מתגלגל לא נעצר מוקדם: הדעיכה רק מתחת לס״מ לשנייה */
-  const g=await E(()=>{ const S=__sim; S.gameStart(false); const b=S.addBallTest('pollen',0,0.6,-30,{x:0.5,y:0,z:0});
+  const g=await E(()=>{ const S=__sim; S.gameStart(false);
+    /* v76: המסלול של הכדור פנוי — כדורים ורובוטים שנשארו שם אחרי המאץ׳ עצרו אותו לפעמים (נכשל פעם אחת בתגית v1.16.0) */
+    for(const o of S.balls){ const p=o.body.position; if(Math.hypot(S.I(p.x)-5,S.I(p.z)+30)<30){ p.set(S.M(60),S.M(0.5),S.M(60)); o.body.velocity.set(0,0,0); } }
+    for(const bt of S.BOTS) if(bt.body&&Math.hypot(S.I(bt.body.position.x)-5,S.I(bt.body.position.z)+30)<40){ bt.body.position.set(S.M(-60),bt.body.position.y,S.M(60)); bt.body.velocity.set(0,0,0); }
+    { const q=S.botBody.position; if(Math.hypot(S.I(q.x)-5,S.I(q.z)+30)<40){ q.set(S.M(-60),q.y,S.M(-60)); S.botBody.velocity.set(0,0,0); } }
+    const b=S.addBallTest('pollen',0,0.6,-30,{x:0.5,y:0,z:0});
     b.body.angularVelocity.set(0,0,-0.5/(b.r)); S.advance(0.5,1/60); return Math.hypot(b.body.velocity.x,b.body.velocity.z); });
   ok(g>0.2,`PF1: כדור מתגלגל ב-0.5 מ׳/ש׳ ממשיך להתגלגל (${g.toFixed(2)} מ׳/ש׳ אחרי חצי שנייה)`);
 }
