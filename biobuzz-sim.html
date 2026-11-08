@@ -21090,10 +21090,20 @@ function sctProf(r){
     vs:sctNum(mv("volley_sec")!=null?mv("volley_sec"):mv("shoot_sec"),0.2,20),
     spm:sctNum(mv("shots_per_match"),0,200), range:sctNum(dv("max_range_in"),12,150), drv:sctNum(mv("drive_rating"),0,1),
     fouls:sctNum(mv("fouls_points_per_match")!=null?mv("fouls_points_per_match"):mv("fouls_per_match"),0,200),
-    start:typeof mv("auto_start")==="string"?sctStr(mv("auto_start"),4):"", autoBalls:sctNum(dv("auto_balls"),0,10),
+    start:sctStartABC(mv("auto_start"))||"", autoBalls:sctNum(dv("auto_balls"),0,10),
     wheel:sctNum(dv("wheel_mm"),40,160), mrpm:sctNum(dv("drive_rpm"),60,6000), xfer:oneOf(dv("transfer"),["direct","belt","indexer","elevator","spin","kicker","ramp"]),
     intake:oneOf(dv("intake_type"),["rollers","compliant","mecanum","surgical","star","belt","funnel","claw"]),
-    color:d.color_sensor===true, fc, dc:sctNum(d.confidence,0,1)};
+    color:d.color_sensor===true, fc, dc:sctNum(d.confidence,0,1),
+    /* v77: עוד שדות של מבנה גרסה 1 — להתנהגות של הבוט (sctBehave) */
+    intakeFrom:Array.isArray(d.intake_from)?d.intake_from.filter(x=>["flower","floor","human"].indexOf(x)>=0):null,
+    moveShoot:typeof d.shoots_moving==="boolean"?d.shoots_moving:null, autoAim:typeof d.auto_aim==="boolean"?d.auto_aim:null,
+    lateNectar:typeof d.late_nectar==="boolean"?d.late_nectar:null, fullSize:typeof d.full_size==="boolean"?d.full_size:null,
+    shWheels:oneOf(dv("shooter_wheels"),["one","two","other"]),
+    autoStarts:Array.isArray(d.auto_starts)?d.auto_starts.map(x=>sctStartABC(x)).filter(Boolean):null,
+    dLeave:typeof d.auto_leave==="boolean"?d.auto_leave:null, dAPark:typeof d.auto_park==="boolean"?d.auto_park:null,
+    dATips:sctNum(dv("auto_tips"),0,20), aProgs:sctNum(dv("auto_programs"),0,20),
+    mLeave:sctNum(mv("auto_leave"),0,1), mAPark:sctNum(mv("auto_park"),0,1), mATips:sctNum(mv("auto_tips"),0,20),
+    tele:sctNum(mv("tele_points"),0,500), endP:sctNum(mv("end_points"),0,200), total:sctNum(mv("total_points"),0,800)};
   /* end_park של הפיט הוא ״כן/לא״ — ביטחון של מוצהר (0.5) */
   if(park==null&&p.park!=null) fc.end_park=0.5;
   if(p.zone&&!fc.main_shoot_zone&&m.main_shoot_zone==null) fc.main_shoot_zone=0.5;
@@ -21152,6 +21162,32 @@ function sctBotMods(b,o){
   if(p.vs!=null&&p.vb){ const gap=Math.max(0.3,Math.min(4,p.vs/Math.max(1,p.vb))); o.cycle=mix(o.cycle,gap,K(F.volley_sec!=null?"volley_sec":"shoot_sec")); }
   return o;
 }
+/* v77: עמדת פתיחה — בכחול D/E/F הן אותן עמדות כמו A/B/C */
+function sctStartABC(x){ if(typeof x!=="string") return ""; const c=x.trim().toUpperCase(); return {A:"A",B:"B",C:"C",D:"A",E:"B",F:"C"}[c]||""; }
+/* ══ v77: ״התנהגות מהסקאוטינג״ — חוזה אחד שהמוח של הבוט קורא (b.sb). כל שדה: ערך או null (= לא ידוע → ההתנהגות הרגילה),
+   ו-k[שדה] = כמה לסמוך עליו (0–1). המוח מערבב: רגיל + (מהסקאוטינג − רגיל) × k. targets — מה שנמדד, לבדיקת כיול.
+   def      חלק הזמן בהגנה בשליטה הידנית (0–1)             drv      איכות נהיגה (0–1): חלקות, תאוצה, התנגשויות, היסוס
+   aggr     נטייה למגע ולעבירות (0–1), מנקודות עבירה למאץ׳  moveShoot / autoAim  יורה בתנועה / כיוון אוטומטי (כן/לא/null)
+   intake   מאיפה אוסף {flower, floor, human}                lateNectar  נקטר בסוף המאץ׳   lift  מעלית לפרח
+   auto     {leave, park: חלק המאצ׳ים; balls, tips: כמות; start: A/B/C; progs: כמה תוכניות}
+   endPark  חלק המאצ׳ים שבהם חנה בסוף   rel  אמינות   noShowP  סיכוי שלא יגיע למאץ׳ */
+function sctBehave(p){
+  if(!p) return null; const F=p.fc||{}, k0=p.conf==null?0.5:p.conf, KD=p.dc!=null?p.dc:0.5, K=f=>F[f]!=null?F[f]:k0;
+  const share=(m,dcl)=>m!=null?m:dcl===true?0.85:dcl===false?0.1:null;
+  const seen=p.seen||0, ns=p.noShow||0;
+  const o={conf:k0,
+    def:p.def, drv:p.drv, aggr:p.fouls!=null?Math.max(0,Math.min(1,p.fouls/15)):null,
+    moveShoot:p.moveShoot, autoAim:p.autoAim, lateNectar:p.lateNectar, lift:!!p.lift,
+    intake:p.intakeFrom&&p.intakeFrom.length?{flower:p.intakeFrom.indexOf("flower")>=0,floor:p.intakeFrom.indexOf("floor")>=0,human:p.intakeFrom.indexOf("human")>=0}:null,
+    auto:{leave:share(p.mLeave,p.dLeave), park:share(p.mAPark,p.dAPark), balls:p.autoBalls, tips:p.mATips!=null?p.mATips:p.dATips,
+      start:p.start||(p.autoStarts&&p.autoStarts.length===1?p.autoStarts[0]:null), progs:p.aProgs},
+    endPark:p.park, rel:p.rel, noShowP:seen+ns>0?ns/(seen+ns):0,
+    targets:{acc:p.acc, spm:p.spm, tips:p.tips, cyc:p.cyc, autoPts:p.ap, telePts:p.tele, endPts:p.endP, total:p.total, fouls:p.fouls, def:p.def, park:p.park},
+    k:{def:K("defense_share"), drv:K("drive_rating"), aggr:K("fouls_points_per_match"), moveShoot:KD, autoAim:KD, intake:KD, lateNectar:KD,
+       leave:p.mLeave!=null?K("auto_leave"):KD, apark:p.mAPark!=null?K("auto_park"):KD, balls:KD, tips:p.mATips!=null?K("auto_tips"):KD, start:p.start?K("auto_start"):KD,
+       endPark:F.end_park!=null?F.end_park:K("end_park"), rel:K("reliability")}};
+  return o;
+}
 function sctAuto(p){ if(p.ap==null) return null; return p.ap<=0?"none":p.ap<=4?"leave":p.ap<=16?"preload":"cycle"; }
 function sctRole(p){ if(p.def!=null) return p.def>0.5?"defend":"score"; return p.role||null; }
 /* מחילים את המאץ׳ שנבחר: השותף = הרובוט השני בברית שלנו, היריבים = הברית השנייה */
@@ -21163,9 +21199,9 @@ function sctApply(){
   const partner=BOTS.find(b=>b.ally===myAlly()), opps=BOTS.filter(b=>b.ally!==myAlly());
   const plan=[[partner,mine[0]],[opps[0],them[0]],[opps[1],them[1]]];
   for(const b of BOTS){ b.prof=null; b.skC=null; } SCT.build=[null,null,null];
-  for(const b of BOTS){ b.noPark=undefined; b.prefRange=undefined; }
+  for(const b of BOTS){ b.noPark=undefined; b.prefRange=undefined; b.sb=null; }
   for(const [b,t] of plan){ if(!b||!t||!P0.robots[t]) continue; const i=BOTS.indexOf(b);
-    b.prof=P0.robots[t]; SCT.build[i]=sctBuild(b.prof,i);
+    b.prof=P0.robots[t]; SCT.build[i]=sctBuild(b.prof,i); b.sb=sctBehave(b.prof);   /* v77 */
     /* v76: טווח הירי המועדף (קרוב/בינוני/רחוק) — רמז לבחירת עמדה */
     if(b.prof.zone) b.prefRange={near:30,mid:55,far:85}[b.prof.zone];
     else if(b.prof.range) b.prefRange=Math.max(24,Math.min(85,b.prof.range*0.65)); }
@@ -21177,7 +21213,7 @@ function sctApply(){
 function sctClear(){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err=""; SCT.pend=false;
   /* v76: ״נקה״ מוחק גם את התמונה השמורה של התחרות הזו (החיבור החי, אם יש, יטען מחדש בבדיקה הבאה) */
   try{ localStorage.removeItem(SCTL_CACHE+(sctlCode()||"")); }catch(e){} SCTL.src=""; SCTL.lastSig=""; SCTL.qrLeft=0;
-  for(const b of BOTS){ b.prof=null; b.skC=null; b.noPark=undefined; b.prefRange=undefined; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
+  for(const b of BOTS){ b.prof=null; b.skC=null; b.noPark=undefined; b.prefRange=undefined; b.sb=null; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
 /* מאץ׳ מלא עם הרובוטים מהסקאוטינג — אחרי ״התחל״ הרגיל: כולם בזירה, תפקיד ואוטונומי מהפרופיל */
 function sctPlay(){
   if((!SCT.on||SCT.pend)&&!sctApply()) return; SCT.pend=false;
@@ -21429,7 +21465,7 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; if(SCTL.cam) sctl
     [/^⚠ החבילה היא של תחרות אחרת( \(.+\))?$/,"⚠ This package is from another event$1"],[/^⚠ גרסת קובץ לא מוכרת \((.+)\) — צריך לעדכן את הסימולטור$/,"⚠ Unknown file version ($1) — the simulator needs an update"]);
   /* v76: מי שכבר הגדיר חיבור חי — מתחבר לבד בפתיחה */
   try{ if(sctlCfgLoad()) setTimeout(sctlStart,1500); }catch(e){}
-  if(window.__sim) Object.assign(window.__sim,{SCTL,sctlStart,sctlStop,sctlQR,sctlEmit,sctPack,sctlForget,sctlCfgSave,sctlPull,sctUI,sctlStale,sctlStatusHTML,sctUse,SCT,sctParse,sctProf,sctApply,sctClear,sctPlay,sctLoadText,sctOpen,sctClose,sctBotMods,sctBuild,sctAuto,sctRole});
+  if(window.__sim) Object.assign(window.__sim,{sctBehave,sctStartABC,SCTL,sctlStart,sctlStop,sctlQR,sctlEmit,sctPack,sctlForget,sctlCfgSave,sctlPull,sctUI,sctlStale,sctlStatusHTML,sctUse,SCT,sctParse,sctProf,sctApply,sctClear,sctPlay,sctLoadText,sctOpen,sctClose,sctBotMods,sctBuild,sctAuto,sctRole});
 })();
 
 /* ══════ v63 wiz — אשף הגדרה אישית ══════
