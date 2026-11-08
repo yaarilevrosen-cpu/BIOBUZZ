@@ -39,7 +39,7 @@ for(let m=0;m<N;m++){
         const autoPts=3*leave+5*apark+20*tipsA+2*aH, telePts=20*tipsT+2*tH, endPts=5*park;
         out.bots.push({n:b.name, ally:A, team:b.prof?b.prof.team:null, on:b.on, noShow:!!(b.sbS&&b.sbS.noShow), sh:b.shots, hit:b.hits||0, aSh:s.aSh, aHit:aH,
           tips:+(tipsA+tipsT).toFixed(2), def:s.tele?+(s.def/s.tele).toFixed(3):0, park, leave, apark, fouls, autoPts:+autoPts.toFixed(1), telePts:+telePts.toFixed(1), endPts,
-          total:+(autoPts+telePts+endPts).toFixed(1), auto:b.autoLvl, start:b.sbS?b.sbS.start:null, hes:b.sbS?b.sbS.st.hes:0, push:b.sbS?b.sbS.st.push:0, fb:b.sbS?b.sbS.fb:null, miss:b.sbS?b.sbS.st.miss||0:0, T:b.prof?{spm:b.prof.spm,acc:b.prof.acc,tips:b.prof.tips,def:b.prof.def,park:b.prof.park,fouls:b.prof.fouls,ap:b.prof.ap,tp:b.prof.tele,ep:b.prof.endP,total:b.prof.total,leave:b.prof.mLeave,apark:b.prof.mAPark}:null}); } }
+          total:+(autoPts+telePts+endPts).toFixed(1), auto:b.autoLvl, start:b.sbS?b.sbS.start:null, hes:b.sbS?b.sbS.st.hes:0, push:b.sbS?b.sbS.st.push:0, fb:b.sbS?b.sbS.fb:null, noPark:b.noPark, parkGo:!!b.parkGo, lvB:!!b.lvBlock, ph:b.ph, miss:b.sbS?b.sbS.st.miss||0:0, T:b.prof?{spm:b.prof.spm,acc:b.prof.acc,tips:b.prof.tips,def:b.prof.def,park:b.prof.park,fouls:b.prof.fouls,ap:b.prof.ap,tp:b.prof.tele,ep:b.prof.endP,total:b.prof.total,leave:b.prof.mLeave,apark:b.prof.mAPark}:null}); } }
     out.fl=S.REF.log.filter(e=>e.pts).map(e=>e.rule+':'+e.team);
     out.hits=S.v77b?S.v77b.V77B.hits:null;
     return out; },[EV,m,MODE,!!process.env.OFF,seed0*7919+m,OURS,!!process.env.FOULS]);
