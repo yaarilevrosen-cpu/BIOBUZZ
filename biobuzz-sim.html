@@ -1299,6 +1299,8 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   #sctBox{position:fixed; inset:0; z-index:95} #sctBox[hidden]{display:none} #sctBg{position:absolute; inset:0; background:rgba(5,7,10,.35)}
   .sctWin{width:min(720px,calc(100vw - 32px)); max-height:86vh} #sctBody{padding:8px 16px 14px}
   .sctFile{cursor:pointer; display:inline-flex; align-items:center} .sctErr{color:#ff6b6b; font-size:13px}
+  .sctLive{font-size:12px; opacity:.9; margin:6px 0} .sctCloud{margin:6px 0} .sctCloud summary{cursor:pointer; font-size:13px}
+  .sctQrRow input{flex:1; min-width:0} .sctCam video{width:100%; max-height:220px; border-radius:8px; background:#000}
   .sctRows{display:grid; gap:6px; margin:8px 0} .sctRow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--line2); border-radius:10px; font-size:13px}
   .sctRow small{color:var(--muted); flex:1 1 220px} .sctRow em{font-style:normal; font-size:11px; color:var(--muted); flex:1 1 100%}
   .sctT{font-weight:700; color:var(--accent)} .sctBtns{display:flex; gap:6px; flex:1 1 100%} .sctBtns button{flex:0 0 auto; width:auto; font-size:11.5px; padding:3px 9px} .sctC{font-size:11px; padding:1px 6px; border-radius:8px; background:rgba(53,214,164,.15); color:#35d6a4}
@@ -2914,6 +2916,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_app" data-i18n>{"📄 מה נשלח לגוגל (מספרים ושמות הנהגים)": "📄 What was sent to Google (numbers and driver names)"}</script>
 <script type="application/json" id="i18nX_v70drills" data-i18n>{"חמישה עשר תרגילים — מחזורים, דיוק, טעינה, החלטות, חניה, מול בולם ועוד — עם שיא אישי": "Fifteen drills — cycles, accuracy, loading, decisions, parking, vs a defender and more — with a personal best", "טעינה על זמן": "Load against the clock", "החלטות": "Decisions", "עמדות משתנות": "Moving spots", "עקיפה בלי עבירות": "Get around, no fouls", "מעבר אוטונומי ← טלאופ": "Autonomous → TeleOp", "סיבוב פרחים על זמן": "Flower lap against the clock", "תרגיל: טעינה על זמן": "Drill: Load against the clock", "תרגיל: החלטות": "Drill: Decisions", "תרגיל: עמדות משתנות": "Drill: Moving spots", "תרגיל: עקיפה בלי עבירות": "Drill: Get around, no fouls", "תרגיל: מעבר אוטונומי ← טלאופ": "Drill: Autonomous → TeleOp", "תרגיל: סיבוב פרחים על זמן": "Drill: Flower lap against the clock", "מחזורים נכונים": "correct cycles", "📥 טעינה על זמן": "📥 Load against the clock", "🧭 החלטות · 60 שנ׳": "🧭 Decisions · 60 s", "⭕ עמדות משתנות · 10 יריות": "⭕ Moving spots · 10 shots", "🛡 עקיפה בלי עבירות · 60 שנ׳": "🛡 Get around, no fouls · 60 s", "🔁 מעבר אוטונומי ← טלאופ": "🔁 Autonomous → TeleOp", "🌼 סיבוב פרחים על זמן": "🌼 Flower lap against the clock", "📥 טעינה על זמן: למלא את המחסנית בארבעה כדורים מהפרחים, הכי מהר שאפשר": "📥 Load against the clock: fill the magazine with four balls from the flowers, as fast as you can", "🧭 60 שניות: לטעון רק בפרח המסומן ואז לירות. אחרי כל מחזור הפרח מתחלף": "🧭 60 seconds: load only at the highlighted flower, then shoot. The flower changes after every cycle", "🛡 60 שניות מול בולם: כל עבירה שלך מורידה 10 נקודות": "🛡 60 seconds against a defender: every foul you commit costs 10 points", "🔁 האוטונומי שלך, המעבר, ואז 30 שניות טלאופ": "🔁 Your autonomous, the transition, then 30 seconds of TeleOp", "המחזור לא נספר — טוענים רק בפרח המסומן": "Cycle not counted — load only at the highlighted flower", "טעינה לא בפרח המסומן — המחזור הזה לא ייספר": "Loading away from the highlighted flower — this cycle won't count", "לפרח המסומן הבא": "on to the next highlighted flower", "מחוץ לטבעת — היריה לא תיספר": "Outside the ring — the shot won't count", "סיבוב פרחים: לגעת בארבעת הפרחים בכל סדר ולחזור לטבעת הכחולה. השעון מתחיל כשזזים": "Flower lap: touch all four flowers in any order and come back to the blue ring. The clock starts when you move", "עמדות משתנות: 10 יריות. נספרת רק יריה מתוך הטבעת, והטבעת זזה אחרי כל יריה": "Moving spots: 10 shots. Only a shot from inside the ring counts, and the ring moves after every shot", "לחפש את הצד הפנוי של הכוורת לפני שמגיעים לבולם": "Look for the open side of the hive before you reach the defender", "לסיים את האוטונומי ליד פרח — ככה הטלאופ מתחיל מיד": "End the autonomous next to a flower — that way TeleOp starts right away", "קו ישר לפרח, בלי סיבובים מיותרים בדרך": "A straight line to the flower, no extra turns on the way", "מהזמן": "of the time", "טעינה בפרח": "Loading at the flower", "עמידה ללא מטרה": "Standing without a goal"}</script>
 <script type="application/json" id="i18nX_v75" data-i18n>{"🛠 מוסך — בונה רובוטים": "🛠 Garage — robot builder", "מוסך — בונה רובוטים": "Garage — robot builder", "בוחרים רובוט מהשורה, או לוחצים על כל חלק — הנעה, איסוף, העברה, ירי, מעלית — ובונים משלכם. הבדיקה לפי חוקי המדריך: 8 מנועים, 8 סרוו, 18 אינץ׳, 4 כדורים. למטה: מי נוהג באיזה רובוט.": "Pick a robot from the row, or click any part — drive, intake, transfer, shooter, lift — and build your own. Checked against the game manual: 8 motors, 8 servos, 18 inches, 4 balls. Below: who drives which robot.", "בנייה מוכנה — לחיצה על חלק יוצרת עותק שלך": "Ready-made build — clicking a part makes your own copy", "הבנייה שלך": "Your build", "🛠 נוצר עותק שלך — עכשיו אפשר לשנות": "🛠 Made your own copy — now you can change it", "🎲 תפתיע אותי": "🎲 Surprise me", "בנייה אקראית חוקית": "A random legal build", "שכפל ושנה": "Duplicate and edit", "שכפל": "Duplicate", "הנעה": "Drive", "איסוף": "Intake", "העברה": "Transfer", "ירי": "Shooter", "מעלית": "Lift", "מידות": "Size", "שלדה": "Chassis", "תמסורת": "Gearing", "מהירות": "Speed", "תמרון": "Agility", "דחיפה": "Push", "קצב ירי": "Fire rate", "טווח": "Range", "שליטה": "Control", "קיבולת": "Capacity", "מנועים": "Motors", "סרוו": "Servos", "כמה מהר הוא נוסע": "How fast it drives", "תנועה הצידה וסיבוב": "Strafing and turning", "כמה קשה להזיז אותו": "How hard it is to move", "רוחב הפתח ועוצמת המשיכה": "Mouth width and pull strength", "כמה יריות בשנייה": "Shots per second", "מהירות היציאה המרבית": "Top exit speed", "צריח ושליטה בסיבוב הכדור": "Turret and control of ball spin", "כמה כדורים נכנסים": "How many balls fit", "הרובוט מלמעלה": "The robot from above", "▲ חזית": "▲ Front", "כמה כדורים": "How many balls", "חיישן צבע": "Color sensor", "בלי": "None", "לא לוקח נקטר של היריב": "Skips the opponent's NECTAR", "המעלית מרימה כדורים מעל הפרח ומשחררת אותם ברמפה. נקטר שלך למעלה — הפרח שלך.": "The lift raises balls above the flower and releases them on a ramp. Your NECTAR on top — the flower is yours.", "בהתחלה עד 18 × 18 אינץ׳ (R102). רובוט רחב תופס יותר מקום לאיסוף — וגם נתקע יותר.": "At the start up to 18 × 18 inches (R102). A wide robot has more room to collect — and also gets stuck more.", "X־דרייב (אומני)": "X-drive (omni)", "הכי חלק הצידה, פחות אחיזה בדחיפה": "Smoothest sideways, less grip when pushing", "סוורב": "Swerve", "נוסע לכל כיוון בלי לאבד כוח — יקר בסרוו": "Drives in any direction without losing power — costs servos", "זחלים": "Treads", "הכי חזק בדחיפה, איטי ולא זז הצידה": "Strongest pusher, slow and no strafing", "מאוזנת": "Balanced", "כמו היום": "As today", "מהירה": "Fast", "מהירות גבוהה, פחות כוח בדחיפה ובתאוצה": "High speed, less push and acceleration", "חזקה": "Strong", "דוחף חזק, איטי יותר": "Pushes hard, slower", "צינורות גומי": "Surgical tubing", "משיכה חזקה מאוד, רוחב בינוני": "Very strong pull, medium width", "גלגלי כוכב": "Star wheels", "זול ויציב, משיכה טובה": "Cheap and steady, good pull", "מסוע רחב מעל הפגוש": "Wide over-the-bumper belt", "הפתח הכי רחב, משיכה רכה": "The widest mouth, gentle pull", "משפך עם גלגל": "Funnel with a roller", "מרכז לבד, משיכה חלשה, בלי מנוע נוסף בצדדים": "Self-centering, weak pull, no extra side motors", "צבת בסרוו": "Servo claw", "תופסת כדור אחד בכל פעם — איטי, בלי מנוע": "Grabs one ball at a time — slow, no motor", "ישיר — מהאיסוף ליורה": "Direct — intake to shooter", "כמו היום: גלגל מזין אחד": "As today: one feeder wheel", "רצועה": "Belt", "הזנה מהירה ורציפה": "Fast, continuous feed", "גלגלי הזנה רכים": "Soft indexer wheels", "מהיר, כל כדור בתורו": "Fast, one ball at a time", "מעלית פנימית": "Internal elevator", "מרים אנכית ליורה גבוה": "Lifts vertically to a high shooter", "קרוסלה (ספינדקסר)": "Carousel (spindexer)", "שלושה תאים מסתובבים — מסדר את הכדורים": "Three rotating slots — orders the balls", "בועט סרוו": "Servo kicker", "זול, דוחף כדור אחד בכל פעם": "Cheap, pushes one ball at a time", "רמפה בכוח הכובד": "Gravity ramp", "בלי מנוע — שער סרוו, איטי": "No motor — a servo gate, slow", "שני גלגלים — אותה מהירות": "Two wheels — same speed", "ישר ויציב, בלי סיבוב": "Straight and steady, no spin", "שני גלגלים על הוד": "Two wheels on a hood", "חזק יותר מהוד רגיל, סיבוב אחורי קטן": "Stronger than a plain hood, a little backspin", "קטפולטה": "Catapult", "פשוטה וזולה — טווח קצר וטעינה איטית": "Simple and cheap — short range and slow reload", "בועט קפיץ": "Spring puncher", "ירייה ישרה, טווח בינוני, טעינה איטית": "A flat shot, medium range, slow reload", "קטפולטה זולה": "Budget catapult", "ארבעה מנועים בלבד: טנק, גלגלי כוכב, רמפה וקטפולטה. יורים מקרוב, בקצב איטי — רובוט ראשון מצוין.": "Only four motors: tank, star wheels, ramp and catapult. Shoot from close, slowly — a great first robot.", "בורר צבעים": "Color sorter", "קרוסלה של שלושה כדורים וחיישן צבע שלא לוקח נקטר של היריב. יורה בשני גלגלים על הוד.": "A three-ball carousel and a color sensor that skips the opponent's NECTAR. Shoots with two wheels on a hood.", "סוורב עם צריח": "Swerve with turret", "נוסע לכל כיוון בלי לאבד כוח, אוסף במסוע רחב ויורה מצריח מלא — בדיוק 8 מנועים.": "Drives any direction without losing power, collects with a wide belt and shoots from a full turret — exactly 8 motors.", "זחלים חוסם": "Tread blocker", "זחלים ותמסורת חזקה — הכי קשה להזיז אותו. משפך פשוט ובועט קפיץ.": "Treads and strong gearing — the hardest robot to move. A simple funnel and a spring puncher.", "X־דרייב מהיר": "Speedy X-drive", "הכי זריז בזירה: X־דרייב בתמסורת מהירה, גלגלי הזנה ושני גלגלים באותה מהירות.": "The quickest on the field: X-drive with fast gearing, indexer wheels and two same-speed wheels.", "חיישן הצבע מיותר — הגרון ממילא בולע רק פולן": "The color sensor is redundant — the throat only swallows POLLEN anyway", "צריח על": "Turret on", "— אפשרי, אבל היורה מוגבל בטווח": "— possible, but the shooter has limited range", "כדורים ברובוט": "Balls in the robot", "תמסורת מהירה": "Fast gearing", "תמסורת חזקה": "Strong gearing", "כדורים": "balls", "בק־ספין קבוע (": "Fixed backspin (", "אין —": "None —", "🎲 ברק": "🎲 Lightning", "🎲 טורנדו": "🎲 Tornado", "🎲 דבורת־על": "🎲 Super Bee", "🎲 פלא": "🎲 Marvel", "🎲 זמזום": "🎲 Buzz", "🎲 רעם": "🎲 Thunder", "🎲 מכונה": "🎲 Machine", "🎲 כוכב": "🎲 Star", "🎲 בומרנג": "🎲 Boomerang", "🎲 טיל": "🎲 Rocket", "📊 מאץ׳ מהסקאוטינג": "📊 Match from scouting", "מאץ׳ מהסקאוטינג": "Match from scouting", "הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ הבא": "The bots are built from the real robots of your next match", "בוטים לפי הרובוטים האמיתיים": "Bots from the real robots", "מאץ׳ מהסקאוטינג — בוטים לפי הרובוטים האמיתיים": "Match from scouting — bots from the real robots", "המספר שלנו": "Our team number", "מספר הקבוצה שלנו": "Our team number", "למשל 90001": "e.g. 90001", "📂 טען קובץ מהסקאוטינג": "📂 Load a scouting file", "נקה": "Clear", "מקבלים קובץ מאפליקציית הסקאוטינג (״ייצוא לסימולטור״), טוענים אותו כאן, והבוטים בזירה נבנים לפי הרובוטים האמיתיים של המאץ׳ — מהירות, זמן מחזור, דיוק, תפקיד ואוטונומי.": "Get a file from the scouting app (“Export to simulator”), load it here, and the bots on the field are built from the real robots of the match — speed, cycle time, accuracy, role and autonomous.", "מאץ׳": "Match", "מול": "vs", "הברית שלנו בקובץ": "Our alliance in the file", "לפי המספר": "By our number", "אדומה": "Red", "כחולה": "Blue", "שותף": "Partner", "יריב": "Opponent", "ביטחון": "Confidence", "— בוט רגיל —": "— regular bot —", "🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים.": "🔒 The file stays only in this window's memory — not saved, not synced and not backed up. On the network, guests get only the bots' builds.", "החל על הבוטים": "Apply to the bots", "▶ מאץ׳ מלא עם הרובוטים האלה": "▶ Full match with these robots", "📊 הבוטים נבנו לפי הסקאוטינג": "📊 The bots were built from scouting", "איטי": "slow", "בינוני": "medium", "מהיר": "fast", "מחזור": "cycle", "שנ׳": "s", "דיוק": "accuracy", "אוטונומי": "auto", "בולם": "defender", "מנקד": "scorer", "אין מספרים — רק הבנייה": "No numbers — build only", "במשחק ברשת רק המארח מתחיל מאץ׳": "In a network game only the host starts a match", "📊 מאץ׳ מהסקאוטינג —": "📊 Match from scouting —", "📊 נטענו": "📊 Loaded", "רובוטים": "robots", "מאצ׳ים": "matches", "הקובץ גדול מדי": "The file is too big", "זה לא קובץ ג׳ייסון תקין": "This is not a valid JSON file", "אין בקובץ רשימת רובוטים": "The file has no robot list", "גרסת קובץ חדשה מדי (": "File version too new (", ") — צריך לעדכן את הסימולטור": ") — update the simulator", "יותר מדי רובוטים בקובץ": "Too many robots in the file", "לא נמצא אף רובוט תקין בקובץ": "No valid robot found in the file", "מהסקאוטינג": "From scouting", "כמה יורים": "How many shooters", "שניים": "Two", "אחד": "One", "מעלית לפרח": "Flower lift", "עם מעלית": "With lift", "צד האיסוף": "Intake side", "קדימה": "Front", "קדימה ואחורה": "Front and back", "מה אוסף": "Collects", "פולן ונקטר": "POLLEN and NECTAR", "רק פולן": "POLLEN only", "צריח": "Turret", "כדורים בהרמה": "Balls per lift", "רוחב × אורך": "Width × length", "תמונות לשנייה — לחיצה מסתירה (מחזירים בחיפוש: ״קצב תמונות״)": "Frames per second — click to hide (bring it back from search: “frame rate”)", "מונה קצב התמונות מוצג": "The frame-rate counter is shown", "מונה קצב התמונות הוסתר — מחזירים בחיפוש: ״קצב תמונות״": "The frame-rate counter is hidden — bring it back from search: “frame rate”", "קצב תמונות — להציג או להסתיר את המונה": "Frame rate — show or hide the counter", "חשבון אחר": "Another account", "להתנתק?": "Sign out?", "מתנתקים ופותחים את חלון הכניסה — לחשבון של מישהו אחר או לחשבון חדש": "Signs out and opens the sign-in window — for someone else's account or a new one", "↷ חזור": "↷ Redo", "חזרה על מה שבוטל (Ctrl+Y)": "Redo what was undone (Ctrl+Y)", "אין מה לחזור": "Nothing to redo", "🖼 תמונה": "🖼 Image", "שומר את הלוח כתמונה": "Saves the board as an image", "התמונה נשמרה": "Image saved", "הדפדפן לא מאפשר לשמור תמונה כאן": "The browser doesn't allow saving an image here", "▶ נסה בסימולטור": "▶ Try in the simulator", "החצים שלי הופכים למסלול, והרובוט נוסע בו עכשיו בזירה": "My arrows become a path, and the robot drives it on the field now", "בכלי ״הזזה״ גוררים רובוטים, וגלגלת מעל רובוט (או R) מסובבת אותו. מציירים חצים שיוצאים מהרובוט שלי — ״העבר לעורך״ הופך אותם למסלול אוטונומי.": "With the “Move” tool you drag robots, and the scroll wheel over a robot (or R) rotates it. Draw arrows that leave my robot — “Send to editor” turns them into an autonomous path.", "מציירים חץ שיוצא מ״אני״ — ונראה כאן אם הוא אפשרי באוטונומי": "Draw an arrow that leaves “Me” — and see here whether it works in autonomous", "המסלול שלי": "My path", "נכנס באוטונומי": "fits in autonomous", "ארוך מדי לאוטונומי": "too long for autonomous", "חוצה את קו האמצע": "crosses the midline", "לא חוצה את האמצע": "stays off the midline", "עובר דרך מבנה": "goes through a structure", "בלי מבנים בדרך": "no structures in the way", "מעביר חצים מהלוח למסלול": "Moves the board's arrows into a path", "⚠ ״אני״ בלוח רחוק": "⚠ “Me” on the board is", "מעמדת הפתיחה — המסלול מתחיל מעמדת הפתיחה": "from the starting position — the path starts at the starting position", "מתוך": "of", "ברק": "Lightning", "טורנדו": "Tornado", "דבורת־על": "Super Bee", "פלא": "Marvel", "זמזום": "Buzz", "רעם": "Thunder", "מכונה": "Machine", "כוכב": "Star", "בומרנג": "Boomerang", "טיל": "Rocket", "· ⚠ ״אני״ בלוח רחוק": "· ⚠ “Me” on the board is"}</script>
+<script type="application/json" id="i18nX_v76s" data-i18n>{"🟢 חי": "🟢 Live", "🟡 שאילה כל 10 שנ׳": "🟡 Polling every 10 s", "💾 תמונה שמורה": "💾 Saved snapshot", "📂 קובץ": "📂 File", "▦ קוד QR": "▦ QR code", "עודכן לפני רגע": "updated just now", "☁ מתחבר…": "☁ Connecting…", "⚠ אין חיבור לענן": "⚠ No cloud connection", "☁ בשאילה": "☁ Polling", "⏳ עדכון ייכנס בסוף המאץ׳": "⏳ The update will apply after the match", "השרת לא ענה תוך 8 שניות": "The server didn't answer within 8 seconds", "אין הרשאת קריאה — לבדוק את חשבון הקריאה": "No read permission — check the reader account", "עוד אין נתונים מהסקאוטינג לתחרות הזו": "No scouting data for this event yet", "החשבון או הסיסמה לא נכונים": "Wrong account or password", "☁ חיבור חי לסקאוטינג": "☁ Live scouting connection", "· מחובר": "· connected", "כתובת": "Address", "מפתח ציבורי": "Public key", "חשבון קריאה": "Reader account", "סיסמה": "Password", "קוד תחרות": "Event code", "התחבר": "Connect", "התחבר מחדש": "Reconnect", "נתק": "Disconnect", "שכח את הפרטים": "Forget the details", "🔒 הפרטים והתמונה האחרונה נשמרים רק במחשב הזה — לא בגיבוי, לא בסנכרון ולא בדיווח באג. החשבון קורא רק את הפרופילים.": "🔒 The details and the last snapshot are kept only on this computer — not in backups, sync or bug reports. The account reads only the profiles.", "⏹ עצור": "⏹ Stop", "סריקה במצלמה": "Scan with the camera", "ריק = בלי קוד": "empty = no code", "כתובת הענן של הסקאוטינג": "Scouting cloud address", "מייל של חשבון הקריאה": "Reader account email", "סיסמה של חשבון הקריאה": "Reader account password", "קוד התחרות": "Event code", "טקסט של קוד QR מהטלפון של המנהל": "QR code text from the admin's phone", "⚠ זה לא קובץ של אפליקציית הסקאוטינג": "⚠ This isn't a scouting app file", "⚠ כתובת לא תקינה — צריכה להתחיל ב-https://": "⚠ Invalid address — it must start with https://", "⚠ חסר המפתח הציבורי": "⚠ The public key is missing", "⚠ הקוד לא תקין (צריך להתחיל ב-A9662:)": "⚠ Invalid code (it must start with A9662:)", "⚠ המצלמה לא יודעת לקרוא קודים במחשב הזה — מדביקים את הטקסט של הקוד בשדה": "⚠ The camera can't read codes on this computer — paste the code text into the field", "⚠ אין גישה למצלמה": "⚠ No camera access", "⚠ ברשת רק המארח מתחבר לסקאוטינג": "⚠ In a network game only the host connects to scouting", "▦ נקלטה חבילה מקוד QR": "▦ Package received from QR code", "☁ הפרטים נמחקו מהמחשב הזה": "☁ The details were deleted from this computer", "פותח עותק של הרובוט הזה במוסך — לראות ולשנות": "Opens a copy of this robot in the garage — to view and change", "זה לא קובץ של אפליקציית הסקאוטינג": "This isn't a scouting app file", "גרסת קובץ לא מוכרת (": "Unknown file version (", "החבילה היא של תחרות אחרת": "This package is from another event", "ההתחברות נכשלה (": "Sign-in failed (", "השרת לא ענה (": "The server didn't answer (", "המצלמה לא יודעת לקרוא קודים במחשב הזה — מדביקים את הטקסט של הקוד בשדה": "The camera can't read codes on this computer — paste the code text into the field", "אין גישה למצלמה": "No camera access", "לפני רגע": "just now", "עודכן": "updated", "נוצר": "created", "כתובת לא תקינה — צריכה להתחיל ב-https://": "Invalid address — it must start with https://", "חסר המפתח הציבורי": "The public key is missing", "ברשת רק המארח מתחבר לסקאוטינג": "In a network game only the host connects to scouting", "הקוד לא תקין (צריך להתחיל ב-A9662:)": "Invalid code (it must start with A9662:)", "⚠ המנהל לא מחובר כבר": "⚠ The scouting admin has been offline for", "דק׳ — הנתונים קפואים": "min — the data is frozen", "▦ חסרים עוד": "▦ Still missing", "קודים": "codes"}</script>
 <script type="application/json" id="i18nX_v76g" data-i18n>{"כמו במעבדה": "As in the lab", "לא משנה": "No change", "72 מ״מ": "72 mm", "96 מ״מ": "96 mm", "104 מ״מ": "104 mm", "140 מ״מ": "140 mm", "100 מ״מ": "100 mm", "120 מ״מ": "120 mm", "תאוצה חזקה, מהירות נמוכה": "Strong acceleration, low speed", "הסטנדרט": "The standard", "מעט מהיר יותר": "A bit faster", "מהיר מאוד, מאיץ לאט": "Very fast, accelerates slowly", "117 סל״ד": "117 RPM", "223 סל״ד": "223 RPM", "312 סל״ד": "312 RPM", "435 סל״ד": "435 RPM", "1150 סל״ד": "1150 RPM", "כוח עצום, איטי מאוד": "Huge force, very slow", "חזק ואיטי": "Strong and slow", "מאוזן — הכי נפוץ": "Balanced — the most common", "מהיר, פחות כוח": "Fast, less force", "טיל — רק עם גלגל קטן": "A rocket — only with a small wheel", "אלומיניום": "Aluminum", "חזק וקל — הבחירה הרגילה": "Strong and light — the usual choice", "פוליקרבונט": "Polycarbonate", "קל, מתכופף קצת": "Light, flexes a little", "הדפסה בתלת־ממד": "3D printed", "הכי קל וזול, פחות דחיפה": "Lightest and cheapest, less push", "סיבי פחמן": "Carbon fiber", "קל מאוד וקשיח": "Very light and stiff", "פלדה": "Steel", "כבד — קשה להזיז, מאיץ לאט": "Heavy — hard to move, accelerates slowly", "רגילה": "Normal", "איטית": "Slow", "שקטה, משיכה חלשה": "Quiet, weak pull", "שואבת חזק מרחוק": "Pulls hard from far away", "קטן — מגיע מהר למהירות": "Small — spins up fast", "כמו הקלאסי": "Like the classic", "מהירות יציאה גבוהה": "High exit speed", "קל — מודפס": "Light — printed", "מאיץ מהר, נחלש אחרי כל ירייה": "Spins up fast, drops after every shot", "מאוזן": "Balanced", "פלדה עם משקולות": "Steel with weights", "שומר מהירות בין יריות": "Keeps its speed between shots", "1:1": "1:1", "1.5:1": "1.5:1", "3:1": "3:1", "4:1": "4:1", "מהיר מאוד, מומנט נמוך": "Very fast, low torque", "חזק, מהירות מוגבלת": "Strong, limited speed", "שטוח — מרחוק": "Flat — from far", "תלול — מקרוב": "Steep — from close", "⚙ כוונון": "⚙ Tuning", "קוטר גלגל": "Wheel diameter", "מנוע הנעה": "Drive motor", "מהירות האיסוף": "Intake speed", "גלגל תנופה": "Flywheel", "מסת הגלגל": "Wheel mass", "תמסורת היורה": "Shooter gearing", "זווית ירי": "Launch angle", "⚙ חומר השלדה": "⚙ Frame material", "חומר": "Material", "כוונונים": "tuning changes", "🧊 תלת־ממד": "🧊 3D", "📐 מלמעלה": "📐 Top view", "תצוגה": "View", "גוררים כדי לסובב": "Drag to rotate", "התצוגה התלת־ממדית לא נתמכת כאן — יש שרטוט מלמעלה": "3D view isn't supported here — there's a top-view drawing", "כדורים ב־": "balls in", "חונה": "parks", "אמינות": "reliability", "🛠 במוסך": "🛠 In the garage", "🎮 לנהוג בו": "🎮 Drive it", "פותח עותק של הרובוט הזה במוסך — לראות ולשנות": "Opens a copy of this robot in the garage — to see and change it", "הרובוט שלי נבנה כמו הרובוט הזה": "My robot is built like this robot", "📊 רובוט מהסקאוטינג": "📊 Robot from scouting", "🎮 הרובוט שלך נבנה כמו #": "🎮 Your robot is now built like #", "🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים. ״במוסך״ שומר עותק של המערכות בלבד, בלי מספר הקבוצה.": "🔒 The file stays only in this window's memory — not saved, not synced and not backed up. On the network, guests get only the bots' builds. “In the garage” saves a copy of the systems only, without the team number.", "כבר יש חשבון עם המייל הזה — מתחברים במקום להירשם (או ״שכחתי סיסמה״)": "There's already an account with this email — sign in instead (or “Forgot password”)"}</script>
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
 <script type="application/json" id="i18nX_v70plan" data-i18n>{"מתחיל משני הרצפים הכי טובים של המחולל, מזיז את עמדות הירי ואת הנקודות בדרך, ולפעמים משנה את הרצף עצמו — מוסיף, מוציא או מחליף אבן בניין (החניה תמיד אחרונה). כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences, moves the shooting spots and the points on the way, and sometimes changes the sequence itself — adds, removes or swaps a building block (parking always stays last). Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "🧠 הסבר את התוצאה": "🧠 Explain the result", "⏳ העוזר קורא את המספרים…": "⏳ The helper is reading the numbers…", "לא הצלחתי להסביר — נסו שוב": "Couldn't explain it — try again", "שינויי רצף": "Sequence changes", "ניסיונות": "tries", "שיפורים": "improvements"}</script>
@@ -16250,7 +16253,7 @@ function bkPut(a){
   while(true){ try{ localStorage.setItem(BKKEY,JSON.stringify(a)); return true; }
     catch(e){ if(a.length<=1) return false; a=a.slice(0,a.length-1); } } }
 function bkSize(b){ let n=0; for(const k in b.data) n+=(b.data[k]||"").length; return n; }
-const BKTRIV=BKKEEP.concat(["bbHud1","bbHelp1","bbQual1","bbPrefs1","bbTour1","bbNew57","bbLang1","bbWizard1"]);   /* רק העדפות תצוגה — לא סיבה לגבות (v63: גם ״האשף הושלם״) */
+const BKTRIV=BKKEEP.concat(["bbHud1","bbHelp1","bbQual1","bbPrefs1","bbTour1","bbNew57","bbLang1","bbWizard1","bbHud76"]);   /* רק העדפות תצוגה — לא סיבה לגבות (v63: גם ״האשף הושלם״) */
 function bkUseful(d){ return Object.keys(d).some(k=>BKTRIV.indexOf(k)<0); }
 /* היסטוריה (עונה, שיאים, רוח, תחקיר, זיכרון הבוטים) — גדולה; גיבוי אוטומטי שומר רק הגדרות ולא נוגע בה בשחזור */
 const BKHIST=/^(bbSeason1|biobuzz_records_v1|biobuzz_ghost_v1|biobuzz_ghost_v2|biobuzz_debrief_v1|bbBotMem1)$/;   /* v70: רוחות לכל מצב */
@@ -20942,7 +20945,7 @@ function bldNetReset(){ if(!BLD) return; const had=BLD.remote||Object.keys(BLD.n
      רמת ביטחון נמוכה — הערך מתערבב עם ערך הרמה הרגילה. מה שחסר — נשאר כמו ברמה הרגילה. */
 var SCT={on:false, ver:0, pack:null, err:"", mi:0, ours:"", side:"", build:[null,null,null]};
 const SCT_MAX=2*1024*1024;
-function sctNum(v,a,b){ v=+v; return isFinite(v)?Math.max(a,Math.min(b,v)):null; }
+function sctNum(v,a,b){ if(v==null||v===""||typeof v==="boolean"||typeof v==="object") return null; v=+v; return isFinite(v)?Math.max(a,Math.min(b,v)):null; }   /* v76: null = ״לא ידוע״ (לא 0) */
 function sctStr(v,n){ return typeof v==="string"?v.replace(/[\u0000-\u001f<>]/g,"").slice(0,n||40):""; }
 function sctConf(c,seen){ if(typeof c==="number") return sctNum(c,0,1);
   if(c==="high") return 0.9; if(c==="mid"||c==="medium") return 0.6; if(c==="low") return 0.3;
@@ -20952,38 +20955,63 @@ function sctProf(r){
   if(!r||typeof r!=="object") return null;
   const team=sctNum(r.team,1,999999); if(team==null||Math.floor(team)!==team) return null;
   const d=r.declared&&typeof r.declared==="object"?r.declared:{}, m=r.measured&&typeof r.measured==="object"?r.measured:{};
+  /* v76 (מבנה גרסה 1 של 04): כל ערך נמדד הוא {value, confidence, n} או null; null = ״לא ידוע״, לא ״לא״. גם מספר בודד (המבנה הישן) מתקבל */
+  const fc={}, mv=(k,alt)=>{ let x=m[k]; if(x==null&&alt) x=m[alt]; if(x&&typeof x==="object"&&!Array.isArray(x)){ const c=sctNum(x.confidence,0,1); if(c!=null) fc[k]=c; return x.value; } return x; };
+  const dv=k=>d[k]==null?null:d[k], oneOf=(v,L)=>L.indexOf(v)>=0?v:"";
+  /* יורה: shooters (0/1/2) ו-shooter_mount (fixed/turret) של 04, או shooter של המבנה הישן */
+  const ns=sctNum(dv("shooters"),0,2), mount=oneOf(dv("shooter_mount"),["fixed","turret"]);
+  let shooter=oneOf(dv("shooter"),["fixed","turret","double","none","hood","flywheel"]);
+  if(!shooter&&ns!=null) shooter=ns===0?"none":ns===2?"double":mount==="turret"?"turret":"fixed";
+  if(shooter==="double"&&mount==="turret") shooter="turret";
+  const role=dv("preferred_role"), park=sctNum(mv("end_park","park_end"),0,1);
   const p={team, id:"t"+team, ally:r.alliance==="red"||r.alliance==="blue"?r.alliance:"", seen:sctNum(r.matches_seen,0,999)||0,
-    conf:sctConf(r.confidence,r.matches_seen),
-    drive:["mecanum","tank","other","xdrive","swerve","tread"].indexOf(d.drive)>=0?d.drive:"",
-    speed:["slow","mid","medium","fast"].indexOf(d.speed)>=0?d.speed:"",
-    cap:sctNum(d.capacity,1,4), shooter:["fixed","turret","double","none","hood","flywheel"].indexOf(d.shooter)>=0?d.shooter:"",
-    side:d.intake_side==="both"?2:1, lift:d.lift===true, role:d.preferred_role==="defense"||d.preferred_role==="defender"?"defend":d.preferred_role==="scorer"?"score":"",
-    cyc:sctNum(m.cycle_sec,2,90), acc:sctNum(m.accuracy,0,1), ap:sctNum(m.auto_points,0,200), def:sctNum(m.defense_share,0,1),
-    park:sctNum(m.park_end,0,1), rel:sctNum(m.reliability,0,1), tips:sctNum(m.tips_per_match,0,40), zone:["near","mid","far"].indexOf(m.main_shoot_zone)>=0?m.main_shoot_zone:"",
-    /* v76: כמה כדורים בכל מטח ובכמה שניות (גם בשמות חלופיים), מאיפה מתחיל באוטונומי, ופרטי חומרה מהפיט */
-    vb:sctNum(m.balls_per_volley!=null?m.balls_per_volley:m.balls_per_cycle!=null?m.balls_per_cycle:m.shots_per_cycle,1,4),
-    vs:sctNum(m.volley_sec!=null?m.volley_sec:m.shoot_sec,0.2,20), fouls:sctNum(m.fouls_per_match,0,30),
-    start:typeof m.auto_start==="string"?sctStr(m.auto_start,4):"",
-    wheel:sctNum(d.wheel_mm,40,160), mrpm:sctNum(d.drive_rpm,60,6000), xfer:["direct","belt","indexer","elevator","spin","kicker","ramp"].indexOf(d.transfer)>=0?d.transfer:"",
-    intake:["rollers","compliant","mecanum","surgical","star","belt","funnel","claw"].indexOf(d.intake_type)>=0?d.intake_type:"",
-    color:d.color_sensor===true};
+    conf:sctConf(r.confidence,r.matches_seen), us:r.is_us===true, noShow:sctNum(r.no_shows,0,999)||0,
+    drive:oneOf(dv("drive"),["mecanum","tank","other","xdrive","swerve","tread"]),
+    speed:oneOf(dv("speed"),["slow","mid","medium","fast"]),
+    cap:sctNum(dv("capacity"),1,4), shooter, turret2:ns===2&&mount==="turret",
+    side:d.intake_side==="both"?2:1, lift:d.flower_lift===true||d.lift===true,
+    role:role==="defense"||role==="defender"?"defend":role==="scorer"?"score":"",
+    cyc:sctNum(mv("cycle_s","cycle_sec"),2,90), acc:sctNum(mv("accuracy"),0,1), ap:sctNum(mv("auto_points"),0,200), def:sctNum(mv("defense_share"),0,1),
+    park:park!=null?park:d.end_park===true?0.8:d.end_park===false?0.1:null, rel:sctNum(mv("reliability"),0,1), tips:sctNum(mv("tips_per_match"),0,40),
+    zone:oneOf(mv("main_shoot_zone"),["near","mid","far"])||(Array.isArray(d.shoot_zones)&&d.shoot_zones.length===1?oneOf(d.shoot_zones[0],["near","mid","far"]):""),
+    /* v76: כמה כדורים בכל מטח ובכמה שניות (גם בשמות חלופיים), יריות למאץ׳, טווח מרבי, נהיגה, עבירות, ופרטי חומרה מהפיט */
+    vb:sctNum(mv("balls_per_volley")!=null?mv("balls_per_volley"):mv("balls_per_cycle")!=null?mv("balls_per_cycle"):mv("shots_per_cycle"),1,4),
+    vs:sctNum(mv("volley_sec")!=null?mv("volley_sec"):mv("shoot_sec"),0.2,20),
+    spm:sctNum(mv("shots_per_match"),0,200), range:sctNum(dv("max_range_in"),12,150), drv:sctNum(mv("drive_rating"),0,1),
+    fouls:sctNum(mv("fouls_points_per_match")!=null?mv("fouls_points_per_match"):mv("fouls_per_match"),0,200),
+    start:typeof mv("auto_start")==="string"?sctStr(mv("auto_start"),4):"", autoBalls:sctNum(dv("auto_balls"),0,10),
+    wheel:sctNum(dv("wheel_mm"),40,160), mrpm:sctNum(dv("drive_rpm"),60,6000), xfer:oneOf(dv("transfer"),["direct","belt","indexer","elevator","spin","kicker","ramp"]),
+    intake:oneOf(dv("intake_type"),["rollers","compliant","mecanum","surgical","star","belt","funnel","claw"]),
+    color:d.color_sensor===true, fc, dc:sctNum(d.confidence,0,1)};
+  /* end_park של הפיט הוא ״כן/לא״ — ביטחון של מוצהר (0.5) */
+  if(park==null&&p.park!=null) fc.end_park=0.5;
+  if(p.zone&&!fc.main_shoot_zone&&m.main_shoot_zone==null) fc.main_shoot_zone=0.5;
   return p;
 }
 function sctParse(txt){
   if(typeof txt!=="string"||txt.length>SCT_MAX) throw new Error("הקובץ גדול מדי");
   let o; try{ o=JSON.parse(txt); }catch(e){ throw new Error("זה לא קובץ ג׳ייסון תקין"); }
+  return sctPack(o);
+}
+/* v76: חבילה (מקובץ, מהענן או מקוד QR). מבנה גרסה 1 של 04: format = apollo9662-scouting/event או /match, version = 1 בדיוק */
+function sctPack(o){
   if(!o||typeof o!=="object"||!Array.isArray(o.robots)) throw new Error("אין בקובץ רשימת רובוטים");
-  if(o.version!=null&&+o.version>1) throw new Error("גרסת קובץ חדשה מדי ("+(+o.version)+") — צריך לעדכן את הסימולטור");
+  if(o.format!=null&&!/^apollo9662-scouting\/(event|match)$/.test(String(o.format))) throw new Error("זה לא קובץ של אפליקציית הסקאוטינג");
+  if(o.version!=null&&+o.version!==1) throw new Error("גרסת קובץ לא מוכרת ("+sctStr(String(o.version),8)+") — צריך לעדכן את הסימולטור");
   if(o.robots.length>400) throw new Error("יותר מדי רובוטים בקובץ");
-  const R={}; for(const r of o.robots){ const p=sctProf(r); if(p) R[p.team]=p; }
+  const R={}; let us=0; for(const r of o.robots){ const p=sctProf(r); if(p){ R[p.team]=p; if(p.us) us=p.team; } }
   const teams=Object.keys(R).map(Number); if(!teams.length) throw new Error("לא נמצא אף רובוט תקין בקובץ");
-  const M=[], ok=t=>R[t]?t:null;
-  if(Array.isArray(o.schedule)) for(const s of o.schedule.slice(0,400)){ if(!s||typeof s!=="object") continue;
+  const M=[], ok=t=>R[t]?t:null, add=(n,s)=>{ if(!s||typeof s!=="object") return;
     const red=(Array.isArray(s.red)?s.red:[]).map(Number).filter(ok).slice(0,2), blue=(Array.isArray(s.blue)?s.blue:[]).map(Number).filter(ok).slice(0,2);
-    if(red.length+blue.length>=2) M.push({n:sctNum(s.match,0,9999)||M.length+1, red, blue}); }
+    if(red.length+blue.length>=2) M.push({n:sctNum(n,0,9999)||M.length+1, red, blue}); };
+  /* לוח זמנים: מפה ״מספר מאץ׳ → {red, blue}״ (04), או רשימה (המבנה הישן) */
+  if(Array.isArray(o.schedule)) for(const s of o.schedule.slice(0,400)) add(s&&s.match,s);
+  else if(o.schedule&&typeof o.schedule==="object") for(const k of Object.keys(o.schedule).slice(0,400)) add(+k,o.schedule[k]);
+  M.sort((a,b)=>a.n-b.n);
+  if(!M.length&&o.alliances&&typeof o.alliances==="object") add(o.match,o.alliances);
   if(!M.length){ const red=teams.filter(t=>R[t].ally==="red").slice(0,2), blue=teams.filter(t=>R[t].ally==="blue").slice(0,2);
     if(red.length+blue.length) M.push({n:sctNum(o.match,0,9999)||0, red, blue}); }
-  return {event:sctStr(o.event,60), robots:R, matches:M, n:teams.length};
+  return {event:sctStr(o.event,60), code:sctStr(o.event_code,40), at:sctStr(o.generated_at,40), robots:R, matches:M, n:teams.length, us};
 }
 /* פרופיל ← בנייה של הבוט (מה שהוצהר בפיט). מה שלא ידוע — מהבנייה הקלאסית */
 function sctBuild(p,i){
@@ -21000,12 +21028,17 @@ function sctBuild(p,i){
 /* מה הפרופיל עושה לחמשת הערכים של הבוט. ביטחון נמוך — מתערבב עם הרמה הרגילה */
 function sctBotMods(b,o){
   if(!SCT.on||!b.prof) return o;
-  const p=b.prof, k=p.conf==null?0.5:p.conf, mix=(base,v)=>base+(v-base)*k;
-  if(p.speed) o.v=mix(o.v,o.v*(p.speed==="slow"?0.75:p.speed==="fast"?1:0.88));
-  if(p.cyc!=null){ const r=Math.max(0.8,Math.min(2.4,p.cyc/12)); o.cycle=mix(o.cycle,o.cycle*r); o.think=mix(o.think,Math.max(0,Math.min(1.5,(p.cyc-12)/12))); }
-  if(p.acc!=null){ o.tol=mix(o.tol,o.tol+(1-p.acc)*0.05); o.vErr=mix(o.vErr,o.vErr+(1-p.acc)*0.018); }
-  /* v76: ״כמה כדורים בכמה שניות״ — הזמן בין יריות במטח הוא הנתון הכי ישיר, וגובר על הנגזרת מזמן המחזור */
-  if(p.vs!=null&&p.vb){ const gap=Math.max(0.3,Math.min(4,p.vs/Math.max(1,p.vb))); o.cycle=mix(o.cycle,gap); }
+  /* v76: לכל ערך הביטחון שלו (04 נותן ביטחון לכל ערך נמדד, ו-0.5 קבוע למה שהוצהר בפיט). אין — הביטחון הכללי */
+  const p=b.prof, k0=p.conf==null?0.5:p.conf, F=p.fc||{}, K=f=>F[f]!=null?F[f]:k0, KD=p.dc!=null?p.dc:k0, mix=(base,v,k)=>base+(v-base)*(k==null?k0:k);
+  if(p.speed) o.v=mix(o.v,o.v*(p.speed==="slow"?0.75:p.speed==="fast"?1:0.88),KD);
+  if(p.cyc!=null){ const k=K(F.cycle_s!=null?"cycle_s":"cycle_sec"), r=Math.max(0.8,Math.min(2.4,p.cyc/12)); o.think=mix(o.think,Math.max(0,Math.min(1.5,(p.cyc-12)/12)),k);
+    if(p.spm==null&&!(p.vs!=null&&p.vb)) o.cycle=mix(o.cycle,o.cycle*r,k); }
+  /* יריות למאץ׳: הבוטים יורים בערך 24 במאץ׳ — מי שיורה פחות, איטי יותר בין יריות */
+  if(p.spm!=null&&p.spm>0&&!(p.vs!=null&&p.vb)){ const r=Math.max(0.7,Math.min(2.4,24/p.spm)); o.cycle=mix(o.cycle,o.cycle*r,K("shots_per_match")); }
+  if(p.acc!=null){ const k=K("accuracy"); o.tol=mix(o.tol,o.tol+(1-p.acc)*0.05,k); o.vErr=mix(o.vErr,o.vErr+(1-p.acc)*0.018,k); }
+  if(p.drv!=null) o.think=mix(o.think,o.think+(1-p.drv)*0.4,K("drive_rating"));
+  /* ״כמה כדורים בכמה שניות״ — הזמן בין יריות במטח הוא הנתון הכי ישיר, וגובר על כל השאר */
+  if(p.vs!=null&&p.vb){ const gap=Math.max(0.3,Math.min(4,p.vs/Math.max(1,p.vb))); o.cycle=mix(o.cycle,gap,K(F.volley_sec!=null?"volley_sec":"shoot_sec")); }
   return o;
 }
 function sctAuto(p){ if(p.ap==null) return null; return p.ap<=0?"none":p.ap<=4?"leave":p.ap<=16?"preload":"cycle"; }
@@ -21013,7 +21046,7 @@ function sctRole(p){ if(p.def!=null) return p.def>0.5?"defend":"score"; return p
 /* מחילים את המאץ׳ שנבחר: השותף = הרובוט השני בברית שלנו, היריבים = הברית השנייה */
 function sctApply(){
   const P0=SCT.pack; if(!P0) return false; const m=P0.matches[SCT.mi]; if(!m) return false;
-  const ours=+SCT.ours||0; let side=SCT.side;
+  const ours=+SCT.ours||P0.us||0; let side=SCT.side;
   if(!side) side=m.red.indexOf(ours)>=0?"red":m.blue.indexOf(ours)>=0?"blue":"red";
   const mine=(side==="red"?m.red:m.blue).filter(t=>t!==ours), them=side==="red"?m.blue:m.red;
   const partner=BOTS.find(b=>b.ally===myAlly()), opps=BOTS.filter(b=>b.ally!==myAlly());
@@ -21023,17 +21056,20 @@ function sctApply(){
   for(const [b,t] of plan){ if(!b||!t||!P0.robots[t]) continue; const i=BOTS.indexOf(b);
     b.prof=P0.robots[t]; SCT.build[i]=sctBuild(b.prof,i);
     /* v76: טווח הירי המועדף (קרוב/בינוני/רחוק) — רמז לבחירת עמדה */
-    if(b.prof.zone) b.prefRange={near:30,mid:55,far:85}[b.prof.zone]; }
+    if(b.prof.zone) b.prefRange={near:30,mid:55,far:85}[b.prof.zone];
+    else if(b.prof.range) b.prefRange=Math.max(24,Math.min(85,b.prof.range*0.65)); }
   SCT.on=true; SCT.ver++; if(BLD) bldVerUp();
   for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){}
   try{ bldNet(); }catch(e){}
   return true;
 }
-function sctClear(){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err="";
+function sctClear(){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err=""; SCT.pend=false;
+  /* v76: ״נקה״ מוחק גם את התמונה השמורה של התחרות הזו (החיבור החי, אם יש, יטען מחדש בבדיקה הבאה) */
+  try{ localStorage.removeItem(SCTL_CACHE+(sctlCode()||"")); }catch(e){} SCTL.src=""; SCTL.lastSig=""; SCTL.qrLeft=0;
   for(const b of BOTS){ b.prof=null; b.skC=null; b.noPark=undefined; b.prefRange=undefined; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
 /* מאץ׳ מלא עם הרובוטים מהסקאוטינג — אחרי ״התחל״ הרגיל: כולם בזירה, תפקיד ואוטונומי מהפרופיל */
 function sctPlay(){
-  if(!SCT.on&&!sctApply()) return;
+  if((!SCT.on||SCT.pend)&&!sctApply()) return; SCT.pend=false;
   if(NET.mode==="guest"){ refToast("במשחק ברשת רק המארח מתחיל מאץ׳","block"); return; }
   sctClose(); setupApply();
   for(const b of BOTS){ if(!b.prof) continue; b.on=true; const r=sctRole(b.prof); if(r) setAIRole(b,r); const a=sctAuto(b.prof); if(a&&MT.auto>0) b.autoLvl=a;
@@ -21042,12 +21078,157 @@ function sctPlay(){
   refToast("📊 מאץ׳ מהסקאוטינג — "+BOTS.filter(b=>b.prof).map(b=>"#"+b.prof.team).join(" · "),"ok");
 }
 function sctLoadText(txt){
-  try{ const pk=sctParse(txt); SCT.pack=pk; SCT.mi=0; SCT.err=""; const ours=+SCT.ours||0;
-    if(ours){ const j=pk.matches.findIndex(m=>m.red.indexOf(ours)>=0||m.blue.indexOf(ours)>=0); if(j>=0) SCT.mi=j; }
-    sctApply(); refToast("📊 נטענו "+pk.n+" רובוטים"+(pk.matches.length>1?" · "+pk.matches.length+" מאצ׳ים":""),"ok"); }
-  catch(e){ SCT.err=String(e&&e.message||e); }
+  let o; SCT.err="";
+  if(typeof txt!=="string"||txt.length>SCT_MAX) SCT.err="הקובץ גדול מדי";
+  else { try{ o=JSON.parse(txt); }catch(e){ SCT.err="זה לא קובץ ג׳ייסון תקין"; } }
+  if(!SCT.err&&sctlEmit("file",o)) refToast("📊 נטענו "+SCT.pack.n+" רובוטים"+(SCT.pack.matches.length>1?" · "+SCT.pack.matches.length+" מאצ׳ים":""),"ok");
   sctUI();
 }
+/* חבילה חדשה (מכל מקור): שומרים על המאץ׳ שנבחר אם הוא עדיין שם; באמצע מאץ׳ — מחכים לסופו */
+function sctUse(pk){
+  const keep=SCT.pack&&SCT.pack.matches[SCT.mi]; SCT.pack=pk; SCT.err="";
+  const ours=+SCT.ours||pk.us||0; let j=keep?pk.matches.findIndex(m=>m.n===keep.n):-1;
+  if(j<0&&ours) j=pk.matches.findIndex(m=>m.red.indexOf(ours)>=0||m.blue.indexOf(ours)>=0);
+  SCT.mi=Math.max(0,j);
+  if(MATCH.on&&SCT.on) SCT.pend=true; else { SCT.pend=false; sctApply(); }
+}
+
+/* ══════ v76: סנכרון חי מהסקאוטינג (04, docs/live-sync.md במאגר של 04) ══════
+   השרשרת: 1 ״חי״ (ריל־טיים של סופאבייס) → 2 ״שאילה״ כל 10 שנ׳ → 3 ״תמונה שמורה״ במחשב → 4 קובץ → 5 קוד QR.
+   • רק קריאה: שתי טבלאות (sim_meta, sim_profiles) בחשבון קריאה של 04. כל בקשה נחתכת אחרי 8 שנ׳; תשובה ישנה לא מחליפה חדשה.
+   • פרטי החיבור והתמונה השמורה — רק במחשב הזה, במפתחות שמתחילים ב-a9662: לא בגיבוי, לא בסנכרון של האפליקציה,
+     לא בדיווח באג ולא במאגר. התמונה — רק של אותה תחרות; ״נקה״ ו״שכח את הפרטים״ מוחקים אותה.
+   • חבילה של תחרות אחרת (event_code) או של גרסה לא מוכרת — נדחית מכל מקור.
+   • דופק: sim_meta.updated_at מתעדכן כל דקה כשהמנהל מחובר. ישן מ-5 דק׳ — ״המנהל לא מחובר, הנתונים קפואים״.
+   • ברשת — רק המארח קורא; האורחים מקבלים את הבנייה של הבוטים, כמו תמיד. */
+const SCTL={cfg:null, st:"off", src:"", at:0, hb:0, err:"", tok:"", tokExp:0, ws:null, live:false, pollT:0, hbT:0, retryT:0, deb:0,
+  seq:0, applied:0, busy:false, lastSig:"", qr:new Map(), ref:0, cam:null, open:false};
+const SCTL_CFG="a9662-sim-cfg", SCTL_CACHE="a9662-sim-cache:", SCTL_STALE=5*60e3, SCTL_TO=8000;
+function sctlUrlOk(u){ return typeof u==="string"&&(/^https:\/\/[A-Za-z0-9.-]+(:\d+)?\/?$/.test(u)||/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/?$/.test(u)); }
+function sctlCfgLoad(){ try{ const o=JSON.parse(localStorage.getItem(SCTL_CFG)||"null"); if(o&&typeof o==="object"&&sctlUrlOk(o.url)&&typeof o.key==="string"&&o.key) return o; }catch(e){} return null; }
+function sctlCfgSave(o){ try{ if(o) localStorage.setItem(SCTL_CFG,JSON.stringify(o)); else localStorage.removeItem(SCTL_CFG); }catch(e){} }
+const sctlCode=()=>SCTL.cfg?String(SCTL.cfg.event||""):null;
+const sctlCloud=()=>SCTL.src==="live"||SCTL.src==="poll"||SCTL.src==="cache";
+function sctlStale(){ if(!sctlCloud()) return false; const t=Math.max(SCTL.hb,SCTL.at||0); return !t||Date.now()-t>SCTL_STALE; }
+function sctlEmit(src,o,at){
+  let pk; try{ pk=sctPack(o); }catch(e){ SCT.err=String(e&&e.message||e); sctUI(); return false; }
+  const code=sctlCode();
+  if(code!=null&&(pk.code||"")!==code){ SCT.err="החבילה היא של תחרות אחרת"+(pk.code?" ("+pk.code+")":""); sctUI(); return false; }
+  SCTL.src=src; SCTL.at=at||Date.now();
+  if(src==="live"||src==="poll"){ try{ localStorage.setItem(SCTL_CACHE+(code||""),JSON.stringify({at:SCTL.at,hb:SCTL.hb,data:o})); }catch(e){} }
+  const sig=JSON.stringify(o);
+  if(sig!==SCTL.lastSig||!SCT.pack){ SCTL.lastSig=sig; sctUse(pk); }
+  sctUI(); return true;
+}
+async function sctlFetch(u,op){ const c=new AbortController(), t=setTimeout(()=>c.abort(),SCTL_TO); try{ return await fetch(u,Object.assign({},op,{signal:c.signal})); } finally{ clearTimeout(t); } }
+const sctlBase=()=>SCTL.cfg.url.replace(/\/+$/,"");
+async function sctlLogin(){
+  const C=SCTL.cfg; if(!C.email){ SCTL.tok=C.key; SCTL.tokExp=Infinity; return; }
+  const r=await sctlFetch(sctlBase()+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:C.key,"Content-Type":"application/json"},body:JSON.stringify({email:C.email,password:C.pw||""})});
+  let j={}; try{ j=await r.json(); }catch(e){}
+  if(!r.ok||!j||!j.access_token){ SCTL.tok=""; throw new Error(r.status===400||r.status===401?"החשבון או הסיסמה לא נכונים":"ההתחברות נכשלה ("+r.status+")"); }
+  SCTL.tok=j.access_token; SCTL.tokExp=Date.now()+Math.max(60,(+j.expires_in||3600)-60)*1000;
+}
+async function sctlPull(src){
+  if(!SCTL.cfg||SCTL.busy||(typeof NET!=="undefined"&&NET.mode==="guest")) return; SCTL.busy=true; const my=++SCTL.seq, C=SCTL.cfg;
+  try{
+    if(!SCTL.tok||Date.now()>SCTL.tokExp) await sctlLogin();
+    const h={apikey:C.key, Authorization:"Bearer "+SCTL.tok}, ev=encodeURIComponent(C.event||"");
+    const [a,b]=await Promise.all([sctlFetch(sctlBase()+"/rest/v1/sim_meta?select=data,updated_at&event_code=eq."+ev+"&limit=1",{headers:h}),
+                                   sctlFetch(sctlBase()+"/rest/v1/sim_profiles?select=team,data,updated_at&event_code=eq."+ev,{headers:h})]);
+    if([a.status,b.status].some(x=>x===401||x===403)){ SCTL.tok=""; throw new Error("אין הרשאת קריאה — לבדוק את חשבון הקריאה"); }
+    if(!a.ok||!b.ok) throw new Error("השרת לא ענה ("+(a.ok?b.status:a.status)+")");
+    const meta=await a.json(), rows=await b.json();
+    if(SCTL.cfg!==C||my<SCTL.applied) return;      /* תשובה ישנה שהגיעה אחרי חדשה, או שהחיבור הוחלף בינתיים */
+    SCTL.applied=my; SCTL.err=""; SCTL.st=src;
+    if(!Array.isArray(meta)||!meta.length){ SCTL.err="עוד אין נתונים מהסקאוטינג לתחרות הזו"; sctUI(); return; }
+    SCTL.hb=Date.parse(meta[0].updated_at)||SCTL.hb;
+    const m=meta[0].data&&typeof meta[0].data==="object"?meta[0].data:{}, by={}, R=Array.isArray(rows)?rows.slice(0,400):[];
+    for(const r of R) if(r&&r.data&&typeof r.data==="object") by[r.team]=r.data;
+    const teams=Array.isArray(m.teams)?m.teams.slice(0,400):Object.keys(by).map(Number);
+    const pkg={format:"apollo9662-scouting/event",version:m.version==null?1:m.version,generated_at:m.generated_at,event:m.event,event_code:m.event_code||"",
+      schedule:m.schedule||{},robots:teams.map(t=>by[t]).filter(Boolean)};
+    let newest=SCTL.hb; for(const r of R){ const t=Date.parse(r&&r.updated_at); if(t>newest) newest=t; }
+    sctlEmit(src,pkg,newest||Date.now());
+  }catch(e){
+    if(SCTL.cfg===C){ SCTL.st="offline"; SCTL.err=e&&e.name==="AbortError"?"השרת לא ענה תוך 8 שניות":String(e&&e.message||e).slice(0,120); sctlFromCache(); sctUI(); }
+  }finally{ SCTL.busy=false; }
+}
+function sctlWs(){
+  if(!SCTL.cfg||SCTL.ws||typeof WebSocket==="undefined") return;
+  const C=SCTL.cfg; let ws; try{ ws=new WebSocket(sctlBase().replace(/^http/,"ws")+"/realtime/v1/websocket?apikey="+encodeURIComponent(C.key)+"&vsn=1.0.0"); }catch(e){ return; }
+  SCTL.ws=ws; const topic="realtime:sim-"+Math.random().toString(36).slice(2,8);
+  ws.onopen=()=>{ try{ ws.send(JSON.stringify({topic,event:"phx_join",ref:String(++SCTL.ref),join_ref:"1",payload:{config:{broadcast:{self:false},presence:{key:""},
+      postgres_changes:[{event:"*",schema:"public",table:"sim_profiles"},{event:"*",schema:"public",table:"sim_meta"}]},access_token:SCTL.tok||C.key}})); }catch(e){}
+    clearInterval(SCTL.hbT); SCTL.hbT=setInterval(()=>{ try{ ws.send(JSON.stringify({topic:"phoenix",event:"heartbeat",payload:{},ref:String(++SCTL.ref)})); }catch(e){} },25000); };
+  ws.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(x){ return; } if(!m||m.topic!==topic) return;
+    const ok=m.payload&&m.payload.status;
+    if(m.event==="phx_reply"&&ok==="ok"&&!SCTL.live){ SCTL.live=true; SCTL.st="live"; sctlPull("live"); }
+    else if((m.event==="phx_reply"&&ok==="error")||m.event==="phx_error"||m.event==="phx_close"){ try{ ws.close(); }catch(x){} }
+    else if(m.event==="postgres_changes"){ clearTimeout(SCTL.deb); SCTL.deb=setTimeout(()=>sctlPull("live"),300); } };
+  ws.onerror=()=>{};
+  ws.onclose=()=>{ clearInterval(SCTL.hbT); if(SCTL.ws===ws) SCTL.ws=null; const was=SCTL.live; SCTL.live=false;
+    if(SCTL.cfg===C){ if(was) SCTL.st="poll"; clearTimeout(SCTL.retryT); SCTL.retryT=setTimeout(sctlWs,10000); sctUI(); } };
+}
+function sctlFromCache(){
+  if(SCT.pack) return; const code=sctlCode(); if(code==null) return;
+  try{ const c=JSON.parse(localStorage.getItem(SCTL_CACHE+code)||"null"); if(c&&c.data){ SCTL.hb=+c.hb||0; sctlEmit("cache",c.data,+c.at||0); } }catch(e){}
+}
+function sctlStart(){
+  sctlStop(); SCTL.cfg=sctlCfgLoad(); if(!SCTL.cfg){ SCTL.st="off"; return false; }
+  if(typeof NET!=="undefined"&&NET.mode==="guest"){ SCTL.cfg=null; SCTL.st="off"; return false; }
+  SCTL.st="connecting"; SCTL.err=""; SCTL.applied=0; sctlFromCache();
+  sctlPull("poll").then(()=>sctlWs());
+  let n=0; SCTL.pollT=setInterval(()=>{ n++; if(SCT.pend&&!MATCH.on){ SCT.pend=false; sctApply(); sctUI(); }
+    if(!SCTL.live||n%6===0) sctlPull(SCTL.live?"live":"poll"); else sctlStatusUI(); },10000);
+  return true;
+}
+function sctlStop(){
+  clearInterval(SCTL.pollT); clearInterval(SCTL.hbT); clearTimeout(SCTL.retryT); clearTimeout(SCTL.deb); SCTL.pollT=0;
+  const ws=SCTL.ws; SCTL.ws=null; SCTL.live=false; SCTL.cfg=null; SCTL.tok=""; SCTL.tokExp=0; SCTL.st="off";
+  if(ws){ ws.onclose=null; try{ ws.close(); }catch(e){} }
+}
+function sctlForget(){ const code=sctlCode()||""; sctlStop(); sctlCfgSave(null);
+  try{ for(let i=localStorage.length-1;i>=0;i--){ const k=localStorage.key(i); if(k&&k.indexOf(SCTL_CACHE)===0) localStorage.removeItem(k); } }catch(e){}
+  if(sctlCloud()){ SCTL.src=""; SCTL.lastSig=""; } }
+/* קוד QR מהטלפון של המנהל: A9662:<מספר>/<סה״כ>:<מזהה>:<נתונים>. מחזיר כמה קודים חסרים, 0 כשהחבילה הושלמה, -1 לקוד פגום */
+async function sctlQR(str){
+  const m=/^A9662:(\d+)\/(\d+):(\w{1,24}):([A-Za-z0-9_-]*)$/.exec(String(str||"").trim()); if(!m) return -1;
+  const i=+m[1], n=+m[2], id=m[3]; if(!(n>=1&&n<=20&&i>=1&&i<=n)) return -1;
+  if(!SCTL.qr.has(id)){ if(SCTL.qr.size>8) SCTL.qr.clear(); SCTL.qr.set(id,{n,parts:new Map()}); }
+  const g=SCTL.qr.get(id); if(g.n!==n) return -1; g.parts.set(i,m[4]); if(g.parts.size<n) return n-g.parts.size;
+  let b=""; for(let k=1;k<=n;k++) b+=g.parts.get(k); SCTL.qr.delete(id);
+  try{ const bin=atob(b.replace(/-/g,"+").replace(/_/g,"/")), u=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++) u[k]=bin.charCodeAt(k);
+    const ds=new DecompressionStream("deflate-raw"), w=ds.writable.getWriter(); w.write(u).catch(()=>{}); w.close().catch(()=>{});
+    const buf=await new Response(ds.readable).arrayBuffer(); if(buf.byteLength>SCT_MAX) return -1;
+    return sctlEmit("qr",JSON.parse(new TextDecoder().decode(buf)))?0:-1; }catch(e){ return -1; }
+}
+/* מצלמה: רק כשהדפדפן יודע לפענח קודים לבד (BarcodeDetector). אחרת — מדביקים את הטקסט של הקוד */
+async function sctlCam(on){
+  const C=SCTL.cam; if(C){ clearInterval(C.t); try{ C.s.getTracks().forEach(x=>x.stop()); }catch(e){} SCTL.cam=null; }
+  if(!on) { sctUI(); return; }
+  if(typeof BarcodeDetector==="undefined"||!navigator.mediaDevices){ SCT.err="המצלמה לא יודעת לקרוא קודים במחשב הזה — מדביקים את הטקסט של הקוד בשדה"; sctUI(); return; }
+  try{ const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false}), v=document.createElement("video");
+    v.srcObject=s; v.muted=true; v.playsInline=true; await v.play(); const det=new BarcodeDetector({formats:["qr_code"]});
+    SCTL.cam={s,v,t:setInterval(async()=>{ try{ for(const c of await det.detect(v)){ const r=await sctlQR(c.rawValue); SCTL.qrLeft=r; if(r===0){ sctlCam(false); refToast("▦ נקלטה חבילה מקוד QR","ok"); } sctlStatusUI(); } }catch(e){} },300)};
+    sctUI(); const h=$("sctCam"); if(h){ h.innerHTML=""; h.appendChild(v); } }
+  catch(e){ SCTL.cam=null; SCT.err="אין גישה למצלמה"; sctUI(); }
+}
+function sctlAgo(t){ if(!t) return ""; const s=Math.max(0,(Date.now()-t)/1000); return s<50?"לפני רגע":s<3600?"לפני "+Math.round(s/60)+" דק׳":"לפני "+Math.round(s/3600)+" שע׳"; }
+function sctlStatusHTML(){
+  const L={live:"🟢 חי",poll:"🟡 שאילה כל 10 שנ׳",cache:"💾 תמונה שמורה",file:"📂 קובץ",qr:"▦ קוד QR"}, e=x=>appEsc(String(x)), t=[];
+  if(SCTL.src&&SCT.pack){ t.push('<b>'+L[SCTL.src]+'</b>'); if(SCTL.at) t.push("<span>עודכן "+sctlAgo(SCTL.at)+"</span>");
+    if(SCT.pack.at&&/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(SCT.pack.at)){ const d=new Date(SCT.pack.at); if(isFinite(d)) t.push("<span>נוצר "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+"</span>"); } }
+  if(SCTL.cfg&&SCTL.st==="connecting") t.push("<span>☁ מתחבר…</span>"); else if(SCTL.cfg&&SCTL.st==="offline") t.push("<span>⚠ אין חיבור לענן</span>");
+  if(SCTL.cfg&&SCTL.st==="poll"&&SCTL.src!=="poll"&&!SCTL.live) t.push("<span>☁ בשאילה</span>");
+  if(SCT.pend) t.push("<span>⏳ עדכון ייכנס בסוף המאץ׳</span>");
+  let h=t.length?'<div class="sctLive" id="sctLiveS">'+t.join(" · ")+'</div>':'<div id="sctLiveS"></div>';
+  if(sctlStale()) h+='<p class="sctErr">⚠ המנהל לא מחובר כבר '+Math.round((Date.now()-Math.max(SCTL.hb,SCTL.at))/60000)+' דק׳ — הנתונים קפואים</p>';
+  if(SCTL.cfg&&SCTL.err) h+='<p class="sctErr">☁ <span>'+e(SCTL.err)+'</span></p>';
+  if(SCTL.qrLeft>0) h+='<p class="note">▦ חסרים עוד '+SCTL.qrLeft+' קודים</p>';
+  return h;
+}
+function sctlStatusUI(){ const s=$("sctLiveW"); if(s) s.innerHTML=sctlStatusHTML(); }
 function sctFmt(p){
   const t=[]; if(p.speed) t.push({slow:"איטי",mid:"בינוני",medium:"בינוני",fast:"מהיר"}[p.speed]);
   if(p.cyc!=null) t.push("מחזור "+Math.round(p.cyc)+" שנ׳"); if(p.acc!=null) t.push("דיוק "+Math.round(p.acc*100)+"%");
@@ -21058,9 +21239,25 @@ function sctFmt(p){
 }
 function sctUI(){
   const box=$("sctBox"); if(!box||box.hidden) return; const B=$("sctBody"); if(!B) return;
+  /* v76: לא בונים מחדש בזמן שמקלידים (הסנכרון החי מעדכן כל 10 שנ׳) — רק שורת המצב; השאר אחרי שיוצאים מהשדה */
+  const ae=document.activeElement; if(ae&&B.contains(ae)&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)&&ae.type!=="file"){ SCT.dirty=true; sctlStatusUI(); return; }
+  SCT.dirty=false;
   const pk=SCT.pack, e=x=>appEsc(String(x));
   let h='<div class="bldF"><span>המספר שלנו</span><input id="sctOurs" type="number" min="1" max="999999" value="'+e(SCT.ours||"")+'" aria-label="מספר הקבוצה שלנו" placeholder="למשל 90001"></div>'+
     '<div class="row"><label class="btn sctFile">📂 טען קובץ מהסקאוטינג<input id="sctFileIn" type="file" accept=".json,application/json" hidden></label>'+(pk?'<button data-sct="clear">נקה</button>':'')+'</div>';
+  /* v76: מאיפה הנתונים ומאיזו שעה, חיבור חי, וקוד QR */
+  const cf=SCTL.cfg||sctlCfgLoad()||{};
+  h+='<div id="sctLiveW">'+sctlStatusHTML()+'</div>'+
+    '<details class="sctCloud" id="sctCloudD"'+(SCTL.open?" open":"")+'><summary><span>☁ חיבור חי לסקאוטינג</span>'+(SCTL.cfg?" <span>· מחובר</span>":"")+'</summary>'+
+    '<div class="bldF"><span>כתובת</span><input id="sctlUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://….supabase.co" value="'+e(cf.url||"")+'" aria-label="כתובת הענן של הסקאוטינג"></div>'+
+    '<div class="bldF"><span>מפתח ציבורי</span><input id="sctlKey" type="password" autocomplete="off" value="'+e(cf.key||"")+'" aria-label="מפתח ציבורי"></div>'+
+    '<div class="bldF"><span>חשבון קריאה</span><input id="sctlMail" type="email" autocomplete="off" value="'+e(cf.email||"")+'" aria-label="מייל של חשבון הקריאה"></div>'+
+    '<div class="bldF"><span>סיסמה</span><input id="sctlPw" type="password" autocomplete="new-password" value="'+e(cf.pw||"")+'" aria-label="סיסמה של חשבון הקריאה"></div>'+
+    '<div class="bldF"><span>קוד תחרות</span><input id="sctlEv" type="text" maxlength="40" autocomplete="off" value="'+e(cf.event||"")+'" placeholder="ריק = בלי קוד" aria-label="קוד התחרות"></div>'+
+    '<div class="row"><button data-sctl="go" class="primary">'+(SCTL.cfg?"התחבר מחדש":"התחבר")+'</button>'+(SCTL.cfg?'<button data-sctl="stop">נתק</button>':'')+(sctlCfgLoad()?'<button data-sctl="forget">שכח את הפרטים</button>':'')+'</div>'+
+    '<p class="note">🔒 הפרטים והתמונה האחרונה נשמרים רק במחשב הזה — לא בגיבוי, לא בסנכרון ולא בדיווח באג. החשבון קורא רק את הפרופילים.</p></details>'+
+    '<div class="bldF sctQrRow"><span>▦ קוד QR</span><input id="sctlQrIn" type="text" autocomplete="off" spellcheck="false" placeholder="A9662:1/2:…" aria-label="טקסט של קוד QR מהטלפון של המנהל">'+
+      '<button data-sctl="cam" title="סריקה במצלמה">'+(SCTL.cam?"⏹ עצור":"📷")+'</button></div>'+(SCTL.cam?'<div id="sctCam" class="sctCam"></div>':'');
   if(SCT.err) h+='<p class="sctErr">⚠ '+e(SCT.err)+'</p>';
   if(!pk) h+='<p class="note">מקבלים קובץ מאפליקציית הסקאוטינג (״ייצוא לסימולטור״), טוענים אותו כאן, והבוטים בזירה נבנים לפי הרובוטים האמיתיים של המאץ׳ — מהירות, זמן מחזור, דיוק, תפקיד ואוטונומי.</p>';
   else {
@@ -21073,12 +21270,24 @@ function sctUI(){
       '<div class="row"><button data-sct="apply">החל על הבוטים</button><button data-sct="play" class="primary">▶ מאץ׳ מלא עם הרובוטים האלה</button></div>';
   }
   B.innerHTML=h;
+  if(SCTL.cam){ const c=$("sctCam"); if(c) c.appendChild(SCTL.cam.v); }
 }
-function sctOpen(){ const m=$("sctBox"); if(!m) return; m.hidden=false; try{ SCT.ours=localStorage.getItem("bbSctOurs1")||SCT.ours; }catch(e){} sctUI(); }
-function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; }
+function sctOpen(){ const m=$("sctBox"); if(!m) return; m.hidden=false; if(SCT.pend&&!MATCH.on){ SCT.pend=false; sctApply(); } try{ SCT.ours=localStorage.getItem("bbSctOurs1")||SCT.ours; }catch(e){} sctUI(); }
+function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; if(SCTL.cam) sctlCam(false); }
 (function sctWire(){
   const m=$("sctBox"); if(!m) return;
   m.addEventListener("click",e=>{
+    /* v76: חיבור חי וקוד QR */
+    const L=e.target.closest("[data-sctl]"); if(L){ const k=L.dataset.sctl, v=id=>{ const x=$(id); return x?String(x.value||"").trim():""; };
+      if(k==="go"){ const o={url:v("sctlUrl"),key:v("sctlKey"),email:v("sctlMail"),pw:($("sctlPw")||{}).value||"",event:v("sctlEv").slice(0,40)};
+        if(!sctlUrlOk(o.url)){ SCT.err="כתובת לא תקינה — צריכה להתחיל ב-https://"; sctUI(); return; }
+        if(!o.key){ SCT.err="חסר המפתח הציבורי"; sctUI(); return; }
+        SCT.err=""; if(sctlCode()!=null&&sctlCode()!==o.event&&sctlCloud()){ SCTL.src=""; SCTL.lastSig=""; }
+        sctlCfgSave(o); SCTL.open=false; if(!sctlStart()) SCT.err="ברשת רק המארח מתחבר לסקאוטינג"; sctUI(); }
+      else if(k==="stop"){ sctlStop(); sctUI(); }
+      else if(k==="forget"){ sctlForget(); sctUI(); refToast("☁ הפרטים נמחקו מהמחשב הזה","ok"); }
+      else if(k==="cam") sctlCam(!SCTL.cam);
+      return; }
     const s=e.target.closest("[data-sctside]"); if(s){ SCT.side=s.dataset.sctside; if(SCT.pack) sctApply(); sctUI(); return; }
     const sg=e.target.closest("[data-sctgar],[data-sctdrive]"); if(sg){ const i=+(sg.dataset.sctgar!=null?sg.dataset.sctgar:sg.dataset.sctdrive), B=SCT.build[i]; if(!B) return;
       /* v76: רובוט מהסקאוטינג → בנייה שלי במוסך. נשמרת כמו כל בנייה — רק המערכות, בלי מספר הקבוצה ובלי המספרים מהסקאוטינג */
@@ -21088,7 +21297,13 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; }
       else { sctClose(); bldOpen(N.id); } return; }
     const a=e.target.closest("[data-sct]"); if(!a) return; const k=a.dataset.sct;
     if(k==="close") sctClose(); else if(k==="clear") sctClear(); else if(k==="apply"){ if(sctApply()) refToast("📊 הבוטים נבנו לפי הסקאוטינג","ok"); sctUI(); } else if(k==="play") sctPlay(); });
+  const qrGo=async el=>{ const t=String(el.value||"").trim(); if(!t) return; el.value=""; const r=await sctlQR(t); SCTL.qrLeft=r>0?r:0;
+    if(r<0){ SCT.err="הקוד לא תקין (צריך להתחיל ב-A9662:)"; } else if(r===0) refToast("▦ נקלטה חבילה מקוד QR","ok"); sctUI(); };
+  m.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="sctlQrIn"){ e.preventDefault(); qrGo(e.target); } });
+  m.addEventListener("toggle",e=>{ if(e.target.id==="sctCloudD") SCTL.open=e.target.open; },true);
+  m.addEventListener("focusout",()=>{ setTimeout(()=>{ if(SCT.dirty) sctUI(); },0); });
   m.addEventListener("change",e=>{
+    if(e.target.id==="sctlQrIn"){ qrGo(e.target); return; }
     if(e.target.id==="sctFileIn"){ const f=e.target.files&&e.target.files[0]; e.target.value="";
       if(!f) return; if(f.size>SCT_MAX){ SCT.err="הקובץ גדול מדי"; sctUI(); return; }
       const r=new FileReader(); r.onload=()=>sctLoadText(String(r.result||"")); r.readAsText(f); }
@@ -21097,7 +21312,13 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; }
   on($("sctBg"),sctClose);
   on($("ppScout"),sctOpen);
   document.addEventListener("click",e=>{ const h=e.target&&e.target.closest&&e.target.closest('[data-hm="scout"]'); if(h){ e.preventDefault(); setTimeout(()=>sctOpen(),0); } });
-  if(window.__sim) Object.assign(window.__sim,{SCT,sctParse,sctProf,sctApply,sctClear,sctPlay,sctLoadText,sctOpen,sctClose,sctBotMods,sctBuild,sctAuto,sctRole});
+  if(I18N.lang==="en") I18N.rules.push([/^עודכן לפני (\d+) דק׳$/,"updated $1 min ago"],[/^עודכן לפני (\d+) שע׳$/,"updated $1 h ago"],[/^נוצר (\d\d:\d\d)$/,"created $1"],
+    [/^⚠ המנהל לא מחובר כבר (\d+) דק׳ — הנתונים קפואים$/,"⚠ The scouting admin has been offline for $1 min — the data is frozen"],[/^▦ חסרים עוד (\d+) קודים$/,"▦ $1 more codes needed"],
+    [/^ההתחברות נכשלה \((\d+)\)$/,"Sign-in failed ($1)"],[/^השרת לא ענה \((\d+)\)$/,"The server didn't answer ($1)"],
+    [/^⚠ החבילה היא של תחרות אחרת( \(.+\))?$/,"⚠ This package is from another event$1"],[/^⚠ גרסת קובץ לא מוכרת \((.+)\) — צריך לעדכן את הסימולטור$/,"⚠ Unknown file version ($1) — the simulator needs an update"]);
+  /* v76: מי שכבר הגדיר חיבור חי — מתחבר לבד בפתיחה */
+  try{ if(sctlCfgLoad()) setTimeout(sctlStart,1500); }catch(e){}
+  if(window.__sim) Object.assign(window.__sim,{SCTL,sctlStart,sctlStop,sctlQR,sctlEmit,sctPack,sctlForget,sctlCfgSave,sctlPull,sctUI,sctlStale,sctlStatusHTML,sctUse,SCT,sctParse,sctProf,sctApply,sctClear,sctPlay,sctLoadText,sctOpen,sctClose,sctBotMods,sctBuild,sctAuto,sctRole});
 })();
 
 /* ══════ v63 wiz — אשף הגדרה אישית ══════

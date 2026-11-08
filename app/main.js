@@ -111,7 +111,8 @@ function showMain() {
    בלי object/embed, בלי base, ורשת רק למה שבאמת בשימוש: הגשר המקומי (ws/http), משחק ברשת וחיבור חי לרובוט (ws ברשת המקומית),
    הענן (Supabase — בדרך כלל דרך התהליך הראשי), וגופנים מגוגל בגרסה עם רשת. העדכונים מגיטהאב והבינה המלאכותית — בתהליך הראשי (לא כפופים ל-CSP) */
 function simCsp() {
-  let cloud = "https://*.supabase.co";
+  /* v76: גם wss לסופאבייס — הסנכרון החי מהסקאוטינג (04) מקבל שינויים בזרם */
+  let cloud = "https://*.supabase.co wss://*.supabase.co";
   try { const u = new URL(process.env.BIOBUZZ_CLOUD_URL || ""); if (/^https?:$/.test(u.protocol)) cloud += " " + u.origin; } catch (e) {}
   return [
     "default-src 'self' file: data: blob:",
@@ -142,7 +143,9 @@ function hardenSession(ses) {
     }
     cb({ responseHeaders: h });
   });
-  ses.setPermissionRequestHandler((wc, perm, cb, det) => cb(permOk(wc, perm, det && (det.requestingUrl || det.securityOrigin))));
+  /* v76: מצלמה (וידאו בלבד, בלי מיקרופון) — לסריקת קוד QR מהטלפון של המנהל בחלון הסקאוטינג, רק בדף הסימולטור ורק אחרי לחיצה */
+  const camOk = (wc, det) => !!(det && Array.isArray(det.mediaTypes) && det.mediaTypes.length && det.mediaTypes.every(t => t === "video")) && permOk(wc, "fullscreen", det.requestingUrl || det.securityOrigin);
+  ses.setPermissionRequestHandler((wc, perm, cb, det) => cb(perm === "media" ? camOk(wc, det) : permOk(wc, perm, det && (det.requestingUrl || det.securityOrigin))));
   ses.setPermissionCheckHandler((wc, perm, origin, det) => permOk(wc, perm, (det && det.requestingUrl) || origin));
 }
 
