@@ -207,6 +207,7 @@ for(const lang of ['he','en']){
 }
 {
   const {ctx,pg}=await view({width:1400,height:860},'en','lab',false);
+  await pg.evaluate(()=>{ if(__sim.v76) __sim.v76.metSet(true); });   /* v76: הטלמטריה מקופלת תחת ״📊 מדדים״ — פותחים אותה כדי למדוד */
   const r=await pg.evaluate(`({ir:(${rect})('#irBtn'), tel:(${rect})('#telem')})`);
   const hit=(a,b)=>a&&b&&Math.min(a.r,b.r)-Math.max(a.l,b.l)>1&&Math.min(a.b,b.b)-Math.max(a.t,b.t)>1;
   ok(r.ir&&r.tel&&!hit(r.ir,r.tel)&&r.ir.r-r.ir.l<300,`UI4: 1400 אנגלית מעבדה — ״שידור חוזר״ לא מכסה את הטלמטריה (רוחב ${r.ir&&Math.round(r.ir.r-r.ir.l)})`);

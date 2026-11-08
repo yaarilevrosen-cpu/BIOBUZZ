@@ -123,12 +123,12 @@ for(const en of [false,true]){
     const s=await legalState(E); ok(s.sel[0]==='terms','['+L+'] חץ קדימה עובר ללשונית הבאה ('+s.sel+')');
     const allTabs=await E(async()=>{ const o={}; for(const t of __sim.v73legal.L().TABS){ document.getElementById('lgTab-'+t).click(); await new Promise(r=>setTimeout(r,30)); o[t]=document.getElementById('legalBox').innerText; } return o; });
     if(en) ok(Object.values(allTabs).every(t=>!HE.test(t)),'[en] כל 6 הלשוניות בלי עברית');
-    ok(/2\d{3}-\d\d-\d\d/.test(allTabs.licenses)&&/not affiliated with, endorsed by or sponsored by FIRST/.test(allTabs.licenses)&&/v70/.test(allTabs.licenses),'['+L+'] בתחתית: גרסת המסמכים, גרסת האפליקציה והצהרת FIRST');
+    ok(/2\d{3}-\d\d-\d\d/.test(allTabs.licenses)&&/not affiliated with, endorsed by or sponsored by FIRST/.test(allTabs.licenses)&&/v7\d/.test(allTabs.licenses),'['+L+'] בתחתית: גרסת המסמכים, גרסת האפליקציה והצהרת FIRST');
     await E(()=>__sim.v73legal.close());
   }
   /* אודות */
   { const a=await E(()=>{ __sim.v73legal.aboutUI(); return document.getElementById('aboutBox').innerText; });
-    ok(/v70/.test(a)&&/2\d{3}-\d\d-\d\d/.test(a)&&/not affiliated/.test(a)&&!/@/.test(a)&&(!en||!HE.test(a)),'['+L+'] אודות: גרסה, גרסת מסמכים, הצהרה, בלי מייל (CONTACT_EMAIL ריק)'+(en?' ובלי עברית':'')); }
+    ok(/v7\d/.test(a)&&/2\d{3}-\d\d-\d\d/.test(a)&&/not affiliated/.test(a)&&!/@/.test(a)&&(!en||!HE.test(a)),'['+L+'] אודות: גרסה, גרסת מסמכים, הצהרה, בלי מייל (CONTACT_EMAIL ריק)'+(en?' ובלי עברית':'')); }
   /* 1.16: בינה מלאכותית בדפדפן — בלי חסימת גיל, עם קישור לפרטים */
   { const t=await E(()=>({t:document.getElementById('aiSet').innerText, l:!!document.querySelector('#aiSet [data-legal="ai"]')})); ok(!/18/.test(t.t)&&t.l&&(!en||!HE.test(t.t)),'['+L+'] הגדרות הבינה המלאכותית בדפדפן: בלי ״18 ומעלה״, עם ״פרטים״'); }
   /* דיווח באג: מה נשלח, 12 חודשים, וצילום מסך רק אם מסמנים */

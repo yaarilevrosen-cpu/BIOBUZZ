@@ -1755,28 +1755,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 </div></div>
 <div id="legalNote" hidden role="region" aria-label="תנאי שימוש ופרטיות"><p id="lnTxt"></p><div class="lnRow"><button id="lnOk" type="button" class="go">מסכים/ה</button><button type="button" data-legal="terms">תנאי השימוש</button><button type="button" data-legal="privacy">מדיניות הפרטיות</button></div></div>
 <details id="setBox" class="setHome" hidden><summary>הגדרות</summary><div class="body" id="setBody">
-  <section class="setGrp" id="setTeam"><h4>הקבוצה</h4>
-        <div class="row"><label class="lbl" for="tmName">שם הקבוצה</label><input type="text" id="tmName" maxlength="24" placeholder="לא חובה"></div>
-        <div class="row"><label class="lbl" for="tmNum">מספר</label><input type="text" id="tmNum" maxlength="6" inputmode="numeric" placeholder="למשל 12345"></div>
-        <p class="note">השם והמספר מופיעים על הרובוט, בשידור ובסרטונים.</p>
-        
-      </section>
-  <section class="setGrp"><h4>שפה ועזרה</h4><div class="row"><button class="langBtn" data-lang="1"></button><button data-tour="1">? סיור קצר</button><button data-wiz="1">✨ הגדרה אישית מחדש</button><button data-bug="1">🐞 דיווח על באג</button><button data-legal="privacy">⚖ משפטי ופרטיות</button><button data-find="1">🔍 חיפוש <kbd>Ctrl+K</kbd></button></div></section>
-  <section class="setGrp" id="setAbout" data-kw="about legal privacy terms license version"><h4>אודות, פרטיות ותנאים</h4><div id="aboutBox"></div></section>
-  <section class="setGrp" id="setAI"><h4>🧠 בינה מלאכותית — מפתח של גוגל</h4><div id="aiSet"></div></section>
-  <section class="setGrp" data-kw="volume audio mute sound effects"><h4>קולות</h4>
-        <div class="out" id="oSnd"></div>
-        <label class="check" for="kSndOn"><input type="checkbox" id="kSndOn" checked>קולות המגרש — צופרים, ספירה, ״Drivers, pick up your controllers״</label>
-        <label class="check" for="kSndFx"><input type="checkbox" id="kSndFx" checked>אפקטים — ירייה, איסוף, היפוך כוורת, שריקת שופט</label>
-        <div class="frow"><span>עוצמה</span><em id="sVolV">80%</em><input type="range" id="sVol" min="0" max="100" step="5" value="80"></div>
-        <div class="row"><button id="bSndTest">בדיקת שמע</button></div>
-        <p class="note"><b>למה לפעמים שקט:</b> הדפדפן לא מרשה להשמיע כלום לפני שנגעת בדף. מהנגיעה הראשונה — בכל מקום — השמע נפתח, וכל צליל שחיכה בינתיים מושמע. אם עדיין שקט, בדוק שהלשונית לא מושתקת ושהעוצמה של המערכת פתוחה.</p>
-      </section>
-  <section class="setGrp" id="setShot" data-kw="auto speed shot speed distance flywheel shooter"><h4 data-en="Shooting">ירי</h4>
-        <label class="check" for="setAutoV"><input type="checkbox" id="setAutoV" checked>מהירות ירי אוטומטית לפי המרחק</label>
-        <p class="note">הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.</p>
-      </section>
-  <section class="setGrp setHud" id="setQual"><h4>מה מוצג ואיכות התצוגה</h4><div class="row"><button id="bSetHud">👁 מה מוצג על המסך…</button></div>
+  <!-- v76: גרפיקה וקול קודם; ״אודות ומשפטי״ בסוף ומקופל -->
+  <section class="setGrp setHud" id="setQual"><h4>גרפיקה ותצוגה</h4><div class="row"><button id="bSetHud">👁 מה מוצג על המסך…</button></div>
         <div class="seg" id="qualSeg" role="group" aria-label="איכות תצוגה">
           <button data-q="high" class="on">מלאה</button>
           <button data-q="auto">אוטומטי</button>
@@ -1790,6 +1770,26 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         את צפיפות הפיקסלים; <b>מהירה</b> מחליפה אותו במודל הפרמטרי ומכבה צללים.
         הפיזיקה והניווט לא נוגעים בזה — יחד הם בערך שתי מילישניות לפריים.</p>
       </section>
+  <section class="setGrp" data-kw="volume audio mute sound effects"><h4>קולות</h4>
+        <div class="out" id="oSnd"></div>
+        <label class="check" for="kSndOn"><input type="checkbox" id="kSndOn" checked>קולות המגרש — צופרים, ספירה, ״Drivers, pick up your controllers״</label>
+        <label class="check" for="kSndFx"><input type="checkbox" id="kSndFx" checked>אפקטים — ירייה, איסוף, היפוך כוורת, שריקת שופט</label>
+        <div class="frow"><span>עוצמה</span><em id="sVolV">80%</em><input type="range" id="sVol" min="0" max="100" step="5" value="80"></div>
+        <div class="row"><button id="bSndTest">בדיקת שמע</button></div>
+        <p class="note"><b>למה לפעמים שקט:</b> הדפדפן לא מרשה להשמיע כלום לפני שנגעת בדף. מהנגיעה הראשונה — בכל מקום — השמע נפתח, וכל צליל שחיכה בינתיים מושמע. אם עדיין שקט, בדוק שהלשונית לא מושתקת ושהעוצמה של המערכת פתוחה.</p>
+      </section>
+  <section class="setGrp" id="setTeam"><h4>הקבוצה</h4>
+        <div class="row"><label class="lbl" for="tmName">שם הקבוצה</label><input type="text" id="tmName" maxlength="24" placeholder="לא חובה"></div>
+        <div class="row"><label class="lbl" for="tmNum">מספר</label><input type="text" id="tmNum" maxlength="6" inputmode="numeric" placeholder="למשל 12345"></div>
+        <p class="note">השם והמספר מופיעים על הרובוט, בשידור ובסרטונים.</p>
+        
+      </section>
+  <section class="setGrp"><h4>שפה ועזרה</h4><div class="row"><button class="langBtn" data-lang="1"></button><button data-tour="1">? סיור קצר</button><button data-wiz="1">✨ הגדרה אישית מחדש</button><button data-bug="1">🐞 דיווח על באג</button><button data-legal="privacy">⚖ משפטי ופרטיות</button><button data-find="1">🔍 חיפוש <kbd>Ctrl+K</kbd></button></div></section>
+  <section class="setGrp" id="setShot" data-kw="auto speed shot speed distance flywheel shooter"><h4 data-en="Shooting">ירי</h4>
+        <label class="check" for="setAutoV"><input type="checkbox" id="setAutoV" checked>מהירות ירי אוטומטית לפי המרחק</label>
+        <p class="note">הרובוט מחשב את מהירות גלגל התנופה שמכניסה את הכדור לפתח מהמקום שבו הוא עומד — כמו רובוט אמיתי שמודד מרחק. כבוי — המהירות נשארת קבועה, ומשנים אותה בלוח ״משחק״ או במעבדה.</p>
+      </section>
+  <section class="setGrp" id="setAI"><h4>🧠 בינה מלאכותית — מפתח של גוגל</h4><div id="aiSet"></div></section>
   <section class="setGrp" id="dBk"><h4>גיבוי, שחזור ואיפוס</h4>
         <p class="note">כל מה ששומרים בדפדפן — פרמטרים של הרובוט, מסלולים, מקשים, עונה, שיאים — נכנס לגיבוי. <b>לפני כל איפוס או שחזור נשמר גיבוי לבד</b>, אז אפשר לנסות בלי פחד.</p>
         <div class="row"><button id="bBkNow">💾 שמור גיבוי עכשיו</button><button id="bBkExp">ייצא לקובץ</button><button id="bBkImp">ייבא מקובץ</button></div>
@@ -1801,6 +1801,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div id="bkState" class="note"></div>
         <div id="bkList"></div>
       </section>
+  <section class="setGrp" id="setAbout" data-kw="about legal privacy terms license version"><details id="setAboutD" class="v76fold"><summary><h4>אודות, פרטיות ותנאים</h4></summary><div id="aboutBox"></div></details></section>
 </div></details>
 <div id="magicMenu" class="tbPop" hidden role="menu">
         <button data-act="best">🎯 לעמדה הטובה</button>
@@ -1822,7 +1823,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <div id="skinBox" hidden role="dialog" aria-modal="true" aria-label="סקינים לרובוטים"><div id="skinBg"></div><div class="skWin">
   <div class="coachTop"><b>🎨 סקינים לרובוטים</b><button data-skact="close" aria-label="סגור">✕</button></div>
   <p class="note skNote">מראה בלבד — אותה פיזיקה ואותן מגבלות. הפס הזוהר מסביב לכל רובוט תמיד בצבע הברית שלו.</p>
-  <div id="skinRows"></div>
+  <div id="skinTabs" class="skTabs" role="tablist" aria-label="איזה רובוט"></div>
+  <div class="skMain"><div id="skinPrev" class="skPrev" aria-hidden="true"></div><div id="skinRows"></div></div>
   <div class="row skAct"><button data-skact="rand">🎲 אקראי לבוטים</button><button data-skact="reset">הכול מקורי</button><button data-skact="close" class="primary">סיום</button></div>
 </div></div>
 <div id="pracBox" hidden role="dialog" aria-modal="true" aria-labelledby="pracTtl"><div id="pracBg"></div><div class="skWin pracWin">
@@ -1975,6 +1977,8 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   </div>
   <main>
     <div id="stage">
+      <div id="v76Score" hidden aria-hidden="true"><div class="sbT red"><i>אדום</i><b id="v76R">0</b></div><div class="sbMid"><b id="v76Clk">0:00</b><span id="v76Ph"></span><i class="sbProg"><em id="v76Prog"></em></i></div><div class="sbT blue"><b id="v76B">0</b><i>כחול</i></div></div>
+      <button id="v76Met" aria-pressed="false" title="טלמטריה ורשימת המקשים — שכבה אחת, נפתחת בלחיצה">📊 מדדים</button>
       <div id="fpsChip" hidden title="תמונות לשנייה — לחיצה מסתירה (מחזירים בחיפוש: ״קצב תמונות״)" role="status" aria-live="off"></div>
       <div id="faultTag" hidden></div>
       <button id="irBtn" hidden title="שידור חוזר של 10 השניות האחרונות — המאץ׳ ממתין (J)">⏪ שידור חוזר</button>
@@ -2052,7 +2056,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
       <div id="netTag" class="stag" hidden></div>
       <div id="splitTags" hidden><div id="splitA" class="stag"></div><div id="splitB" class="stag"></div><i id="splitLine"></i></div>
       <button id="railToggle">פקדים</button>
-      <div id="banner" role="status" aria-live="polite"><b id="bannerBig"></b><span id="bannerSub"></span><div id="bnAct" hidden></div><button class="hudX" id="bannerX">✕ סגור</button></div>
+      <div id="banner" role="status" aria-live="polite"><div class="bnCard"><b id="bannerBig"></b><span id="bannerSub"></span><div id="v76End" hidden></div><div id="bnAct" hidden></div><button class="hudX" id="bannerX">✕ סגור</button></div></div>
       <div id="refToast" role="status" aria-live="polite"></div>
       <div id="mpSum" hidden></div>
       <div id="mtop">
@@ -2930,6 +2934,180 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   .brdLib button{width:auto; flex:0 0 auto}
   #ppBoard.brdNew i{position:relative} #ppBoard.brdNew i::after{content:""; position:absolute; top:-2px; inset-inline-end:-4px; width:9px; height:9px; border-radius:50%; background:var(--accent)}
 </style>
+<script type="application/json" id="i18nX_v76ui" data-i18n>{"חסם את קו הירי": "Blocked the shooting line", "סה״כ": "Total", "כוכב המאץ׳": "Match star", "⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור": "⏸ The host switched to another tab — the game is paused until they return", "⏸ המשחק הושהה כשעברתם ללשונית אחרת — P או ״המשך״ כדי להמשיך": "⏸ The game was paused when you switched tabs — press P or “Continue” to resume", "▶ המארח חזר — ממשיכים": "▶ The host is back — resuming", "▴ פחות": "▴ Less", "⋯ עוד אפשרויות": "⋯ More options", "שלושת ההישגים הבאים": "Your next three achievements", "▶ שחקו מאץ׳ ראשון": "▶ Play your first match", "📊 מדדים": "📊 Metrics", "טלמטריה ורשימת המקשים — שכבה אחת, נפתחת בלחיצה": "Telemetry and the key list — one layer, opens on click", "גרפיקה ותצוגה": "Graphics and display", "איזה רובוט": "Which robot", "לעמדות": "To your positions", "סוף משחק": "Endgame", "כדורים בתא": "balls in the cell", "יציאה וחניה": "Leave and park", "שיא אישי חדש": "New personal best", "מחזור ממוצע": "Average cycle", "המארח עבר ללשונית אחרת": "The host switched to another tab"}</script>
+<style id="css_v76ui">
+  /* ══ v76 ui — חלות דבש, פס תוצאה, כרטיס סיום, מסך נקי ══ */
+  :root{ --v76hex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zm0 32V66' fill='none' stroke='%23FFB020' stroke-opacity='.055' stroke-width='1.2'/%3E%3C/svg%3E");
+         --v76hexB:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,3 93,27 93,73 50,97 7,73 7,27' fill='rgba(11,14,18,.62)' stroke='%23FFB020' stroke-width='3.2' stroke-linejoin='round'/%3E%3Cpolygon points='50,13 84,32 84,68 50,87 16,68 16,32' fill='none' stroke='%23FFB020' stroke-opacity='.35' stroke-width='1.4'/%3E%3C/svg%3E"); }
+  /* רקע עדין של משושים בלוחות */
+  #rail, #playModal .pmCard, .skWin, #setup, #wshead{background-image:var(--v76hex)}
+  #rail{background-attachment:local}
+
+  /* ── פס התוצאה במרכז למעלה ── */
+  #v76Score{position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:9; display:flex; align-items:stretch;
+    border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.06); font-family:var(--display);
+    pointer-events:none; animation:v76sbIn .35s ease-out}
+  @keyframes v76sbIn{from{opacity:0}}
+  #v76Score .sbT{display:flex; align-items:center; gap:10px; padding:4px 16px; min-width:112px}
+  #v76Score .sbT.red{background:linear-gradient(90deg,#9a2f35,#c9434a)}
+  #v76Score .sbT.blue{background:linear-gradient(270deg,#1f4f86,#3a7fd0)}
+  html[dir=rtl] #v76Score .sbT.red{background:linear-gradient(270deg,#9a2f35,#c9434a)}
+  html[dir=rtl] #v76Score .sbT.blue{background:linear-gradient(90deg,#1f4f86,#3a7fd0)}
+  #v76Score .sbT.red{justify-content:space-between} #v76Score .sbT.blue{justify-content:space-between}
+  #v76Score .sbT b{font-weight:400; font-size:38px; color:#fff; line-height:1.05; font-variant-numeric:tabular-nums; min-width:1.3em; text-align:center; text-shadow:0 2px 8px rgba(0,0,0,.35)}
+  #v76Score .sbT i{font-style:normal; font-family:var(--ui); font-size:11.5px; letter-spacing:.08em; color:rgba(255,255,255,.88)}
+  #v76Score .sbT.me{box-shadow:inset 0 -3px 0 rgba(255,255,255,.9)}
+  #v76Score .sbMid{position:relative; background:rgba(11,14,18,.93); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:4px 18px 7px; min-width:108px}
+  #v76Score .sbMid b{font-family:var(--mono); font-weight:600; font-size:27px; color:#fff; line-height:1.05; font-variant-numeric:tabular-nums}
+  #v76Score .sbMid span{font-family:var(--ui); font-size:10.5px; letter-spacing:.12em; color:var(--accent); white-space:nowrap}
+  #v76Score .sbProg{position:absolute; inset-inline:0; bottom:0; height:3px; background:rgba(255,255,255,.08)}
+  #v76Score .sbProg em{display:block; height:100%; width:0; background:var(--accent); transition:width .25s linear}
+  #v76Score.auto .sbMid span{color:#8cc4ff} #v76Score.auto .sbProg em{background:#4c9af5}
+  #v76Score.trans .sbMid span{color:var(--ink2)}
+  #v76Score.end30 .sbMid{background:rgba(40,26,6,.94)}
+  #v76Score.end30 .sbMid b{color:var(--accent); animation:v76pulse 1s ease-in-out infinite}
+  #v76Score.cd .sbMid b{color:var(--accent)}
+  @keyframes v76pulse{50%{opacity:.5}}
+  /* כשפס התוצאה גלוי — השעון והניקוד בכותרת לא כפולים (העצירה נשארת) */
+  body.v76sb:not(.hud-chips) #clkPhase, body.v76sb:not(.hud-chips) #clkTime, body.v76sb:not(.hud-chips) #clkNote, body.v76sb:not(.hud-chips) #clkBar, body.v76sb:not(.hud-chips) #clockWrap .cends, body.v76sb:not(.hud-chips) #cScore{display:none!important}
+  body.replay #v76Score, body.bcast #v76Score, body.hud-chips #v76Score{display:none!important}
+  body.ph #v76Score{top:calc(56px + var(--safeT, 0px)); border-radius:11px}
+  body.ph #v76Score .sbT{min-width:62px; padding:2px 9px; gap:6px} body.ph #v76Score .sbT b{font-size:24px} body.ph #v76Score .sbT i{font-size:9.5px}
+  body.ph #v76Score .sbMid{min-width:72px; padding:2px 10px 5px} body.ph #v76Score .sbMid b{font-size:18px} body.ph #v76Score .sbMid span{font-size:9px; letter-spacing:.06em}
+  @media (max-width:760px){ body:not(.ph) #v76Score .sbT{min-width:70px; padding:3px 10px} body:not(.ph) #v76Score .sbT b{font-size:28px}
+    body:not(.ph) #v76Score .sbMid{min-width:84px; padding:3px 12px 6px} body:not(.ph) #v76Score .sbMid b{font-size:21px} body:not(.ph) #v76Score .sbT i{display:none} }
+
+  /* ── מעבדה: ״מדדים״ ── */
+  #v76Met{display:none; position:absolute; top:12px; inset-inline-start:14px; z-index:8; width:auto; min-width:0; padding:5px 12px; font-size:12px;
+    border-radius:999px; background:rgba(20,26,33,.9); border:1px solid var(--line2); color:var(--ink2); backdrop-filter:blur(6px)}
+  body.lab #v76Met{display:block}
+  #v76Met.on{border-color:var(--accent); color:var(--accent)}
+  body.lab:not(.ph) #telem{top:50px}
+  body.ph #v76Met, body.bcast #v76Met, body.replay #v76Met{display:none!important}
+  /* המחסנית בכותרת — רק כשהלוח שלה מוסתר */
+  body:not(.hud-mag):not(.replay):not(.bcast) #hchips .chip.mag{display:none}
+
+  /* ── לוח ״המשחק עכשיו״ בזמן מאץ׳ ── */
+  #v76More{display:none; width:100%; margin-top:6px; font-size:12px; padding:6px 10px; background:transparent; border:1px dashed var(--line2); color:var(--muted)}
+  body.pplive #v76More{display:block}
+  body.pplive:not(.v76more) #ppDaily, body.pplive:not(.v76more) .ppMineH, body.pplive:not(.v76more) .ppMine, body.pplive:not(.v76more) .ppAutoV,
+  body.pplive:not(.v76more) #ppManV, body.pplive:not(.v76more) #ppMedia, body.pplive:not(.v76more) #ppStats, body.pplive:not(.v76more) #ppCtl,
+  body.pplive:not(.v76more) #ppCam, body.pplive:not(.v76more) #ppKeys, body.pplive:not(.v76more) #playPanel>.v76ppH, body.pplive:not(.v76more) #ppDrills,
+  body.pplive:not(.v76more) #ppHowD{display:none!important}
+  /* הודעות הניקוד יורדות מתחת לפס התוצאה */
+  body.v76sb #scorePops{top:86px} body.ph.v76sb #scorePops{top:calc(112px + var(--safeT, 0px))}
+  body.pplive:not(.v76more) #ppStatus>div:not([data-r]){display:none}
+  body.pplive .ppNow{margin-top:4px}
+
+  /* ── כרטיס סוף מאץ׳ ── */
+  #banner .bnCard{display:contents}
+  #banner.end{background:rgba(8,11,15,.42); backdrop-filter:blur(7px) saturate(.9); -webkit-backdrop-filter:blur(7px) saturate(.9)}
+  #banner.end .bnCard{display:flex; flex-direction:column; align-items:center; gap:8px; position:relative;
+    background-color:rgba(20,26,33,.94); background-image:var(--v76hex); border:1px solid var(--line2); border-radius:22px;
+    padding:22px 30px 16px; box-shadow:0 24px 70px rgba(0,0,0,.55); width:min(520px,92%); max-height:92%; overflow:auto; animation:v76cardIn .38s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes v76cardIn{from{opacity:0; transform:translateY(14px) scale(.96)}}
+  #banner.end.win .bnCard{border-color:rgba(53,214,164,.5); box-shadow:0 24px 70px rgba(0,0,0,.55), 0 0 40px rgba(53,214,164,.12)}
+  #banner.end .bnCard>b{font-size:60px; text-shadow:none}
+  #banner.end .bnCard>span{text-shadow:none; letter-spacing:.06em}
+  #v76End{display:flex; flex-direction:column; align-items:stretch; gap:10px; width:100%; margin-top:4px}
+  #v76End[hidden]{display:none}
+  #banner #v76End .v76Brk{display:grid; gap:0; border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  #banner #v76End .v76Brk>div{display:grid; grid-template-columns:1fr 64px 64px; align-items:center; padding:5px 12px; border-top:1px solid var(--line)}
+  #banner #v76End .v76Brk>div:first-child{border-top:0}
+  #banner #v76End .v76Brk span{font-size:12.5px; color:var(--ink2); letter-spacing:0; text-shadow:none; text-align:start}
+  #banner #v76End .v76Brk b{font-family:var(--mono); font-size:15px; font-weight:500; text-shadow:none; text-align:center; color:var(--ink); line-height:1.4}
+  #banner #v76End .v76Brk b.r{color:#ff8c8c} #banner #v76End .v76Brk b.b{color:#8cc4ff}
+  #banner #v76End .v76Brk .hd{background:rgba(255,255,255,.03)} #banner #v76End .v76Brk .hd b{font-family:var(--ui); font-size:11.5px; letter-spacing:.06em}
+  #banner #v76End .v76Brk .tot{background:rgba(255,176,32,.06)} #banner #v76End .v76Brk .tot b{font-size:18px; font-weight:600}
+  #banner #v76End .v76Star{display:flex; align-items:center; gap:12px; padding:9px 14px; border-radius:12px; text-align:start;
+    background:linear-gradient(90deg,rgba(255,176,32,.14),rgba(255,176,32,.03)); border:1px solid rgba(255,176,32,.35)}
+  #banner #v76End .v76Star>i{font-style:normal; font-size:26px; display:grid; place-items:center; width:40px; height:44px; flex:0 0 40px;
+    background:rgba(255,176,32,.16); clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+  #banner #v76End .v76Star small{display:block; font-size:10.5px; letter-spacing:.14em; color:var(--accent)}
+  #banner #v76End .v76Star b{display:flex; align-items:center; gap:2px; font-family:var(--display); font-size:19px; color:var(--ink); text-shadow:none; line-height:1.3}
+  #banner #v76End .v76Star em{display:block; font-style:normal; font-size:12px; color:var(--ink2)}
+  #banner #v76End .v76Stat{font-size:15px; color:var(--ink); padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid var(--line)}
+  #banner #v76End .v76Stat.pb{color:var(--good); border-color:rgba(53,214,164,.45); background:rgba(53,214,164,.08)}
+  #banner.end #bnAct button{background:var(--panel2)} #banner.end #bnAct button.primary{background:var(--accent)}
+  body.ph #banner.end .bnCard{padding:16px 16px 12px; border-radius:18px} body.ph #banner.end .bnCard>b{font-size:42px}
+  body.ph #banner #v76End .v76Brk>div{grid-template-columns:1fr 52px 52px; padding:4px 10px}
+
+  /* ── ספירה בתוך משושה זוהר ── */
+  #banner.cd b{position:relative; z-index:0; display:grid; place-items:center; width:210px; height:210px; font-size:118px; color:var(--accent)}
+  #banner.cd b::before{content:""; position:absolute; inset:0; z-index:-1; background:var(--v76hexB) center/contain no-repeat;
+    filter:drop-shadow(0 0 18px rgba(255,176,32,.55)) drop-shadow(0 0 42px rgba(255,176,32,.25)); animation:v76hexSpin .9s ease-out}
+  @keyframes v76hexSpin{from{transform:rotate(-30deg) scale(.7); opacity:0}}
+  body.ph #banner.cd b{width:150px; height:150px; font-size:82px}
+
+  /* ── קונפטי של משושים ── */
+  .v76conf{position:fixed; left:50%; top:42%; width:0; height:0; z-index:200; pointer-events:none}
+  .v76conf i{position:absolute; width:14px; height:16px; margin:-8px -7px; clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+    animation:v76conf 1.6s cubic-bezier(.15,.7,.3,1) forwards; opacity:0}
+  @keyframes v76conf{0%{opacity:1; transform:translate(0,0) rotate(0) scale(.6)} 70%{opacity:1}
+    100%{opacity:0; transform:translate(var(--dx),calc(var(--dy) + 220px)) rotate(var(--rt)) scale(1)}}
+
+  /* ── תגי הישגים בצורת משושה ── */
+  .achC i{display:grid; place-items:center; width:34px; height:38px; flex:0 0 34px; font-size:18px; background:rgba(255,255,255,.05);
+    clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+  .achC.on i{background:rgba(53,214,164,.18)}
+  #achToast i{clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); background:rgba(255,176,32,.18); display:grid; place-items:center; width:44px; height:50px; font-style:normal}
+  .v76Next .achC{opacity:1; border-color:rgba(255,176,32,.35)}
+  details.achAll>summary{list-style:none; cursor:pointer} details.achAll>summary::-webkit-details-marker{display:none}
+  details.achAll>summary .stH::after{content:" ▾"; color:var(--muted)} details.achAll[open]>summary .stH::after{content:" ▴"}
+  .v76First{display:block; width:100%; margin:10px 0 4px; padding:11px; font-size:14.5px; background:var(--accent); color:#0B0E12; border-color:var(--accent); font-weight:600}
+  .v76First:hover{background:var(--accent2)}
+
+  /* ── הגדרות: ״אודות״ מקופל ── */
+  details.v76fold>summary{cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px}
+  details.v76fold>summary::-webkit-details-marker{display:none}
+  #setAboutD>summary h4{margin:0} #setAboutD>summary::after{content:"▾"; color:var(--muted); font-size:12px} #setAboutD[open]>summary::after{content:"▴"}
+  #setAboutD[open]>summary{margin-bottom:8px}
+
+  /* ── סקינים: לשוניות, שורה אחת, תצוגה מקדימה ── */
+  .skTabs{display:flex; gap:6px; flex-wrap:wrap; padding:2px 16px 10px}
+  .skTabs button{width:auto; min-width:0; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; font-size:12.5px; background:var(--panel2)}
+  .skTabs button.on{border-color:var(--accent); color:var(--accent); background:rgba(255,176,32,.08)}
+  .skMain{display:flex; gap:16px; align-items:center; padding:0 16px 12px}
+  .skPrev{flex:0 0 132px; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid var(--line)}
+  .skPrev svg{width:112px; height:112px} .skPrev b{font-size:12px; color:var(--ink2); font-weight:500}
+  .skMain #skinRows{flex:1 1 auto; min-width:0}
+  .skMain .skSw{display:grid; grid-template-columns:repeat(6,40px); gap:8px}
+  .skMain .skSw button{width:40px; height:32px; flex:none; transition:transform .12s} .skMain .skSw button:hover:not(:disabled){transform:translateY(-2px)}
+  .skMain .skLab{justify-content:flex-start} .skMain .skLab>b, .skMain .skLab>.skA{display:none} .skMain .skLab em{font-style:normal; color:var(--accent); margin:0}
+  @media (max-width:520px){ .skMain{flex-direction:column; align-items:stretch} .skPrev{flex:0 0 auto; flex-direction:row; justify-content:center} .skPrev svg{width:80px; height:80px} }
+
+  /* ── אוטונומי: הבורר ״הרובוט שלי״ (חמש אפשרויות) בשורה מלאה ── */
+  .autorow:first-child{grid-template-columns:1fr}
+  .autorow:first-child .seg{display:grid; grid-template-columns:repeat(5,minmax(0,1fr))}
+  .autorow:first-child .seg button{white-space:normal; line-height:1.2}
+
+  /* ── טלפון: בלי שבבי טלמטריה במצב ״משחק״, בלי מחסנית כפולה, דהייה בקצוות של פסים נגללים ── */
+  body.ph.play #hud{display:none}
+  body.ph:not(.hud-mag) #hud .h.v76mag{display:none}
+  #mbar, #hud, body.ph .chips, #wsphone, .skTabs{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+  .skTabs{-webkit-mask-image:none; mask-image:none}
+
+  /* ── חלון צר במחשב: הכותרת לא נשברת והשעון לא חורג ── */
+  @media (max-width:900px){
+    body:not(.ph) header{gap:8px}
+    body:not(.ph) header .brand .btxt{display:none}
+    body:not(.ph) #bTour, body:not(.ph) #bBug{display:none}
+    body:not(.ph) #clkNote, body:not(.ph) #clockWrap .cends{display:none}
+    body:not(.ph) #clockWrap{min-width:0; flex:1 1 auto}
+    body:not(.ph) #clkBar{width:min(220px,26vw)}
+    body:not(.ph) #clkTime{font-size:24px}
+    body:not(.ph) .hright{gap:5px}
+  }
+  @media (max-width:640px){
+    body:not(.ph) #uiMode button{padding:5px 8px; font-size:11px}
+    body:not(.ph) #clkPhase{display:none}
+    body:not(.ph) #clkStop{font-size:0; padding:4px 8px} body:not(.ph) #clkStop::before{content:"⏹"; font-size:13px}
+    body:not(.ph) #bSound{display:none}
+    body:not(.ph) .iconbtn{width:32px; height:32px; min-width:32px}
+  }
+</style>
 <script type="application/json" id="i18nX_wiz" data-i18n>{"דלג": "Skip", "הבא": "Next", "הקודם": "Back", "סיום": "Done", "המשך": "Continue", "חדש: הגדרה אישית בדקה — גרפיקה, שליטה ומה שנוח לך": "New: a one-minute personal setup — graphics, controls and what suits you", "להתחיל": "Start", "הגדרה אישית מחדש": "Run personal setup again", "הגדרה אישית — אשף קצר": "Personal setup — short wizard", "באיזו שפה נוח לך?": "Which language do you prefer?", "אפשר להחליף בכל רגע מהכפתור 🌐 למעלה.": "You can switch any time with the 🌐 button at the top.", "גרפיקה": "Graphics", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה.": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes.", "בוחרים ורואים מאחור מיד. הפיזיקה זהה בכל האפשרויות — משתנה רק המראה": "Pick one and see it behind this window right away. The physics is identical in every option — only the look changes", "בודק את המחשב…": "Checking this computer…", "בודק את המחשב": "Checking this computer", "נמדד:": "Measured:", "נמדד": "Measured", "פריימים לשנייה באיכות מלאה": "frames per second at full quality", "מדוד שוב": "Measure again", "לא הצלחנו למדוד — אוטומטי יבחר לבד": "Couldn't measure — Auto will choose by itself", "מומלץ": "Recommended", "המודל המלא עם צללים — הכי יפה": "The full model with shadows — the best look", "אותו מודל, פחות צללים ופיקסלים": "Same model, fewer shadows and pixels", "מודל פשוט בלי צללים — למחשב חלש": "Simple model, no shadows — for weaker computers", "יורד ועולה לבד לפי הקצב": "Steps down and up by itself with the frame rate", "מי נוהג?": "Who's driving?", "הנהג שלך במחשב הזה — השם, הסמל והצבע מופיעים בסטטיסטיקות ובטבלת הקבוצה.": "Your driver on this computer — the name, icon and color show up in the stats and the team table.", "השם מופיע במשחק ברשת. אפשר להשאיר ריק.": "Your name is shown in network games. You can leave it empty.", "השם שלך": "Your name", "למשל: נועה": "e.g. Noa", "סמל": "Icon", "צבע": "Color", "הברית שלך כברירת מחדל": "Your default alliance", "הסקין של הרובוט שלך": "Your robot's skin", "איך נוהגים?": "How do you drive?", "אפשר גם את כולם יחד — כל מה שמחובר עובד.": "Or all of them together — anything connected works.", "מקלדת": "Keyboard", "ועכבר למצלמה": "With the mouse for the camera", "שלט": "Controller", "של אקסבוקס או פלייסטיישן": "Xbox or PlayStation", "טלפון": "Phone", "סורקים קוד ונוהגים": "Scan a code and drive", "לשנות מקשים": "Change keys", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי": "A controller is connected. Left stick drives, right stick turns, right trigger shoots", "זוהה שלט מחובר. סטיק שמאל נסיעה, סטיק ימין סיבוב, הדק ימני ירי.": "A controller is connected. Left stick drives, right stick turns, right trigger shoots.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו.": "No controller found yet — connect it and press any button.", "עוד לא זוהה שלט — מחברים אותו ולוחצים על כפתור כלשהו": "No controller found yet — connect it and press any button", "סטודיו השלט — מה כל כפתור עושה": "Controller studio — what each button does", "הטלפון הופך לשלט, בלי להתקין כלום: פותחים את המצלמה, סורקים את הקוד ונוהגים.": "Your phone becomes a controller with nothing to install: open the camera, scan the code and drive.", "להציג את הקוד": "Show the code", "איך נוח לך לעבוד?": "How do you like to work?", "הכול אפשר לשנות אחר כך בהגדרות.": "You can change all of it later in Settings.", "מצב": "Mode", "פשוט — רק לשחק": "Simple — just play", "כל הכלים: רובוט, אוטונומי, ניתוח": "All the tools: robot, autonomous, analysis", "חוקים": "Rules", "תחרות": "Competition", "בדיוק לפי המדריך הרשמי": "Exactly by the official game manual", "פתוח": "Open", "אפשר לשנות הכול ולנסות": "Change anything and experiment", "קולות": "Sounds", "קולות ואפקטים": "Sounds and effects", "עוצמת הקולות": "Sound volume", "להראות סיור קצר בסוף": "Show a short tour at the end", "הכול מוכן!": "All set!", "אפשר לשנות הכול בהגדרות — ושם גם להריץ את האשף שוב.": "You can change everything in Settings — and run this setup again from there.", "שפה": "Language", "ברית": "Alliance", "סקין": "Skin", "שליטה": "Controls", "כבויים": "Off", "להתחיל מאץ׳": "Start a match", "נסיעה": "Drive", "ירי": "Shoot", "קסם": "Magic", "לסיור קצר": "Take the tour"}</script>
 <script type="application/json" id="i18nX_v70cast" data-i18n>{"👁 צפייה": "👁 Watch", "נכנסים בלי לנהוג — לוח ניקוד גדול ומצלמה חופשית": "Join without driving — big scoreboard and a free camera", "כל העמדות וכל מקומות הצפייה תפוסים": "All seats and all spectator places are taken", "👁 צופה": "👁 Spectator", "👁 צופים": "👁 Spectators", "צופה": "spectator", "רוצים רק לראות?": "Just want to watch?", "⏪ שידור חוזר": "⏪ Replay", "שידור חוזר של 10 השניות האחרונות — המאץ׳ ממתין (J)": "Replay the last 10 seconds — the match waits (J)", "⏪ שידור חוזר · 10 השניות האחרונות · ✕ חוזרים למאץ׳": "⏪ Replay · last 10 seconds · ✕ back to the match", "שידור חוזר באמצע מאץ׳ — רק במשחק לבד, לא ברשת": "Mid-match replay — solo only, not online", "שידור חוזר באמצע מאץ׳ — לא במסך מפוצל": "Mid-match replay — not in split screen", "השידור החוזר כבר פתוח": "The replay is already open", "שידור חוזר מיידי — רק באמצע מאץ׳": "Instant replay — only during a match", "שידור חוזר מיידי — לא בזמן חיפוש מסלול": "Instant replay — not while a path search is running", "עוד אין מה להראות — רגע מתחילת המאץ׳": "Nothing to show yet — the match just started", "🎬 במאי אוטומטי": "🎬 Auto director", "🎬 במאי אוטומטי · פועל": "🎬 Auto director · on", "🎬 במאי אוטומטי · כבוי": "🎬 Auto director · off", "במסך השני: מצלמה רחבה, מעקב אחרי הכדור, וקלוז־אפ על הכוורת אחרי ניקוד": "On the second screen: a wide shot, following the ball, and a close-up on the hive after a score"}</script>
 <style id="css_v70cast">
@@ -3157,7 +3335,8 @@ function ovlScan(){
 function ovlTop(){ return ovlScan(); }
 function ovlFocusables(m){
   return [...m.querySelectorAll('button:not([disabled]),[href],input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')]
-    .filter(x=>x.getClientRects().length&&getComputedStyle(x).visibility!=="hidden"&&!x.closest("[hidden],[inert]"));
+    .filter(x=>x.getClientRects().length&&getComputedStyle(x).visibility!=="hidden"&&!x.closest("[hidden],[inert]")
+      &&!(x.parentElement&&x.parentElement.closest("details:not([open])")&&!(x.matches("summary")&&x.parentElement.matches("details:not([open])"))));   /* v76: מה שבתוך <details> סגור לא מקבל מיקוד (רק הכותרת שלו) */
 }
 addEventListener("keydown",e=>{
   if(e.key!=="Escape"&&e.key!=="Tab") return;
@@ -3717,8 +3896,10 @@ function teamSet(name,num){
   try{ teamBadge(); }catch(e){}
 }
 function teamBadge(){ const b=document.getElementById("verBadge"); if(!b) return;
-  const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:""); }
-const BUILD_VER="v70";
+  const l=teamLabel(); b.textContent=BUILD_VER+(l?" · "+l:"");
+  /* v76: הגרסה האמיתית — באפליקציה גם מספר הגרסה שלה */
+  try{ b.title="BIOBUZZ "+BUILD_VER+(window.bbApp&&bbApp.version?" · "+bbApp.version:""); }catch(e){} }
+const BUILD_VER="v76";
 function logoPanel(){
   const[c,g]=cv2d(1024,256);
   g.fillStyle="#12171c";g.fillRect(0,0,1024,256);
@@ -4001,7 +4182,7 @@ const FLOW={ plateW:5.94, plateD:4.87, baseT:0.55, baseHole:3.20,
              brkW:6.67, brkD:2.79, brkT:0.40, brkY:11.44,
              peanut:1.28, peanutU:1.25, peanutV:1.76, peanutTop:4.10 };
 function buildFlower(root,x,z,outDir){
-  const g=new THREE.Group(); g.position.set(M(x),0,M(z)); root.add(g);
+  const g=new THREE.Group(); g.position.set(M(x),0,M(z)); root.add(g); g.userData.v76flower=1;   /* v76: הפרח מטיל צל */
   const body=newBody(false,matGlass); body.position.set(M(x),0,M(z));
   // צירים מקומיים: eU לאורך הקיר, eV מהזירה אל הקיר.
   // outDir הוא הנורמל של הקיר כלפי חוץ, ולכן הוא עצמו הכיוון אל הקיר.
@@ -4077,7 +4258,7 @@ function rebuildField(){
   disposeField();
   fieldRoot=new THREE.Group(); scene.add(fieldRoot);
   const rot=P.hiveRot*Math.PI/180;
-  const spin=new THREE.Group(); spin.rotation.y=rot; fieldRoot.add(spin);
+  const spin=new THREE.Group(); spin.rotation.y=rot; fieldRoot.add(spin); spin.userData.v76spin=1;   /* v76: יחידות ההדהיה במצלמה העוקבת */
   hiveRed=buildHive(spin,-P.hiveSep/2,MAT.red,honeyRed,0,MAT.cellRed);
   hiveBlue=buildHive(spin,P.hiveSep/2,MAT.blue,honeyBlue,2,MAT.cellBlue);
   hiveRed.alliance="red"; hiveBlue.alliance="blue"; hiveRed.rot=rot; hiveBlue.rot=rot;
@@ -9600,11 +9781,14 @@ let bannerT=0, bannerKey="";
 const HUD={off:{}, endGone:false};
 const HUDKEY="bbHud1", HUDK=["telem","keys","verdict","banner","toast","chips","mag"];
 try{ const o=JSON.parse(localStorage.getItem(HUDKEY)||"null"); if(o&&typeof o==="object") HUD.off=o; }catch(e){}
+/* v76: במעבדה — שכבה צפה אחת בכל פעם. הטלמטריה ורשימת המקשים מתחילות מקופלות תחת ״📊 מדדים״ (פעם אחת לכל משתמש; בטלפון יש ״כל המספרים״) */
+try{ if(!PHONE&&!localStorage.getItem("bbHud76")){ HUD.off.telem=true; HUD.off.keys=true; localStorage.setItem("bbHud76","1"); } }catch(e){}
 function hudApply(){
   for(const k of HUDK) document.body.classList.toggle("hud-"+k,!!HUD.off[k]);
   document.querySelectorAll("#hudMenu [data-hud]").forEach(c=>c.checked=!HUD.off[c.dataset.hud]);
   const b=$("tbHud"); if(b) b.classList.toggle("on",HUDK.some(k=>HUD.off[k]));
   try{ localStorage.setItem(HUDKEY,JSON.stringify(HUD.off)); }catch(e){}
+  try{ v76MetSync(); }catch(e){}
 }
 function hudSet(k,show){ HUD.off[k]=!show; hudApply(); }
 function hudClean(){ const all=HUDK.every(k=>HUD.off[k]); for(const k of HUDK) HUD.off[k]=!all; hudApply(); }
@@ -9644,7 +9828,7 @@ function showBanner(){
   let cls="", b="", t="", show=true, key="";
   if(MATCH.cd>0){
     const n=Math.ceil(MATCH.cd-1);
-    if(n>0){ b=String(n); t="לעמדות"; key="cd"+n; }
+    if(n>0){ b=String(n); t="לעמדות"; key="cd"+n; cls="cd"; }   /* v76: הספירה בתוך משושה זוהר */
     else { b="צא!"; cls="go"; key="go";
       t=MT.auto>0?MT.auto+" שניות אוטונומי":"טלאופ — "+MT.tele+" שניות"; }
   } else if(MATCH.phase==="מעבר"){
@@ -9665,6 +9849,7 @@ function showBanner(){
   if(key!==bannerKey){ bannerKey=key; bannerT=0; }
   big.textContent=b; sub.textContent=t;
   try{ if(typeof v72tBannerAct==="function") v72tBannerAct(show?key:""); }catch(e){}   /* 1.13: כפתורי הכרטיס */
+  try{ v76EndCard(show?key:""); }catch(e){}   /* v76: פירוק נקודות, נתון בולט, כוכב המאץ׳ */
 }
 const MATCH={on:false,t:0,phase:"idle",tipsAuto:0,tipsTele:0,leave:false,startedAtWall:false,
              cd:0, locked:false, autoDone:false, start0:null};
@@ -12294,12 +12479,19 @@ let padLive=null;
 /* שלט שתפוס על ידי שחקן אחר (מסך מפוצל או עמדה) לא נוהג ברובוט שלי */
 function padClaimed(i){ return (typeof OPR!=="undefined"&&OPR.on&&OPR.idx===i)||(typeof SPLIT!=="undefined"&&SPLIT.on&&SPLIT.padIdx===i)||
   (typeof NET!=="undefined"&&netPadTaken(i)); }
+/* v76: רשימת השלטים נקראת פעם אחת בפריים (בצעד, בבדיקות) — getGamepads מקצה רשימה חדשה בכל קריאה,
+   והיא נקראה עד עשר פעמים בפריים (נהיגה, מסך מפוצל, שלטים ברשת). פונקציה שהוחלפה (בדיקה) — קוראים מחדש */
+const PADL={tick:1, at:0, fn:null, list:[]};
+function padList(){ const f=navigator.getGamepads;
+  if(!f) return PADL.list.length?(PADL.list=[]):PADL.list;
+  if(PADL.at!==PADL.tick||PADL.fn!==f){ PADL.at=PADL.tick; PADL.fn=f; try{ PADL.list=navigator.getGamepads()||[]; }catch(e){ PADL.list=[]; } }
+  return PADL.list; }
 function padPoll(dt){
   PAD.lastDt=dt||0;
   let g=null;
   /* שלט הטלפון מקבל עדיפות: אם הוא נוהג, הוא מה שנקרא. */
   if(VPAD.on&&VPAD.pad&&!(typeof PHN!=="undefined"&&PHN.seat>=0)) g=VPAD.pad;
-  else if(navigator.getGamepads){ const list=navigator.getGamepads();
+  else if(navigator.getGamepads){ const list=padList();
     for(let i=0;i<list.length;i++) if(list[i]&&list[i].connected&&!padClaimed(i)){ g=list[i]; break; } }
   padLive=g;
   if(!g){ if(PAD.on){ PAD.on=false; touch.x=0; touch.y=0; touch.turn=0; updatePadBadge(); } return; }
@@ -12883,6 +13075,9 @@ function fitView(){
   cam.target.set(0,M(tall?26:20),0);
 }
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;
+  /* v76: תקציב פיקסלים — חלון שגדל (מסך מלא, 4K) לא עובר את התקרה */
+  try{ const q=QLEVELS[QUAL.level]||QLEVELS.high, want=v76DprWant(Math.min(devicePixelRatio||1,PHONE?Math.min(1.3,q.dpr):q.dpr),w,h);
+    if(Math.abs(renderer.getPixelRatio()-want)>0.01) renderer.setPixelRatio(want); }catch(e){}   /* לפני שהאיכות הוגדרה — כמו קודם */
   renderer.setSize(w,h,false);camera.aspect=(SPLIT.on?Math.floor(w/2):w)/h;camera.updateProjectionMatrix();
   if(PHONE){
     document.body.classList.toggle("land",w>h);
@@ -13114,6 +13309,7 @@ function stepSim(dt){
       const rel=_sRel.copy(b.body.position).sub(mf.c);
       const d=rel.dot(mf.n);
       if(d<0&&Math.abs(rel.dot(mf.ex))<=M(P.cellW/2)&&Math.abs(rel.dot(mf.ey))<=M(P.cellH/2)){
+        try{ v76Hit(b.tracked,mf.c,mf.n); }catch(e){}   /* v76: התא מאיר לרגע */
         b.tracked=null;
         if(b.spotKey){ brainSpotResult(b.spotKey,true); b.spotKey=null; }
         if(typeof replayEv==="function") replayEv("hit",b.byAI?b.byAI.name:"אני");
@@ -13165,6 +13361,7 @@ function stepSim(dt){
                  if(hiveBlue&&!hiveBlue.tipping&&cellContents(hiveBlue).mass*1000>=P.tipMass) tip(hiveBlue); } }
   if(aimT>(fastMode?1.0:0.12)){aimT=0;refreshAim();}
   shotHud(dt); v74rbParkTick(dt);   /* v74 U4 */
+  try{ v76Tick(dt); }catch(e){}      /* v76: פס התוצאה ופירוק הנקודות */
 }
 /* ══════════════ איכות וקצב פריימים ══════════════
    המודל התלת־ממדי של הזירה הוא 1.35 מיליון משולשים מול 48 אלף של המודל
@@ -13176,6 +13373,44 @@ function stepSim(dt){
    לכן יש כאן שלוש רמות אמיתיות, לא ״נמוך/בינוני/גבוה״ מומצאות. כל רמה
    מוותרת על דבר אחד מדיד, ובמצב אוטומטי הסימולטור יורד רמה כשהקצב נופל
    ועולה חזרה כשיש מקום. */
+/* v76: תקציב פיקסלים — רוחב × גובה × צפיפות² עד כ-3.7 מיליון. 4K בצפיפות 2 היה 29 מיליון.
+   לא יורדים מתחת לצפיפות 1 (או לצפיפות של המסך, אם היא נמוכה יותר) — מתחת לזה התמונה נמרחת. */
+const V76_PIX=3.7e6;
+function v76DprWant(base,w,h){ w=w||stage.clientWidth; h=h||stage.clientHeight;
+  if(!(w>0&&h>0)) return base;
+  const cap=Math.sqrt(V76_PIX/(w*h)), floor=Math.min(1,devicePixelRatio||1);
+  return Math.max(Math.min(base,floor),Math.min(base,Math.round(cap*100)/100)); }
+/* v76: צל רק לגדולים ולחשובים — רובוטים, כוורות, פרחים וכדורים. ברגים, גלגלות, מרצפות, קירות ההיקף והמסגרת לא מטילים.
+   עובר רק על רשתות חדשות (מסומנות), ולכן זול גם כשהוא נקרא פעמיים בשנייה: רובוט שנבנה מחדש נבדק בפעם הבאה. */
+const V76SH={minBot:1.5, minHive:2.5, minFlower:5, bigField:6, n:0, off:0, _v:null};
+function v76ShR(o){ const g=o.geometry; if(!g) return 0; if(!g.boundingSphere) g.computeBoundingSphere();
+  const v=V76SH._v||(V76SH._v=new THREE.Vector3()); o.getWorldScale(v);
+  return (g.boundingSphere?g.boundingSphere.radius:0)*Math.max(v.x,v.y,v.z)/M(1); }
+function v76ShadowTrim(){
+  if(typeof scene==="undefined") return;
+  const robots=new Set([bot.group]); try{ for(const b of BOTS) if(b&&b.group) robots.add(b.group); }catch(e){}
+  const keepF=new Set(); if(hiveRed) keepF.add(hiveRed.group); if(hiveBlue) keepF.add(hiveBlue.group);
+  const cad=new Set(); if(cadRoot) cad.add(cadRoot); if(cadHives) for(const k in cadHives) if(cadHives[k].outer) cad.add(cadHives[k].outer);
+  for(const top of scene.children){
+    if(cad.has(top)) continue;
+    const isBot=robots.has(top), isField=top===fieldRoot;
+    if(top.isMesh&&top.userData&&top.userData.kind) continue;          /* כדורים של הרשת ושל השידור החוזר */
+    top.traverse(o=>{
+      if(!o.isMesh||o.userData.v76sh) return;
+      o.userData.v76sh=1; V76SH.n++;
+      if(!o.castShadow) return;
+      let keep;
+      if(isBot) keep=v76ShR(o)>=V76SH.minBot;
+      else if(isField){ let q=o.parent, lim=V76SH.bigField;
+        /* בכוורת: כל מה שמעל 2.5 אינץ׳ (קירות התא, הזרועות). בפרח: הצינורות והלוחות הגדולים (5+). בשאר הזירה: קורות המסגרת (6+) */
+        while(q&&q!==fieldRoot){ if(keepF.has(q)){ lim=V76SH.minHive; break; } if(q.userData.v76flower){ lim=V76SH.minFlower; break; } q=q.parent; }
+        keep=v76ShR(o)>=lim; }
+      else keep=balls.some(b=>b.mesh===o);
+      if(!keep){ o.castShadow=false; V76SH.off++; }
+    });
+  }
+  if(renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate=true;
+}
 const QUAL={
   mode:"high",          /* auto · high · mid · fast — ברירת מחדל: מלאה (v60). בחירה שמורה נשמרת */
   level:"high",         /* הרמה שבאמת מופעלת */
@@ -13190,7 +13425,8 @@ const QLEVELS={
 };
 const QORDER=["high","mid","fast"];
 function qualCadCast(on){
-  if(cadRoot) cadRoot.traverse(o=>{ if(o.isMesh) o.castShadow=on; });
+  /* v76: מהמודל הרשמי רק הכוורות מטילות צל — שאר 2.2 מיליון המשולשים לא נמשכים פעם שנייה למפת הצללים */
+  if(cadRoot) cadRoot.traverse(o=>{ if(o.isMesh) o.castShadow=false; });
   if(cadHives) for(const k in cadHives){
     const h=cadHives[k];
     if(h.outer&&h.outer.traverse) h.outer.traverse(o=>{ if(o.isMesh) o.castShadow=on; });
@@ -13219,8 +13455,9 @@ function applyQual(lv){
     sun.shadow.mapSize.set(q.map,q.map);
     if(sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map=null; }
   }
-  const want=Math.min(devicePixelRatio||1,PHONE?Math.min(1.3,q.dpr):q.dpr);
+  const want=v76DprWant(Math.min(devicePixelRatio||1,PHONE?Math.min(1.3,q.dpr):q.dpr));
   if(Math.abs(renderer.getPixelRatio()-want)>0.01){ renderer.setPixelRatio(want); resize(); }
+  try{ v76ShadowTrim(); }catch(e){}
   _trisN=0;   /* ספירת המשולשים תיבנה מחדש, הרמה השתנתה */
   refreshQual();
 }
@@ -13241,6 +13478,7 @@ function qualStep(dt,raw){
   QUAL.frames++; QUAL.acc+=raw!=null?raw:dt;   /* v75: הזמן האמיתי — dt חתוך ל-0.05, והמד לא ירד מתחת ל-20 */
   if(QUAL.acc>=0.5){
     QUAL.fps=QUAL.frames/QUAL.acc; QUAL.frames=0; QUAL.acc=0;
+    try{ v76ShadowTrim(); }catch(e){}   /* v76: רשתות שנבנו מאז (רובוט, בוט, זירה) */
     const el=$("qFps"); if(el) el.textContent=Math.round(QUAL.fps);
   }
   if(QUAL.mode!=="auto"||fastMode) return;
@@ -13470,7 +13708,7 @@ function splitMyStation(){
    והמקלדת פנויה לשחקן הראשון, אפשר לבחור לתת לו את השלט. */
 function splitPads(){
   const out=[]; if(!navigator.getGamepads) return out;
-  const L=navigator.getGamepads(); for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected) out.push(L[i]);
+  const L=padList(); for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected) out.push(L[i]);
   return out;
 }
 function splitPickPad(){
@@ -13850,7 +14088,7 @@ function padToCmd(g,st){
 function netLocalPads(){
   if(typeof phoneFeed==="function") phoneFeed();
   if(!navigator.getGamepads) return;
-  const L=navigator.getGamepads();
+  const L=padList();
   for(const b of BOTS){ const h=b.hum; if(!h||h.src!=="pad") continue;
     const g=L[h.padIdx]; if(g&&g.connected) humFeed(b,padToCmd(g,h)); }
 }
@@ -13876,7 +14114,7 @@ function netClose(why){
   for(const b of BOTS) if(b.hum&&b.hum.src==="net") humFree(b);
   const wasGuest=NET.mode==="guest";
   if(NET.spec) netSpecView(false); NET.specs=[];   /* v70 */
-  NET.mode="solo"; NET.id=null; NET.seat=null; NET.guests={}; NET.snaps.length=0;
+  NET.mode="solo"; NET.id=null; NET.seat=null; NET.guests={}; NET.snaps.length=0; NET.gapMs=0;
   MT_NET=null; NET.bc=null; NET.seatLock=false; NET.hostGone=false;   /* 1.12.5 */
   if(wasGuest) netGuestLeave();
   NET.err=why||""; netRefresh();
@@ -13950,7 +14188,9 @@ function netOnMsg(data){
     else if(m.t==="nowant"){ try{ refToast(T("🔒 אי אפשר להחליף עמדה באמצע מאץ׳ בתחרות — אחרי המאץ׳"),"block"); }catch(e){} }
     else if(m.t==="pong"){ const r=Math.max(0,performance.now()-(+m.c||0));
       NET.rtt=NET.rtt?NET.rtt*0.7+r*0.3:r; }
-    else if(m.t==="ev"){ m.txt=netStr(m.txt,160); refToast(m.txt,m.k==="foul"?"foul":"coach");
+    else if(m.t==="ev"){ m.txt=netStr(m.txt,160);
+      if(m.bg===1||m.bg===0){ try{ m.txt=v76GuestBg(m.bg===1); }catch(e){} }   /* v76: המארח ברקע — טקסט בשפה של האורח ותג קבוע */
+      refToast(m.txt,m.k==="foul"?"foul":"coach");
       const g=netGuestPad(); if(g) padRumble(g,0.7,0.4,260);
       (HUM.log||(HUM.log=[])).push({t:simT,who:"net",txt:m.txt,kind:m.k==="foul"?"foul":"coach"}); }
     else if(m.t==="sum"){ mpSumShow(m); }
@@ -14015,7 +14255,7 @@ function netHostGone(){
   if(NET.mode!=="guest") return;
   const was=NET.hostGone; NET.hostGone=true;
   if(MATCH.netMirror||MATCH.on||MATCH.cd>0){ MATCH.on=false; MATCH.cd=0; MATCH.netMirror=false; if(MATCH.phase!=="סיום") MATCH.phase="idle"; }
-  NET.snaps.length=0; NET.seats=[]; MT_NET=null;
+  NET.snaps.length=0; NET.gapMs=0; NET.seats=[]; MT_NET=null;
   try{ refreshClock(); }catch(e){}
   if(!was){ try{ refToast(T("🌐 המארח יצא מהחדר — מחכים שיחזור (או צאו מהחדר)"),"block"); }catch(e){} }
 }
@@ -14068,7 +14308,7 @@ function netGuestEnter(){
   if(typeof OPR!=="undefined"&&OPR.on) oprSet(false,true);   /* v74 net U8 */
   if(PHN.seat>=0) PHN.seat=-1;
   for(const b of BOTS){ humFree(b); }
-  NET.snaps.length=0; NET.seat=null; NET.stationK=null;
+  NET.snaps.length=0; NET.gapMs=0; NET.seat=null; NET.stationK=null;
   if(typeof traj!=="undefined") traj.visible=false;
   document.body.classList.add("netguest");
 }
@@ -14097,9 +14337,15 @@ function netOnState(buf){
   for(let i=0;i<a.length;i++) if(!isFinite(a[i])) return;
   if(!(a[3]>=0&&a[3]<=5)) return;
   for(let i=0;i<n;i++){ const k=a[33+i*4]; if(!(k>=0&&k<NET_KINDS.length)) return; }
-  NET.snaps.push({at:performance.now(),a});
-  if(NET.snaps.length>4) NET.snaps.shift();
+  const pn=performance.now(), Sn=NET.snaps;
+  /* v76: הפער הממוצע בין תמונות מצב (ממוצע נע) — השהיית האינטרפולציה מסתגלת אליו */
+  if(Sn.length){ const gap=Math.min(300,pn-Sn[Sn.length-1].at); NET.gapMs=NET.gapMs?NET.gapMs*0.9+gap*0.1:gap; }
+  Sn.push({at:pn,a});
+  if(Sn.length>8) Sn.shift();
 }
+/* v76: השהיית האינטרפולציה של האורח — פי 1.5 מהפער הממוצע, לא פחות ממרווח שידור אחד ולא יותר מרבע שנייה.
+   קודם קבוע 40 מ״ש: מארח איטי (15–20 הרץ) השאיר את האורח בלי תמונה הבאה ברבע מהפריימים */
+function netInterpDelay(){ const g=NET.gapMs; if(!g) return 1000/NET_HZ; return Math.max(1000/NET_HZ,Math.min(250,g*1.5)); }
 function netGuestCam(allies){
   if(NET.seat===null) return;
   /* v74 net N3: המארח קובע את עמדת הנהג (st). מארח ישן בלי st — לפי סדר העמדות כמו קודם */
@@ -14109,7 +14355,7 @@ function netGuestCam(allies){
 /* השהיה: פינג פעם בשנייה, והאורח מדווח למארח מה הוא מדד — ככה שניהם רואים */
 function netGuestPad(){
   if(VPAD.on&&VPAD.pad) return VPAD.pad;
-  const L=navigator.getGamepads?navigator.getGamepads():[];
+  const L=padList();
   for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected) return L[i];
   return null;
 }
@@ -14123,7 +14369,7 @@ function netGuestInput(dt){
   let f=kbHeld("fire"), aim=kbHeld("assist");
   const iK=kbHeld("intake"); if(iK&&!NET.prevI) NET.intakeOn=!NET.intakeOn; NET.prevI=iK;
   let intake=NET.intakeOn;
-  let g=null, yr=0; if(navigator.getGamepads){ const L=navigator.getGamepads();
+  let g=null, yr=0; if(navigator.getGamepads){ const L=padList();
     for(let i=0;i<L.length;i++) if(L[i]&&L[i].connected){ g=L[i]; break; } }
   if(VPAD.on&&VPAD.pad) g=VPAD.pad;
   if(g){ const c=padToCmd(g,NET); yr=c.yr;
@@ -14148,7 +14394,7 @@ function netGuestStep(dt){
   simT+=dt;
   netGuestInput(dt);
   const S=NET.snaps; if(!S.length) return;
-  const now=performance.now()-1000/NET_HZ;
+  const now=performance.now()-netInterpDelay();   /* v76: מסתגל */
   let A=S[S.length-1], B=A, u=1;
   for(let i=S.length-1;i>0;i--){ if(S[i-1].at<=now){ A=S[i-1]; B=S[i];
     u=Math.max(0,Math.min(1,(now-A.at)/Math.max(1,B.at-A.at))); break; } }
@@ -14177,7 +14423,7 @@ function netGuestStep(dt){
   MATCH.cd=ph===5?b[4]:0; MATCH.on=ph>=1&&ph<=3; MATCH.t=b[2]; MATCH.netMirror=true;
   MATCH.phase=ph===4?"סיום":ph>=1&&ph<=3?PH[ph-1][0]:"idle";
   NET.score=[b[5],b[6]];
-  clkT+=dt; if(clkT>0.1){ clkT=0; refreshClock(); netGuestScore(); magHud(); }
+  clkT+=dt; if(clkT>0.1){ clkT=0; refreshClock(); netGuestScore(); magHud(); try{ v76SbTick(true); }catch(e){} }
   if(camView==="driver") holdDriver();
   hudT+=dt; if(hudT>0.25){ hudT=0; netRefresh(); }
 }
@@ -14296,7 +14542,7 @@ function netWire(){
 const CAMW=232, CAMH=174;
 let genDrawAt=0, uiWallT=0;
 function frame(now){
-  requestAnimationFrame(frame);
+  requestAnimationFrame(frame); PADL.tick++;   /* v76: רשימת שלטים חדשה לפריים הזה */
   const raw=Math.max(0,Math.min(.25,(now-last)/1000)), dt=Math.min(.05,raw); last=now;
   fpsTick(now);
   qualStep(dt,raw);
@@ -14307,6 +14553,7 @@ function frame(now){
     let rem=raw, n=0; do{ const d=Math.min(.05,rem); stepSim(d); rem-=d; n++; }while(rem>1e-4&&n<5);
   }
   if(BC.on&&!REPLAY.on) bcTick(dt);
+  try{ v76Frame(now); }catch(e){}   /* v76: פתיחה, זוהר התא, תאורה לפי שלב, מבנה שקוף במצלמה העוקבת */
   applyCam();
   /* 1.12.4: בזמן מחולל/מתכנן — ציור ארבע פעמים בשנייה בלבד; הזמן הולך לסימולציות */
   if(GEN.running){ if(now-genDrawAt<250) return; genDrawAt=now; }
@@ -14354,7 +14601,7 @@ on($("fpsChip"),()=>fpsSet(false));
 function advance(sec,step){
   const d=step||1/120, n=Math.max(1,Math.round(sec/d));
   fastMode=true;
-  for(let i=0;i<n;i++) stepSim(d);
+  for(let i=0;i<n;i++){ PADL.tick++; stepSim(d); }   /* v76: בצעד דטרמיניסטי — רשימה לכל צעד */
   fastMode=false;
 }
 
@@ -15605,7 +15852,10 @@ function playModalOpen(det,title){
   const body=det.querySelector(":scope>.body"); if(!body) return false;
   PMOD.home=det; PMOD.body=body;
   $("pmBody").appendChild(body); $("pmTitle").textContent=title||"";
-  $("playModal").hidden=false; return true;
+  $("playModal").hidden=false;
+  /* v76: חלון חדש נפתח מלמעלה — לא באמצע הגלילה של החלון הקודם */
+  { const pm=$("playModal"); [$("pmBody"),pm.querySelector(".pmCard"),body].forEach(e=>{ if(e) e.scrollTop=0; }); }
+  return true;
 }
 function playModalClose(){
   if(PMOD.body&&PMOD.home) PMOD.home.appendChild(PMOD.body);
@@ -15637,13 +15887,13 @@ function ppRefresh(){
         if(why) pc.title=why; else pc.removeAttribute("title"); } } }
   const live=MATCH.on||MATCH.cd>0, ended=!live&&MATCH.phase==="סיום";
   const phase=MATCH.cd>0?"ספירה":MATCH.on?({AUTO:"אוטונומי — הרובוט נוסע לבד","מעבר":"מעבר — עוד רגע תורכם",TELEOP:"טלאופ — אתם נוהגים"}[MATCH.phase]||MATCH.phase):ended?"הסתיים":pracActive()?"תרגול מול בוטים — בלי שעון":"אין משחק — נסיעה חופשית";
-  const r=(l,v,c)=>'<div><span>'+l+'</span><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>';
-  let h=r("שלב",phase,live?"hl":"");
+  const r=(l,v,c,k)=>'<div'+(k?' data-r="'+k+'"':'')+'><span>'+l+'</span><b'+(c?' class="'+c+'"':'')+'>'+v+'</b></div>';   /* v76: data-r — מה נשאר גלוי בזמן מאץ׳ */
+  let h=r("שלב",phase,live?"hl":"","ph");
   if(MATCH.on){ const i=matchPhase(MATCH.t);
     h+=r("זמן",fmtClock(phaseEnd(i)-MATCH.t)+" בשלב · "+fmtClock(Math.max(0,tEnd()-MATCH.t))+" עד הסוף"); }
   if(live||ended){
     const R=allianceScore("red")|0, B=allianceScore("blue")|0;
-    h+=r("ניקוד",'<span style="color:var(--red)">אדום '+R+'</span> · <span style="color:var(--blue)">כחול '+B+'</span>');
+    h+=r("ניקוד",'<span style="color:var(--red)">אדום '+R+'</span> · <span style="color:var(--blue)">כחול '+B+'</span>',"","sc");
     if(ended){ const mine=my==="red"?R:B, opp=my==="red"?B:R;
       /* כרטיס סוף מאץ׳: מאיפה הגיעו הנקודות, דיוק, קצב, ומול השיא */
       /* v75: לא מפענחים את כל העונה בכל רענון (כל 400 מ״ש) — מטמון לשלוש שניות לכל מאץ׳ שנגמר */
@@ -15662,7 +15912,7 @@ function ppRefresh(){
         if(prior.length&&statIsMatch(m)) h+=r("מול השיא",m.my>best?"🏅 שיא חדש! ("+m.my+")":"שיא "+best+" · חסרו "+(best-m.my),m.my>best?"ok":"");
       } }
   }
-  h+=r("הברית שלי",my==="red"?"אדומה":"כחולה")+r("כדורים ברובוט",(bot.mag|0)+" מתוך "+bldCapMe(),bot.mag>0?"":"bad");
+  h+=r("הברית שלי",my==="red"?"אדומה":"כחולה")+r("כדורים ברובוט",(bot.mag|0)+" מתוך "+bldCapMe(),bot.mag>0?"":"bad","bl");
   { const n=typeof bkChanged==="function"?bkChanged():0;
     h+=r("הרובוט",n?"מותאם — "+n+" שינויים ממצב בדיקות":"מקורי"); }
   if(live) h+=r("האוטונומי שלי",seasonAutoName());
@@ -15681,7 +15931,8 @@ function ppRefresh(){
   const stp=$("ppStop");
   if(stp){ stp.disabled=false;
     stp.textContent=live?(performance.now()-stopArmT<3000?"לחצו שוב לעצירה":"עצור משחק"):(v72tLastK()&&(ended||v72tCardOn()))?"🔁 "+T("שוב")+": "+T(DRILL.N[v72tLastK()]):ended?"🔁 עוד משחק":"⚡ משחק מהיר"; }   /* 1.13: אחרי תרגיל — אותו תרגיל שוב */
-  const rp=$("ppReplay"); if(rp) rp.disabled=!REPLAY.frames.length||live;
+  const rp=$("ppReplay"); if(rp){ rp.disabled=live?!(typeof irShow==="function"&&irShow()):!REPLAY.frames.length;   /* v76: במאץ׳ — שידור חוזר מיידי */
+    const rt=live?"⏪ שידור חוזר":"▶ שידור חוזר"; if(rp.textContent!==rt) rp.textContent=rt; }
   document.querySelectorAll("#ppCam [data-ppcam]").forEach(b=>b.classList.toggle("on",b.dataset.ppcam===camShown()));
   const k=$("ppKeys");
   if(k){
@@ -15727,7 +15978,8 @@ function ppWire(){
   addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("playModal").hidden){ e.stopImmediatePropagation(); playModalClose(); } },true);
   on($("ppPhone"),()=>phoneOpen());
   on($("ppStop"),()=>{ if(MATCH.on||MATCH.cd>0) matchStopSafe(); else if(v72tLastK()&&(MATCH.phase==="סיום"||v72tCardOn())) v72tAgain(); else quick(); ppRefresh(); });   /* 1.13 */
-  on($("ppReplay"),()=>{ if(!replayOpen({})) refToast("אין עדיין מאץ׳ מוקלט — שחק מאץ׳ והוא יישמר לבד","block"); });
+  on($("ppReplay"),()=>{ if(MATCH.on||MATCH.cd>0){ if(irShow()) irOpen(); return; }   /* v76: במאץ׳ — 10 השניות האחרונות */
+    if(!replayOpen({})) refToast("אין עדיין מאץ׳ מוקלט — שחק מאץ׳ והוא יישמר לבד","block"); });
   on($("ppBcast"),()=>bcSet(!BC.on));
   /* שליטה במצב משחק — אותם מתגים כמו בסרגל של המעבדה */
   document.querySelectorAll("#ppCtl [data-ppt]").forEach(b=>on(b,()=>{ const t=document.querySelector('#toolbar [data-tog="'+b.dataset.ppt+'"]'); if(t) t.click(); ppRefresh(); }));
@@ -16004,7 +16256,8 @@ function bkArm(btn,key,label,fn,ask){
 function settingsOpen(sec){
   if(typeof APP!=="undefined"&&APP.on&&typeof shellGo==="function") shellGo("settings");
   else playModalOpen($("setBox"),"הגדרות");
-  const el=sec&&$(sec); if(el) setTimeout(()=>{ try{ el.scrollIntoView({block:"start",behavior:"smooth"}); }catch(e){} },60);
+  const el=sec&&$(sec); if(el){ const f=el.querySelector&&el.querySelector("details.v76fold"); if(f) f.open=true; }   /* v76: ״אודות״ מקופל */
+  if(el) setTimeout(()=>{ try{ el.scrollIntoView({block:"start",behavior:"smooth"}); }catch(e){} },60);
 }
 function bkOpen(){ settingsOpen("dBk"); bkUI(); }
 function bkWire(){
@@ -16094,7 +16347,8 @@ function statUI(){
   document.querySelectorAll("[data-stf]").forEach(b=>b.classList.toggle("on",b.dataset.stf===STAT.filt));
   document.querySelectorAll("[data-stk]").forEach(b=>{ b.classList.toggle("on",!!STAT.drills); b.setAttribute("aria-pressed",STAT.drills?"true":"false"); });
   const l=statList(), s=statCalc(l);
-  if(!s){ o.innerHTML='<div class="stEmpty">'+(STAT.drills?"אין תרגילים בטווח הזה.":(APP.on&&APP.all?APP.all.length:seasonAll().length)?"אין משחקים בטווח הזה.":"עוד אין משחקים.<br>כל מאץ׳ שמסתיים — מול בוטים, מהיר, במסך מפוצל או ברשת — נכנס לכאן לבד.")+'</div>'+appTeamHTML(); return; }
+  if(!s){ o.innerHTML='<div class="stEmpty">'+(STAT.drills?"אין תרגילים בטווח הזה.":(APP.on&&APP.all?APP.all.length:seasonAll().length)?"אין משחקים בטווח הזה.":"עוד אין משחקים.<br>כל מאץ׳ שמסתיים — מול בוטים, מהיר, במסך מפוצל או ברשת — נכנס לכאן לבד.")+'</div>'+
+    (!STAT.drills&&!(APP.on&&APP.all?APP.all.length:seasonAll().length)?'<button class="primary v76First" data-v76first="1">▶ שחקו מאץ׳ ראשון</button>':'')+appTeamHTML(); return; }   /* v76 */
   const pct=v=>Math.round(100*v)+"%";
   const T=(label,val,sub,cls)=>'<div class="stT'+(cls?" "+cls:"")+'"><span>'+label+'</span><b>'+val+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div>';
   let trend="";
@@ -18026,13 +18280,15 @@ function achPump(){ if(ACH.busy||!ACH.q.length) return; const a=ACH.q.shift(); A
   const el=achToastEl(); el.innerHTML='<i>'+a.i+'</i><div><small>'+appEsc(T("🏅 הישג חדש"))+'</small><b>'+appEsc(T(a.n))+'</b></div>'; el.className="show";
   setTimeout(()=>{ el.className=""; setTimeout(()=>{ ACH.busy=false; achPump(); },350); },3600); }
 function achDate(t){ const d=new Date(t); return d.getDate()+"."+(d.getMonth()+1)+"."+d.getFullYear(); }
-function achUI(){ const box=$("achBox"); if(!box) return; const s=ACH.st||achLoad(); const L=achEval(achLive());
+function achUI(){ const box=$("achBox"); if(!box) return; const s=ACH.st||achLoad(); const D=achLive(), L=achEval(D);
   const n=L.filter(a=>s.un[a.id]).length, E=x=>appEsc(String(x));
-  box.innerHTML='<div class="stH">🏅 '+E(T("הישגים"))+' <span class="achN">'+n+'/'+L.length+'</span></div><div class="achGrid">'+
+  /* v76: עוד אין משחקים ואין הישגים — שלושת הבאים בתור, והשאר מקופלים */
+  const fresh=n===0&&!(D.games&&D.games.length);
+  box.innerHTML=(fresh?v76AchTeaser(L,s)+'<details class="v76fold achAll"><summary>':'')+'<div class="stH">🏅 '+E(T("הישגים"))+' <span class="achN">'+n+'/'+L.length+'</span></div>'+(fresh?'</summary>':'')+'<div class="achGrid">'+
     L.map(a=>{ const at=s.un[a.id], v=at?a.max:a.v;
       return '<div class="achC'+(at?' on':'')+'" data-ach="'+a.id+'"><i>'+a.i+'</i><div><b>'+E(T(a.n))+'</b><span>'+E(T(a.h))+'</span>'+
         '<div class="achBar"><em style="width:'+Math.round(100*v/a.max)+'%"></em></div>'+
-        '<small>'+(at?'✓ '+E(achDate(at)):v+'/'+a.max)+'</small></div></div>'; }).join("")+'</div>'; }
+        '<small>'+(at?'✓ '+E(achDate(at)):v+'/'+a.max)+'</small></div></div>'; }).join("")+'</div>'+(fresh?'</details>':''); }
 setTimeout(()=>{ try{ dailyLoad(); achLoad(); achCheck(true); dailyUI(); }catch(e){} },0);
 { const X={DAILY,ACH,ACH_DEFS,dailyKey,dailyFor,dailySig,dailyDrillOf,dailyStreak,dailyResult,dailyLoad,dailyStart,dailyCatch,dailyUI,dailyCardHTML,dailyPrev,
     achData,achEval,achCheck,achUI,achLoad,achLive,achFlag, tEndNow:()=>tEnd(), dailyFaultOn:()=>FAULT.on, statUI:()=>statUI()};
@@ -18831,6 +19087,7 @@ function skinRows(){
 function skinSw(s){ if(s.id==="classic") return "linear-gradient(135deg,#8e99a2 0 45%,#3a434b 45% 70%,#f5b921 70%)";
   const h=c=>"#"+c.toString(16).padStart(6,"0"); return "linear-gradient(135deg,"+h(s.frame)+" 0 45%,"+h(s.panel)+" 45% 70%,"+h(s.accent)+" 70%)"; }
 function skinUI(){
+  try{ return v76SkinUI(); }catch(e){}   /* v76: לשוניות, שורה אחת ותצוגה מקדימה */
   const el=$("skinRows"); if(!el||$("skinBox").hidden) return;
   const guest=NET.mode==="guest";
   el.innerHTML=skinRows().map(r=>{ const cur=skinOf(r.i), lock=guest&&r.i>=0||(r.i>=0&&!!r.hum);
@@ -20397,6 +20654,285 @@ Object.assign(window.__sim||{},{WZ,wzOpen,wzClose,wzSkip,wzGo,wzFinish,wzMeasure
 /* 1.12.5 · ווים לבדיקות — חוקים ובוטים (v72 rules) */
 { const X={refIllegalTake,compDriveFix,compMotorOf,COMP_VMAX,frameTouch,legDist,parkClear,brainParkSpot,refRP,scoreNow,myParkPts,PH,MT,aiIntake,aiDrive,aiParkStep,humBraked,refCard};
   if(window.__sim) Object.assign(window.__sim,{v72rules:X}); }
+/* ══════ v76 ui — מסך משחק נקי, פס תוצאה, כרטיס סיום, שפת חלות דבש, ביצועים ══════
+   · מעבדה: שכבה צפה אחת בכל פעם — הטלמטריה ורשימת המקשים מתקפלות לכפתור ״📊 מדדים״ (אותו מצב של ״תצוגה״, נשמר ב-bbHud1).
+   · בזמן מאץ׳: פס תוצאה בסגנון שידור במרכז למעלה (אדום | שעון ושלב | כחול), ולוח ״המשחק עכשיו״ רזה — השאר תחת ״⋯ עוד״.
+   · סוף מאץ׳: כרטיס על רקע מטושטש — פירוק נקודות (אוטונומי, טלאופ, סוף משחק), נתון בולט אחד, וכוכב המאץ׳.
+   · שפת חלות דבש: תאורה לפי שלב (תאורה קיימת בלבד), תא שנכנס אליו כדור מאיר לרגע, קונפטי משושים לשיא אישי,
+     ופתיחה קצרה של המצלמה בכניסה הראשונה ל״משחק״ (כל מקש או לחיצה מדלגים; לא בבדיקות ולא בשידור).
+   · מצלמה עוקבת: מבנה שמסתיר את הרובוט נעשה שקוף למחצה.
+   · ביצועים: מארח שעבר ללשונית אחרת משהה ומודיע לאורחים, וחוזר כשחוזרים. */
+const V76={lastT:0, skinTab:-1, more:false, sbAt:-1, sb:{}, auto:null, endSig:"", end:null, confAt:"", glow:null, glowT0:0,
+  light:null, lightK:"", occT:0, occ:new Map(), occMat:new WeakMap(), glide:null, bg:null, hits:0};
+/* תרגום שמתחיל באות גדולה (באנגלית ״auto״ ← ״Auto״) */
+function v76T(t){ const x=T(t); return x.replace(/[a-z]/,c=>c.toUpperCase()); }
+/* ── מעבדה: ״מדדים״ — טלמטריה ומקשים כשכבה אחת ── */
+function v76MetOn(){ return !(HUD.off.telem&&HUD.off.keys); }
+function v76MetSet(v){ HUD.off.telem=!v; HUD.off.keys=!v; hudApply(); }
+function v76MetSync(){ const b=$("v76Met"); if(!b) return; const v=v76MetOn(); b.classList.toggle("on",v); b.setAttribute("aria-pressed",v?"true":"false"); }
+/* ── פס התוצאה ── */
+function v76Scores(){
+  if(NET.mode==="guest"&&NET.score) return [NET.score[0]|0,NET.score[1]|0];
+  return [allianceScore("red")|0,allianceScore("blue")|0]; }
+function v76SbTick(force){
+  const el=$("v76Score"); if(!el) return;
+  const live=(MATCH.on||MATCH.cd>0)&&!REPLAY.on&&!BC.on;
+  if(!live){ if(!el.hidden){ el.hidden=true; document.body.classList.remove("v76sb"); V76.sb={}; } return; }
+  if(!force&&V76.sbAt>=0&&Math.abs(simT-V76.sbAt)<0.1) return; V76.sbAt=simT;
+  if(el.hidden){ el.hidden=false; document.body.classList.add("v76sb"); }
+  const [r,b]=v76Scores(), my=NET.mode==="guest"&&NET.seat!=null&&NET.allies?NET.allies[NET.seat]:myAlly();
+  let clk, ph, cls;
+  if(MATCH.cd>0){ clk=String(Math.max(0,Math.ceil(MATCH.cd-1))); ph=v76T("לעמדות"); cls="cd"; }
+  else { const i=matchPhase(MATCH.t), left=tEnd()-MATCH.t;
+    clk=fmtClock(phaseEnd(i)-MATCH.t);
+    if(i===0){ ph=v76T("אוטונומי"); cls="auto"; }
+    else if(i===1){ ph=v76T("מעבר"); cls="trans"; }
+    else if(left<=30){ ph=v76T("סוף משחק"); cls="end30"; }
+    else { ph=v76T("טלאופ"); cls="tele"; } }
+  const prog=Math.max(0,Math.min(100,100*(MATCH.cd>0?0:MATCH.t/Math.max(1,tEnd())))).toFixed(1)+"%";
+  const S=V76.sb, set=(id,k,v)=>{ if(S[k]!==v){ S[k]=v; const e=$(id); if(e) e.textContent=v; } };
+  set("v76R","r",String(r)); set("v76B","b",String(b)); set("v76Clk","c",clk); set("v76Ph","p",ph);
+  if(S.prog!==prog){ S.prog=prog; const e=$("v76Prog"); if(e) e.style.width=prog; }
+  const k=cls+"|"+my; if(S.k!==k){ S.k=k; el.className=cls;
+    el.querySelector(".sbT.red").classList.toggle("me",my==="red"); el.querySelector(".sbT.blue").classList.toggle("me",my==="blue"); }
+}
+/* ── פירוק נקודות: מה היה בסוף האוטונומי, ומה בסוף המאץ׳ ── */
+/* בסוף האוטונומי: היפוכים, יציאה, עבירות וחניית האוטונומי בלבד (autoPark). חניה של ״עכשיו באזור״ שייכת לסוף המשחק */
+function v76AutoPark(a){ let n=(myAlly()===a&&MATCH.autoPark)?5:0; for(const b of BOTS) if(b&&b.on&&b.ally===a&&b.autoPark) n+=5; return n; }
+function v76AutoSnap(){ const o={}; for(const a of ["red","blue"]){ const S=scoreAlly(a), pk=v76AutoPark(a); o[a]={pts:S.tip+S.leave+pk+S.foul, park:pk}; } return o; }
+function v76Tick(dt){
+  /* מאץ׳ חדש (ספירה, או שהשעון חזר לאחור) — מתחילים מחדש */
+  if(MATCH.cd>0||MATCH.t<V76.lastT-0.5) V76.auto=null;
+  V76.lastT=MATCH.t;
+  if(MATCH.on&&!MATCH.netMirror&&!(MATCH.cd>0)&&!V76.auto&&MATCH.t>=tAuto())
+    V76.auto=tAuto()>0?v76AutoSnap():{red:{pts:0,park:0},blue:{pts:0,park:0}};
+  if(MATCH.phase==="סיום"&&MATCH.final&&!MATCH.netMirror){
+    const sig=String(MATCH.endT||"")+"|"+MATCH.final.red+"|"+MATCH.final.blue;
+    if(V76.endSig!==sig){ V76.endSig=sig; try{ V76.end=v76EndCalc(); }catch(e){ V76.end=null; } } }
+  v76SbTick(false);
+  if(V76.gbg&&NET.mode!=="guest"){ V76.gbg=false; try{ v76GuestBg(false); }catch(e){} }
+}
+/* כוכב המאץ׳: מי מארבעת הרובוטים תרם הכי הרבה — כדורים בתא (2 כל אחד), יציאה וחניה, וזמן בקו הירי של היריב.
+   הכול ממה שכבר נמדד: hits/shots לכל רובוט, leaveDone/autoPark, botInLZ, blockT */
+function v76Star(){
+  const L=[]; const my=myAlly();
+  const meName=NET.mode==="host"?(NET.name||T("המארח")):(teamLabel()||T("הרובוט שלי"));
+  L.push({name:meName, ally:my, me:true, hits:hits|0, shots:shots|0, block:0,
+    pts:(hits|0)*2+(MATCH.leave?3:0)+(myInLZ()?5:0)+(MATCH.autoPark?5:0)});
+  BOTS.forEach((b,i)=>{ if(!b||!b.on||!b.body) return; let nm=b.name;
+    try{ const inf=netSeatInfo(i+1); if(inf&&inf.kind!=="bot"&&inf.name) nm=inf.name; }catch(e){}
+    const blk=b.ally!==my?(+b.blockT||0):0;
+    L.push({name:nm, ally:b.ally, hits:b.hits|0, shots:b.shots|0, block:blk,
+      pts:(b.hits|0)*2+(b.leaveDone?3:0)+(b.autoPark?5:0)+(botInLZ(b)?5:0)+Math.min(20,blk)}); });
+  const acc=x=>x.shots?x.hits/x.shots:0;
+  L.sort((a,b)=>b.pts-a.pts||acc(b)-acc(a)||b.hits-a.hits);
+  const s=L[0]; if(!s||s.pts<=0) return null;
+  let why;
+  if(s.hits>0) why=s.hits+" "+T("כדורים בתא")+(s.shots?" · "+Math.round(100*acc(s))+"% "+T("דיוק"):"");
+  else if(s.block>=3) why=T("חסם את קו הירי")+" "+s.block.toFixed(0)+" "+T("שנ׳");
+  else why=T("יציאה וחניה");
+  return {name:s.name, ally:s.ally, me:!!s.me, why}; }
+function v76EndCalc(){
+  const fin=MATCH.final||{red:allianceScore("red")|0,blue:allianceScore("blue")|0}, A=V76.auto||{red:{pts:0,park:0},blue:{pts:0,park:0}};
+  const brk={}; for(const a of ["red","blue"]){ const S=scoreAlly(a), f=+fin[a]|0, au=Math.max(0,A[a].pts|0), eg=Math.max(0,(S.park|0)-(A[a].park|0));
+    brk[a]={auto:Math.min(f,au), end:Math.min(Math.max(0,f-au),eg), total:f}; brk[a].tele=Math.max(0,f-brk[a].auto-brk[a].end); }
+  return {brk, star:v76Star()}; }
+/* הנתון הבולט: שיא אישי חדש, או דיוק, או זמן מחזור, או האוטונומי */
+function v76Stat(){
+  let all=[]; try{ all=seasonAll(); }catch(e){}
+  const m=all[all.length-1];
+  if(m&&statIsMatch(m)&&Date.now()-m.at<60e3){ const prior=all.slice(0,-1).filter(statIsMatch);
+    const best=prior.reduce((a,q)=>Math.max(a,+q.my||0),-1);
+    if(prior.length&&m.my>best) return {pb:true, t:"🏅 "+v76T("שיא אישי חדש")+" — "+m.my+" "+T("נק׳")}; }
+  const cyc=(DEB.cyc||[]).filter(v=>v>0.35&&v<45), meStar=!!(V76.end&&V76.end.star&&V76.end.star.me);
+  const cycT=cyc.length?{t:"⏱ "+v76T("מחזור ממוצע")+" "+(cyc.reduce((a,b)=>a+b,0)/cyc.length).toFixed(1)+" "+T("שנ׳")}:null;
+  if(meStar&&cycT) return cycT;   /* הדיוק כבר מופיע בשורת הכוכב */
+  if(shots>=3) return {t:"🎯 "+v76T("דיוק")+" "+Math.round(100*hits/shots)+"% ("+hits+"/"+shots+")"};
+  if(cycT) return cycT;
+  if(V76.end&&V76.end.brk[myAlly()].auto>0) return {t:"🤖 "+v76T("אוטונומי")+" "+V76.end.brk[myAlly()].auto+" "+T("נק׳")};
+  return null; }
+/* נקרא מ-showBanner: ממלא את הכרטיס במצב ״סוף מאץ׳״ ומנקה אותו בכל מצב אחר */
+function v76EndCard(key){
+  const el=$("v76End"); if(!el) return;
+  if(key!=="end"){ if(!el.hidden){ el.hidden=true; el.innerHTML=""; el.dataset.sig=""; } return; }
+  const E=appEsc, guest=NET.mode==="guest";
+  const st=guest?null:v76Stat(), d=guest?null:V76.end;
+  const sig=V76.endSig+"|"+(st?st.t:"")+"|"+I18N.lang;
+  if(el.dataset.sig===sig&&!el.hidden) return; el.dataset.sig=sig;
+  let h="";
+  if(d){ const R=d.brk.red, B=d.brk.blue, row=(n,a,b,c)=>'<div'+(c?' class="'+c+'"':'')+'><span>'+E(n)+'</span><b class="r">'+a+'</b><b class="b">'+b+'</b></div>';
+    h+='<div class="v76Brk">'+row("",E(v76T("אדום")),E(v76T("כחול")),"hd")+row(v76T("אוטונומי"),R.auto,B.auto)+row(v76T("טלאופ"),R.tele,B.tele)+row(v76T("סוף משחק"),R.end,B.end)+row(v76T("סה״כ"),R.total,B.total,"tot")+'</div>';
+    if(d.star) h+='<div class="v76Star"><i aria-hidden="true">⭐</i><div><small>'+E(T("כוכב המאץ׳"))+'</small><b><i class="dot '+d.star.ally+'"></i>'+E(d.star.name)+'</b><em>'+E(d.star.why)+'</em></div></div>'; }
+  if(st) h+='<div class="v76Stat'+(st.pb?" pb":"")+'">'+E(st.t)+'</div>';
+  el.innerHTML=h; el.hidden=!h;
+  if(st&&st.pb&&V76.confAt!==V76.endSig){ V76.confAt=V76.endSig; v76Confetti(); }
+}
+/* ── רגעי שמחה ── */
+function v76Confetti(n){
+  if(navigator.webdriver&&!window.__v76conf) return;   /* בבדיקות — רק כשמבקשים */
+  try{ if(matchMedia("(prefers-reduced-motion:reduce)").matches) return; }catch(e){}
+  const box=document.createElement("div"); box.className="v76conf"; box.setAttribute("aria-hidden","true");
+  const C=["#FFB020","#FFC65A","#35D6A4","#4C9AF5","#F2545B","#E9EFF5"];
+  for(let i=0;i<(n||28);i++){ const x=document.createElement("i"), a=Math.random()*Math.PI*2, r=140+Math.random()*260;
+    x.style.cssText="--dx:"+(Math.cos(a)*r).toFixed(0)+"px;--dy:"+(Math.sin(a)*r-120).toFixed(0)+"px;--rt:"+(Math.random()*540-270).toFixed(0)+"deg;background:"+C[i%C.length]+";animation-delay:"+(Math.random()*0.12).toFixed(2)+"s";
+    box.appendChild(x); }
+  document.body.appendChild(box); setTimeout(()=>box.remove(),1900); return box; }
+function v76HexTex(){
+  const[c,g]=cv2d(128,128); g.translate(64,64);
+  const hex=r=>{ g.beginPath(); for(let k=0;k<6;k++){ const a=Math.PI/6+k*Math.PI/3; g[k?"lineTo":"moveTo"](Math.cos(a)*r,Math.sin(a)*r); } g.closePath(); };
+  const gr=g.createRadialGradient(0,0,4,0,0,62); gr.addColorStop(0,"rgba(255,214,120,.95)"); gr.addColorStop(.55,"rgba(255,176,32,.45)"); gr.addColorStop(1,"rgba(255,176,32,0)");
+  hex(60); g.fillStyle=gr; g.fill(); hex(52); g.lineWidth=5; g.strokeStyle="rgba(255,230,160,.9)"; g.stroke();
+  return tex(c,false); }
+/* כדור שנכנס לתא: משושה זוהר על פתח התא, דועך תוך 0.7 שנ׳ (רשת אחת, רק כשהיא גלויה) */
+function v76Hit(h,c,n){
+  if(!c) return; V76.hits++;
+  if(!V76.glow){ const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:v76HexTex(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+    m.renderOrder=5; m.castShadow=false; m.userData.v76sh=1; m.visible=false; scene.add(m); V76.glow=m; }
+  const g=V76.glow, s=M(Math.max(P.cellW,P.cellH)*1.25);
+  g.position.copy(c); if(n) g.position.addScaledVector(n,M(0.6));
+  if(n){ g.lookAt(g.position.x+n.x,g.position.y+n.y,g.position.z+n.z); }
+  g.scale.set(s,s,s); g.material.opacity=1; g.visible=true; V76.glowT0=performance.now(); }
+/* ── תאורה לפי שלב — רק צבע ועוצמה של אורות שכבר קיימים ── */
+function v76LightInit(){ if(V76.light) return V76.light;
+  const hemi=scene.children.find(o=>o.isHemisphereLight);
+  V76.light={hemi, h0:hemi?hemi.color.clone():null, r0:rimL.color.clone(), ri0:rimL.intensity, f0:fillL.color.clone(), fi0:fillL.intensity,
+    cool:new THREE.Color(0x7fb4ff), coolH:new THREE.Color(0x8fb3e6), amber:new THREE.Color(0xffa52a)};
+  return V76.light; }
+function v76LightTick(now){
+  const L=v76LightInit(); let k="";
+  if(MATCH.on&&!REPLAY.on){ const i=matchPhase(MATCH.t); k=i===0?"auto":(i===2&&tEnd()-MATCH.t<=30)?"end":"tele"; }
+  if(k!==V76.lightK){ V76.lightK=k;
+    if(L.hemi) L.hemi.color.copy(k==="auto"?L.coolH:L.h0);
+    rimL.color.copy(k==="auto"?L.cool:k==="end"?L.amber:L.r0); rimL.intensity=k==="auto"?0.55:L.ri0;
+    fillL.color.copy(k==="auto"?L.cool:L.f0); fillL.intensity=k==="auto"?0.5:L.fi0; }
+  if(k==="end"){ const p=0.5+0.5*Math.sin(now/1000*Math.PI*2*0.9); rimL.intensity=0.35+0.55*p; }
+}
+/* ── מצלמה עוקבת: מבנה בין המצלמה לרובוט נעשה שקוף למחצה ── */
+const _v76Ray=new THREE.Raycaster(), _v76V=new THREE.Vector3(), _v76D=new THREE.Vector3();
+function v76OccMat(m){ if(Array.isArray(m)) return m.map(v76OccMat);
+  let c=V76.occMat.get(m); if(!c){ c=m.clone(); c.transparent=true; c.opacity=0.22; c.depthWrite=false; V76.occMat.set(m,c); } return c; }
+function v76OccUnit(o){ /* היחידה שמדהה: הכוורת כולה, פרח שלם, או קורה בודדת של המסגרת */
+  let q=o; while(q.parent&&q.parent!==fieldRoot&&!q.parent.userData.v76spin) q=q.parent;
+  return q; }
+function v76OccFade(unit,on){
+  unit.traverse(o=>{ if(!o.isMesh) return;
+    if(on){ if(!o.userData.v76o){ o.userData.v76o=o.material; o.material=v76OccMat(o.material); } }
+    else if(o.userData.v76o){ o.material=o.userData.v76o; delete o.userData.v76o; } }); }
+function v76OccClear(){ for(const u of V76.occ.keys()) v76OccFade(u,false); V76.occ.clear(); }
+function v76OccTick(now){
+  const want=camView==="chase"&&!SPLIT.on&&!REPLAY.on&&!!fieldRoot&&fieldRoot.visible;
+  if(!want){ if(V76.occ.size) v76OccClear(); return; }
+  if(now-V76.occT<120) return; V76.occT=now;
+  const tgt=_v76V.copy(bot.group.position); tgt.y+=M(8);
+  _v76D.copy(tgt).sub(camera.position); const dist=_v76D.length(); if(dist<1e-3) return; _v76D.divideScalar(dist);
+  _v76Ray.set(camera.position,_v76D); _v76Ray.far=Math.max(0,dist-M(6));
+  let hitsL=[]; try{ hitsL=_v76Ray.intersectObject(fieldRoot,true); }catch(e){}
+  const now2=new Set();
+  for(const h of hitsL){ const o=h.object; if(!o.visible||!o.isMesh) continue; const m=o.userData.v76o||o.material; if(m&&m.transparent&&!o.userData.v76o) continue;
+    const u=v76OccUnit(o); now2.add(u); }
+  for(const u of now2) if(!V76.occ.has(u)){ v76OccFade(u,true); V76.occ.set(u,now); }
+  for(const [u,t] of V76.occ) if(!now2.has(u)){ v76OccFade(u,false); V76.occ.delete(u); }
+}
+/* ── פתיחה: המצלמה מחליקה מלמעלה לעמדה הרגילה. כל מקש, לחיצה או גלגלת — מדלגים ── */
+function v76GlideStart(){
+  if(V76.glide||(navigator.webdriver&&!window.__v76glide)||(window.bbApp&&bbApp.test)||BC.on||UI.mode!=="play"||camView!=="free"||camUser) return false;
+  try{ if(sessionStorage.getItem("bbGlide76")) return false; sessionStorage.setItem("bbGlide76","1"); }catch(e){}
+  try{ if(matchMedia("(prefers-reduced-motion:reduce)").matches) return false; }catch(e){}
+  const to={th:cam.theta, ph:cam.phi, d:cam.dist};
+  V76.glide={t0:performance.now(), dur:2600, to, from:{th:to.th+1.1, ph:0.28, d:to.d*1.55}};
+  const skip=e=>v76GlideEnd(e);
+  for(const ev of ["keydown","pointerdown","wheel","touchstart","resize"]) addEventListener(ev,skip,{capture:true,once:true,passive:true});   /* גם שינוי גודל — אחרי fitView היעד כבר לא נכון */
+  V76.glide.skip=skip; v76GlideApply(0); return true; }
+function v76GlideApply(u){ const G=V76.glide; if(!G) return; const e=1-Math.pow(1-u,3);
+  cam.theta=G.from.th+(G.to.th-G.from.th)*e; cam.phi=G.from.ph+(G.to.ph-G.from.ph)*e; cam.dist=G.from.d+(G.to.d-G.from.d)*e; }
+function v76GlideEnd(e){ const G=V76.glide; if(!G) return; V76.glide=null; if(!(e&&e.type==="resize"&&PHONE&&!camTouched)){ cam.theta=G.to.th; cam.phi=G.to.ph; cam.dist=G.to.d; }
+  for(const ev of ["keydown","pointerdown","wheel","touchstart","resize"]) removeEventListener(ev,G.skip,{capture:true}); }
+/* נקרא מ-frame() פעם בפריים */
+function v76Frame(now){
+  if(V76.glide){ if(camUser||camView!=="free") v76GlideEnd(); else { const u=Math.min(1,(now-V76.glide.t0)/V76.glide.dur); v76GlideApply(u); if(u>=1) v76GlideEnd(); } }
+  if(V76.glow&&V76.glow.visible){ const a=1-(now-V76.glowT0)/700; if(a<=0) V76.glow.visible=false; else V76.glow.material.opacity=a; }
+  v76LightTick(now);
+  v76OccTick(now);
+}
+/* ── מארח ברקע: משהים ומודיעים לאורחים; כשחוזרים — ממשיכים. לבד במאץ׳: השהיה גלויה ── */
+function v76Vis(){
+  const hid=document.hidden;
+  if(hid){
+    if(NET.mode==="host"&&NET.sock&&NET.sock.readyState===1){
+      V76.bg={was:paused}; if(!paused) TOG.pause.set(true);
+      netSend({to:"*",t:"ev",k:"coach",bg:1,txt:"⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור"}); }
+    else if(NET.mode==="solo"&&(MATCH.on||MATCH.cd>0)&&!paused&&!REPLAY.on){ V76.bg={solo:true}; TOG.pause.set(true); }
+  } else {
+    const B=V76.bg; V76.bg=null;
+    try{ FPS.t0=0; FPS.n=0; QUAL.frames=0; QUAL.acc=0; QUAL.lowT=0; }catch(e){}   /* הפריים הראשון אחרי חזרה ארוך ומטעה */
+    if(!B) return;
+    if(B.solo){ refToast(T("⏸ המשחק הושהה כשעברתם ללשונית אחרת — P או ״המשך״ כדי להמשיך"),"coach"); try{ syncBar(); }catch(e){} return; }
+    if(NET.mode==="host"){ if(!B.was) TOG.pause.set(false);
+      netSend({to:"*",t:"ev",k:"coach",bg:0,txt:"▶ המארח חזר — ממשיכים"}); }
+    try{ syncBar(); }catch(e){}
+  } }
+/* אצל האורח: תג ״⏸ מושהה״ קבוע כל עוד המארח ברקע (ההודעה עצמה נעלמת אחרי שלוש שניות) */
+function v76GuestBg(on){
+  const tg=$("pauseTag"), sp=tg&&tg.querySelector("span");
+  V76.gbg=!!on;
+  if(tg&&sp){ if(on){ if(sp.dataset.v76==null) sp.dataset.v76=sp.textContent; sp.textContent=T("המארח עבר ללשונית אחרת"); tg.hidden=false; }
+    else { if(sp.dataset.v76!=null){ sp.textContent=sp.dataset.v76; delete sp.dataset.v76; } tg.hidden=!paused; } }
+  return on?T("⏸ המארח עבר ללשונית אחרת — המשחק מושהה עד שיחזור"):T("▶ המארח חזר — ממשיכים"); }
+/* ── לוח ״המשחק עכשיו״ בזמן מאץ׳: רק תוצאה, שלב, כדורים, שידור חוזר ועצירה ── */
+function v76MoreSet(v){ V76.more=!!v; document.body.classList.toggle("v76more",V76.more);
+  const b=$("v76More"); if(b){ b.textContent=V76.more?T("▴ פחות"):T("⋯ עוד אפשרויות"); b.setAttribute("aria-expanded",V76.more?"true":"false"); } }
+/* ── סקינים: לשונית לכל רובוט, שורת צבעים אחת ותצוגה מקדימה ── */
+function v76SkinPrev(id,ally){
+  const s=SKINBY[id]||SKINS[0], h=c=>"#"+c.toString(16).padStart(6,"0");
+  const fr=s.id==="classic"?"#8e99a2":h(s.frame), pn=s.id==="classic"?"#3a434b":h(s.panel), ac=s.id==="classic"?"#f5b921":h(s.accent);
+  const band=ally==="blue"?"#2d8cff":"#ff3b30";
+  /* מבט מלמעלה מופשט: שלדה, לוח, פס הברית ומשושה — לא רובוט אמיתי */
+  return '<svg viewBox="0 0 120 120" role="img" aria-label="'+appEsc(T(s.n))+'"><defs><filter id="v76gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter></defs>'+
+    '<rect x="17" y="17" width="86" height="86" rx="12" fill="none" stroke="'+band+'" stroke-width="5" filter="url(#v76gl)" opacity=".85"/>'+
+    '<rect x="20" y="20" width="80" height="80" rx="10" fill="'+fr+'" stroke="'+band+'" stroke-width="2.5"/>'+
+    ['10,24','10,74','96,24','96,74'].map(p=>{ const [x,y]=p.split(","); return '<rect x="'+x+'" y="'+y+'" width="14" height="22" rx="4" fill="#15191d"/>'; }).join("")+
+    '<rect x="31" y="31" width="58" height="58" rx="7" fill="'+pn+'"/>'+
+    '<polygon points="60,40 77,50 77,70 60,80 43,70 43,50" fill="none" stroke="'+ac+'" stroke-width="4.5" stroke-linejoin="round"/>'+
+    '<rect x="31" y="22" width="58" height="6" rx="3" fill="'+ac+'"/></svg>'+
+    '<b>'+appEsc(T(s.n))+'</b>'; }
+function v76SkinUI(){
+  const el=$("skinRows"), tabs=$("skinTabs"), pv=$("skinPrev"); if(!el||$("skinBox").hidden) return;
+  const guest=NET.mode==="guest", R=skinRows();
+  if(!R.some(r=>r.i===V76.skinTab)) V76.skinTab=-1;
+  if(tabs) tabs.innerHTML=R.map(r=>{ const al=r.ally||myAlly(), on=r.i===V76.skinTab;
+    return '<button role="tab" data-sktab="'+r.i+'" class="'+(on?"on":"")+'" aria-selected="'+(on?"true":"false")+'"><i class="skA '+al+'"></i>'+appEsc(r.n)+'</button>'; }).join("");
+  const r=R.find(x=>x.i===V76.skinTab)||R[0], cur=skinOf(r.i), lock=guest&&r.i>=0||(r.i>=0&&!!r.hum);
+  if(pv) pv.innerHTML=v76SkinPrev(cur,r.ally||myAlly());
+  el.innerHTML='<div class="skRow'+(lock?" lock":"")+'"><div class="skLab"><b>'+appEsc(r.n)+'</b>'+(r.hum?'<small>· '+appEsc(r.hum)+' בוחר</small>':'')+(guest&&r.i>=0?'<small>· המארח בוחר</small>':'')+'<em>'+appEsc(T((SKINBY[cur]||SKINS[0]).n))+'</em></div>'+
+    '<div class="skSw">'+SKINS.map(s=>'<button data-skin="'+r.i+'|'+s.id+'" class="'+(s.id===cur?"on":"")+'" title="'+appEsc(T(s.n))+'" aria-label="'+appEsc(T(s.n))+'"'+(lock?" disabled":"")+' style="background:'+skinSw(s)+'"></button>').join("")+'</div></div>'; }
+/* ── סטטיסטיקה ריקה: שלושת ההישגים הבאים, וכפתור ״שחקו מאץ׳ ראשון״ ── */
+function v76AchTeaser(L,s){
+  const next=L.filter(a=>!s.un[a.id]).sort((a,b)=>(b.v/b.max)-(a.v/a.max)).slice(0,3), E=x=>appEsc(String(x));
+  return '<div class="stH">🏅 '+E(T("שלושת ההישגים הבאים"))+'</div><div class="achGrid v76Next">'+next.map(a=>'<div class="achC" data-ach="'+a.id+'"><i>'+a.i+'</i><div><b>'+E(T(a.n))+'</b><span>'+E(T(a.h))+'</span><div class="achBar"><em style="width:'+Math.round(100*a.v/a.max)+'%"></em></div><small>'+a.v+'/'+a.max+'</small></div></div>').join("")+'</div>'; }
+function v76Wire(){
+  /* מדדים */
+  on($("v76Met"),()=>v76MetSet(!v76MetOn())); v76MetSync();
+  /* מגירת המחסנית בטלפון — שבב שכפול */
+  { const hm=$("hMag"); if(hm&&hm.parentElement) hm.parentElement.classList.add("v76mag"); }
+  /* ״⋯ עוד״ בלוח המשחק בזמן מאץ׳ */
+  { const row=$("ppStop")&&$("ppStop").parentElement; if(row&&!$("v76More")){ const b=document.createElement("button"); b.id="v76More"; b.className="v76More"; b.type="button";
+      row.insertAdjacentElement("afterend",b); on(b,()=>v76MoreSet(!V76.more)); }
+    document.querySelectorAll("#playPanel>.ppH").forEach(h=>{ const n=h.nextElementSibling; if(n&&(n.id==="ppCtl"||n.id==="ppKeys")) h.classList.add("v76ppH"); });
+    v76MoreSet(false); }
+  /* לשוניות הסקינים */
+  { const t=$("skinTabs"); if(t) t.addEventListener("click",e=>{ const b=e.target.closest("[data-sktab]"); if(!b) return; V76.skinTab=+b.dataset.sktab; v76SkinUI(); }); }
+  /* ״שחקו מאץ׳ ראשון״ */
+  document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-v76first]"); if(!b) return; e.preventDefault();
+    try{ playModalClose(); }catch(err){} try{ if(APP.on&&typeof shellGo==="function") shellGo("play"); }catch(err){} goPlay(); const m=$("ppMatch"); if(m) m.click(); });
+  document.addEventListener("visibilitychange",v76Vis);
+  setTimeout(()=>{ try{ v76GlideStart(); }catch(e){} },700);
+}
+try{ v76Wire(); }catch(e){ console.error(e); }
+{ const X={V76, metOn:v76MetOn, metSet:v76MetSet, sbTick:()=>v76SbTick(true), endCalc:v76EndCalc, star:v76Star, stat:v76Stat, endCard:v76EndCard, hit:v76Hit,
+    confetti:v76Confetti, lightTick:v76LightTick, occTick:v76OccTick, occClear:v76OccClear, frame:v76Frame, glideStart:v76GlideStart, glideEnd:v76GlideEnd, vis:v76Vis,
+    moreSet:v76MoreSet, skinUI:v76SkinUI, guestBg:v76GuestBg, camAt:()=>({view:camView, th:cam.theta, ph:cam.phi, d:cam.dist}), rim:()=>rimL, camera:()=>camera, setCamView:v=>setCamView(v), applyCam:()=>applyCam(), shadowTrim:v76ShadowTrim, V76SH, dprWant:v76DprWant, padList, PADL, interpDelay:netInterpDelay, NET};
+  if(window.__sim) window.__sim.v76=X; }
+/* ══════ סוף v76 ui ══════ */
 /* ══════ v72 uiperf — נגישות וביצועים ══════ */
 /* 1.12.5 PF4: לוח על המסך? IntersectionObserver עונה ״לא״ בלי חישוב פריסה; offsetParent נבדק רק כשהלוח אולי גלוי */
 function onScreen72(el){
