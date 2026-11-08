@@ -6803,7 +6803,8 @@ function aiDefendStep(b,dt){
   if(gap<AIC.W+2.5) b.contact+=dt; else b.contact=Math.max(0,b.contact-dt*1.6);
   /* הצמדה אמיתית — היריב מנסה לנסוע ולא זז — נספרת בנפרד, ובולם שיודע
      את החוקים משחרר לפני שהשופט מגיע לשלוש (G421) */
-  const tryMove=Math.hypot(F.ix,F.iz)>0.25;
+  /* v76: כמו השופט (refPins) — יריב צמוד לקיר נחשב מוצמד גם בלי שהוא מנסה לזוז (טנק לא ״מבקש״ הצידה) */
+  const tryMove=Math.hypot(F.ix,F.iz)>0.25||nearWall({x:fx,z:fz,half:F.id==="me"?Math.max(P.botW||16,P.botL||16)/2:Math.max(AIC.W,AIC.L)/2});
   if(gap<AIC.W+2.5&&fsp<0.15&&tryMove) b.pinT=(b.pinT||0)+dt;
   else b.pinT=Math.max(0,(b.pinT||0)-dt*2);
   if(b.contact>AIC.pinLimit||b.pinT>AIC.pinRelease){ b.backoff=1.8; b.contact=0; b.pinT=0; }
@@ -21691,7 +21692,8 @@ function v76TankBack(b,gd,dt){
   const k=b.v76Back;
   if(k){ if(simT>k.until){ b.v76Back=null; b.stallT=0.6; b.navBest=gd; b.navStill=0; if(b.nav){ b.nav.path=null; b.nav.age=9; } return false; }
     aiDrive(b,k.x,k.z,dt,0.9); b.navLen=Infinity; return true; }
-  if(V76B.noTank||!BLD||BLD_DRIVE[bldBot(b).drive].strafe||b.hum||b.parkGo||b.parkA) return false;   /* noTank — להשוואה ב-bench בלבד */
+  if(V76B.noTank||!BLD||BLD_DRIVE[bldBot(b).drive].strafe||b.hum||b.parkGo||b.parkA) return false;
+  if((b.role==="defend"&&!b.lastVol)||b.lvBlock) return false;   /* בולם דוחף בכוונה; נסיגה קצרה רק מאפסת לו את ספירת ההצמדה (G421) */   /* noTank — להשוואה ב-bench בלבד */
   if((b.stallT||0)<1.2||gd<8||(b.v76BackN||0)>=2) return false;
   let nx=0,nz=0,hit=0;
   for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o||balls.some(q=>q.body===o)) continue;
