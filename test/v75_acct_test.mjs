@@ -10,12 +10,13 @@ let pass = 0, fail = 0; const ok = (c, m) => { c ? pass++ : fail++; console.log(
 const A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', B = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const USERS = { tA: { id: A, email: 'alice@x.io', user_metadata: { name: 'Alice', tos_v: '2026-10-01', age_bracket: '18+' } },
                 tB: { id: B, email: 'bob@x.io', user_metadata: { tos_v: '2026-10-01', age_bracket: '13-17' } } };
-const S = { userFail: false, profiles: [], signupConfirm: false };
+const S = { userFail: false, profiles: [], signupConfirm: false, signupExists: false };
 const srv = http.createServer((q, r) => { let b = ''; q.on('data', c => b += c); q.on('end', () => {
   const u = new URL(q.url, 'http://x'), p = u.pathname, tok = String(q.headers.authorization || '').replace(/^Bearer /, '');
   const send = (c, o) => { r.writeHead(c, { 'Content-Type': 'application/json' }); r.end(o === undefined ? '' : JSON.stringify(o)); };
   const me = USERS[tok];
   if (p === '/auth/v1/signup') {
+    if (S.signupExists) return send(200, { id: B, email: 'bob@x.io', identities: [], user_metadata: {} });   // v76: מייל שכבר רשום — ״הצלחה״ בלי זהויות
     if (S.signupConfirm) return send(200, { id: B, email: 'bob@x.io', user_metadata: USERS.tB.user_metadata });   // צריך אישור במייל — בלי אסימון
     return send(200, { access_token: 'tB', refresh_token: 'rB', expires_in: 3600, user: USERS.tB });
   }
@@ -81,6 +82,11 @@ console.log('APP_DIR=' + APP);
   await y.signIn('alice@x.io', 'pw'); S.signupConfirm = true;
   const r = await y.signUp('bob@x.io', 'pw123456', META); S.signupConfirm = false;
   ok(r.confirm && y.status().email === 'alice@x.io', '[מידע] הרשמה עם אישור מייל — עדיין מחוברים כ-A (' + y.status().email + ')');
+}
+// 6. v76: מייל שכבר רשום — לא ״נשלח מייל״, אלא הודעה ברורה
+{ const { y } = fresh(); S.signupExists = true;
+  const r = await y.signUp('bob@x.io', 'pw123456', META); S.signupExists = false;
+  ok(!r.ok && r.exists && /כבר יש חשבון/.test(r.why || ''), '[v76] מייל שכבר רשום — ״כבר יש חשבון עם המייל הזה״ (' + JSON.stringify(r) + ')');
 }
 srv.close();
 console.log(`\n${pass} עברו, ${fail} נכשלו`);

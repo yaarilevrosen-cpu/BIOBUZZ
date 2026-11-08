@@ -1300,7 +1300,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   .sctFile{cursor:pointer; display:inline-flex; align-items:center} .sctErr{color:#ff6b6b; font-size:13px}
   .sctRows{display:grid; gap:6px; margin:8px 0} .sctRow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--line2); border-radius:10px; font-size:13px}
   .sctRow small{color:var(--muted); flex:1 1 220px} .sctRow em{font-style:normal; font-size:11px; color:var(--muted); flex:1 1 100%}
-  .sctT{font-weight:700; color:var(--accent)} .sctC{font-size:11px; padding:1px 6px; border-radius:8px; background:rgba(53,214,164,.15); color:#35d6a4}
+  .sctT{font-weight:700; color:var(--accent)} .sctBtns{display:flex; gap:6px; flex:1 1 100%} .sctBtns button{flex:0 0 auto; width:auto; font-size:11.5px; padding:3px 9px} .sctC{font-size:11px; padding:1px 6px; border-radius:8px; background:rgba(53,214,164,.15); color:#35d6a4}
   /* v75 מוסך */
   .gar{display:grid; grid-template-columns:290px 1fr; gap:14px; align-items:start}
   @media (max-width:760px){ .gar{grid-template-columns:1fr} }
@@ -1332,6 +1332,9 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   .garPart b{font-size:12px; line-height:1.25} .garPart small{font-size:10.5px; color:var(--muted); line-height:1.3}
   .garPart em{font-style:normal; font-size:10.5px; color:var(--muted); display:flex; gap:6px} .garPart em i{font-style:normal}
   .garPane[hidden]{display:none}
+  .garVTabs{display:flex; gap:4px; justify-content:center; margin:2px 0 4px} .garVTabs button{flex:0 0 auto; width:auto; font-size:11.5px; padding:3px 10px; border-radius:999px} .garVTabs button.on{border-color:var(--accent); background:rgba(255,176,32,.14)}
+  .garPv{cursor:grab; touch-action:none} .garPv[hidden],.garTop[hidden]{display:none} .garCv{display:block; width:100%; border-radius:10px}
+  .garTune>span{min-width:96px} .garTune .bldSeg button{font-size:11.5px; padding:3px 8px}
   #bldAssign,#bldList,#bldEdit{padding:8px 16px}
   .bldH{font-size:12px; color:var(--muted); margin:4px 0 6px; font-weight:600}
   .bldRow{display:flex; align-items:center; gap:8px; font-size:13px; margin:4px 0} .bldRow.lock{opacity:.6}
@@ -2888,6 +2891,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
 <script type="application/json" id="i18nX_app" data-i18n>{"📄 מה נשלח לגוגל (מספרים ושמות הנהגים)": "📄 What was sent to Google (numbers and driver names)"}</script>
 <script type="application/json" id="i18nX_v70drills" data-i18n>{"חמישה עשר תרגילים — מחזורים, דיוק, טעינה, החלטות, חניה, מול בולם ועוד — עם שיא אישי": "Fifteen drills — cycles, accuracy, loading, decisions, parking, vs a defender and more — with a personal best", "טעינה על זמן": "Load against the clock", "החלטות": "Decisions", "עמדות משתנות": "Moving spots", "עקיפה בלי עבירות": "Get around, no fouls", "מעבר אוטונומי ← טלאופ": "Autonomous → TeleOp", "סיבוב פרחים על זמן": "Flower lap against the clock", "תרגיל: טעינה על זמן": "Drill: Load against the clock", "תרגיל: החלטות": "Drill: Decisions", "תרגיל: עמדות משתנות": "Drill: Moving spots", "תרגיל: עקיפה בלי עבירות": "Drill: Get around, no fouls", "תרגיל: מעבר אוטונומי ← טלאופ": "Drill: Autonomous → TeleOp", "תרגיל: סיבוב פרחים על זמן": "Drill: Flower lap against the clock", "מחזורים נכונים": "correct cycles", "📥 טעינה על זמן": "📥 Load against the clock", "🧭 החלטות · 60 שנ׳": "🧭 Decisions · 60 s", "⭕ עמדות משתנות · 10 יריות": "⭕ Moving spots · 10 shots", "🛡 עקיפה בלי עבירות · 60 שנ׳": "🛡 Get around, no fouls · 60 s", "🔁 מעבר אוטונומי ← טלאופ": "🔁 Autonomous → TeleOp", "🌼 סיבוב פרחים על זמן": "🌼 Flower lap against the clock", "📥 טעינה על זמן: למלא את המחסנית בארבעה כדורים מהפרחים, הכי מהר שאפשר": "📥 Load against the clock: fill the magazine with four balls from the flowers, as fast as you can", "🧭 60 שניות: לטעון רק בפרח המסומן ואז לירות. אחרי כל מחזור הפרח מתחלף": "🧭 60 seconds: load only at the highlighted flower, then shoot. The flower changes after every cycle", "🛡 60 שניות מול בולם: כל עבירה שלך מורידה 10 נקודות": "🛡 60 seconds against a defender: every foul you commit costs 10 points", "🔁 האוטונומי שלך, המעבר, ואז 30 שניות טלאופ": "🔁 Your autonomous, the transition, then 30 seconds of TeleOp", "המחזור לא נספר — טוענים רק בפרח המסומן": "Cycle not counted — load only at the highlighted flower", "טעינה לא בפרח המסומן — המחזור הזה לא ייספר": "Loading away from the highlighted flower — this cycle won't count", "לפרח המסומן הבא": "on to the next highlighted flower", "מחוץ לטבעת — היריה לא תיספר": "Outside the ring — the shot won't count", "סיבוב פרחים: לגעת בארבעת הפרחים בכל סדר ולחזור לטבעת הכחולה. השעון מתחיל כשזזים": "Flower lap: touch all four flowers in any order and come back to the blue ring. The clock starts when you move", "עמדות משתנות: 10 יריות. נספרת רק יריה מתוך הטבעת, והטבעת זזה אחרי כל יריה": "Moving spots: 10 shots. Only a shot from inside the ring counts, and the ring moves after every shot", "לחפש את הצד הפנוי של הכוורת לפני שמגיעים לבולם": "Look for the open side of the hive before you reach the defender", "לסיים את האוטונומי ליד פרח — ככה הטלאופ מתחיל מיד": "End the autonomous next to a flower — that way TeleOp starts right away", "קו ישר לפרח, בלי סיבובים מיותרים בדרך": "A straight line to the flower, no extra turns on the way", "מהזמן": "of the time", "טעינה בפרח": "Loading at the flower", "עמידה ללא מטרה": "Standing without a goal"}</script>
 <script type="application/json" id="i18nX_v75" data-i18n>{"🛠 מוסך — בונה רובוטים": "🛠 Garage — robot builder", "מוסך — בונה רובוטים": "Garage — robot builder", "בוחרים רובוט מהשורה, או לוחצים על כל חלק — הנעה, איסוף, העברה, ירי, מעלית — ובונים משלכם. הבדיקה לפי חוקי המדריך: 8 מנועים, 8 סרוו, 18 אינץ׳, 4 כדורים. למטה: מי נוהג באיזה רובוט.": "Pick a robot from the row, or click any part — drive, intake, transfer, shooter, lift — and build your own. Checked against the game manual: 8 motors, 8 servos, 18 inches, 4 balls. Below: who drives which robot.", "בנייה מוכנה — לחיצה על חלק יוצרת עותק שלך": "Ready-made build — clicking a part makes your own copy", "הבנייה שלך": "Your build", "🛠 נוצר עותק שלך — עכשיו אפשר לשנות": "🛠 Made your own copy — now you can change it", "🎲 תפתיע אותי": "🎲 Surprise me", "בנייה אקראית חוקית": "A random legal build", "שכפל ושנה": "Duplicate and edit", "שכפל": "Duplicate", "הנעה": "Drive", "איסוף": "Intake", "העברה": "Transfer", "ירי": "Shooter", "מעלית": "Lift", "מידות": "Size", "שלדה": "Chassis", "תמסורת": "Gearing", "מהירות": "Speed", "תמרון": "Agility", "דחיפה": "Push", "קצב ירי": "Fire rate", "טווח": "Range", "שליטה": "Control", "קיבולת": "Capacity", "מנועים": "Motors", "סרוו": "Servos", "כמה מהר הוא נוסע": "How fast it drives", "תנועה הצידה וסיבוב": "Strafing and turning", "כמה קשה להזיז אותו": "How hard it is to move", "רוחב הפתח ועוצמת המשיכה": "Mouth width and pull strength", "כמה יריות בשנייה": "Shots per second", "מהירות היציאה המרבית": "Top exit speed", "צריח ושליטה בסיבוב הכדור": "Turret and control of ball spin", "כמה כדורים נכנסים": "How many balls fit", "הרובוט מלמעלה": "The robot from above", "▲ חזית": "▲ Front", "כמה כדורים": "How many balls", "חיישן צבע": "Color sensor", "בלי": "None", "לא לוקח נקטר של היריב": "Skips the opponent's NECTAR", "המעלית מרימה כדורים מעל הפרח ומשחררת אותם ברמפה. נקטר שלך למעלה — הפרח שלך.": "The lift raises balls above the flower and releases them on a ramp. Your NECTAR on top — the flower is yours.", "בהתחלה עד 18 × 18 אינץ׳ (R102). רובוט רחב תופס יותר מקום לאיסוף — וגם נתקע יותר.": "At the start up to 18 × 18 inches (R102). A wide robot has more room to collect — and also gets stuck more.", "X־דרייב (אומני)": "X-drive (omni)", "הכי חלק הצידה, פחות אחיזה בדחיפה": "Smoothest sideways, less grip when pushing", "סוורב": "Swerve", "נוסע לכל כיוון בלי לאבד כוח — יקר בסרוו": "Drives in any direction without losing power — costs servos", "זחלים": "Treads", "הכי חזק בדחיפה, איטי ולא זז הצידה": "Strongest pusher, slow and no strafing", "מאוזנת": "Balanced", "כמו היום": "As today", "מהירה": "Fast", "מהירות גבוהה, פחות כוח בדחיפה ובתאוצה": "High speed, less push and acceleration", "חזקה": "Strong", "דוחף חזק, איטי יותר": "Pushes hard, slower", "צינורות גומי": "Surgical tubing", "משיכה חזקה מאוד, רוחב בינוני": "Very strong pull, medium width", "גלגלי כוכב": "Star wheels", "זול ויציב, משיכה טובה": "Cheap and steady, good pull", "מסוע רחב מעל הפגוש": "Wide over-the-bumper belt", "הפתח הכי רחב, משיכה רכה": "The widest mouth, gentle pull", "משפך עם גלגל": "Funnel with a roller", "מרכז לבד, משיכה חלשה, בלי מנוע נוסף בצדדים": "Self-centering, weak pull, no extra side motors", "צבת בסרוו": "Servo claw", "תופסת כדור אחד בכל פעם — איטי, בלי מנוע": "Grabs one ball at a time — slow, no motor", "ישיר — מהאיסוף ליורה": "Direct — intake to shooter", "כמו היום: גלגל מזין אחד": "As today: one feeder wheel", "רצועה": "Belt", "הזנה מהירה ורציפה": "Fast, continuous feed", "גלגלי הזנה רכים": "Soft indexer wheels", "מהיר, כל כדור בתורו": "Fast, one ball at a time", "מעלית פנימית": "Internal elevator", "מרים אנכית ליורה גבוה": "Lifts vertically to a high shooter", "קרוסלה (ספינדקסר)": "Carousel (spindexer)", "שלושה תאים מסתובבים — מסדר את הכדורים": "Three rotating slots — orders the balls", "בועט סרוו": "Servo kicker", "זול, דוחף כדור אחד בכל פעם": "Cheap, pushes one ball at a time", "רמפה בכוח הכובד": "Gravity ramp", "בלי מנוע — שער סרוו, איטי": "No motor — a servo gate, slow", "שני גלגלים — אותה מהירות": "Two wheels — same speed", "ישר ויציב, בלי סיבוב": "Straight and steady, no spin", "שני גלגלים על הוד": "Two wheels on a hood", "חזק יותר מהוד רגיל, סיבוב אחורי קטן": "Stronger than a plain hood, a little backspin", "קטפולטה": "Catapult", "פשוטה וזולה — טווח קצר וטעינה איטית": "Simple and cheap — short range and slow reload", "בועט קפיץ": "Spring puncher", "ירייה ישרה, טווח בינוני, טעינה איטית": "A flat shot, medium range, slow reload", "קטפולטה זולה": "Budget catapult", "ארבעה מנועים בלבד: טנק, גלגלי כוכב, רמפה וקטפולטה. יורים מקרוב, בקצב איטי — רובוט ראשון מצוין.": "Only four motors: tank, star wheels, ramp and catapult. Shoot from close, slowly — a great first robot.", "בורר צבעים": "Color sorter", "קרוסלה של שלושה כדורים וחיישן צבע שלא לוקח נקטר של היריב. יורה בשני גלגלים על הוד.": "A three-ball carousel and a color sensor that skips the opponent's NECTAR. Shoots with two wheels on a hood.", "סוורב עם צריח": "Swerve with turret", "נוסע לכל כיוון בלי לאבד כוח, אוסף במסוע רחב ויורה מצריח מלא — בדיוק 8 מנועים.": "Drives any direction without losing power, collects with a wide belt and shoots from a full turret — exactly 8 motors.", "זחלים חוסם": "Tread blocker", "זחלים ותמסורת חזקה — הכי קשה להזיז אותו. משפך פשוט ובועט קפיץ.": "Treads and strong gearing — the hardest robot to move. A simple funnel and a spring puncher.", "X־דרייב מהיר": "Speedy X-drive", "הכי זריז בזירה: X־דרייב בתמסורת מהירה, גלגלי הזנה ושני גלגלים באותה מהירות.": "The quickest on the field: X-drive with fast gearing, indexer wheels and two same-speed wheels.", "חיישן הצבע מיותר — הגרון ממילא בולע רק פולן": "The color sensor is redundant — the throat only swallows POLLEN anyway", "צריח על": "Turret on", "— אפשרי, אבל היורה מוגבל בטווח": "— possible, but the shooter has limited range", "כדורים ברובוט": "Balls in the robot", "תמסורת מהירה": "Fast gearing", "תמסורת חזקה": "Strong gearing", "כדורים": "balls", "בק־ספין קבוע (": "Fixed backspin (", "אין —": "None —", "🎲 ברק": "🎲 Lightning", "🎲 טורנדו": "🎲 Tornado", "🎲 דבורת־על": "🎲 Super Bee", "🎲 פלא": "🎲 Marvel", "🎲 זמזום": "🎲 Buzz", "🎲 רעם": "🎲 Thunder", "🎲 מכונה": "🎲 Machine", "🎲 כוכב": "🎲 Star", "🎲 בומרנג": "🎲 Boomerang", "🎲 טיל": "🎲 Rocket", "📊 מאץ׳ מהסקאוטינג": "📊 Match from scouting", "מאץ׳ מהסקאוטינג": "Match from scouting", "הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ הבא": "The bots are built from the real robots of your next match", "בוטים לפי הרובוטים האמיתיים": "Bots from the real robots", "מאץ׳ מהסקאוטינג — בוטים לפי הרובוטים האמיתיים": "Match from scouting — bots from the real robots", "המספר שלנו": "Our team number", "מספר הקבוצה שלנו": "Our team number", "למשל 90001": "e.g. 90001", "📂 טען קובץ מהסקאוטינג": "📂 Load a scouting file", "נקה": "Clear", "מקבלים קובץ מאפליקציית הסקאוטינג (״ייצוא לסימולטור״), טוענים אותו כאן, והבוטים בזירה נבנים לפי הרובוטים האמיתיים של המאץ׳ — מהירות, זמן מחזור, דיוק, תפקיד ואוטונומי.": "Get a file from the scouting app (“Export to simulator”), load it here, and the bots on the field are built from the real robots of the match — speed, cycle time, accuracy, role and autonomous.", "מאץ׳": "Match", "מול": "vs", "הברית שלנו בקובץ": "Our alliance in the file", "לפי המספר": "By our number", "אדומה": "Red", "כחולה": "Blue", "שותף": "Partner", "יריב": "Opponent", "ביטחון": "Confidence", "— בוט רגיל —": "— regular bot —", "🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים.": "🔒 The file stays only in this window's memory — not saved, not synced and not backed up. On the network, guests get only the bots' builds.", "החל על הבוטים": "Apply to the bots", "▶ מאץ׳ מלא עם הרובוטים האלה": "▶ Full match with these robots", "📊 הבוטים נבנו לפי הסקאוטינג": "📊 The bots were built from scouting", "איטי": "slow", "בינוני": "medium", "מהיר": "fast", "מחזור": "cycle", "שנ׳": "s", "דיוק": "accuracy", "אוטונומי": "auto", "בולם": "defender", "מנקד": "scorer", "אין מספרים — רק הבנייה": "No numbers — build only", "במשחק ברשת רק המארח מתחיל מאץ׳": "In a network game only the host starts a match", "📊 מאץ׳ מהסקאוטינג —": "📊 Match from scouting —", "📊 נטענו": "📊 Loaded", "רובוטים": "robots", "מאצ׳ים": "matches", "הקובץ גדול מדי": "The file is too big", "זה לא קובץ ג׳ייסון תקין": "This is not a valid JSON file", "אין בקובץ רשימת רובוטים": "The file has no robot list", "גרסת קובץ חדשה מדי (": "File version too new (", ") — צריך לעדכן את הסימולטור": ") — update the simulator", "יותר מדי רובוטים בקובץ": "Too many robots in the file", "לא נמצא אף רובוט תקין בקובץ": "No valid robot found in the file", "מהסקאוטינג": "From scouting", "כמה יורים": "How many shooters", "שניים": "Two", "אחד": "One", "מעלית לפרח": "Flower lift", "עם מעלית": "With lift", "צד האיסוף": "Intake side", "קדימה": "Front", "קדימה ואחורה": "Front and back", "מה אוסף": "Collects", "פולן ונקטר": "POLLEN and NECTAR", "רק פולן": "POLLEN only", "צריח": "Turret", "כדורים בהרמה": "Balls per lift", "רוחב × אורך": "Width × length", "תמונות לשנייה — לחיצה מסתירה (מחזירים בחיפוש: ״קצב תמונות״)": "Frames per second — click to hide (bring it back from search: “frame rate”)", "מונה קצב התמונות מוצג": "The frame-rate counter is shown", "מונה קצב התמונות הוסתר — מחזירים בחיפוש: ״קצב תמונות״": "The frame-rate counter is hidden — bring it back from search: “frame rate”", "קצב תמונות — להציג או להסתיר את המונה": "Frame rate — show or hide the counter", "חשבון אחר": "Another account", "להתנתק?": "Sign out?", "מתנתקים ופותחים את חלון הכניסה — לחשבון של מישהו אחר או לחשבון חדש": "Signs out and opens the sign-in window — for someone else's account or a new one", "↷ חזור": "↷ Redo", "חזרה על מה שבוטל (Ctrl+Y)": "Redo what was undone (Ctrl+Y)", "אין מה לחזור": "Nothing to redo", "🖼 תמונה": "🖼 Image", "שומר את הלוח כתמונה": "Saves the board as an image", "התמונה נשמרה": "Image saved", "הדפדפן לא מאפשר לשמור תמונה כאן": "The browser doesn't allow saving an image here", "▶ נסה בסימולטור": "▶ Try in the simulator", "החצים שלי הופכים למסלול, והרובוט נוסע בו עכשיו בזירה": "My arrows become a path, and the robot drives it on the field now", "בכלי ״הזזה״ גוררים רובוטים, וגלגלת מעל רובוט (או R) מסובבת אותו. מציירים חצים שיוצאים מהרובוט שלי — ״העבר לעורך״ הופך אותם למסלול אוטונומי.": "With the “Move” tool you drag robots, and the scroll wheel over a robot (or R) rotates it. Draw arrows that leave my robot — “Send to editor” turns them into an autonomous path.", "מציירים חץ שיוצא מ״אני״ — ונראה כאן אם הוא אפשרי באוטונומי": "Draw an arrow that leaves “Me” — and see here whether it works in autonomous", "המסלול שלי": "My path", "נכנס באוטונומי": "fits in autonomous", "ארוך מדי לאוטונומי": "too long for autonomous", "חוצה את קו האמצע": "crosses the midline", "לא חוצה את האמצע": "stays off the midline", "עובר דרך מבנה": "goes through a structure", "בלי מבנים בדרך": "no structures in the way", "מעביר חצים מהלוח למסלול": "Moves the board's arrows into a path", "⚠ ״אני״ בלוח רחוק": "⚠ “Me” on the board is", "מעמדת הפתיחה — המסלול מתחיל מעמדת הפתיחה": "from the starting position — the path starts at the starting position", "מתוך": "of", "ברק": "Lightning", "טורנדו": "Tornado", "דבורת־על": "Super Bee", "פלא": "Marvel", "זמזום": "Buzz", "רעם": "Thunder", "מכונה": "Machine", "כוכב": "Star", "בומרנג": "Boomerang", "טיל": "Rocket", "· ⚠ ״אני״ בלוח רחוק": "· ⚠ “Me” on the board is"}</script>
+<script type="application/json" id="i18nX_v76g" data-i18n>{"כמו במעבדה": "As in the lab", "לא משנה": "No change", "72 מ״מ": "72 mm", "96 מ״מ": "96 mm", "104 מ״מ": "104 mm", "140 מ״מ": "140 mm", "100 מ״מ": "100 mm", "120 מ״מ": "120 mm", "תאוצה חזקה, מהירות נמוכה": "Strong acceleration, low speed", "הסטנדרט": "The standard", "מעט מהיר יותר": "A bit faster", "מהיר מאוד, מאיץ לאט": "Very fast, accelerates slowly", "117 סל״ד": "117 RPM", "223 סל״ד": "223 RPM", "312 סל״ד": "312 RPM", "435 סל״ד": "435 RPM", "1150 סל״ד": "1150 RPM", "כוח עצום, איטי מאוד": "Huge force, very slow", "חזק ואיטי": "Strong and slow", "מאוזן — הכי נפוץ": "Balanced — the most common", "מהיר, פחות כוח": "Fast, less force", "טיל — רק עם גלגל קטן": "A rocket — only with a small wheel", "אלומיניום": "Aluminum", "חזק וקל — הבחירה הרגילה": "Strong and light — the usual choice", "פוליקרבונט": "Polycarbonate", "קל, מתכופף קצת": "Light, flexes a little", "הדפסה בתלת־ממד": "3D printed", "הכי קל וזול, פחות דחיפה": "Lightest and cheapest, less push", "סיבי פחמן": "Carbon fiber", "קל מאוד וקשיח": "Very light and stiff", "פלדה": "Steel", "כבד — קשה להזיז, מאיץ לאט": "Heavy — hard to move, accelerates slowly", "רגילה": "Normal", "איטית": "Slow", "שקטה, משיכה חלשה": "Quiet, weak pull", "שואבת חזק מרחוק": "Pulls hard from far away", "קטן — מגיע מהר למהירות": "Small — spins up fast", "כמו הקלאסי": "Like the classic", "מהירות יציאה גבוהה": "High exit speed", "קל — מודפס": "Light — printed", "מאיץ מהר, נחלש אחרי כל ירייה": "Spins up fast, drops after every shot", "מאוזן": "Balanced", "פלדה עם משקולות": "Steel with weights", "שומר מהירות בין יריות": "Keeps its speed between shots", "1:1": "1:1", "1.5:1": "1.5:1", "3:1": "3:1", "4:1": "4:1", "מהיר מאוד, מומנט נמוך": "Very fast, low torque", "חזק, מהירות מוגבלת": "Strong, limited speed", "שטוח — מרחוק": "Flat — from far", "תלול — מקרוב": "Steep — from close", "⚙ כוונון": "⚙ Tuning", "קוטר גלגל": "Wheel diameter", "מנוע הנעה": "Drive motor", "מהירות האיסוף": "Intake speed", "גלגל תנופה": "Flywheel", "מסת הגלגל": "Wheel mass", "תמסורת היורה": "Shooter gearing", "זווית ירי": "Launch angle", "⚙ חומר השלדה": "⚙ Frame material", "חומר": "Material", "כוונונים": "tuning changes", "🧊 תלת־ממד": "🧊 3D", "📐 מלמעלה": "📐 Top view", "תצוגה": "View", "גוררים כדי לסובב": "Drag to rotate", "התצוגה התלת־ממדית לא נתמכת כאן — יש שרטוט מלמעלה": "3D view isn't supported here — there's a top-view drawing", "כדורים ב־": "balls in", "חונה": "parks", "אמינות": "reliability", "🛠 במוסך": "🛠 In the garage", "🎮 לנהוג בו": "🎮 Drive it", "פותח עותק של הרובוט הזה במוסך — לראות ולשנות": "Opens a copy of this robot in the garage — to see and change it", "הרובוט שלי נבנה כמו הרובוט הזה": "My robot is built like this robot", "📊 רובוט מהסקאוטינג": "📊 Robot from scouting", "🎮 הרובוט שלך נבנה כמו #": "🎮 Your robot is now built like #", "🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים. ״במוסך״ שומר עותק של המערכות בלבד, בלי מספר הקבוצה.": "🔒 The file stays only in this window's memory — not saved, not synced and not backed up. On the network, guests get only the bots' builds. “In the garage” saves a copy of the systems only, without the team number.", "כבר יש חשבון עם המייל הזה — מתחברים במקום להירשם (או ״שכחתי סיסמה״)": "There's already an account with this email — sign in instead (or “Forgot password”)"}</script>
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
 <script type="application/json" id="i18nX_v70plan" data-i18n>{"מתחיל משני הרצפים הכי טובים של המחולל, מזיז את עמדות הירי ואת הנקודות בדרך, ולפעמים משנה את הרצף עצמו — מוסיף, מוציא או מחליף אבן בניין (החניה תמיד אחרונה). כל ניסיון הוא 30 שניות אוטונומי מלאות בפיזיקה של הסימולטור — בלי בינה מלאכותית. שיפור נשמר, נסיגה נזרקת. עם הבוטים — כל ניסיון שלוש פעמים וממוצע, כדי שהמסלול יעבוד גם כשמישהו בדרך.": "Starts from the generator's two best sequences, moves the shooting spots and the points on the way, and sometimes changes the sequence itself — adds, removes or swaps a building block (parking always stays last). Every try is a full 30-second autonomous in the simulator's physics — no AI. Improvements are kept, setbacks thrown away. With bots — every try runs three times and is averaged, so the path also works when someone is in the way.", "🧠 הסבר את התוצאה": "🧠 Explain the result", "⏳ העוזר קורא את המספרים…": "⏳ The helper is reading the numbers…", "לא הצלחתי להסביר — נסו שוב": "Couldn't explain it — try again", "שינויי רצף": "Sequence changes", "ניסיונות": "tries", "שיפורים": "improvements"}</script>
 <style id="css_v70plan">
@@ -14905,11 +14909,13 @@ function faultTick(dt){
 function faultFrozen(){ return FAULT.freeze>0; }
 /* v67: תקלות גם לבוטים ולנהגים האחרים — אותן חמש תקלות, אותה תדירות, כל רובוט לבד */
 function botFaultTick(b,dt){
-  if(!FAULT.bots||!MATCH.on||MATCH.phase==="סיום"||GEN.running){ if(b.flt&&(!MATCH.on||!FAULT.bots)) b.flt=null; return; }
-  const F=b.flt||(b.flt={k:null,t:0,next:12+Math.random()*14,batt:false});
+  /* v76: רובוט מהסקאוטינג עם אמינות נמוכה — תקלה אחת לכל היותר במאץ׳, בסיכוי לפי האמינות שנמדדה (גם כשתקלות הבוטים כבויות) */
+  const sp=!FAULT.bots&&typeof SCT!=="undefined"&&SCT&&SCT.on&&b.prof&&b.prof.rel!=null&&b.prof.rel<0.99;
+  if(!(FAULT.bots||sp)||!MATCH.on||MATCH.phase==="סיום"||GEN.running){ if(b.flt&&(!MATCH.on||!(FAULT.bots||sp))) b.flt=null; return; }
+  const F=b.flt||(b.flt=sp?{k:null,t:0,next:Math.random()<Math.min(0.9,(1-b.prof.rel)*2)?15+Math.random()*120:1e9,batt:false,once:true}:{k:null,t:0,next:12+Math.random()*14,batt:false});
   if(F.k){ F.t-=dt; if(F.t<=0) F.k=null; return; }
   F.next-=dt; if(F.next>0) return;
-  F.next=18+Math.random()*22;
+  F.next=F.once?1e9:18+Math.random()*22;
   const f=FAULTS[Math.floor(Math.random()*FAULTS.length)];
   F.k=f.k; F.t=f.s; if(f.k==="batt") F.batt=true;
   replayEv("fault",b.name+" · תקלה: "+f.n);
@@ -16392,7 +16398,8 @@ function accWire(){
   on($("acForgot"),async()=>{ const em=$("acEmail").value.trim(); if(!/.+@.+\..+/.test(em)){ accMsg("כתבו את המייל למעלה ואז ״שכחתי סיסמה״","err"); return; }
     const r=await bbApp.acctRecover(em); accMsg(r.ok?"✉️ נשלח מייל לאיפוס הסיסמה":r.why,r.ok?"ok":"err"); });
   on($("acClose"),()=>accModal(false));
-  ["acEmail","acPass"].forEach(id=>{ const el=$(id); if(el) el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter") go(false); if(e.key==="Escape") accModal(false); }); });
+  /* v76: אנטר כשתיבת ההרשמה פתוחה — הרשמה, לא כניסה (קודם יצא ״המייל או הסיסמה לא נכונים״) */
+  ["acEmail","acPass"].forEach(id=>{ const el=$(id); if(el) el.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Enter"){ const su=$("acSignup"); go(!!(su&&!su.hidden)); } if(e.key==="Escape") accModal(false); }); });
   on($("wcAcct"),()=>accModal(true));
   bbApp.onSync(d=>{ if(d.status) ACC.st=d.status; accRender();
     const r=d.result;
@@ -18900,6 +18907,23 @@ const BLD_SHOOT={
   cat:{n:"קטפולטה",s:"פשוטה וזולה — טווח קצר וטעינה איטית",mot:1,srv:1,vMax:6.3,spin:-0.2,feedMin:1.0,ic:"🏹"},
   punch:{n:"בועט קפיץ",s:"ירייה ישרה, טווח בינוני, טעינה איטית",mot:1,srv:1,vMax:6.9,spin:0,feedMin:0.8,ic:"🥊"},
   none:{n:"בלי יורה",s:"מנקד רק בפרח",mot:0,srv:0,capK:1,spin:null,ic:"🚫"}};
+/* v76 מוסך 2: כוונון לכל מערכת — חלקים אמיתיים שמשנים את הפרמטרים של המעבדה. ״lab״ = מה שבמעבדה (לא דורס כלום).
+   הנעה: קוטר גלגל ומנוע (מומנט ביחס הפוך לסל״ד, לפי הערך שבמעבדה ל-312) · שלדה: חומר (כופל על המסה) ·
+   איסוף: מהירות הגלגלים (כופל על כוח המשיכה) · ירי: קוטר ומסת גלגל התנופה, יחס התמסורת וזווית הירי */
+const BLD_WHEEL={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, w72:{n:"72 מ״מ",s:"תאוצה חזקה, מהירות נמוכה",d:72,ic:"◦"},
+  w96:{n:"96 מ״מ",s:"הסטנדרט",d:96,ic:"○"}, w104:{n:"104 מ״מ",s:"מעט מהיר יותר",d:104,ic:"◯"}, w140:{n:"140 מ״מ",s:"מהיר מאוד, מאיץ לאט",d:140,ic:"⭕"}};
+const BLD_DMOT={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, m117:{n:"117 סל״ד",s:"כוח עצום, איטי מאוד",rpm:117,ic:"🐢"}, m223:{n:"223 סל״ד",s:"חזק ואיטי",rpm:223,ic:"🐂"},
+  m312:{n:"312 סל״ד",s:"מאוזן — הכי נפוץ",rpm:312,ic:"⚖"}, m435:{n:"435 סל״ד",s:"מהיר, פחות כוח",rpm:435,ic:"🐎"}, m1150:{n:"1150 סל״ד",s:"טיל — רק עם גלגל קטן",rpm:1150,ic:"🚀"}};
+const BLD_MAT={lab:{n:"כמו במעבדה",s:"לא משנה",k:1,ic:"⚙"}, alu:{n:"אלומיניום",s:"חזק וקל — הבחירה הרגילה",k:1,ic:"🔩"}, poly:{n:"פוליקרבונט",s:"קל, מתכופף קצת",k:0.86,ic:"🪟"},
+  print:{n:"הדפסה בתלת־ממד",s:"הכי קל וזול, פחות דחיפה",k:0.8,ic:"🖨"}, carbon:{n:"סיבי פחמן",s:"קל מאוד וקשיח",k:0.76,ic:"⬛"}, steel:{n:"פלדה",s:"כבד — קשה להזיז, מאיץ לאט",k:1.3,ic:"🏗"}};
+const BLD_ISP={lab:{n:"רגילה",s:"כמו היום",k:1,ic:"⚙"}, slow:{n:"איטית",s:"שקטה, משיכה חלשה",k:0.8,ic:"🐢"}, fast:{n:"מהירה",s:"שואבת חזק מרחוק",k:1.3,ic:"⚡"}};
+const BLD_FW={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, f72:{n:"72 מ״מ",s:"קטן — מגיע מהר למהירות",d:72,ic:"◦"}, f96:{n:"96 מ״מ",s:"הסטנדרט",d:96,ic:"○"},
+  f100:{n:"100 מ״מ",s:"כמו הקלאסי",d:100,ic:"◯"}, f120:{n:"120 מ״מ",s:"מהירות יציאה גבוהה",d:120,ic:"⭕"}};
+const BLD_FMASS={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, light:{n:"קל — מודפס",s:"מאיץ מהר, נחלש אחרי כל ירייה",kg:0.15,bk:1.08,ic:"🪶"},
+  mid:{n:"אלומיניום",s:"מאוזן",kg:0.35,bk:1,ic:"🔩"}, heavy:{n:"פלדה עם משקולות",s:"שומר מהירות בין יריות",kg:0.8,bk:0.94,ic:"🏋"}};
+const BLD_SR={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, r1:{n:"1:1",s:"מהיר מאוד, מומנט נמוך",r:1,ic:"⚡"}, r15:{n:"1.5:1",s:"מהיר",r:1.5,ic:"🐎"}, r3:{n:"3:1",s:"כמו הקלאסי",r:3,ic:"⚖"}, r4:{n:"4:1",s:"חזק, מהירות מוגבלת",r:4,ic:"🐂"}};
+const BLD_ANG={lab:{n:"כמו במעבדה",s:"לא משנה",ic:"⚙"}, a45:{n:"45°",s:"שטוח — מרחוק",a:45,ic:"↗"}, a55:{n:"55°",s:"",a:55,ic:"↗"}, a68:{n:"68°",s:"כמו הקלאסי",a:68,ic:"⤴"}, a75:{n:"75°",s:"תלול — מקרוב",a:75,ic:"⤴"}};
+const BLD_TUNE2=[["wheel",BLD_WHEEL],["dmot",BLD_DMOT],["mat",BLD_MAT],["isp",BLD_ISP],["fw",BLD_FW],["fm",BLD_FMASS],["sr",BLD_SR],["ang",BLD_ANG]];
 const BLD_HOODK=0.35;          /* הנחה: חלק מהגלגול על ההוד שהופך לסיבוב אחורי */
 const BLD_LIFT_T=1.3;          /* הנחה: שניות להרים כדור ולשחרר אותו ברמפה */
 const BLD_TUR_RATE=3.2;        /* הנחה: מהירות סיבוב הצריח, רדיאנים לשנייה */
@@ -18932,9 +18956,10 @@ const BLD_PRESETS=[
   {id:"xspeed",n:"X־דרייב מהיר",note:"הכי זריז בזירה: X־דרייב בתמסורת מהירה, גלגלי הזנה ושני גלגלים באותה מהירות.",
    drive:"xdrive",gear:"fast",w:16,l:16,intake:"compliant",sides:1,pollen:false,shoot:"dual",n2:1,turret:0,lift:false,xfer:"indexer"}
 ];
-const BLD_TUNE_KEYS=["botW","botL","intakeGap","intakeR","intakeF","ratio","feedTime","driveGR","muWheel","strafeEff"];
+const BLD_TUNE_KEYS=["botW","botL","intakeGap","intakeR","intakeF","ratio","feedTime","driveGR","muWheel","strafeEff",
+  "driveWD","driveRpm","driveNm","botMass","wheelD","flyMass","angle"];   /* v76: גם הכוונון של מוסך 2 */
 /* v75: מפתחות שהבנייה כופלת על ערך המעבדה (ולא דורסת) */
-const BLD_MULT_KEYS=["intakeF","driveGR"];
+const BLD_MULT_KEYS=["intakeF","driveGR","botMass"];
 function bldSpecV(k){ const s=SPEC.find(x=>x.k===k); return s?s.v:P[k]; }
 /* 1.12.5: רק מפתח שבאמת ברשימה — ״constructor״ / ״__proto__״ מאורח ברשת נתנו מספר מנועים NaN */
 function bldHas(T,k){ return typeof k==="string"&&Object.prototype.hasOwnProperty.call(T,k); }
@@ -18947,13 +18972,15 @@ function bldNorm(o){
     lift:!!o.lift, liftN:Math.round(cl(o.liftN,1,4,1)), tune:o.tune&&typeof o.tune==="object"?{ratio:cl(o.tune.ratio,1,6,bldSpecV("ratio"))}:null, custom:!!o.custom,
     /* v75 מוסך: תמסורת הנעה, העברה, כמה כדורים נכנסים, חיישן צבע */
     gear:bldHas(BLD_GEAR,o.gear)?o.gear:"std", xfer:bldHas(BLD_XFER,o.xfer)?o.xfer:"direct", color:!!o.color};
+  for(const [k,T] of BLD_TUNE2) r[k]=bldHas(T,o[k])?o[k]:"lab";   /* v76: כוונון — מפתח שלא ברשימה = כמו במעבדה */
   r.cap=Math.round(cl(o.cap,1,BLD_XFER[r.xfer].cap,BLD_XFER[r.xfer].cap));
   if(r.shoot==="none"){ r.turret=0; r.n2=1; }   /* v63: צריח בלי יורה לא קיים — לא נספר כמנוע */
   return r;
 }
 /* n = שם, n2 = מספר היורים */
 function bldPack(B){ return {id:B.id,n:B.n,note:B.note,drive:B.drive,w:B.w,l:B.l,intake:B.intake,sides:B.sides,pollen:B.pollen,shoot:B.shoot,n2:B.n2,turret:B.turret,lift:B.lift,liftN:B.liftN,tune:B.tune,custom:B.custom,
-  gear:B.gear,xfer:B.xfer,cap:B.cap,color:B.color}; }
+  gear:B.gear,xfer:B.xfer,cap:B.cap,color:B.color,
+  wheel:B.wheel,dmot:B.dmot,mat:B.mat,isp:B.isp,fw:B.fw,fm:B.fm,sr:B.sr,ang:B.ang}; }
 function bldFix(o){ o=o||{}; return bldNorm(Object.assign({},o,{n:typeof o.n==="string"?o.n:(o.name||"רובוט")})); }
 /* v74 R4: מטמון — bldAll נקרא כ-9 פעמים בכל צעד פיזיקה. הבנייות המוכנות קבועות; הרשימה נבנית מחדש רק כשמספר
    הגרסה (BLD.ver) עולה, או כשמערך הבנייות האישיות הוחלף/שינה אורך. עריכה במקום משנה את אותו אובייקט — אין צורך לבנות */
@@ -19001,6 +19028,7 @@ function bldSigOf(B){ const a=[B.id,B.drive,B.w,B.l,B.intake,B.sides,B.pollen,B.
   /* v75: החלקים החדשים נכנסים לחתימה רק כשהם לא ברירת המחדל — חתימה של בנייה ישנה לא משתנה (הכיוונון במעבדה לא נדרס) */
   if(B.gear&&B.gear!=="std") a.push("g:"+B.gear); if(B.xfer&&B.xfer!=="direct") a.push("x:"+B.xfer);
   if(B.cap&&B.cap!==BLD_XFER[B.xfer||"direct"].cap) a.push("c:"+B.cap); if(B.color) a.push("col");
+  for(const [k] of BLD_TUNE2) if(B[k]&&B[k]!=="lab") a.push(k+":"+B[k]);
   return JSON.stringify(a); }
 /* מה הבנייה דורסת בפרמטרים של הרובוט שלי. הקלאסי לא דורס כלום — הוא הרובוט של המעבדה */
 function bldOver(B){
@@ -19014,6 +19042,13 @@ function bldOver(B){
   if(X.feed||S.feedMin) o.feedTime=Math.max(X.feed||(BLD.base&&isFinite(BLD.base.feedTime)?BLD.base.feedTime:P.feedTime),S.feedMin||0);
   if(Gr.k!==1) o.driveGR=Gr.k;
   if(D.mu) o.muWheel=D.mu; if(D.se) o.strafeEff=D.se;
+  /* v76 מוסך 2: כוונון */
+  const Wh=BLD_WHEEL[B.wheel], Dm=BLD_DMOT[B.dmot], Ma=BLD_MAT[B.mat], Is=BLD_ISP[B.isp], Fw=BLD_FW[B.fw], Fm=BLD_FMASS[B.fm], Sr=BLD_SR[B.sr], An=BLD_ANG[B.ang];
+  if(Wh&&Wh.d) o.driveWD=Wh.d;
+  if(Dm&&Dm.rpm){ o.driveRpm=Dm.rpm; o.driveNm=+(bldSpecV("driveNm")*bldSpecV("driveRpm")/Dm.rpm).toFixed(3); }
+  if(Ma&&Ma.k!==1) o.botMass=Ma.k;
+  if(Is&&Is.k!==1) o.intakeF=+((o.intakeF||1)*Is.k).toFixed(3);
+  if(Fw&&Fw.d) o.wheelD=Fw.d; if(Fm&&Fm.kg) o.flyMass=Fm.kg; if(Sr&&Sr.r) o.ratio=Sr.r; if(An&&An.a) o.angle=An.a;
   return o;
 }
 function bldSave(){ bldVerUp(); try{ localStorage.setItem(BLD_KEY,JSON.stringify({sel:BLD.sel,custom:BLD.custom.map(bldPack),tur:BLD.tur.auto})); }catch(e){} }
@@ -19026,9 +19061,10 @@ function bldOf(i){
   return bldById(i<0?BLD.sel.me:BLD.sel.bots[i]);
 }
 function bldMe(){ return bldOf(-1); }
-function bldBot(b){ const i=BOTS.indexOf(b); return i>=0&&i<3?bldOf(i):bldFix(BLD_PRESETS[0]); }
+function bldBot(b){ if(b&&b.previewB) return b.previewB;   /* v76: הרובוט בתצוגה המקדימה של המוסך */
+  const i=BOTS.indexOf(b); return i>=0&&i<3?bldOf(i):bldFix(BLD_PRESETS[0]); }
 function bldIsClassic(B){ return B.drive==="mecanum"&&B.intake==="rollers"&&B.sides===1&&!B.pollen&&B.shoot==="diff"&&B.n2===1&&!B.turret&&!B.lift&&B.w===16&&B.l===16&&
-  (!B.gear||B.gear==="std")&&(!B.xfer||B.xfer==="direct")&&(B.cap==null||B.cap===4)&&!B.color; }
+  (!B.gear||B.gear==="std")&&(!B.xfer||B.xfer==="direct")&&(B.cap==null||B.cap===4)&&!B.color&&BLD_TUNE2.every(([k])=>!B[k]||B[k]==="lab"); }
 /* ── בדיקת חוקים ── */
 function bldCheck(B){
   const d=BLD_DRIVE[B.drive], it=BLD_INTAKE[B.intake], sh=BLD_SHOOT[B.shoot], X=BLD_XFER[B.xfer]||BLD_XFER.direct;
@@ -19060,6 +19096,7 @@ function bldSum(B){
   if(B.xfer&&B.xfer!=="direct") p.push(BLD_XFER[B.xfer].n);
   if(B.cap&&B.cap<4) p.push(B.cap+" כדורים");
   if(B.color) p.push("חיישן צבע");
+  const tn=BLD_TUNE2.filter(([k])=>B[k]&&B[k]!=="lab").length; if(tn) p.push("⚙ "+tn+" כוונונים");
   if(B.shoot==="none"&&!B.lift) p.push("בלי יורה");
   return p;
 }
@@ -19076,7 +19113,7 @@ function bldTuneMe(B){
   BLD.ap={sig:bldSigOf(B),vals}; bldBaseSave();
   /* הערכים של הבנייה נשמרים בפרמטרים מיד (לא אחרי ההשהיה של saveParams) — בטעינה הבאה ap ו-P מתאימים */
   try{ const o=JSON.parse(localStorage.getItem(LSKEY)||"null"); if(o&&typeof o==="object"){ for(const k of BLD_TUNE_KEYS) o[k]=P[k]; localStorage.setItem(LSKEY,JSON.stringify(o)); } }catch(e){}
-  try{ apply("motor"); apply("chas"); }catch(e){}
+  try{ apply("motor"); apply("chas"); apply("shooter"); apply("aim"); }catch(e){}
   bldRebuildMe();
 }
 /* v63: בנייה חדשה לא מקפיצה את הרובוט הביתה — אותו מקום, כיוון ומהירות */
@@ -19109,8 +19146,8 @@ function bldTankVec(ux,uz,v,remain,turn){
   return {f:spin?0:runClamp((back?-1:1)*k*c*c),r:0,turn:runClamp(e*2.4),tank:1,spin};
 }
 /* v63: תקרת גלגל התנופה של בוט (12 וולט) — ביורה הוד חצי ממנה, כמו wheelCap שלי */
-function bldBotCap(b){ const B=bldBot(b), ratio=B.tune&&B.tune.ratio?B.tune.ratio:bldSpecV("ratio");
-  return bldShootCap(bldSpecV("freeRpm")/Math.max(1e-6,ratio)*(Math.PI*bldSpecV("wheelD")/1000)/60, 1, B.shoot); }
+function bldBotCap(b){ const B=bldBot(b), Sr=BLD_SR[B.sr], Fw=BLD_FW[B.fw], ratio=Sr&&Sr.r?Sr.r:B.tune&&B.tune.ratio?B.tune.ratio:bldSpecV("ratio");
+  return bldShootCap(bldSpecV("freeRpm")/Math.max(1e-6,ratio)*(Math.PI*(Fw&&Fw.d?Fw.d:bldSpecV("wheelD"))/1000)/60, 1, B.shoot); }
 /* v75: תקרת מהירות היציאה לפי סוג היורה. surf = מהירות פני הגלגל, volt = מתח יחסי ל-12 וולט */
 function bldShootCap(surf,volt,key){ const S=BLD_SHOOT[key]||BLD_SHOOT.diff; return S.vMax?S.vMax*volt:surf*(S.capK||1); }
 /* v75: היורה של הבנייה — מה שיש לו סיבוב קבוע (כל מה שאינו דיפרנציאלי) מחזיר את המפתח שלו */
@@ -19410,7 +19447,11 @@ function bldBotMods(b,o){
   if(!BLD) return o; const B=bldBot(b); if(bldIsClassic(B)) return o;
   const D=BLD_DRIVE[B.drive]||{}, Gr=BLD_GEAR[B.gear]||BLD_GEAR.std, X=BLD_XFER[B.xfer]||BLD_XFER.direct, S=BLD_SHOOT[B.shoot]||{};
   o.v*=(D.bv||1)*(Gr.bv||1);
-  o.cycle=Math.max(o.cycle*(X.bk||1),S.feedMin?S.feedMin+0.15:0);
+  /* v76: גלגל ומנוע — מהירות חופשית ביחס ל-96 מ״מ ו-312 סל״ד (לא מעל התקרה המשותפת); פלדה — קצת איטי; גלגל תנופה קל/כבד — קצב ירי */
+  const Wh=BLD_WHEEL[B.wheel], Dm=BLD_DMOT[B.dmot], Ma=BLD_MAT[B.mat], Fm=BLD_FMASS[B.fm];
+  if(Wh&&Wh.d||Dm&&Dm.rpm){ const r=((Dm&&Dm.rpm)||312)*((Wh&&Wh.d)||96)/(312*96); if(r<1) o.v*=Math.max(0.35,r); }
+  if(Ma&&Ma.k>1.1) o.v*=0.96;
+  o.cycle=Math.max(o.cycle*(X.bk||1)*((Fm&&Fm.bk)||1),S.feedMin?S.feedMin+0.15:0);
   return o;
 }
 function bldBotTol(b,tol){ const B=bldBot(b); return B.turret&&B.shoot!=="none"?Math.max(tol,B.turret>=360?Math.PI:B.turret*Math.PI/360*0.9):tol; }
@@ -19560,6 +19601,7 @@ function bldUI(){
   const parts=(k,TB)=>'<div class="garParts">'+Object.keys(TB).map(v=>{ const o=TB[v];
     return '<button class="garPart'+(String(B[k])===v?" on":"")+'" data-bopt="'+k+'|'+v+'" title="'+appEsc(o.s||"")+'"><span class="garIc">'+(o.ic||"•")+'</span><b>'+appEsc(o.n)+'</b><small>'+appEsc(o.s||"")+'</small><em>'+cost(o)+'</em></button>'; }).join("")+'</div>';
   const TABS=[["drive","🛞","הנעה"],["intake","🧲","איסוף"],["xfer","🔁","העברה"],["shoot","🎯","ירי"],["lift","🛗","מעלית"],["body","📐","מידות"]];
+  const tune=(k,T,lab)=>'<div class="bldF garTune"><span>'+lab+'</span>'+seg(k,Object.keys(T).map(v=>[v,(T[v].ic&&v!=="lab"?T[v].ic+" ":"")+T[v].n,T[v].s]))+'</div>';
   const pane=(id,html)=>'<div class="garPane" data-gpane="'+id+'"'+(tab===id?'':' hidden')+'>'+html+'</div>';
   const st=bldStats(B), mot=c.mot, srv=c.srv;
   const bar=(n,v,tip)=>'<div class="garStat" title="'+appEsc(tip)+'"><span>'+n+'</span><div class="garBar"><i style="width:'+Math.round(v*10)+'%"></i></div><b>'+v.toFixed(1)+'</b></div>';
@@ -19568,7 +19610,8 @@ function bldUI(){
     (ro?'<div class="bldName"><b>'+appEsc(B.n)+'</b></div>':'<div class="bldName"><input id="bldNameIn" maxlength="32" value="'+appEsc(B.n)+'" aria-label="שם הרובוט"></div>')+
     (B.note?'<p class="note">'+appEsc(B.note)+'</p>':'')+
     '<div class="gar"><div class="garL">'+
-      '<div class="garView">'+bldSvg(B)+'</div>'+
+      '<div class="garView"><div class="garVTabs" role="group" aria-label="תצוגה"><button data-gview="3d" class="'+(BLD.view!=="top"?"on":"")+'">🧊 תלת־ממד</button><button data-gview="top" class="'+(BLD.view==="top"?"on":"")+'">📐 מלמעלה</button></div>'+
+        '<div class="garPv" id="garPv"'+(BLD.view==="top"?" hidden":"")+' title="גוררים כדי לסובב"></div><div class="garTop"'+(BLD.view!=="top"?" hidden":"")+'>'+bldSvg(B)+'</div></div>'+
       '<div class="garStats">'+bar("מהירות",st.speed,"כמה מהר הוא נוסע")+bar("תמרון",st.agile,"תנועה הצידה וסיבוב")+bar("דחיפה",st.push,"כמה קשה להזיז אותו")+
         bar("איסוף",st.intake,"רוחב הפתח ועוצמת המשיכה")+bar("קצב ירי",st.rate,"כמה יריות בשנייה")+bar("טווח",st.range,"מהירות היציאה המרבית")+
         bar("שליטה",st.control,"צריח ושליטה בסיבוב הכדור")+bar("קיבולת",st.cap,"כמה כדורים נכנסים")+'</div>'+
@@ -19578,38 +19621,101 @@ function bldUI(){
         c.warn.map(t=>'<div class="warn"><i>!</i><span>'+appEsc(t)+'</span></div>').join("")+'</div>'+
     '</div><div class="garR">'+
       '<div class="garTabs" role="tablist">'+TABS.map(([id,ic,n])=>'<button role="tab" data-gtab="'+id+'" class="'+(tab===id?"on":"")+'" aria-selected="'+(tab===id)+'"><span>'+ic+'</span>'+n+'</button>').join("")+'</div>'+
-      pane("drive",'<div class="garSub">שלדה</div>'+parts("drive",BLD_DRIVE)+'<div class="garSub">תמסורת</div>'+parts("gear",BLD_GEAR))+
+      pane("drive",'<div class="garSub">שלדה</div>'+parts("drive",BLD_DRIVE)+'<div class="garSub">תמסורת</div>'+parts("gear",BLD_GEAR)+
+        '<div class="garSub">⚙ כוונון</div>'+tune("wheel",BLD_WHEEL,"קוטר גלגל")+tune("dmot",BLD_DMOT,"מנוע הנעה"))+
       pane("intake",parts("intake",BLD_INTAKE)+
         '<div class="bldF"><span>צד האיסוף</span>'+seg("sides",[[1,"קדימה"],[2,"קדימה ואחורה"]])+'</div>'+
-        '<div class="bldF"><span>מה אוסף</span>'+seg("pollen",[[false,"פולן ונקטר"],[true,"רק פולן"]])+'</div>')+
+        '<div class="bldF"><span>מה אוסף</span>'+seg("pollen",[[false,"פולן ונקטר"],[true,"רק פולן"]])+'</div>'+
+        '<div class="garSub">⚙ כוונון</div>'+tune("isp",BLD_ISP,"מהירות האיסוף"))+
       pane("xfer",parts("xfer",BLD_XFER)+
         '<div class="bldF"><span>כמה כדורים</span>'+seg("cap",Array.from({length:BLD_XFER[B.xfer].cap},(_,i)=>[i+1,String(i+1)]))+'</div>'+
         '<div class="bldF"><span>חיישן צבע</span>'+seg("color",[[false,"בלי"],[true,"לא לוקח נקטר של היריב"]])+'</div>')+
       pane("shoot",parts("shoot",BLD_SHOOT)+
         '<div class="bldF"><span>כמה יורים</span>'+seg("n2",[[1,"אחד"],[2,"שניים"]])+'</div>'+
-        '<div class="bldF"><span>צריח</span>'+seg("turret",[[0,"בלי"],[90,"90°"],[180,"180°"],[360,"360°"]])+'</div>')+
+        '<div class="bldF"><span>צריח</span>'+seg("turret",[[0,"בלי"],[90,"90°"],[180,"180°"],[360,"360°"]])+'</div>'+
+        '<div class="garSub">⚙ כוונון</div>'+tune("fw",BLD_FW,"גלגל תנופה")+tune("fm",BLD_FMASS,"מסת הגלגל")+tune("sr",BLD_SR,"תמסורת היורה")+tune("ang",BLD_ANG,"זווית ירי"))+
       pane("lift",'<div class="bldF"><span>מעלית לפרח</span>'+seg("lift",[[false,"בלי"],[true,"עם מעלית"]])+'</div>'+
         (B.lift?'<div class="bldF"><span>כדורים בהרמה</span>'+seg("liftN",[[1,"1"],[2,"2"],[3,"3"],[4,"4"]])+'</div>':'')+
         '<p class="note">המעלית מרימה כדורים מעל הפרח ומשחררת אותם ברמפה. נקטר שלך למעלה — הפרח שלך.</p>')+
       pane("body",'<div class="bldF"><span>רוחב × אורך</span><div class="bldWL"><input type="number" id="bldW" min="12" max="24" step="0.5" value="'+B.w+'"'+(ro?" disabled":"")+' aria-label="רוחב"> × <input type="number" id="bldL" min="12" max="24" step="0.5" value="'+B.l+'"'+(ro?" disabled":"")+' aria-label="אורך"> <em>אינץ׳</em></div></div>'+
-        '<p class="note">בהתחלה עד 18 × 18 אינץ׳ (R102). רובוט רחב תופס יותר מקום לאיסוף — וגם נתקע יותר.</p>')+
+        '<p class="note">בהתחלה עד 18 × 18 אינץ׳ (R102). רובוט רחב תופס יותר מקום לאיסוף — וגם נתקע יותר.</p>'+
+        '<div class="garSub">⚙ חומר השלדה</div>'+tune("mat",BLD_MAT,"חומר"))+
     '</div></div>'+
     '<div class="row bldEdAct"><button data-bact="rand" title="בנייה אקראית חוקית">🎲 תפתיע אותי</button>'+(ro?'<button data-bact="dup">שכפל ושנה</button>':'<button data-bact="dup">שכפל</button><button data-bact="del">מחק</button>')+
       '<button data-bact="useme" class="primary"'+(comp&&!c.ok?" disabled":"")+'>לרובוט שלי</button></div>';
+  try{ gpvShow(B); }catch(e){ console.error(e); }
 }
+/* ══ v76 מוסך 2: תצוגה תלת־ממדית מסתובבת ══
+   רנדרר קטן משלו (קנבס נפרד), סצנה עם אור ורצפה, ו״בוט רפאים״ שנבנה באותה פונקציה של הבוטים בזירה (buildAIBot + bldDecorBot)
+   מהבנייה שבעריכה — בלי גוף פיזיקלי (מוסר מיד מהעולם), כך שהוא לא משפיע על כלום. מסתובב לבד, וגוררים כדי לסובב.
+   מצויר רק כשהחלון פתוח והתצוגה התלת־ממדית נבחרה */
+const GPV={r:null,sc:null,cam:null,b:null,raf:0,yaw:0.7,pitch:0.42,drag:null,sig:"",cv:null,fail:false,idle:0};
+function gpvInit(){
+  if(GPV.r||GPV.fail) return !!GPV.r;
+  try{ GPV.cv=document.createElement("canvas"); GPV.cv.className="garCv";
+    GPV.r=new THREE.WebGLRenderer({canvas:GPV.cv,antialias:true,alpha:true,powerPreference:"low-power"});
+    GPV.r.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); }
+  catch(e){ GPV.fail=true; GPV.r=null; return false; }
+  const sc=GPV.sc=new THREE.Scene();
+  sc.add(new THREE.HemisphereLight(0xdfe8ff,0x2a2f38,1.05));
+  const d=new THREE.DirectionalLight(0xffffff,1.25); d.position.set(0.8,1.6,1.1); sc.add(d);
+  const k=new THREE.DirectionalLight(0xffb020,0.45); k.position.set(-1.2,0.6,-0.8); sc.add(k);
+  const fl=new THREE.Mesh(new THREE.CircleGeometry(0.42,48),new THREE.MeshStandardMaterial({color:0x1d2530,roughness:.9}));
+  fl.rotation.x=-Math.PI/2; sc.add(fl);
+  const rg=new THREE.Mesh(new THREE.RingGeometry(0.405,0.42,48),new THREE.MeshBasicMaterial({color:0xffb020,transparent:true,opacity:.55}));
+  rg.rotation.x=-Math.PI/2; rg.position.y=0.001; sc.add(rg);
+  GPV.cam=new THREE.PerspectiveCamera(32,1.4,0.02,10);
+  const cv=GPV.cv;
+  cv.addEventListener("pointerdown",e=>{ GPV.drag={x:e.clientX,y:e.clientY,yaw:GPV.yaw,pitch:GPV.pitch}; GPV.idle=0; try{ cv.setPointerCapture(e.pointerId); }catch(err){} });
+  cv.addEventListener("pointermove",e=>{ const g=GPV.drag; if(!g) return; GPV.yaw=g.yaw-(e.clientX-g.x)*0.012; GPV.pitch=Math.max(0.08,Math.min(1.25,g.pitch+(e.clientY-g.y)*0.008)); });
+  const up=()=>{ GPV.drag=null; GPV.idle=0; }; cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
+  return true;
+}
+function gpvShow(B){
+  const host=$("garPv"); if(!host||host.hidden){ gpvStop(); return; }
+  if(!gpvInit()){ host.innerHTML='<p class="note">התצוגה התלת־ממדית לא נתמכת כאן — יש שרטוט מלמעלה</p>'; return; }
+  if(GPV.cv.parentNode!==host) host.appendChild(GPV.cv);
+  const sig=JSON.stringify(bldPack(B))+"|"+myAlly();
+  if(sig!==GPV.sig){ GPV.sig=sig;
+    const fb=GPV.b||(GPV.b={name:"",ally:myAlly(),role:"score",home:{x:0,z:0},on:true,clip:[],yaw:0,t:0});
+    fb.ally=myAlly(); fb.previewB=B;
+    if(fb.group) GPV.sc.remove(fb.group);
+    buildAIBot(fb);
+    try{ scene.remove(fb.group); }catch(e){} if(fb.body){ try{ world.removeBody(fb.body); }catch(e){} fb.body=null; }
+    fb.group.position.set(0,0,0); fb.group.rotation.set(0,0,0); fb.group.visible=true;
+    if(fb.ring) fb.ring.visible=false; if(fb.ringFill) fb.ringFill.visible=false;
+    GPV.sc.add(fb.group); }
+  if(!GPV.raf) GPV.raf=requestAnimationFrame(gpvFrame);
+}
+function gpvFrame(){
+  GPV.raf=0; const host=$("garPv"), box=$("bldBox");
+  if(!host||host.hidden||!box||box.hidden||!GPV.r) return;
+  const w=Math.max(120,host.clientWidth|0), h=Math.round(w*0.72);
+  if(GPV.cv.width!==Math.round(w*GPV.r.getPixelRatio())){ GPV.r.setSize(w,h,false); GPV.cv.style.width=w+"px"; GPV.cv.style.height=h+"px"; GPV.cam.aspect=w/h; GPV.cam.updateProjectionMatrix(); }
+  if(!GPV.drag){ GPV.idle+=1/60; if(GPV.idle>1.2) GPV.yaw+=0.006; }
+  const R=1.55, ty=0.2;
+  GPV.cam.position.set(Math.sin(GPV.yaw)*Math.cos(GPV.pitch)*R, ty+Math.sin(GPV.pitch)*R, Math.cos(GPV.yaw)*Math.cos(GPV.pitch)*R);
+  GPV.cam.lookAt(0,ty,0);
+  GPV.r.render(GPV.sc,GPV.cam);
+  GPV.raf=requestAnimationFrame(gpvFrame);
+}
+function gpvStop(){ if(GPV.raf){ cancelAnimationFrame(GPV.raf); GPV.raf=0; } }
 /* v75 מוסך: ציונים לתצוגה (0–10) — מחושבים מאותם ערכים שמשנים את ההתנהגות, לא ממספרים נפרדים */
 function bldStats(B){
   const D=BLD_DRIVE[B.drive], Gr=BLD_GEAR[B.gear]||BLD_GEAR.std, it=BLD_INTAKE[B.intake], X=BLD_XFER[B.xfer]||BLD_XFER.direct, S=BLD_SHOOT[B.shoot];
   const cl=v=>Math.max(0,Math.min(10,v));
   const mu=D.mu||(D.strafe?0.85:0.95), se=D.strafe?(D.se||0.78):0;
-  const speed=cl(7/Gr.k*(D.bv||1)*(B.drive==="tread"?0.85:1)+(D.strafe&&D.se>0.9?0.5:0));
-  const agile=cl(2+se*8+(B.drive==="tread"?-1:0));
-  const push=cl(mu*7*Gr.k+(D.strafe?-1:1));
+  /* v76: כוונון — גלגל ומנוע (מהירות חופשית ביחס ל-96 מ״מ ו-312), חומר (מסה) */
+  const Wh=BLD_WHEEL[B.wheel]||{}, Dm=BLD_DMOT[B.dmot]||{}, Ma=BLD_MAT[B.mat]||{k:1}, Fw=BLD_FW[B.fw]||{}, Fm=BLD_FMASS[B.fm]||{}, Sr=BLD_SR[B.sr]||{};
+  const vr=((Dm.rpm||312)*(Wh.d||96))/(312*96), tq=(312/(Dm.rpm||312))*(96/(Wh.d||96));
+  const speed=cl(7/Gr.k*(D.bv||1)*(B.drive==="tread"?0.85:1)*Math.pow(vr,0.6)+(D.strafe&&D.se>0.9?0.5:0)-(Ma.k>1.1?0.6:Ma.k<0.9?-0.4:0));
+  const agile=cl(2+se*8+(B.drive==="tread"?-1:0)+(Ma.k<0.9?0.5:Ma.k>1.1?-0.8:0));
+  const push=cl(mu*7*Gr.k*Math.pow(tq,0.35)*Math.pow(Ma.k||1,0.8)+(D.strafe?-1:1));
   const intake=B.intake==="none"?0:cl(2+it.hw*0.55+it.F*3-(it.pg||0)*4+(B.sides===2?1.5:0)+(it.center?0.5:0));
   const feed=Math.max(X.feed||(BLD&&BLD.base&&isFinite(BLD.base.feedTime)?BLD.base.feedTime:0.35),S.feedMin||0);
-  const rate=B.shoot==="none"?0:cl((1/feed)*2.6*(B.n2===2?1.6:1));
-  const ratio=B.tune&&B.tune.ratio?B.tune.ratio:bldSpecV("ratio");
-  const range=B.shoot==="none"?0:cl(bldShootCap(bldSpecV("freeRpm")/Math.max(1e-6,ratio)*(Math.PI*bldSpecV("wheelD")/1000)/60,1,B.shoot)*0.9);
+  const rate=B.shoot==="none"?0:cl((1/feed)*2.6*(B.n2===2?1.6:1)/(Fm.bk||1));
+  const ratio=Sr.r||(B.tune&&B.tune.ratio?B.tune.ratio:bldSpecV("ratio"));
+  const range=B.shoot==="none"?0:cl(bldShootCap(bldSpecV("freeRpm")/Math.max(1e-6,ratio)*(Math.PI*(Fw.d||bldSpecV("wheelD"))/1000)/60,1,B.shoot)*0.9);
   const control=B.shoot==="none"?0:cl(4+(B.turret>=360?4:B.turret?B.turret/90:0)+(S.spin==null?1.5:0)+(B.color?0.5:0));
   return {speed,agile,push,intake,rate,range,control,cap:cl((B.cap||4)*2.5)};
 }
@@ -19659,6 +19765,7 @@ function bldRandomBuild(){
     const o={drive:pick(BLD_DRIVE),gear:pick(BLD_GEAR),intake:pick(BLD_INTAKE),xfer:pick(BLD_XFER),shoot:pick(BLD_SHOOT),
       sides:Math.random()<0.25?2:1,pollen:Math.random()<0.2,n2:Math.random()<0.15?2:1,turret:[0,0,90,180,360][Math.floor(Math.random()*5)],
       lift:Math.random()<0.15,liftN:1+Math.floor(Math.random()*3),color:Math.random()<0.3,w:16,l:16};
+    for(const [k,TT] of BLD_TUNE2) if(Math.random()<0.4) o[k]=pick(TT);   /* v76: גם כוונון אקראי */
     if(o.intake==="none"||o.shoot==="none"&&!o.lift) continue;
     const C=bldNorm(o); if(bldCheck(C).ok){ B=C; break; } }
   if(!B) B=bldFix(BLD_PRESETS[0]);
@@ -19669,7 +19776,7 @@ function bldRandomBuild(){
   BLD.edit=N.id; bldSave(); bldUI(); return N;
 }
 function bldOpen(id){ const m=$("bldBox"); if(!m) return; m.hidden=false; if(id) BLD.edit=id; else if(!BLD.edit) BLD.edit=BLD.sel.me; bldUI(); }
-function bldClose(){ const m=$("bldBox"); if(m) m.hidden=true; }
+function bldClose(){ const m=$("bldBox"); if(m) m.hidden=true; try{ gpvStop(); }catch(e){} }
 /* v63: מאץ׳ רץ (או ספירה לאחור) — לא מחליפים רובוט באמצע. השינוי נשמר ומוחל בסוף המאץ׳ */
 function bldBusy(){ return typeof MATCH!=="undefined"&&!!(MATCH.on||MATCH.cd>0); }
 function bldInUse(id){ return BLD.sel.me===id||BLD.sel.bots.indexOf(id)>=0||!!BLD.pend&&Object.values(BLD.pend).indexOf(id)>=0; }
@@ -19783,6 +19890,7 @@ function bldNetReset(){ if(!BLD) return; const had=BLD.remote||Object.keys(BLD.n
     m.addEventListener("click",e=>{
       const p=e.target.closest("[data-bpick]"); if(p){ BLD.edit=p.dataset.bpick; bldUI(); return; }
       const g=e.target.closest("[data-gtab]"); if(g){ BLD.tab=g.dataset.gtab; bldUI(); return; }
+      const gv=e.target.closest("[data-gview]"); if(gv){ BLD.view=gv.dataset.gview; bldUI(); return; }
       const o=e.target.closest("[data-bopt]"); if(o&&!o.disabled){ const [k,v]=o.dataset.bopt.split("|");
         /* v75 מוסך: חלק בבנייה מוכנה — יוצרים עותק שלך ומשנים אותו */
         if(!BLD.custom.some(x=>x.id===BLD.edit)){ const cur=bldAll().find(x=>x.id===BLD.edit); if(cur&&String(cur[k])===v) return;
@@ -19821,7 +19929,7 @@ function bldNetReset(){ if(!BLD) return; const had=BLD.remote||Object.keys(BLD.n
 })();
 (function(o){ const S=window.__sim; if(!S) return; for(const k in o){ try{ if(!(k in S)) S[k]=o[k]; }catch(e){} } })({BLD,BLD_PRESETS,BLD_DRIVE,BLD_INTAKE,BLD_SHOOT,bldAll,bldById,bldOf,bldMe,bldBot,bldSet,bldCheck,bldSum,bldOpen,bldClose,
   bldDup,bldDel,bldEditSet,bldRandomBots,bldRandomBuild,bldStats,bldSvg,bldCapMe,aiCap,skill,SKILL,GAME,BLD_XFER,BLD_GEAR,bldShootCap,bldSpinW,bldFix,bldLiftGo,bldLiftFlower,bldDeposit,bldTurCmd,bldTurAuto,bldMouths,bldBotMouths,bldNet,bldFromGuest,bldFromHost,
-  bldNetReset,bldIsClassic,bldGapBot,bldAimErr,shotFwd,bldStepMe,vdMe,flowerPoints,fire,shotPose,refreshAim,mouthFrame,aimHive,solveAvgHere,
+  GPV,BLD_TUNE2,bldOver,BLD_WHEEL,BLD_DMOT,BLD_MAT,botFaultTick,gpvShow,bldPack,bldNorm,bldNetReset,bldIsClassic,bldGapBot,bldAimErr,shotFwd,bldStepMe,vdMe,flowerPoints,fire,shotPose,refreshAim,mouthFrame,aimHive,solveAvgHere,
   PADACT,PACTS,pathJava,aiCanEat,humSeat,humFree,bldFlowerInfo,bldEndgame,bldLiftTarget,bldLiftSeek,bldBotWantsLiftTest:bldBotWantsLift,bldHomeFlowerTest:bldHomeFlower,addBallTest:addBall,
   bldBusy,bldFlush,bldFlowerFull,bldLiftPick,bldTankVec,bldLegalFix,bldBotReset,bldBotCap,bldDiffNow,bldRebuildBot,bldSigOf,bldUI,buildAIBot,humFireRaw,GEO,BALLSETS});
 
@@ -19853,7 +19961,14 @@ function sctProf(r){
     cap:sctNum(d.capacity,1,4), shooter:["fixed","turret","double","none","hood","flywheel"].indexOf(d.shooter)>=0?d.shooter:"",
     side:d.intake_side==="both"?2:1, lift:d.lift===true, role:d.preferred_role==="defense"||d.preferred_role==="defender"?"defend":d.preferred_role==="scorer"?"score":"",
     cyc:sctNum(m.cycle_sec,2,90), acc:sctNum(m.accuracy,0,1), ap:sctNum(m.auto_points,0,200), def:sctNum(m.defense_share,0,1),
-    park:sctNum(m.park_end,0,1), rel:sctNum(m.reliability,0,1), tips:sctNum(m.tips_per_match,0,40), zone:sctStr(m.main_shoot_zone,12)};
+    park:sctNum(m.park_end,0,1), rel:sctNum(m.reliability,0,1), tips:sctNum(m.tips_per_match,0,40), zone:["near","mid","far"].indexOf(m.main_shoot_zone)>=0?m.main_shoot_zone:"",
+    /* v76: כמה כדורים בכל מטח ובכמה שניות (גם בשמות חלופיים), מאיפה מתחיל באוטונומי, ופרטי חומרה מהפיט */
+    vb:sctNum(m.balls_per_volley!=null?m.balls_per_volley:m.balls_per_cycle!=null?m.balls_per_cycle:m.shots_per_cycle,1,4),
+    vs:sctNum(m.volley_sec!=null?m.volley_sec:m.shoot_sec,0.2,20), fouls:sctNum(m.fouls_per_match,0,30),
+    start:typeof m.auto_start==="string"?sctStr(m.auto_start,4):"",
+    wheel:sctNum(d.wheel_mm,40,160), mrpm:sctNum(d.drive_rpm,60,6000), xfer:["direct","belt","indexer","elevator","spin","kicker","ramp"].indexOf(d.transfer)>=0?d.transfer:"",
+    intake:["rollers","compliant","mecanum","surgical","star","belt","funnel","claw"].indexOf(d.intake_type)>=0?d.intake_type:"",
+    color:d.color_sensor===true};
   return p;
 }
 function sctParse(txt){
@@ -19878,6 +19993,10 @@ function sctBuild(p,i){
     intake:"compliant", sides:p.side, shoot:p.shooter==="none"?"none":p.shooter==="hood"?"hood":"diff", n2:p.shooter==="double"?2:1,
     turret:p.shooter==="turret"?360:0, lift:p.lift, liftN:2, cap:p.cap||4, w:16, l:16};
   if(o.turret) o.shoot="hood";
+  /* v76: מה שהוצהר בפיט — סוג איסוף, העברה, חיישן צבע, קוטר גלגל ומנוע (לקרוב ביותר שיש במוסך) */
+  if(p.intake) o.intake=p.intake; if(p.xfer){ o.xfer=p.xfer; o.cap=Math.min(o.cap,BLD_XFER[p.xfer].cap); } if(p.color) o.color=true;
+  const near=(v,T,f)=>{ let best="lab",bd=1e9; for(const k in T){ const x=T[k][f]; if(x&&Math.abs(x-v)<bd){ bd=Math.abs(x-v); best=k; } } return best; };
+  if(p.wheel) o.wheel=near(p.wheel,BLD_WHEEL,"d"); if(p.mrpm) o.dmot=near(p.mrpm,BLD_DMOT,"rpm");
   const B=bldFix(o); B.custom=false; B.scout=true; return B;
 }
 /* מה הפרופיל עושה לחמשת הערכים של הבוט. ביטחון נמוך — מתערבב עם הרמה הרגילה */
@@ -19887,6 +20006,8 @@ function sctBotMods(b,o){
   if(p.speed) o.v=mix(o.v,o.v*(p.speed==="slow"?0.75:p.speed==="fast"?1:0.88));
   if(p.cyc!=null){ const r=Math.max(0.8,Math.min(2.4,p.cyc/12)); o.cycle=mix(o.cycle,o.cycle*r); o.think=mix(o.think,Math.max(0,Math.min(1.5,(p.cyc-12)/12))); }
   if(p.acc!=null){ o.tol=mix(o.tol,o.tol+(1-p.acc)*0.05); o.vErr=mix(o.vErr,o.vErr+(1-p.acc)*0.018); }
+  /* v76: ״כמה כדורים בכמה שניות״ — הזמן בין יריות במטח הוא הנתון הכי ישיר, וגובר על הנגזרת מזמן המחזור */
+  if(p.vs!=null&&p.vb){ const gap=Math.max(0.3,Math.min(4,p.vs/Math.max(1,p.vb))); o.cycle=mix(o.cycle,gap); }
   return o;
 }
 function sctAuto(p){ if(p.ap==null) return null; return p.ap<=0?"none":p.ap<=4?"leave":p.ap<=16?"preload":"cycle"; }
@@ -19900,21 +20021,26 @@ function sctApply(){
   const partner=BOTS.find(b=>b.ally===myAlly()), opps=BOTS.filter(b=>b.ally!==myAlly());
   const plan=[[partner,mine[0]],[opps[0],them[0]],[opps[1],them[1]]];
   for(const b of BOTS){ b.prof=null; b.skC=null; } SCT.build=[null,null,null];
+  for(const b of BOTS){ b.noPark=undefined; b.prefRange=undefined; }
   for(const [b,t] of plan){ if(!b||!t||!P0.robots[t]) continue; const i=BOTS.indexOf(b);
-    b.prof=P0.robots[t]; SCT.build[i]=sctBuild(b.prof,i); }
+    b.prof=P0.robots[t]; SCT.build[i]=sctBuild(b.prof,i);
+    /* v76: טווח הירי המועדף (קרוב/בינוני/רחוק) — רמז לבחירת עמדה */
+    if(b.prof.zone) b.prefRange={near:30,mid:55,far:85}[b.prof.zone]; }
   SCT.on=true; SCT.ver++; if(BLD) bldVerUp();
   for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){}
   try{ bldNet(); }catch(e){}
   return true;
 }
 function sctClear(){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err="";
-  for(const b of BOTS){ b.prof=null; b.skC=null; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
+  for(const b of BOTS){ b.prof=null; b.skC=null; b.noPark=undefined; b.prefRange=undefined; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
 /* מאץ׳ מלא עם הרובוטים מהסקאוטינג — אחרי ״התחל״ הרגיל: כולם בזירה, תפקיד ואוטונומי מהפרופיל */
 function sctPlay(){
   if(!SCT.on&&!sctApply()) return;
   if(NET.mode==="guest"){ refToast("במשחק ברשת רק המארח מתחיל מאץ׳","block"); return; }
   sctClose(); setupApply();
-  for(const b of BOTS){ if(!b.prof) continue; b.on=true; const r=sctRole(b.prof); if(r) setAIRole(b,r); const a=sctAuto(b.prof); if(a&&MT.auto>0) b.autoLvl=a; }
+  for(const b of BOTS){ if(!b.prof) continue; b.on=true; const r=sctRole(b.prof); if(r) setAIRole(b,r); const a=sctAuto(b.prof); if(a&&MT.auto>0) b.autoLvl=a;
+    /* v76: רובוט שחונה רק לפעמים — מגרילים לכל מאץ׳ לפי אחוז החניה שנמדד */
+    b.noPark=b.prof.park!=null?Math.random()>b.prof.park:undefined; b.sctFlt=null; }
   refToast("📊 מאץ׳ מהסקאוטינג — "+BOTS.filter(b=>b.prof).map(b=>"#"+b.prof.team).join(" · "),"ok");
 }
 function sctLoadText(txt){
@@ -19927,7 +20053,9 @@ function sctLoadText(txt){
 function sctFmt(p){
   const t=[]; if(p.speed) t.push({slow:"איטי",mid:"בינוני",medium:"בינוני",fast:"מהיר"}[p.speed]);
   if(p.cyc!=null) t.push("מחזור "+Math.round(p.cyc)+" שנ׳"); if(p.acc!=null) t.push("דיוק "+Math.round(p.acc*100)+"%");
+  if(p.vb&&p.vs!=null) t.push(p.vb+" כדורים ב־"+(+p.vs).toFixed(1)+" שנ׳");
   if(p.ap!=null) t.push("אוטונומי "+Math.round(p.ap)); const r=sctRole(p); if(r) t.push(r==="defend"?"בולם":"מנקד");
+  if(p.park!=null) t.push("חונה "+Math.round(p.park*100)+"%"); if(p.rel!=null) t.push("אמינות "+Math.round(p.rel*100)+"%");
   return t.join(" · ")||"אין מספרים — רק הבנייה";
 }
 function sctUI(){
@@ -19942,8 +20070,8 @@ function sctUI(){
       (pk.matches.length>1?'<div class="bldF"><span>מאץ׳</span><select id="sctMatch" aria-label="מאץ׳">'+pk.matches.map((m,i)=>'<option value="'+i+'"'+(i===SCT.mi?" selected":"")+'>'+(m.n?"מאץ׳ "+m.n:"מאץ׳")+' · '+m.red.map(t=>"#"+t).join(" ")+' מול '+m.blue.map(t=>"#"+t).join(" ")+'</option>').join("")+'</select></div>':'')+
       '<div class="bldF"><span>הברית שלנו בקובץ</span><div class="seg bldSeg">'+[["","לפי המספר"],["red","אדומה"],["blue","כחולה"]].map(([v,n])=>'<button data-sctside="'+v+'" class="'+(SCT.side===v?"on":"")+'">'+n+'</button>').join("")+'</div></div>'+
       '<div class="sctRows">'+BOTS.map((b,i)=>[b,i]).sort((x,y)=>(y[0].ally===myAlly())-(x[0].ally===myAlly())).map(([b,i])=>{ const p=b.prof; const lab=b.ally===myAlly()?"שותף":"יריב";
-        return '<div class="sctRow"><i class="skA '+b.ally+'"></i><b>'+e(lab)+'</b>'+(p?'<span class="sctT">#'+p.team+'</span><span class="sctC" title="ביטחון">'+Math.round((p.conf||0)*100)+'%</span><small>'+e(sctFmt(p))+'</small><em>'+e(bldSum(bldOf(i)).join(" · "))+'</em>':'<small>— בוט רגיל —</small>')+'</div>'; }).join("")+'</div>'+
-      '<p class="note">🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים.</p>'+
+        return '<div class="sctRow"><i class="skA '+b.ally+'"></i><b>'+e(lab)+'</b>'+(p?'<span class="sctT">#'+p.team+'</span><span class="sctC" title="ביטחון">'+Math.round((p.conf||0)*100)+'%</span><small>'+e(sctFmt(p))+'</small><em>'+e(bldSum(bldOf(i)).join(" · "))+'</em><span class="sctBtns"><button data-sctgar="'+i+'" title="פותח עותק של הרובוט הזה במוסך — לראות ולשנות">🛠 במוסך</button><button data-sctdrive="'+i+'" title="הרובוט שלי נבנה כמו הרובוט הזה">🎮 לנהוג בו</button></span>':'<small>— בוט רגיל —</small>')+'</div>'; }).join("")+'</div>'+
+      '<p class="note">🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים. ״במוסך״ שומר עותק של המערכות בלבד, בלי מספר הקבוצה.</p>'+
       '<div class="row"><button data-sct="apply">החל על הבוטים</button><button data-sct="play" class="primary">▶ מאץ׳ מלא עם הרובוטים האלה</button></div>';
   }
   B.innerHTML=h;
@@ -19954,6 +20082,12 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; }
   const m=$("sctBox"); if(!m) return;
   m.addEventListener("click",e=>{
     const s=e.target.closest("[data-sctside]"); if(s){ SCT.side=s.dataset.sctside; if(SCT.pack) sctApply(); sctUI(); return; }
+    const sg=e.target.closest("[data-sctgar],[data-sctdrive]"); if(sg){ const i=+(sg.dataset.sctgar!=null?sg.dataset.sctgar:sg.dataset.sctdrive), B=SCT.build[i]; if(!B) return;
+      /* v76: רובוט מהסקאוטינג → בנייה שלי במוסך. נשמרת כמו כל בנייה — רק המערכות, בלי מספר הקבוצה ובלי המספרים מהסקאוטינג */
+      const N=bldFix(Object.assign(bldPack(B),{id:"c"+Date.now().toString(36)+BLD.custom.length,n:T("📊 רובוט מהסקאוטינג"),note:"",custom:true}));
+      N.custom=true; BLD.custom.push(N); if(BLD.custom.length>16){ const j=BLD.custom.findIndex(x=>x!==N&&!bldInUse(x.id)); if(j>=0) BLD.custom.splice(j,1); } bldSave();
+      if(sg.dataset.sctdrive!=null){ bldSet(-1,N.id); refToast("🎮 הרובוט שלך נבנה כמו #"+(BOTS[i].prof?BOTS[i].prof.team:""),"ok"); sctUI(); }
+      else { sctClose(); bldOpen(N.id); } return; }
     const a=e.target.closest("[data-sct]"); if(!a) return; const k=a.dataset.sct;
     if(k==="close") sctClose(); else if(k==="clear") sctClear(); else if(k==="apply"){ if(sctApply()) refToast("📊 הבוטים נבנו לפי הסקאוטינג","ok"); sctUI(); } else if(k==="play") sctPlay(); });
   m.addEventListener("change",e=>{

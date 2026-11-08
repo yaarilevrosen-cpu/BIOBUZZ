@@ -213,6 +213,9 @@ class Sync {
     try {
       const { data } = await this.http("POST", this.cloud.url + "/auth/v1/signup?redirect_to=" + encodeURIComponent(SITE), { email: String(email).trim(), password: String(password), data: m.data });
       if (data && data.access_token) { this.setSession(data); return { ok: true, email: this.sess.user.email }; }
+      /* v76: מייל שכבר רשום — השרת עונה ״הצלחה״ עם identities ריק ולא שולח מייל. אומרים את זה במקום ״נשלח מייל״ */
+      const u = data && (data.user || data);
+      if (u && Array.isArray(u.identities) && u.identities.length === 0) return { ok: false, exists: true, why: "כבר יש חשבון עם המייל הזה — מתחברים במקום להירשם (או ״שכחתי סיסמה״)" };
       return { ok: true, confirm: true };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
