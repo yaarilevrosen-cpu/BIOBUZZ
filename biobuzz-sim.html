@@ -20706,13 +20706,13 @@ function v76GlideStart(){
   try{ if(matchMedia("(prefers-reduced-motion:reduce)").matches) return false; }catch(e){}
   const to={th:cam.theta, ph:cam.phi, d:cam.dist};
   V76.glide={t0:performance.now(), dur:2600, to, from:{th:to.th+1.1, ph:0.28, d:to.d*1.55}};
-  const skip=()=>v76GlideEnd();
-  for(const ev of ["keydown","pointerdown","wheel","touchstart"]) addEventListener(ev,skip,{capture:true,once:true,passive:true});
+  const skip=e=>v76GlideEnd(e);
+  for(const ev of ["keydown","pointerdown","wheel","touchstart","resize"]) addEventListener(ev,skip,{capture:true,once:true,passive:true});   /* גם שינוי גודל — אחרי fitView היעד כבר לא נכון */
   V76.glide.skip=skip; v76GlideApply(0); return true; }
 function v76GlideApply(u){ const G=V76.glide; if(!G) return; const e=1-Math.pow(1-u,3);
   cam.theta=G.from.th+(G.to.th-G.from.th)*e; cam.phi=G.from.ph+(G.to.ph-G.from.ph)*e; cam.dist=G.from.d+(G.to.d-G.from.d)*e; }
-function v76GlideEnd(){ const G=V76.glide; if(!G) return; V76.glide=null; cam.theta=G.to.th; cam.phi=G.to.ph; cam.dist=G.to.d;
-  for(const ev of ["keydown","pointerdown","wheel","touchstart"]) removeEventListener(ev,G.skip,{capture:true}); }
+function v76GlideEnd(e){ const G=V76.glide; if(!G) return; V76.glide=null; if(!(e&&e.type==="resize"&&PHONE&&!camTouched)){ cam.theta=G.to.th; cam.phi=G.to.ph; cam.dist=G.to.d; }
+  for(const ev of ["keydown","pointerdown","wheel","touchstart","resize"]) removeEventListener(ev,G.skip,{capture:true}); }
 /* נקרא מ-frame() פעם בפריים */
 function v76Frame(now){
   if(V76.glide){ if(camUser||camView!=="free") v76GlideEnd(); else { const u=Math.min(1,(now-V76.glide.t0)/V76.glide.dur); v76GlideApply(u); if(u>=1) v76GlideEnd(); } }
