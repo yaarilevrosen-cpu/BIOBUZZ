@@ -48,9 +48,13 @@ ok(r.p.sh==='turret'&&r.p.lift&&r.p.cap===3&&r.p.acc===0.75&&r.p.fa===0.13&&r.p.
 ok(r.q.drive===''&&r.q.cap===null&&r.q.shooter===''&&r.q.acc===null,'declared: null = לא ידוע — נשאר ברירת המחדל ('+JSON.stringify(r.q)+')');
 
 // 2. הביטחון של כל ערך: דיוק 0.75 בביטחון 0.13 כמעט לא משנה; יריות למאץ׳ מאטות
-r=await E(()=>{ const S=__sim; const b=S.BOTS.find(b=>b.prof&&b.prof.team===90001); const s1=S.skill(b); S.SCT.on=false; S.SCT.ver++; const s0=S.skill(b); S.SCT.on=true; S.SCT.ver++;
-  return {tol0:s0.tol, tol1:s1.tol, c0:s0.cycle, c1:s1.cycle, pr:b.prefRange}; });
-ok(r.tol1-r.tol0<0.0035&&r.tol1>r.tol0&&r.c1>r.c0*1.15&&r.pr===85,'ביטחון לכל ערך: דיוק עם ביטחון נמוך משנה מעט, 4 יריות למאץ׳ מאטות, אזור רחוק ('+JSON.stringify(r)+')');
+/* v77 (docs/v77-brain.md): הדיוק ויריות למאץ׳ כבר לא משנים את tol ואת הזמן בין יריות — המוח של הבוט מקבל יעדים (b.sbS.accT, b.sbS.spmT),
+   מעורבבים עם הבוט הרגיל לפי הביטחון של כל ערך */
+r=await E(()=>{ const S=__sim, X=S.v77b; const b=S.BOTS.find(b=>b.prof&&b.prof.team===90001); const s1=S.skill(b); S.SCT.on=false; S.SCT.ver++; const s0=S.skill(b); S.SCT.on=true; S.SCT.ver++;
+  const keep={a:b.autoLvl,np:b.noPark,on:b.on}; S.MATCH.cd=1; X.v77bMatchArm(); b.sbN=null; X.v77bRoll(b); S.MATCH.cd=0;
+  const accT=b.sbS.accT, spmT=b.sbS.spmT; b.sbS=null; b.sbN=null; b.autoLvl=keep.a; b.noPark=keep.np; b.on=keep.on;
+  return {tol0:s0.tol, tol1:s1.tol, c0:s0.cycle, c1:s1.cycle, pr:b.prefRange, accT, spmT}; });
+ok(r.tol1===r.tol0&&r.c1===r.c0&&r.accT<0.92&&r.accT>0.88&&r.spmT<38*0.9&&r.pr===85,'ביטחון לכל ערך: דיוק עם ביטחון נמוך משנה מעט, 4 יריות למאץ׳ מאטות, אזור רחוק ('+JSON.stringify(r)+')');
 
 // 3. חבילת אירוע: לוח זמנים כמפה; גרסה ופורמט לא מוכרים נדחים
 r=await E(t=>{ const S=__sim; S.sctLoadText(t); const pk=S.SCT.pack; const out={n:pk.n, m:pk.matches.map(m=>m.n).join()};

@@ -12,3 +12,8 @@ Thumbs.db
 .room-key
 test/_v76bots/
 sim-*.json
+test/sim_base77.html
+test/_v77brain/*.txt
+test/_v77brain/*probe*.mjs
+test/_v77brain/keys.mjs
+test/_v77brain/i18nchk.mjs
