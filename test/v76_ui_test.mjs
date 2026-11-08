@@ -51,7 +51,8 @@ const RECT=`s=>{ const e=typeof s==='string'?document.querySelector(s):s; if(!e|
   r=await E(()=>{ const sh=s=>{ const e=document.querySelector(s); return !!e&&!!e.getClientRects().length&&getComputedStyle(e).display!=='none'; };
     return {rows:[...document.querySelectorAll('#ppStatus>div')].filter(d=>d.getClientRects().length).map(d=>d.dataset.r),
       hidden:['#ppDaily','#ppStats','#ppCtl','#ppCam','#ppKeys','#ppMedia','.ppMine'].filter(sh), stop:sh('#ppStop'), rp:sh('#ppReplay'), more:sh('#v76More')}; });
-  ok(r.rows.join(',')==='ph,sc,bl'&&r.hidden.length===0&&r.stop&&r.rp&&r.more,'בזמן מאץ׳ הלוח רזה: שלב, ניקוד, כדורים, עצירה ושידור חוזר ('+r.rows+' · גלויים בטעות: '+r.hidden+')');
+  /* v77: ״עצור״ ו״שידור חוזר״ בזמן מאץ׳ רק בכותרת ועל הזירה — לא שוב בלוח הצד */
+  ok(r.rows.join(',')==='ph,sc,bl'&&r.hidden.length===0&&!r.stop&&!r.rp&&r.more,'בזמן מאץ׳ הלוח רזה: שלב, ניקוד, כדורים — ״עצור״ ו״שידור חוזר״ לא כפולים ('+r.rows+' · גלויים בטעות: '+r.hidden+')');
   r=await E(()=>{ document.getElementById('v76More').click(); const a=[...document.querySelectorAll('#ppStatus>div')].filter(d=>d.getClientRects().length).length;
     const st=!!document.getElementById('ppStats').getClientRects().length; document.getElementById('v76More').click(); return {a,st}; });
   ok(r.a>3&&r.st,'״⋯ עוד אפשרויות״ מחזיר את כל השאר — שום יכולת לא נמחקה ('+r.a+' שורות)');
@@ -76,8 +77,8 @@ const RECT=`s=>{ const e=typeof s==='string'?document.querySelector(s):s; if(!e|
     const rows=[...ve.querySelectorAll('.v76Brk>div')].map(d=>[...d.querySelectorAll('b')].map(b=>b.textContent));
     const d=S.v76.V76.end; return {ph:S.MATCH.phase, cls:bn.className, shown:!ve.hidden, rows, brk:d&&d.brk, fin:S.MATCH.final, star:ve.querySelector('.v76Star b')&&ve.querySelector('.v76Star b').textContent,
       btn:[...document.querySelectorAll('#bnAct [data-bn]')].map(b=>b.dataset.bn), bf:getComputedStyle(bn).backdropFilter, stat:(ve.querySelector('.v76Stat')||{}).textContent}; });
-  ok(r.ph==='סיום'&&/\bend\b/.test(r.cls)&&r.shown&&r.rows.length===5,'סוף מאץ׳: כרטיס עם פירוק נקודות (אוטונומי, טלאופ, סוף משחק, סה״כ)');
-  ok(r.brk&&['red','blue'].every(a=>r.brk[a].auto+r.brk[a].tele+r.brk[a].end===r.brk[a].total&&r.brk[a].total===(r.fin[a]|0)),'הפירוק מסתכם בתוצאה הסופית ('+JSON.stringify(r.brk)+')');
+  ok(r.ph==='סיום'&&/\bend\b/.test(r.cls)&&r.shown&&r.rows.length===(r.brk&&(r.brk.red.pre||r.brk.blue.pre)?6:5),'סוף מאץ׳: כרטיס עם פירוק נקודות (בזירה מההתחלה, אוטונומי, טלאופ, סוף משחק, סה״כ)');   /* v77: שורת ״בזירה מההתחלה״ */
+  ok(r.brk&&['red','blue'].every(a=>(r.brk[a].pre|0)+r.brk[a].auto+r.brk[a].tele+r.brk[a].end===r.brk[a].total&&r.brk[a].total===(r.fin[a]|0)),'הפירוק מסתכם בתוצאה הסופית ('+JSON.stringify(r.brk)+')');
   ok(!!r.star&&r.star.length>1,'⭐ כוכב המאץ׳: '+r.star);
   ok(r.btn.includes('again')&&r.btn.includes('debrief'),'הכפתורים הקיימים בכרטיס: '+r.btn.join(', '));
   ok(/blur/.test(r.bf||''),'רקע מטושטש מאחורי הכרטיס ('+r.bf+')');
@@ -121,7 +122,7 @@ const RECT=`s=>{ const e=typeof s==='string'?document.querySelector(s):s; if(!e|
   ok(r,'פתיחה ישירה של ״אודות״ (מהחיפוש) פותחת את המקופל');
   await E(()=>document.getElementById('pmX').click());
   r=await E(()=>({t:document.getElementById('verBadge').textContent, ti:document.getElementById('verBadge').title}));
-  ok(r.t==='v76'&&/BIOBUZZ v76/.test(r.ti),'תג הגרסה: '+r.t+' ('+r.ti+')');
+  ok(/^v(7[6-9]|[89]\d)$/.test(r.t)&&/BIOBUZZ v(7[6-9]|[89]\d)/.test(r.ti),'תג הגרסה: '+r.t+' ('+r.ti+')');   /* v77: מתעדכן עם כל גרסה */
   ok(realErrs(errs).length===0,'בלי שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
   await browser.close();
 }
@@ -193,11 +194,13 @@ const RECT=`s=>{ const e=typeof s==='string'?document.querySelector(s):s; if(!e|
     const r=await pg.evaluate(`(()=>{ const R=${RECT}; const hd=document.querySelector('#app>header'), iw=innerWidth;
       const out=[...hd.querySelectorAll('button,#clockWrap,.chip')].filter(e=>e.getClientRects().length&&getComputedStyle(e).display!=='none').filter(e=>{ const q=e.getBoundingClientRect(); return q.right>iw+1||q.left<-1; }).map(e=>e.id||e.className);
       const sb=R('#v76Score'), mb=R('#mbar'), fps=R('#fpsChip'), hud=R('#hud');
-      return {ph:document.body.classList.contains('ph'), sw:document.documentElement.scrollWidth, iw, out, sb, sbIn:sb&&sb.l>=0&&sb.r<=iw, mb:sb&&mb?(${ovl})(sb,mb):false, fps:sb&&fps?(${ovl})(sb,fps):false, hud:!!hud, stop:R('#clkStop')}; })()`);
+      return {ph:document.body.classList.contains('ph'), sw:document.documentElement.scrollWidth, iw, out, sb, sbIn:sb&&sb.l>=0&&sb.r<=iw, mb:sb&&mb?(${ovl})(sb,mb):false, fps:sb&&fps?(${ovl})(sb,fps):false, hud:!!hud, stop:R('#clkStop'), qp:R('#qPlay')}; })()`);
     const tag=vp.width+'px '+lang+(mob?' טלפון':' מחשב');
     ok(r.sw<=r.iw&&r.out.length===0,tag+': הכותרת לא חורגת מהמסך ('+r.sw+'/'+r.iw+(r.out.length?' · '+r.out.join(','):'')+')');
     ok(r.sb&&r.sbIn&&!r.mb&&!r.fps,tag+': פס התוצאה בתוך המסך, לא על פס הכפתורים ולא על מונה התמונות');
-    ok(!!r.stop&&r.stop.r<=r.iw&&r.stop.l>=0,tag+': ״עצור״ גלוי בכותרת');
+    /* v77: בטלפון ״⏹ עצור״ ברצועה העליונה — לא פעמיים */
+    if(r.ph) ok(!r.stop&&!!r.qp&&r.qp.r<=r.iw&&r.qp.l>=0,tag+': ״עצור״ פעם אחת — ברצועה העליונה');
+    else ok(!!r.stop&&r.stop.r<=r.iw&&r.stop.l>=0,tag+': ״עצור״ גלוי בכותרת');
     if(mob) ok(!r.hud,tag+': בלי שבבי טלמטריה במצב ״משחק״');
     if(lang==='en'){ const he=await pg.evaluate(()=>['v76Score','v76Met','v76More'].map(id=>document.getElementById(id)).filter(Boolean).map(e=>e.textContent).join(' '));
       ok(!/[֐-׿]/.test(he),tag+': הכול באנגלית ('+he.replace(/\s+/g,' ').slice(0,80)+')'); }
