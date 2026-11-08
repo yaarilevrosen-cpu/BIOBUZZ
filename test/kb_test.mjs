@@ -82,7 +82,7 @@ r=await page.evaluate(()=>({f:__sim.KB.move.fwd, g:__sim.KB.binds.some(b=>b.k===
 ok(r.f==='KeyS'&&r.g,'המיפוי נשמר בפתיחה הבאה');
 await page.click('#bKbReset');
 r=await page.evaluate(()=>({f:__sim.KB.move.fwd, n:__sim.KB.binds.length}));
-ok(r.f==='KeyW'&&r.n===17,'״החזר ברירת מחדל״ מחזיר W ושבעה־עשר מקשים (כולל חמשת מקשי הקסם וארבעת מקשי הצריח והמעלית)');
+ok(r.f==='KeyW'&&r.n===20,'״החזר ברירת מחדל״ מחזיר W ועשרים מקשים (כולל חמשת מקשי הקסם, ארבעת מקשי הצריח והמעלית ושלוש הקריאות לשותף — v76)');
 await page.screenshot({path:'kb.png'});
 ok(realErrs(errs).length===0,'אין שגיאות: '+realErrs(errs).slice(0,2).join(' | '));
 await browser.close(); done('kb_test');

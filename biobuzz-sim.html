@@ -311,6 +311,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   #refToast.yellow{border-color:#f5d020; background:rgba(58,50,10,.95); color:#ffe46b}
   #refToast.red{border-color:var(--red); background:rgba(60,18,20,.95); color:#ff9da1}
   #refToast.block{border-color:var(--line2); color:var(--ink2)}
+  #refToast.ptn{border-color:#5cf2a0; color:#c8ffe2}   /* v76: ״השותף מדבר״ */
   #mpSum{position:absolute; bottom:112px; left:50%; transform:translateX(-50%); z-index:12;
     min-width:min(520px,92%); max-width:94%; background:rgba(17,22,28,.97); border:1px solid var(--line2);
     border-radius:14px; padding:14px 16px; box-shadow:0 18px 50px rgba(0,0,0,.5); font-size:13px}
@@ -1617,7 +1618,7 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
     <section>
       <h3>אוטונומי</h3>
       <label class="check"><input type="checkbox" id="sAutoOn" checked>לשחק עם שלב אוטונומי</label>
-      <label class="check"><input type="checkbox" id="sRandAuto" checked>רמת אוטונומי אחרת לכל בוט (שלי נשאר כמו שבחרתי)</label>
+      <label class="check"><input type="checkbox" id="sRandAuto" checked>רמת אוטונומי אחרת לכל יריב (השותף תמיד מחזור מלא, שלי נשאר כמו שבחרתי)</label>
       <div id="sAutoRows"></div>
     </section>
 
@@ -2261,7 +2262,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="out" id="oMatch"></div>
         <div class="row"><button id="bMatchStart">התחל מאץ׳</button><button id="bMatchStop">עצור</button></div>
         <div class="grp">רמת האוטונומי</div>
-        <label class="check" for="kRandAuto"><input type="checkbox" id="kRandAuto" checked>רמה אקראית לבוטים בכל מאץ׳</label>
+        <label class="check" for="kRandAuto"><input type="checkbox" id="kRandAuto" checked>רמה אקראית ליריבים בכל מאץ׳</label>
         <div id="autoRows"></div>
         <p class="note" id="autoNote"></p>
         <p class="note"><b>אימון נהג:</b> ג׳ויסטיק מחובר נתפס אוטומטית — סטיק שמאל תנועה, סטיק ימין סיבוב, הדק ימני ירי, LB חרטום, A היפוך, X עמדת פתיחה. הניקוד בסוף מאץ׳ נשמר בטבלת השיאים.</p>
@@ -2922,6 +2923,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   .optAiOut.wait{color:var(--muted)} .optAiOut.err{color:var(--warn,#c0392b)}
   html:not(.aion) #optAiRow, html:not(.aion) #oOptAi{display:none!important}
 </style>
+<script type="application/json" id="i18nX_v76bots" data-i18n>{"זוז! אתה עומד על": "Move! You're standing on", "זוז! אתה עומד על ": "Move! You're standing on ", "כדורים — עוד": "balls — another", "שנ׳ ועבירה": "s and it's a foul", " שנ׳ ועבירה (G411)": " s and it's a foul (G411)", "שותף: תבלום": "Partner: defend", "שותף: תנקד": "Partner: score", "שותף: חנה עכשיו": "Partner: park now", "🤝 שותף": "🤝 Partner", "אין שותף בוט בזירה": "No bot partner on the field", "השותף: חניה — רק במאץ׳": "Partner: parking — only in a match", "השותף: קיבלתי — ": "Partner: copy — ", "השותף: קיבלתי —": "Partner: copy —", "השותף: ": "Partner: ", "השותף:": "Partner:", "השותף: קיבלתי — מנקד": "Partner: copy — scoring", "השותף: קיבלתי — בולם": "Partner: copy — defending", "השותף: קיבלתי — יוצא לחניה": "Partner: copy — heading to park", "השותף: קיבלתי — יורה את מה שיש ואז חונה": "Partner: copy — shooting what I have, then parking", "השותף: קיבלתי — בולם את כחול": "Partner: copy — defending Blue", "השותף: קיבלתי — בולם את אדום": "Partner: copy — defending Red", "השותף: בולם את כחול": "Partner: defending Blue", "השותף: בולם את אדום": "Partner: defending Red", "השותף: עובר לבלימה": "Partner: switching to defense", "השותף: עובר לניקוד": "Partner: switching to scoring", "השותף: יוצא לחניה": "Partner: heading to park", "השותף: יורה את מה שיש ואז חונה": "Partner: shooting what I have, then parking", "יורה את מה שיש ואז חונה": "Shooting what I have, then parking", "עובר לבלימה": "Switching to defense", "עובר לניקוד": "Switching to scoring", "רמת אוטונומי אחרת לכל יריב (השותף תמיד מחזור מלא, שלי נשאר כמו שבחרתי)": "A different autonomous level for each opponent (the partner always runs a full cycle, mine stays as I chose)", "רמה אקראית ליריבים בכל מאץ׳": "Random level for opponents every match", "בולם את": "Defending"}</script>
 <script type="application/json" id="i18nX_core" data-i18n>{"כיוון הזירה": "Field orientation", "0° (ברירת מחדל)": "0° (default)", "כיוון הזירה בקוד שלכם: סיבוב של הצירים סביב מרכז הזירה. פנייה שמאלה נשארת פנייה שמאלה בכל בחירה. אותו כיוון משמש גם ביומן מהרובוט וברובוט החי, והמיפוי המדויק כתוב בראש הקוד.": "Field orientation in your code: a rotation of the axes about the field centre. A left turn stays a left turn with every choice. The same orientation is used for the robot log and the live robot, and the exact mapping is written at the top of the code.", "המאץ׳ נגמר — סגרו את ההודעה כדי לנהוג": "The match is over — close the message to drive", "תקלות אקראיות גם לבוטים ולנהגים האחרים": "Random faults for the bots and other drivers too", " · תקלה: ": " · fault: "}</script>
 <script type="application/json" id="i18nX_v70ghost" data-i18n>{"מול הרוח עכשיו": "Versus the ghost now", "מתחרים מול": "Racing against", "השיא שלי": "My best", "הריצה הקודמת": "My previous run", "רוח מקובץ": "Ghost from file", "לשתף רוח עם חבר": "Share a ghost with a teammate", "שם הנהג (לא חובה)": "Driver name (optional)", "שם הנהג": "Driver name", "איזו רוח לייצא": "Which ghost to export", "ייצא רוח לקובץ": "Export ghost to file", "טען רוח מקובץ": "Load ghost from file", "לכל מצב רוח משלו: מאץ׳ מלא וכל תרגיל עם שעון. הקובץ קטן — שולחים אותו לחבר, והוא טוען אותו ונוסע מול הריצה שלך.": "Every mode keeps its own ghost: a full match and every timed drill. The file is small — send it to a teammate, they load it and race your run.", "סוג המאץ׳": "Match type", "מאץ׳ מלא": "Full match", "עוד לא נטען קובץ": "No file loaded yet", "אין ריצה קודמת במצב הזה": "No previous run in this mode", "הרוח נטענה": "Ghost loaded", "בלי שם": "no name", "זה לא קובץ רוח תקין": "This is not a valid ghost file", "הקובץ גדול מדי בשביל רוח": "The file is too big for a ghost", "יותר מדי פריימים בקובץ": "Too many frames in the file", "בקובץ יש ערכים לא תקינים": "The file has invalid values", "אין עדיין שיא שמור במצב": "No saved best yet in mode", "אין עדיין שיא שמור": "No saved best yet", "עוד אין נסיעה שמורה — היא נאספת מעכשיו בכל מאץ׳": "No driving saved yet — it is collected from now on in every match", "איפה הייתי": "Where I was", "הצד שלי משמאל, הקהל למטה": "My side on the left, audience at the bottom"}</script>
 <style id="css_v70ghost">
@@ -5271,6 +5273,7 @@ function tip(h){
   for(const b of cellBalls(h)) b.fromTip=simT;
   h.tipping=true; h.from=h.angle; h.target=h.angle<0?tl:-tl; sfxTip();
   h.t0=simT; h.wakeUntil=simT+2.2; tips++;
+  if(h===aimHive()) v76ShakeStart();                   /* v76: רגע ההיפוך — רעידת מצלמה קטנה (+20) */
   if(typeof replayEv==="function") replayEv("tip","היפוך כוורת "+(h===hiveRed?"אדומה":"כחולה"));
   if(h===hiveRed) TIPS.red++; else if(h===hiveBlue) TIPS.blue++;
   for(const b of balls) b.body.wakeUp();
@@ -6651,8 +6654,9 @@ function aiDriveTo(b,gx,gz,dt,speedCap){
      מגיע לשום מקום. שניהם נספרים כאן כאותו דבר: לא מתקרב. */
   const gd=Math.hypot(gx-px,gz-pz);
   if(b.navGx===undefined||Math.hypot(gx-b.navGx,gz-b.navGz)>4){
-    b.navGx=gx; b.navGz=gz; b.navBest=gd; b.navStill=0; b.stallT=0;
+    b.navGx=gx; b.navGz=gz; b.navBest=gd; b.navStill=0; b.stallT=0; b.v76BackN=0;
   }
+  if(v76TankBack(b,gd,dt)) return gd;                  /* v76: שלדת טנק תקועה — נסיגה קצרה ואז תכנון מחדש */
   if(gd<(b.navBest===undefined?gd:b.navBest)-1.0){
     b.navBest=gd; b.navStill=0; b.stallT=Math.max(0,(b.stallT||0)-dt*2);
   } else if(gd>6){
@@ -6701,7 +6705,10 @@ function aiDrive(b,tx,tz,dt,speedCap){
       if(Math.abs(e)>Math.PI/2){ e=Math.atan2(Math.sin(e+Math.PI),Math.cos(e+Math.PI)); }
       if(b.tankMov){ const mr=AIC.wMax*dt; b.yaw+=Math.max(-mr,Math.min(mr,e)); }
       const fx=Math.sin(b.yaw), fz=Math.cos(b.yaw), along=b.vx*fx+b.vz*fz;
-      b.vx=fx*along; b.vz=fz*along; } }
+      b.vx=fx*along; b.vz=fz*along;
+      /* v76: תיקון קטן הצידה (פחות מ-6″, בלי סיבוב) — טנק לא יכול לבקש אותו מהמנועים. הכוונה (לשופט, למוח ולמדידת התקיעה)
+         היא מה שהשלדה באמת מבקשת: רק הרכיב לאורך הגוף. בסיבוב אל היעד הכוונה נשארת המלאה */
+      if(!b.tankMov){ const ia=b.ivx*fx+b.ivz*fz; b.ivx=fx*ia; b.ivz=fz*ia; } } }
   b.body.velocity.x=b.vx; b.body.velocity.z=b.vz;
   return I(d);
 }
@@ -6897,6 +6904,7 @@ function aiScoreStep(b,dt){
     if(b.clip.length&&(!lo||bldBotWantsLift(b))){ b.ph=BLD&&bldBotWantsLift(b)?"lift":"aim"; b.t=0; }
     else if(lo&&b.clip.length>=aiCap(b)){ b.ph="idle"; b.t=0; return; }
     else { b.target=lo?bldLiftSeek(b):aiFlowerFor(b);
+      if(b.target&&!lo&&v76NoTimeForCycle(b,b.target)){ b.target=null; b.lvBlock=true; b.lvSkip=(b.lvSkip||0)+1; b.ph="guard"; b.t=0; return; }   /* v76 */
       b.ph=b.target?"approach":"idle"; b.t=0; b.loadT=0;
       if(b.ph==="idle") return; }
   }
@@ -7024,7 +7032,8 @@ function aiDefendStep(b,dt){
   if(gap<AIC.W+2.5) b.contact+=dt; else b.contact=Math.max(0,b.contact-dt*1.6);
   /* הצמדה אמיתית — היריב מנסה לנסוע ולא זז — נספרת בנפרד, ובולם שיודע
      את החוקים משחרר לפני שהשופט מגיע לשלוש (G421) */
-  const tryMove=Math.hypot(F.ix,F.iz)>0.25;
+  /* v76: כמו השופט (refPins) — יריב צמוד לקיר נחשב מוצמד גם בלי שהוא מנסה לזוז (טנק לא ״מבקש״ הצידה) */
+  const tryMove=Math.hypot(F.ix,F.iz)>0.25||nearWall({x:fx,z:fz,half:F.id==="me"?Math.max(P.botW||16,P.botL||16)/2:Math.max(AIC.W,AIC.L)/2});
   if(gap<AIC.W+2.5&&fsp<0.15&&tryMove) b.pinT=(b.pinT||0)+dt;
   else b.pinT=Math.max(0,(b.pinT||0)-dt*2);
   if(b.contact>AIC.pinLimit||b.pinT>AIC.pinRelease){ b.backoff=1.8; b.contact=0; b.pinT=0; }
@@ -7149,6 +7158,7 @@ function aiStep(b,dt){
   b.body.quaternion.setFromAxisAngle(_cUpY,b.yaw);
   b.group.position.copy(b.body.position); b.group.rotation.y=b.yaw;
   aiBlockCheck(b,dt);
+  v76TalkTick(b,dt);                                   /* v76: ״השותף מדבר״ — סמל מעל השותף ושורה קצרה */
 }
 /* 1.12.5: מתי הרובוט שלי בבלימה (אין פקודה, לא אוטונומי/הרצה/סיוע) */
 function myBraked(dr,kt){ return dr<0.02&&Math.abs(kt)<0.02&&!RUN.on&&!ASSIST.job&&!(MATCH.on&&MATCH.phase==="AUTO"); }
@@ -7183,7 +7193,8 @@ function aiStepDrive(b,dt){
   else if(MATCH.on&&MATCH.phase==="AUTO") aiAutoStep(b,dt);
   else if(b.hum&&humDrives(b)) humStep(b,dt);   /* v74 net N8: אורח שותק — בלימה 5 שניות לפני שהבוט לוקח */
   else if(brainParkNow(b,dt)) aiParkStep(b,dt);
-  else if(b.role==="score") aiScoreStep(b,dt); else aiDefendStep(b,dt);
+  else if(b.lvBlock) v76HoldStep(b,dt);              /* v76: אין זמן למחזור — חוסמים ליד האזור שלנו עד החניה */
+  else if(b.role==="score"||b.lastVol) aiScoreStep(b,dt); else aiDefendStep(b,dt);   /* v76: גם בולם יורה במטח האחרון */
 }
 function aiBlockCheck(b,dt){
   /* חוסם את קו הירי שלנו? */
@@ -7244,7 +7255,9 @@ const BRAIN={on:true, t:0, every:2.0, act:{}, shots:{}, spotC:{}, spotS:{}, why:
 function brainReset(){
   BRAIN.t=0; BRAIN.act={}; BRAIN.shots={}; BRAIN.spotS={}; BRAIN.spotC={}; BRAIN.why={red:"",blue:""}; BRAIN.swaps=0;
   for(const b of BOTS){ b.roleT=0; b.spot=null; b.spotT=0; b.foe=null; b.foeT=0; b.parkS=null; b.parkBlk=null;
-    b.parkGo=false; b.parkA=false; b.parkChk=0; b.learnT=0; b.relocs=0; b.relocN=0; }
+    b.parkGo=false; b.parkA=false; b.parkChk=0; b.learnT=0; b.relocs=0; b.relocN=0;
+    b.lastVol=false; b.lvChk=0; b.lvBlock=false; b.lvN=0; b.lvSkip=0; b.v76Back=null; b.v76BackN=0; b.v76Backs=0; b.callK=null; b.v76St=null; b.v76SayAt=null; }   /* v76: מטח אחרון — מתאפס בכל מאץ׳ (b.noPark של הסקאוטינג לא מתאפס כאן) */
+  if(typeof v76bReset==="function") v76bReset();
 }
 function brainHuman(b){ return !!(b&&b.hum&&humDrives(b)); }
 /* כל הרובוטים בזירה בתיאור אחד. ix/iz = לאן הנהג מנסה לנסוע (0..1) —
@@ -7309,7 +7322,7 @@ function brainRoles(dt){
   BRAIN.t+=dt; if(BRAIN.t<BRAIN.every) return; BRAIN.t=0;
   const R=brainRobots(), avail=brainAvail();
   for(const A of ["red","blue"]){
-    const mine=BOTS.filter(b=>b.on&&b.body&&b.ally===A&&!brainHuman(b)&&!b.parkGo);
+    const mine=BOTS.filter(b=>b.on&&b.body&&b.ally===A&&!brainHuman(b)&&!b.parkGo&&!b.callK);   /* v76: קריאה של הנהג נשארת עד הקריאה הבאה */
     if(!mine.length) continue;
     const foes=R.filter(r=>r.ally!==A);
     const top=foes.reduce((m,r)=>Math.max(m,brainThreat(r)),0);
@@ -7435,6 +7448,9 @@ function brainSpotCost(b,s,R){
   const mf=mouthFrame(aiHive(b)), mx=I(mf.c.x), mz=I(mf.c.z);
   /* מרכז הקשת הכי סלחני (כדורים בתא, פתח עקום) — עמדה צדדית רק כשהמרכז תפוס */
   let c=Math.hypot(s.x-px,s.z-pz)+(1-brainSpotP(s))*160+Math.abs(s.deg)*1.4+(s.dr?6:0);
+  /* v76: טווח מועדף מהסקאוטינג (b.prefRange, אינץ׳: קרוב≈30 / בינוני≈55 / רחוק≈85) — מעדיף את העמדות בקשת שקרובות אליו.
+     הקשת עצמה נשארת (מרחק הירי ±7″), כך שזו הטיה בתוכה ולא עמדות חדשות */
+  if(typeof b.prefRange==="number"&&b.prefRange>=10&&b.prefRange<=150) c+=Math.abs(Math.hypot(s.x-mx,s.z-mz)-b.prefRange)*1.5;
   for(const r of R){ if(r.ref===b) continue;
     const rx=I(r.body.position.x), rz=I(r.body.position.z), d=Math.hypot(rx-s.x,rz-s.z);
     if(r.ally===b.ally){
@@ -7546,13 +7562,18 @@ function brainParkDue(b,tLeft,dt){
   if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
   /* v63: לפי המהירות הנמדדת (לא הנומינלית), ועם מרווח — בוט שנתקע בדרך עדיין מגיע */
   /* כמו ב-v62 (המהירות הנומינלית). ניסיון לפי מהירות נמדדת ב-v63 הקדים יציאה לחניה במחשבים מהירים */
-  const vIn=AIC.vMax*skill(b).v/IN;
-  b.parkTrav=d/(vIn*0.45);                                                    /* v74 B6 */
-  return tLeft<d/(vIn*0.45)+8.5+skill(b).think;   /* v65: מרווח 8.5 (היה 6) — מאז שבוטים נדחפים באמת (v64) הם מתעכבים זה על זה בדרך לחניה */
+  /* v76: נוסחה אחת לזמן החניה (גם לנהג) — נסיעה לפי המהירות הנומינלית, ומרווח מסתגל לפי אורך הנסיעה והעומס ליד המשבצת
+     (היה מרווח קבוע של 8.5 שנ׳ — הבוטים חיכו בחניה כעשר שניות) */
+  const N=v76ParkNeed(b,d,s);
+  b.parkTrav=N.trav;                                                           /* v74 B6 */
+  return tLeft<N.need;
 }
 function brainParkNow(b,dt){
   if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2) return false;
   if(b.parkGo) return true;
+  v76LastVolley(b,tEnd()-MATCH.t,dt);                    /* v76: מטח אחרון — מפסיקים לאסוף, יורים ואז חונים */
+  if(b.parkGo) return true;
+  if(b.noPark) return false;                             /* v76: פרופיל סקאוטינג של קבוצה שלא חונה — ממשיכה עד הסוף */
   if(brainParkDue(b,tEnd()-MATCH.t,dt)){
     if(v74rbFinishClip(b,tEnd()-MATCH.t)) return false;   /* v74 B6: מסיימים את המחסנית כשיש זמן */
     b.parkGo=true; b.parkS=null; brainParkSpot(b); return true; }
@@ -7713,6 +7734,12 @@ function rulesStep(dt){
     if(me) nearMe=nearOf();
     const collecting=me?(intake&&bot.mag<bldCapMe()):(b.clip.length<aiCap(b)&&(!b.hum||!!(b.hum.cmd&&b.hum.cmd.intake)));
     if(sp<0.12&&nearOf()>=3&&!collecting) S.hoardT+=dt; else S.hoardT=Math.max(0,S.hoardT-dt*2);
+    /* v76: התרעת אגירה לנהג אנושי (אני, שלט, מסך מפוצל, רשת) — אחרי 3 שנ׳, כמו בהצמדה: כרטיס, רטט וצליל. שתי שניות לפני G411 */
+    if(S.hoardT>3&&!S.hwarn&&MATCH.on&&refActive()){ const w=humOf(r.id);
+      if(w){ S.hwarn=true; S.hwarnN=(S.hwarnN||0)+1;
+        humWarn(w,"זוז! אתה עומד על "+nearOf()+" כדורים — עוד "+Math.max(0.5,5-S.hoardT).toFixed(1)+" שנ׳ ועבירה (G411)","coach");
+        if(w.me||!w.hum||w.hum.src!=="net") try{ sfxRef(); }catch(e){} } }
+    else if(S.hoardT<1) S.hwarn=false;
     if(S.hoardT>5&&simT-S.lastFlag>8){
       S.lastFlag=simT;
       RULE.flags.push({t:+simT.toFixed(1),rule:"G411",what:"עמידה על "+nearOf()+" כדורים",team:r.team});
@@ -9921,7 +9948,9 @@ const AUTOL=[
   {k:"cycle", n:"מחזור מלא",    d:"יורה, נוסע לפרח, נטען וחוזר לירות."}
 ];
 const AUTOK=AUTOL.map(a=>a.k);
-const rollAuto=()=>AUTOK[1+Math.floor(Math.random()*3)];   // אקראי בלי ״ללא״
+const rollAuto=()=>Math.random()<0.5?"preload":"cycle";   /* v76: אקראי ליריבים — ״ירי מהעמדה״ או ״מחזור מלא״ (היה גם ״יציאה בלבד״) */
+/* v76: השותף שלי — העמדה השלישית (botsAlign), או בוט נוסף בברית שלי */
+const v76BotPartner=(b,i)=>i===2||(i>2&&b.ally===myAlly());
 
 /* ── האוטונומי של הרובוט שלי, ברמה שנבחרה ── */
 /* הרובוט שלי יכול להריץ גם את המסלול שציירתי או הקלטתי — רק הוא, לא הבוטים */
@@ -10083,7 +10112,9 @@ function matchStart(){
   tips=0; TIPS.red=0; TIPS.blue=0;
   stageMatch();
   /* ״אקראי״ הוא לבוטים בלבד — האוטונומי שלי הוא מה שבחרתי */
-  if(GAME.randAuto){ for(const b of BOTS) b.autoLvl=rollAuto(); }
+  /* v76: השותף שלי תמיד מריץ אוטונומי מלא; האקראיות רק ליריבים, ורק בין ״ירי מהעמדה״ ל״מחזור מלא״ (לא ״יציאה בלבד״ — 25 שנ׳ עמידה).
+     בחירה מפורשת בחלון המשחק מכבה את האקראי (SETUP.randAuto) ונשמרת כמו שהיא */
+  if(GAME.randAuto){ BOTS.forEach((b,i)=>{ b.autoLvl=v76BotPartner(b,i)?"cycle":rollAuto(); }); }
   myAutoReset(); assistStop(); if(auto) autoStop();
   /* G304.G ו-§10.3.4: כל רובוט מתחיל בנגיעה בבדיוק ארבעה פולן — לא בסוג הכדור שנבחר בלוח */
   bot.clip.length=0; for(let k=0;k<bldCapMe();k++) bot.clip.push("pollen"); syncClip(); shots=0; hits=0;
@@ -11041,6 +11072,7 @@ on($("bSolveDiff"),()=>{
   if(bestV){ setP("vDiff",bestD); setP("vAvg",bestV); refreshAim(); refreshMotor(); }
 });
 let intake=true,chase=false,placeOnClick=true,autoTip=true,slow=false,paused=false,showTraj=true,fieldCentric=false,aimAssist=false;
+const V76AA={yaw:null};   /* v76: נעילת כיוון הסטיק בזמן סיוע (נהיגה לפי הרובוט) */
 /* v51 — מחסנית גדולה על המסך: כמה כדורים, איזה צבע, מה הבא, ומה לעשות עכשיו */
 const MH={sig:"",n:-1}, MH2={sig:"",n:-1};
 function magRender(el,clip,open,ik,st,q){
@@ -12467,7 +12499,11 @@ const PADACT={
   lift:   {label:"מעלית — להפקיד בפרח", kind:"edge", run:()=>bldLiftGo()},
   builder:{label:"בונה רובוטים", kind:"edge", run:()=>bldOpen()},
   /* v74 net U5: כמו איפוס חיישן הכיוון באמצע מאץ׳ — הכיוון שהרובוט פונה אליו עכשיו הוא ״קדימה״ בציר המגרש */
-  yawReset:{label:"איפוס כיוון (ציר המגרש)", kind:"edge", run:()=>padYawReset()}
+  yawReset:{label:"איפוס כיוון (ציר המגרש)", kind:"edge", run:()=>padYawReset()},
+  /* v76: קריאות לשותף הבוט — הנהג משתתף באסטרטגיה (מבוסס על setAIRole ועל לוגיקת החניה) */
+  ptnDefend:{label:"שותף: תבלום", kind:"edge", run:()=>v76Call("defend")},
+  ptnScore: {label:"שותף: תנקד", kind:"edge", run:()=>v76Call("score")},
+  ptnPark:  {label:"שותף: חנה עכשיו", kind:"edge", run:()=>v76Call("park")}
 };
 const MODEOK={edge:["press"], bool:["toggle","hold"], fire:["press","hold"], fine:["hold"]};
 const MODENAME={press:"לחיצה", toggle:"מתג", hold:"החזקה"};
@@ -12488,6 +12524,9 @@ const PADDEF={
   12:{a:"best",m:"press"},    13:{a:"park",m:"press"},    14:{a:"flower",m:"press"},
   15:{a:"axis",m:"toggle"},   16:{a:"none",m:"press"}
 };
+/* v76: קריאות לשותף — לחיצה על הסטיקים (L3/R3) וכפתור הבית. שמירה ישנה מקבלת אותן רק אם הכפתור עדיין ״כלום״ */
+const PADDEF76={10:{a:"ptnDefend",m:"press"}, 11:{a:"ptnScore",m:"press"}, 16:{a:"ptnPark",m:"press"}};
+Object.assign(PADDEF,PADDEF76);
 /* ══════ v74 net — מצב השלט (U5) ונהג + מפעיל (U8). var: קיים לפני הקריאה הראשונה של padPoll ══════ */
 var PSH={expo:0, slow:0.28, max:100};          /* עקומה שלישית 0..1, מהירות במצב דיוק מלא, אחוז מהירות מרבית */
 try{ const o=JSON.parse(localStorage.getItem("bbPadShape1")||"null");
@@ -12505,14 +12544,17 @@ function padBindReset(save){
   PADB={}; for(const k in PADDEF) PADB[k]={a:PADDEF[k].a,m:PADDEF[k].m};
   if(save!==false) padBindSave();
 }
-function padBindSave(){ try{ localStorage.setItem(PADBKEY,JSON.stringify(PADB)); }catch(e){} }
+function padBindSave(){ try{ localStorage.setItem(PADBKEY,JSON.stringify(Object.assign({v76:1},PADB))); }catch(e){} }   /* v76: סימון גרסה — גרסה ישנה מדלגת על המפתח */
 function padBindLoad(){
   padBindReset(false);
   try{ const o=JSON.parse(localStorage.getItem(PADBKEY)||"null");
     if(o) for(const k in o){ if(!PADB[k]) continue;
       const A=PADACT[o[k].a]; if(!A) continue;
       if(MODEOK[A.kind].indexOf(o[k].m)<0) o[k].m=MODEOK[A.kind][0];
-      PADB[k]={a:o[k].a,m:o[k].m}; } }catch(e){}
+      PADB[k]={a:o[k].a,m:o[k].m}; }
+    /* v76: מיפוי שנשמר לפני הקריאות לשותף — מוסיפים אותן רק לכפתור שעדיין ״כלום״, ורק אם הפעולה עוד בלי כפתור */
+    if(o&&!o.v76) for(const k in PADDEF76){ const d=PADDEF76[k];
+      if(PADB[k]&&PADB[k].a==="none"&&!Object.keys(PADB).some(j=>PADB[j].a===d.a)) PADB[k]={a:d.a,m:d.m}; } }catch(e){}
 }
 padBindLoad();
 function padBtnName(i){
@@ -12684,10 +12726,11 @@ function padBindsBuild(o){
 const PSICO={none:"⊘",fire:"🎯",fine:"🐢",intake:"🌀",assist:"🧲",axis:"🧭",chase:"🎥",ref:"🧑‍⚖️",slow:"🐌",pause:"⏸",
   qual:"⚙️",route:"〰️",traj:"⤴️",tip:"🔄",home:"🏠",cancel:"✋",autofire:"🔥",best:"⭐",flower:"🌸",park:"🅿️",
   match:"▶️",driver:"👁",camtop:"🛰",nectar:"🍯",dump:"🗑",demo:"🤖",sound:"🔇",
-  turretL:"↶",turretR:"↷",turretAuto:"🎯",lift:"🛗",builder:"🛠",yawReset:"🧭"};
+  turretL:"↶",turretR:"↷",turretAuto:"🎯",lift:"🛗",builder:"🛠",yawReset:"🧭",ptnDefend:"🛡",ptnScore:"🎯",ptnPark:"🅿"};
 const PSGRP=[["נהיגה",["fire","fine","intake","assist","axis","yawReset","dump"]],
   ["✨ קסם",["best","flower","autofire","park","cancel","tip","home","nectar","demo"]],
   ["🛠 מערכות",["turretAuto","turretL","turretR","lift","builder"]],
+  ["🤝 שותף",["ptnDefend","ptnScore","ptnPark"]],
   ["מצלמה",["chase","driver","camtop"]],
   ["משחק ותצוגה",["match","pause","slow","ref","route","traj","qual","sound","none"]]];
 const PSX=215, PSY=128, PSK=1.9;
@@ -12859,7 +12902,9 @@ const KBDEF=[
   {k:"KeyZ",a:"cancel",m:"press"},
   /* v61: צריח ומעלית — פועלים רק ברובוט שיש לו אותם */
   {k:"BracketLeft",a:"turretL",m:"hold"},{k:"BracketRight",a:"turretR",m:"hold"},
-  {k:"KeyY",a:"turretAuto",m:"toggle"},{k:"KeyU",a:"lift",m:"press"}
+  {k:"KeyY",a:"turretAuto",m:"toggle"},{k:"KeyU",a:"lift",m:"press"},
+  /* v76: קריאות לשותף — 7 בלימה, 8 ניקוד, 9 חניה (J תפוס לשידור החוזר המיידי) */
+  {k:"Digit7",a:"ptnDefend",m:"press"},{k:"Digit8",a:"ptnScore",m:"press"},{k:"Digit9",a:"ptnPark",m:"press"}
 ];
 /* מקשים ששייכים לשחקן 2 במסך מפוצל — לא נותנים לקחת אותם */
 const KB_P2=/^(Arrow|Enter$|NumpadEnter$|Slash$|Comma$|Period$|ShiftRight$)/;
@@ -12868,7 +12913,7 @@ function kbReset(save){
   KB.move=Object.assign({},KBMOVE_DEF); KB.binds=KBDEF.map(b=>Object.assign({},b));
   if(save!==false) kbSave();
 }
-function kbSave(){ try{ localStorage.setItem(KBKEY,JSON.stringify({move:KB.move,binds:KB.binds,v58:1,v61:1})); }catch(e){} }
+function kbSave(){ try{ localStorage.setItem(KBKEY,JSON.stringify({move:KB.move,binds:KB.binds,v58:1,v61:1,v76:1})); }catch(e){} }
 function kbLoad(){
   kbReset(false);
   try{ const o=JSON.parse(localStorage.getItem(KBKEY)||"null");
@@ -12881,6 +12926,9 @@ function kbLoad(){
     /* v61: מקשי הצריח והמעלית — אותו כלל: רק מקש פנוי ופעולה בלי מקש */
     if(o&&Array.isArray(o.binds)&&!o.v61){ const used=new Set(KB.binds.map(b=>b.k).concat(Object.values(KB.move)));
       for(const d of KBDEF) if(/^(turretL|turretR|turretAuto|lift)$/.test(d.a)&&!KB.binds.some(b=>b.a===d.a)&&!used.has(d.k)) KB.binds.push({k:d.k,a:d.a,m:d.m}); }
+    /* v76: הקריאות לשותף — אותו כלל */
+    if(o&&Array.isArray(o.binds)&&!o.v76){ const used=new Set(KB.binds.map(b=>b.k).concat(Object.values(KB.move)));
+      for(const d of KBDEF) if(/^(ptnDefend|ptnScore|ptnPark)$/.test(d.a)&&!KB.binds.some(b=>b.a===d.a)&&!used.has(d.k)) KB.binds.push({k:d.k,a:d.a,m:d.m}); }
   }catch(e){}
 }
 /* שם קריא למקש, בעברית כשיש */
@@ -13157,7 +13205,8 @@ function stepSim(dt){
      כלומר פנייה שמאלה. לכן Q, שנותן +1, פונה שמאלה, ו-E ימינה. קודם
      הסימן היה הפוך, וגם סטיק ימין ימינה סובב את הרובוט שמאלה. */
   let turnCmd=kt;                               // Q שמאלה, E ימינה
-  if(aimAssist&&Math.abs(kt)<0.01&&hiveRed&&bot.muzzleMark&&!(auto&&auto.ph==="reload")){
+  let aa76=false;                               /* v76: הסיוע מסובב עכשיו את הרובוט */
+  if(aimAssist&&Math.abs(kt)<0.01&&hiveRed&&bot.muzzleMark&&!(auto&&auto.ph==="reload")){ aa76=true;
     const fa=mouthFrame(aimHive()), pa=muzzleWorld(), la=myLeadPt(fa,pa);   /* v74 U2: ״להוביל את הירי״ */
     let e=Math.atan2(M(la.x)-pa.x,M(la.z)-pa.z)-bot.yaw;
     e=Math.atan2(Math.sin(e),Math.cos(e));
@@ -13192,6 +13241,12 @@ function stepSim(dt){
     dF=PADYAW.on?_sF2.set(Math.sin(PADYAW.yaw),0,Math.cos(PADYAW.yaw)):driverFwd();   /* v74 net U5: ״איפוס כיוון״ */
     dR=_sDR.copy(dF).cross(_sUP).normalize();
   }
+  /* v76: נהיגה לפי הרובוט עם סיוע כיוון — בזמן שהסיוע מסובב, כיוון הסטיק ננעל לכיוון שהרובוט פנה אליו כשהנסיעה התחילה.
+     בלי זה הסיבוב של הסיוע סובב גם את כיוון הנסיעה, והסטרייף ״התעקם״ (0–1 פגיעות מתוך 6, לעומת 6/6 לפי המגרש) */
+  if(!fieldCentric&&aa76&&dr>0.05){
+    if(V76AA.yaw==null) V76AA.yaw=bot.yaw;
+    dF=_sF2.set(Math.sin(V76AA.yaw),0,Math.cos(V76AA.yaw)); dR=_sDR.set(-dF.z,0,dF.x);
+  } else V76AA.yaw=null;
   // הפיקוד מגיע ממערכת הצירים של המצלמה או של הרובוט, ומתורגם לצירי הגוף
   const wx=(dF.x*ky+dR.x*kx)*sc, wz=(dF.z*ky+dR.z*kx)*sc;
   bot.cmdW=driverLocked()?{x:0,z:0}:{x:wx,z:wz};
@@ -14598,7 +14653,7 @@ function frame(now){
   }
   if(BC.on&&!REPLAY.on) bcTick(dt);
   try{ v76Frame(now); }catch(e){}   /* v76: פתיחה, זוהר התא, תאורה לפי שלב, מבנה שקוף במצלמה העוקבת */
-  applyCam();
+  applyCam(); v76ShakeApply(dt);
   /* 1.12.4: בזמן מחולל/מתכנן — ציור ארבע פעמים בשנייה בלבד; הזמן הולך לסימולציות */
   if(GEN.running){ if(now-genDrawAt<250) return; genDrawAt=now; }
   /* דף מלא של האפליקציה מכסה את הזירה — הסימולציה ממשיכה, אבל לא מציירים מה שאף אחד לא רואה */
@@ -22909,13 +22964,15 @@ function v74rbParkBack(b,dt){
   if(simT>k.until){ b.parkBack=null; b.stallT=0; return false; }
   aiDrive(b,k.x,k.z,dt,0.9); b.ph="toPark"; return true;
 }
-/* B6: יש כדורים במחסנית, הבוט כבר ליד עמדת הירי, ויש זמן לסיים ולהגיע — מסיימים לפני החניה */
+/* B6 (v76 — שדרוג): יש כדורים במחסנית, והזמן מספיק לנסוע לעמדה, לרוקן ולנסוע ממנה לחניה — מסיימים לפני החניה.
+   קודם רק כשהבוט כבר עמד ליד העמדה; עכשיו גם במטח האחרון בדרך אליה */
 function v74rbFinishClip(b,tLeft){
-  if(b.role!=="score"||!b.clip.length||b.hum||(b.ph!=="fire"&&b.ph!=="aim")||!b.spot) return false;
-  if(BLD&&bldBot(b).shoot==="none") return false;
-  if(Math.hypot(b.spot.x-I(b.body.position.x),b.spot.z-I(b.body.position.z))>10) return false;
-  const need=(b.parkTrav||20)+5+b.clip.length*skill(b).cycle+1;
-  if(tLeft>need){ b.finishN=(b.finishN||0)+1; return true; }
+  if(!v76Shooter(b)||!b.clip.length) return false;
+  if(b.ph!=="fire"&&b.ph!=="aim"&&!b.lastVol) return false;
+  const n=v76LvNeed(b); if(!n) return false;
+  if(tLeft>n.toSpot+n.shoot+n.fromSpot+n.margin){
+    if(b.ph!=="fire"&&b.ph!=="aim"){ b.ph="aim"; b.t=0; b.target=null; }
+    b.finishN=(b.finishN||0)+1; return true; }
   return false;
 }
 /* B10: בוט שעומד (ממתין) מעל 3 כדורים או יותר — זז 10″ לפני ש-G411 נקרא */
@@ -22947,13 +23004,15 @@ const PARK4={goIn:null,goT:null,leftT:null,cand:null,prevD:null,chk:0,inLZ:false
 function v74rbParkReset(){ Object.assign(PARK4,{goIn:null,goT:null,leftT:null,cand:null,prevD:null,chk:0,inLZ:false,line:""}); }
 function v74rbParkActive(){ return MATCH.on&&!MATCH.netMirror&&matchPhase(MATCH.t)===2&&!RUN.on&&!(typeof auto!=="undefined"&&auto)&&botBody; }
 function v74rbParkTick(dt){
+  v76GlowTick(dt);                                     /* v76: נתיב חניה זוהר */
   if(!v74rbParkActive()){ if(!MATCH.on&&MATCH.phase!=="סיום") PARK4.goIn=null; return; }
   PARK4.chk-=dt; if(PARK4.chk>0) return; PARK4.chk=0.25;
   const tLeft=tEnd()-MATCH.t; if(tLeft>60) { PARK4.goIn=null; return; }
   const s=runParkSpot(), px=I(botBody.position.x), pz=I(botBody.position.z);
   let d=navDist(px,pz,s.x,s.z,navClrMe(),navDyn(botBody)); if(!isFinite(d)) d=Math.hypot(s.x-px,s.z-pz)*1.6;
-  const trav=M(d)/(Math.max(0.4,CH.vMaxFwd||1.5)*0.6)+3;
-  PARK4.goIn=tLeft-trav; PARK4.inLZ=myInLZ();
+  /* v76: אותה נוסחה כמו לבוטים (v76ParkNeed) — נסיעה במהירות של השלדה שלי ומרווח לפי הנסיעה והעומס ליד המשבצת */
+  const N76=v76ParkNeed(null,d,s); PARK4.trav=N76.trav; PARK4.margin=N76.margin;
+  PARK4.goIn=tLeft-N76.need; PARK4.inLZ=myInLZ();
   if(PARK4.goIn<=0&&PARK4.goT==null){ PARK4.goT=MATCH.t;
     cue("parkGo",()=>{ beep(988,0.12); setTimeout(()=>beep(988,0.12),170); setTimeout(()=>say("Time to park"),420); });
     try{ const L=navigator.getGamepads?navigator.getGamepads():[];
@@ -22982,7 +23041,205 @@ function v74rbParkDebrief(){
   return dl>0?row("יציאה לחניה","יצאת לחניה "+dl.toFixed(1)+" שנ׳ מאוחר מדי","bad")
              :row("יציאה לחניה","יצאת לחניה "+(-dl).toFixed(1)+" שנ׳ מוקדם","hl");
 }
-Object.assign(window.__sim||{},{SKILL,skill,v74rb:{muzzleWorld,mouthFrame,aimHive:()=>aimHive(),myMuzzleVel,aiMuzzleVel,leadDir,myLeadPt,aiLeadPt,v74rbRailDist,v74rbDefFree,v74rbYieldCheck,v74rbFinishClip,PARK4,v74rbParkHud,v74rbParkDebrief,v74rbParkTick,BLDC,aiDrive,aiParkStep,aiDefendStep,aiScoreStep,brainParkNow,refCard}});
+/* v76: שחרור גנרי לשלדה שלא זזה הצידה (טנק, 6 גלגלים, זחלים) — בכל השלבים ולא רק בחניה (כמו v74rbParkBack).
+   תקועה 1.2 שנ׳ במגע (מבנה, רובוט) ולא מתקרבת: 0.6 שנ׳ נסיגה הרחק מהמגע, ואז מסלול חדש. עד שתי נסיגות לאותו יעד — אחר כך
+   הלוגיקה הקיימת מוותרת על היעד. בחניה יש כבר נסיגה משלה */
+function v76TankBack(b,gd,dt){
+  const k=b.v76Back;
+  if(k){ if(simT>k.until){ b.v76Back=null; b.stallT=0.6; b.navBest=gd; b.navStill=0; if(b.nav){ b.nav.path=null; b.nav.age=9; } return false; }
+    aiDrive(b,k.x,k.z,dt,0.9); b.navLen=Infinity; return true; }
+  if(V76B.noTank||!BLD||BLD_DRIVE[bldBot(b).drive].strafe||b.hum||b.parkGo||b.parkA) return false;
+  if((b.role==="defend"&&!b.lastVol)||b.lvBlock) return false;   /* בולם דוחף בכוונה; נסיגה קצרה רק מאפסת לו את ספירת ההצמדה (G421) */   /* noTank — להשוואה ב-bench בלבד */
+  if((b.stallT||0)<1.2||gd<8||(b.v76BackN||0)>=2) return false;
+  let nx=0,nz=0,hit=0;
+  for(const c of world.contacts){ const o=c.bi===b.body?c.bj:(c.bj===b.body?c.bi:null); if(!o||balls.some(q=>q.body===o)) continue;
+    if(c.ni&&Math.abs(c.ni.y)>0.7) continue;           /* הרצפה — לא מכשול */
+    /* מגע עם רובוט של היריב — לא נסוגים וחוזרים לדחוף אותו: כל דחיפה חוזרת נספרת אצל השופט כהצמדה (G421).
+       שם מטפלים הפינוי (B7) והוויתור על היעד */
+    const foe=(o===botBody&&myAlly()!==b.ally)||BOTS.some(q=>q.body===o&&q.on&&q.ally!==b.ally); if(foe) return false;
+    nx+=b.body.position.x-o.position.x; nz+=b.body.position.z-o.position.z; hit++; }
+  if(!hit) return false;                               /* בלי מגע זה לא ״תקוע״ — הניווט עצמו מתכנן מחדש */
+  let L=Math.hypot(nx,nz); if(L<1e-6){ const f=aiForward(b); nx=-f.x; nz=-f.z; L=1; }
+  b.v76Back={x:I(b.body.position.x)+nx/L*8, z:I(b.body.position.z)+nz/L*8, until:simT+0.6};
+  b.v76BackN=(b.v76BackN||0)+1; b.v76Backs=(b.v76Backs||0)+1;
+  aiDrive(b,b.v76Back.x,b.v76Back.z,dt,0.9); return true;
+}
+/* ══════ v76 בוטים: מטח אחרון, מרווח חניה מסתגל, נוסחת חניה אחת ══════ */
+const V76B={k:0.55, slack:3, log:[]};
+/* זמן נסיעה (שנ׳) למרחק באינץ׳ במהירות מרבית במ׳/ש׳ — אותה נוסחה לנהג ולבוטים.
+   0.55: יעילות נמדדת (האצה, פניות ועקיפות). בבוטים נמדד ב-24 מאצ׳ים: חזו 3.5 שנ׳ ונסעו 2.6 בממוצע לפי 0.45 */
+function v76ParkTrav(dIn,vMs){ return M(Math.max(0,dIn))/(Math.max(0.4,vMs||1.45)*V76B.k); }
+/* עומס ליד המשבצת: רובוטים אחרים במרחק 30″ ממנה, ובוטים אחרים שכבר נוסעים לאזור החניה הזה */
+function v76ParkCong(self,s){
+  let n=0;
+  for(const r of brainRobots()){ if(self&&r.ref===self) continue; if(!self&&r.id==="me") continue;
+    if(Math.hypot(I(r.body.position.x)-s.x,I(r.body.position.z)-s.z)<30) n++; }
+  for(const o of BOTS) if(o!==self&&o.on&&o.parkGo&&o.parkS&&Math.abs(o.parkS.x-s.x)<20&&Math.abs(o.parkS.z-s.z)<40&&!botInLZ(o)) n+=0.5;
+  return Math.min(3,n);
+}
+/* המרווח: בסיס (3 שנ׳: תגובה, האטה וכניסה לאזור) + 40% מהנסיעה (מי שנוסע רחוק נתקל ביותר) + 1.2 שנ׳ לכל רובוט ליד המשבצת.
+   לבוט — לפחות 4.5 שנ׳ (היה 8.5 קבוע), ועוד שנייה אם כבר נתקע בדרך */
+function v76ParkMargin(trav,cong,react,floor){ return Math.max(floor||0,react+0.4*trav+1.2*cong); }
+/* הנוסחה האחת: נסיעה + מרווח. b=null — הרובוט שלי (U4) */
+function v76ParkNeed(b,dIn,s){
+  if(!b){ const trav=v76ParkTrav(dIn,CH.vMaxFwd||1.5), cong=s?v76ParkCong(null,s):0, mg=v76ParkMargin(trav,cong,3,3);
+    return {trav,margin:mg,need:trav+mg,cong}; }
+  const sk=skill(b), trav=v76ParkTrav(dIn,AIC.vMax*sk.v), cong=s?v76ParkCong(b,s):0;
+  const stuck=(b.parkBacks||0)>0||(b.stallT||0)>1?1:0;   /* כבר נתקע בדרך — עוד שנייה */
+  const mg=v76ParkMargin(trav,cong,3+(sk.think||0)+stuck,4.5);
+  return {trav,margin:mg,need:trav+mg,cong};
+}
+/* מי יורה במטח האחרון: מנקד, או בולם שאסף שני כדורים ויותר — לא בשליטת אדם, ועם משגר */
+function v76Shooter(b){ return !!b&&!b.hum&&(b.role==="score"||(b.role==="defend"&&(b.lastVol||b.clip.length>=2)))&&!(BLD&&bldBot(b).shoot==="none"); }
+/* כמה זמן צריך: לעמדה, לרוקן, ומהעמדה לחניה (עם המרווח המסתגל) */
+function v76LvNeed(b){
+  const px=I(b.body.position.x), pz=I(b.body.position.z);
+  let sp=b.spot; if(!sp){ const L=brainSpots(aiHive(b))||[]; let bd=1e9; for(const q of L){ const d=Math.hypot(q.x-px,q.z-pz); if(d<bd){bd=d; sp=q;} } }
+  if(!sp) return null;
+  const vMs=AIC.vMax*skill(b).v, dSp=Math.hypot(sp.x-px,sp.z-pz);
+  const toSpot=dSp<5?0:v76ParkTrav(dSp*1.3,vMs);
+  const shoot=b.clip.length*skill(b).cycle+(b.ph==="fire"?0.5:1.5);
+  if(b.noPark) return {toSpot,shoot,fromSpot:0,margin:1,sp};
+  const ps=brainParkSpot(b), dPk=Math.hypot(ps.x-sp.x,ps.z-sp.z)*1.3;
+  /* כבר ליד העמדה — הנסיעה לחניה היא מה ש-brainParkDue מדד מכאן במסלול האמיתי */
+  const fromSpot=dSp<10&&b.parkTrav?b.parkTrav:v76ParkTrav(dPk,vMs);
+  const N=v76ParkNeed(b,dPk,ps);
+  return {toSpot,shoot,fromSpot,margin:N.margin,sp};
+}
+/* מטח אחרון (שדרוג של B6): כשמה שנשאר קטן מהזמן לעמדה + ריקון + נסיעה לחניה + מרווח + עוד ״סיבוב איסוף״ —
+   מפסיקים לאסוף, נוסעים לירות את מה שיש, ואז חונים */
+function v76LastVolley(b,tl,dt){
+  if(tl>45||!v76Shooter(b)) return;
+  if(b.lastVol&&!b.clip.length){
+    if(!b.noPark){ b.parkGo=true; b.parkS=null; brainParkSpot(b); v76bNote(b,"lvPark"); }
+    else { b.lastVol=false; b.lvBlock=true; }       /* לא חונה — אחרי המטח בולמים עד הסוף */
+    return; }
+  b.lvChk=(b.lvChk||0)-dt; if(b.lvChk>0) return; b.lvChk=0.5;
+  if(b.lastVol||!b.clip.length||(b.role==="score"&&["approach","seek","idle"].indexOf(b.ph)<0)) return;
+  const n=v76LvNeed(b); if(!n) return;
+  if(tl<n.toSpot+n.shoot+n.fromSpot+n.margin+V76B.slack){
+    b.lastVol=true; b.ph="aim"; b.t=0; b.target=null; b.lvN=(b.lvN||0)+1; v76bNote(b,"lv"); }
+}
+/* לא מתחילים איסוף שאין זמן לירות אחריו: לפרח, טעינה, לעמדה, ירי ולחניה */
+function v76NoTimeForCycle(b,fl){
+  if(!BRAIN.on||!MATCH.on||matchPhase(MATCH.t)<2||b.role!=="score"||!v76Shooter(b)||b.clip.length) return false;
+  const tl=tEnd()-MATCH.t; if(tl>45) return false;
+  const px=I(b.body.position.x), pz=I(b.body.position.z), vMs=AIC.vMax*skill(b).v;
+  const L=brainSpots(aiHive(b))||[]; let sp=null, bd=1e9; for(const q of L){ const d=Math.hypot(q.x-fl.x,q.z-fl.z); if(d<bd){ bd=d; sp=q; } }
+  if(!sp) return false;
+  const nBall=Math.min(aiCap(b),fl.loose?1:Math.max(1,flowerCount(fl)));
+  const go=v76ParkTrav(Math.hypot(fl.x-px,fl.z-pz)*1.3,vMs)+2.0+v76ParkTrav(bd*1.3,vMs)+nBall*skill(b).cycle+1.5;
+  if(b.noPark) return tl<go+1;
+  const ps=brainParkSpot(b), dPk=Math.hypot(ps.x-sp.x,ps.z-sp.z)*1.3, N=v76ParkNeed(b,dPk,ps);
+  return tl<go+N.trav+N.margin;
+}
+/* חסימה ליד האזור שלנו: יריב מתקרב (45″) — בולמים אותו; אחרת מחכים מחוץ לאזור החניה, מול המגרש. מה שמכריע מתי לחנות — brainParkDue */
+function v76HoldStep(b,dt){
+  const ps=brainParkSpot(b), sg=b.ally==="red"?-1:1, hx=ps.x-sg*26, hz=ps.z*0.7;
+  const F=aiFoeFor(b,dt);
+  if(F&&Math.hypot(I(F.body.position.x)-hx,I(F.body.position.z)-hz)<45){ aiDefendStep(b,dt); return; }
+  aiDriveTo(b,hx,hz,dt,0.8); aiFace(b,0,hz,dt); b.ph="hold";
+}
+function v76bNote(b,k){ if(V76B.log.length<200) V76B.log.push({t:+(MATCH.t||0).toFixed(1),n:b.name,k,clip:b.clip.length}); }
+function v76bReset(){ V76B.log.length=0; }
+/* ══════ v76: קריאות לשותף ו״השותף מדבר״ ══════ */
+function v76Partner(){ return BOTS.find(b=>b.on&&b.body&&b.ally===myAlly()&&!brainHuman(b)&&!b.pprog)||null; }
+const V76T={tex:{}, last:"", lastAt:-99, n:0};
+function v76Call(k){
+  if(NET.mode==="guest") return;
+  const p=v76Partner();
+  if(!p){ v76Toast("אין שותף בוט בזירה"); return; }
+  if(k==="park"){
+    if(!MATCH.on&&MATCH.cd<=0){ v76Toast("השותף: חניה — רק במאץ׳"); return; }
+    p.callK="park"; p.lastVol=false; p.lvBlock=false; p.parkGo=true; p.parkS=null; brainParkSpot(p);
+  } else {
+    p.callK=k; p.lastVol=false; p.lvBlock=false;
+    if(p.parkGo&&!p.parkA){ p.parkGo=false; p.parkChk=0.6; }   /* ביטול ״חנה עכשיו״ — אם הזמן באמת נגמר, brainParkDue יחזיר אותו לחניה */
+    setAIRole(p,k);
+  }
+  V76T.n++;
+  if(MATCH.on||MATCH.cd>0) v76TalkTick(p,0,true); else v76Toast(v76Line(p,v76State(p),true));
+}
+/* מה השותף עושה עכשיו: חונה / בולם / מנקד */
+function v76State(b){ return b.parkGo||b.parkA?"park":(b.role==="defend"||b.lvBlock)?"defend":"score"; }
+const V76ICO={score:"🎯",defend:"🛡",park:"🅿"};
+function v76Tex(k){
+  if(V76T.tex[k]) return V76T.tex[k];
+  const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d");
+  g.fillStyle="rgba(12,16,22,.78)"; g.beginPath(); g.arc(32,32,30,0,Math.PI*2); g.fill();
+  g.font="38px sans-serif"; g.textAlign="center"; g.textBaseline="middle"; g.fillText(V76ICO[k]||"?",32,35);
+  const t=new THREE.CanvasTexture(c); V76T.tex[k]=t; return t;
+}
+function v76Ico(b,k,show){
+  if(!show){ if(b.v76Ico) b.v76Ico.visible=false; return; }
+  if(!b.v76Ico){ b.v76Ico=new THREE.Sprite(new THREE.SpriteMaterial({map:v76Tex(k),transparent:true,depthTest:false}));
+    b.v76Ico.scale.set(M(9),M(9),1); b.v76Ico.renderOrder=1002; b.v76Ico.userData.k=k; }
+  if(b.v76Ico.parent!==b.group){ b.group.add(b.v76Ico); b.v76Ico.position.set(0,M(AIC.H+11),0); }
+  if(b.v76Ico.userData.k!==k){ b.v76Ico.material.map=v76Tex(k); b.v76Ico.material.needsUpdate=true; b.v76Ico.userData.k=k; }
+  b.v76Ico.visible=true;
+}
+function v76Line(b,st,obey){
+  const pre=obey?"השותף: קיבלתי — ":"השותף: ";
+  if(st==="park") return pre+(b.lastVol?"יורה את מה שיש ואז חונה":"יוצא לחניה");
+  if(st==="defend"){ const f=b.foe&&b.foe!=="me"?b.foe:null; return pre+(f?"בולם את "+f:obey?"בולם":"עובר לבלימה"); }
+  return pre+(obey?"מנקד":"עובר לניקוד");
+}
+function v76Toast(txt){
+  if(typeof GEN!=="undefined"&&GEN.running) return;
+  const el=$("refToast"); if(!el) return;
+  /* לא דורסים קריאה של השופט שעוד על המסך */
+  if(/\bshow\b/.test(el.className)&&!/\bptn\b/.test(el.className)&&simT-V76T.lastAt>0.2) { V76T.skipped=(V76T.skipped||0)+1; return; }
+  V76T.last=txt; V76T.lastAt=simT; refToast(T(txt),"ptn");
+}
+function v76TalkTick(b,dt,obey){
+  const isP=b.on&&b.ally===myAlly()&&!brainHuman(b)&&!b.pprog&&(MATCH.on||MATCH.cd>0);
+  if(!isP){ if(b.v76Ico&&b.v76Ico.visible) v76Ico(b,null,false); return; }
+  const st=v76State(b);
+  v76Ico(b,st,true);
+  if(obey){ b.v76St=st; b.v76SayAt=simT+(st==="defend"?0.35:0); b.v76Obey=true; }
+  else if(st!==b.v76St){ const first=b.v76St==null; b.v76St=st; if(!first&&MATCH.on){ b.v76SayAt=simT+(st==="defend"?0.35:0); b.v76Obey=false; } }
+  /* בלימה: מחכים רגע עד שהמוח בוחר את מי — ״אני בולם את כחול 2״ */
+  if(b.v76SayAt!=null&&simT>=b.v76SayAt){ b.v76SayAt=null; v76Toast(v76Line(b,b.v76St,b.v76Obey)); }
+}
+/* ══════ v76 ״וואו״ קטן: נתיב חניה זוהר, ורעידת מצלמה בהיפוך ══════ */
+const V76G={grp:null,segs:[],mat:null,on:false,t:0,refT:0};
+function v76GlowHide(){ if(V76G.grp) V76G.grp.visible=false; V76G.on=false; }
+function v76GlowDraw(){
+  const s=runParkSpot(), px=I(botBody.position.x), pz=I(botBody.position.z);
+  const path=navPlan(px,pz,s.x,s.z,navClrMe(),navDyn(botBody))||[[px,pz],[s.x,s.z]];
+  if(!V76G.grp){ V76G.grp=new THREE.Group(); scene.add(V76G.grp);
+    V76G.mat=new THREE.MeshBasicMaterial({color:0x5cf2a0,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}); }
+  let k=0;
+  for(let i=1;i<path.length&&k<16;i++){ const a=path[i-1], c=path[i], dx=c[0]-a[0], dz=c[1]-a[1], L=Math.hypot(dx,dz); if(L<0.5) continue;
+    let m=V76G.segs[k]; if(!m){ m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),V76G.mat); m.rotation.x=-Math.PI/2; m.renderOrder=998; V76G.grp.add(m); V76G.segs.push(m); }
+    m.position.set(M((a[0]+c[0])/2),M(0.7),M((a[1]+c[1])/2)); m.scale.set(M(L+3),M(5),1); m.rotation.z=-Math.atan2(dz,dx); m.visible=true; k++; }
+  for(let i=k;i<V76G.segs.length;i++) V76G.segs[i].visible=false;
+  V76G.grp.visible=true; V76G.on=true;
+}
+/* נקרא מ-v74rbParkTick בכל צעד: מופיע עם ״לחניה עכשיו!״, מתעדכן פעם בשנייה, נעלם בחניה ובסוף המאץ׳ */
+function v76GlowTick(dt){
+  const want=v74rbParkActive()&&PARK4.goT!=null&&!PARK4.inLZ&&!(typeof GEN!=="undefined"&&GEN.running);
+  if(!want){ if(V76G.on) v76GlowHide(); return; }
+  V76G.t+=dt; V76G.refT-=dt;
+  if(!V76G.on||V76G.refT<=0){ V76G.refT=1; try{ v76GlowDraw(); }catch(e){ v76GlowHide(); } }
+  if(V76G.mat) V76G.mat.opacity=0.35+0.25*Math.sin(V76G.t*6);
+}
+const V76SHK={t:0,dur:0.3};
+function v76ReducedMotion(){ try{ return !!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){ return false; } }
+function v76ShakeStart(){
+  if(!MATCH.on||(typeof GEN!=="undefined"&&GEN.running)) return;
+  if(BC.on||(typeof SPLIT!=="undefined"&&SPLIT.on)||REPLAY.on||v76ReducedMotion()) return;
+  V76SHK.t=V76SHK.dur; V76SHK.n=(V76SHK.n||0)+1;
+}
+/* אחרי applyCam בכל פריים — היסט קטן שדועך (בלי Math.random, כדי לא לגעת באקראיות של המאץ׳) */
+function v76ShakeApply(dt){
+  if(V76SHK.t<=0) return;
+  if(BC.on||SPLIT.on||REPLAY.on){ V76SHK.t=0; return; }
+  V76SHK.t=Math.max(0,V76SHK.t-dt);
+  const k=V76SHK.t/V76SHK.dur, a=(cam.dist||8)*0.004*k, w=simT*90;
+  camera.position.x+=Math.sin(w)*a; camera.position.y+=Math.sin(w*1.31+1)*a*0.6; camera.position.z+=Math.cos(w*0.87)*a;
+}
+Object.assign(window.__sim||{},{v76b:{v76TankBack,v76HoldStep,aiDriveTo,PADDEF76,PSGRP,KBDEF,v74rbParkTick,v76Line,V76T,V76G,V76SHK,V76AA,v76Call,v76Partner,v76State,v76GlowTick,v76ShakeStart,v76ShakeApply,v76BotPartner,V76B,v76ParkTrav,v76ParkNeed,v76ParkCong,v76LvNeed,v76LastVolley,v76NoTimeForCycle,v76Shooter},SKILL,skill,v74rb:{muzzleWorld,mouthFrame,aimHive:()=>aimHive(),myMuzzleVel,aiMuzzleVel,leadDir,myLeadPt,aiLeadPt,v74rbRailDist,v74rbDefFree,v74rbYieldCheck,v74rbFinishClip,PARK4,v74rbParkHud,v74rbParkDebrief,v74rbParkTick,BLDC,aiDrive,aiParkStep,aiDefendStep,aiScoreStep,brainParkNow,refCard}});
 requestAnimationFrame(frame);
 setTimeout(resize,60);
 if(PHONE) setTimeout(()=>{ if(!camTouched) fitView(); applyCam(); },420);
