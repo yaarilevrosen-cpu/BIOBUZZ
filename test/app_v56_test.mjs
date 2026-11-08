@@ -13,7 +13,7 @@ ok(await E(()=>!document.getElementById('welcome').hidden&&!!document.getElement
 ok(!/\u05D9\u05E2\u05E8\u05D9|\u05D0\u05E4\u05D5\u05DC\u05D5/.test(await E(()=>document.getElementById('welcome').innerText)),'מסך הפתיחה בלי שם של משתמש או קבוצה קבועים');
 await E(()=>{ document.getElementById('wcName').value='נועה'; document.getElementById('wcTeamN').value='Robo Lions'; document.getElementById('wcTeamNum').value='12345'; document.getElementById('wcGo').click(); });
 await win.waitForTimeout(600);
-ok(await E(()=>/^v\d+ · Robo Lions 12345$/.test(document.getElementById('verBadge').textContent)),'הקבוצה מהפתיחה — בתג הגרסה');
+ok(await E(()=>/^(v\d+|\d+\.\d+(\.\d+)?) · Robo Lions 12345$/.test(document.getElementById('verBadge').textContent)),'הקבוצה מהפתיחה — בתג הגרסה');   /* v77: באפליקציה — מספר הגרסה שלה */
 await E(()=>document.querySelector('#appNav [data-nav="settings"]').click()); await win.waitForTimeout(400);
 let r=await E(()=>({n:document.querySelector('#apSet #tmName').value, u:document.querySelector('#apSet #tmNum').value, lang:!!document.querySelector('#appPage .langBtn'), about:document.getElementById('appPage').innerText}));
 ok(r.n==='Robo Lions'&&r.u==='12345'&&r.lang,'בהגדרות: שם, מספר ומתג שפה '+JSON.stringify({n:r.n,u:r.u,l:r.lang}));
