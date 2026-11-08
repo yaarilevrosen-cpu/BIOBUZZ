@@ -9,7 +9,7 @@ const clean=()=>E(()=>{ const S=__sim; S.matchStop&&S.matchStop(); for(const b o
 // 1. בנייה מוכנה, בדיקת חוקים, ברירת מחדל
 let r=await E(()=>{ const S=__sim; return {n:S.BLD_PRESETS.length, ids:S.bldAll().map(b=>b.id), bad:S.bldAll().filter(b=>!S.bldCheck(b).ok).map(b=>b.id),
   me:S.bldMe().id, classic:S.bldIsClassic(S.bldMe()), mot:S.bldAll().map(b=>b.id+':'+S.bldCheck(b).mot) }; });
-ok(r.n===7,'שבע בניות מוכנות ('+r.ids.join(',')+')');
+ok(r.n===12,'12 בניות מוכנות (v75: +5 במוסך) ('+r.ids.join(',')+')');
 ok(r.bad.length===0,'כל הבניות המוכנות חוקיות — '+r.mot.join(' '));
 ok(r.me==='classic'&&r.classic,'ברירת מחדל: הקלאסי — בדיוק הרובוט של עד היום');
 r=await E(()=>{ const S=__sim, B=S.bldById('starter'); return {B, sum:S.bldSum(B)}; });
@@ -26,7 +26,7 @@ ok(!r.cards.some(x=>/בונה|סקינים/.test(x))&&r.inMine&&r.name==='BIOBUZ
 // 2. החלון
 r=await E(()=>{ document.getElementById('ppBuild').click(); const m=document.getElementById('bldBox');
   return {open:!m.hidden, sel:m.querySelectorAll('[data-bsel]').length, cards:m.querySelectorAll('.bldCard').length, chk:m.querySelectorAll('.bldChk>div').length}; });
-ok(r.open&&r.sel===4&&r.cards===7&&r.chk>=5,'החלון נפתח: 4 רובוטים לבחירה, 7 כרטיסים, בדיקת חוקים ('+JSON.stringify(r)+')');
+ok(r.open&&r.sel===4&&r.cards===12&&r.chk>=5,'החלון נפתח: 4 רובוטים לבחירה, 12 כרטיסים, בדיקת חוקים ('+JSON.stringify(r)+')');
 // שכפול ועריכה
 r=await E(()=>{ const m=document.getElementById('bldBox'); m.querySelector('[data-bpick="turret"]').click(); m.querySelector('[data-bact="dup"]').click();
   const id=__sim.BLD.edit, B=__sim.BLD.custom.find(x=>x.id===id);

@@ -184,6 +184,7 @@ class Store {
     if (opt.local) p.local = true;       /* נהג מקומי — נשאר רק במחשב הזה, לא עולה לחשבון */
     const owner = opt.owner !== undefined ? opt.owner : this.viewer;   /* נוצר בזמן שמחוברים — שייך לחשבון */
     if (owner && !p.local) p.owner = owner;
+    else if (!owner && !p.local && opt.owner === undefined) p.claim = true;   /* תיקון: ״עם מייל״ בלי חשבון מחובר — שייך לחשבון הבא שמתחבר */
     this.meta.list.push(p);
     fs.mkdirSync(this.dir(p.id), { recursive: true });
     if (!opt.quiet) this.saveMeta();
@@ -194,7 +195,7 @@ class Store {
     if (patch.name != null) p.name = this.uniqueName(patch.name, id);
     if (patch.emoji) p.emoji = Array.from(String(patch.emoji)).slice(0, 4).join("");
     if (patch.color && /^#[0-9a-f]{6}$/i.test(patch.color)) p.color = patch.color;
-    if (patch.local != null) { if (patch.local) p.local = true; else { delete p.local; p.kvAt = Date.now(); if (this.viewer && !p.owner) p.owner = this.viewer; } }
+    if (patch.local != null) { if (patch.local) p.local = true; else { delete p.local; p.kvAt = Date.now(); if (this.viewer && !p.owner) p.owner = this.viewer; else if (!p.owner) p.claim = true; } }
     p.metaAt = Date.now();
     this.saveMeta(); return p;
   }

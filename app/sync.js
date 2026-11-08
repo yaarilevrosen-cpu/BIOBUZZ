@@ -148,14 +148,16 @@ class Sync {
     finally { clearTimeout(t); }
   }
   setSession(d) {
-    const prev = this.uid();
+    const prev = this.uid(), nid = d.user && d.user.id || "";
+    /* תיקון: ממלאים חסרים מהחיבור הקודם רק כשזה אותו משתמש (רענון). חשבון אחר — בלי השם/ההסכמה/הגיל/הקבוצה של הקודם */
+    const old = prev && prev === nid && this.sess.user || {};
+    if (prev && prev !== nid) { this.team = null; this.saveTeam(); this.lastSync = 0; this.lastError = ""; }
     /* v63: התוקף לפי השעון של המחשב הזה (expires_in), לא לפי expires_at של השרת — שעון שזז לא מנתק */
     const ttl = +d.expires_in > 0 ? +d.expires_in : 3600;
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
       expires_at: Date.now() + ttl * 1000,
-      user: { id: d.user && d.user.id, email: d.user && d.user.email, name: userName(d.user) || (this.sess && this.sess.user && this.sess.user.name) || "",
-        tos_v: userTos(d.user) || (this.sess && this.sess.user && this.sess.user.tos_v) || "",
-        age: userAge(d.user) || (this.sess && this.sess.user && this.sess.user.age) || "" } };
+      user: { id: nid, email: d.user && d.user.email, name: userName(d.user) || old.name || "",
+        tos_v: userTos(d.user) || old.tos_v || "", age: userAge(d.user) || old.age || "" } };
     this.saveSess();
     if (this.uid() !== prev) this.viewer(this.uid());
   }
@@ -261,7 +263,7 @@ class Sync {
        אחרת — רק נהג שכבר קיים בחשבון הזה, או שנוצר בזמן שהחשבון הזה מחובר. */
     const claimAll = !S.meta.acctSeen && (this.sessAtBoot || !this.hadAcct);
     let claimed = false;
-    for (const p of S.meta.list) if (!p.local && !p.owner && (claimAll || R.has(p.id))) { p.owner = uid; claimed = true; }
+    for (const p of S.meta.list) if (!p.local && !p.owner && (claimAll || R.has(p.id) || p.claim)) { p.owner = uid; delete p.claim; claimed = true; }
     for (const t of S.meta.tombs) if (!t.owner && claimAll) { t.owner = uid; claimed = true; }
     if (!S.meta.acctSeen || claimed) { S.meta.acctSeen = true; S.saveMeta(); }
     /* התקנה חדשה עם נהג ריק אחד, מול חשבון עם נהגים — הנהג הריק מפנה את מקומו */

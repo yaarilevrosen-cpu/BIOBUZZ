@@ -31,7 +31,7 @@ await E(()=>{ localStorage.setItem('bbLang1','en'); }); await page.reload();
 await page.waitForFunction(()=>window.__sim&&window.__sim.botBody&&window.__sim.BOTS.length,null,{timeout:60000});
 {
   const bad=await E(a=>a.map(s=>[s,i18nText(s)]).filter(([s,t])=>/[֐-׿]/.test(t)),segs);
-  ok(segs.length>1500&&bad.length===0,`UI3: ${segs.length} קטעים עבריים בקוד — כולם מתורגמים (${bad.length} לא)`+(bad.length?' · '+bad.slice(0,6).map(x=>JSON.stringify(x[0])).join(' | '):''));
+  ok(segs.length>1500&&bad.length===0,`UI3: ${segs.length} קטעים עבריים בקוד — כולם מתורגמים (${bad.length} לא)`+(bad.length?' · '+bad.slice(0,(process.env.UI3ALL?99:6)).map(x=>JSON.stringify(x[0])).join(' | '):''));
   const r=await E(()=>{ const t=[
       'גם באחיזה מרבית הסימולטור איטי מהמדידה (2.10 שנ׳ מול 1.5) — המנוע מגביל: בדקו מומנט, תמסורת או סוללה',
       'הרובוט האמיתי (2.50) מהיר מהמנוע שמוגדר (1.90 מ׳/ש׳) — בדקו סל״ד, קוטר גלגל ותמסורת בלשונית השלדה',
