@@ -886,6 +886,22 @@ addEventListener("unhandledrejection",function(e){var r=e.reason;k("promise: "+(
   #ppKeys{font-size:12px; color:var(--ink2); line-height:2}
   #ppKeys kbd{font-family:var(--mono); background:var(--panel2); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-size:11px}
   #ppFriends[hidden]{display:none}
+  /* v78: מצב סקאוטינג — על אותו לוח קל של ״משחק״ (body.play), רק עם הלוח שלו במקום ״מה משחקים״ */
+  .ppCard[hidden], #uiMode button[hidden], #scmNow[hidden]{display:none}
+  #scmPanel{display:none; flex-direction:column; gap:12px; padding:16px 14px 20px}
+  body.scout #scmPanel{display:flex} body.scout #playPanel{display:none!important}
+  #scmPanel h3{font-family:var(--display); font-weight:400; font-size:20px; margin:0}
+  #scmPanel .pp-sub{font-size:12px; color:var(--muted); margin:-6px 0 2px; line-height:1.6}
+  #scmPanel #sctBody{padding:0} #scmPanel .sctRow{padding:7px 8px} #scmPanel .sctRows{margin:4px 0}
+  #scmPanel #sctBody>.row [data-sct="play"]{flex:1 1 100%; padding:11px 8px; font-size:13.5px; background:rgba(255,176,32,.12); border-color:var(--accent); color:var(--accent); font-weight:600}
+  #scmPanel .bldF select{flex:1 1 100%; min-width:0; max-width:100%} #scmPanel .bldF>span{min-width:0}
+  .scmSrc{border-top:1px solid var(--line); padding-top:8px; margin-top:4px} .scmSrc>summary{cursor:pointer; font-size:12.5px; color:var(--muted)}
+  .scmAdmRow{display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:6px 0; border-bottom:1px solid var(--line); font-size:12.5px}
+  .scmAdmRow>span{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; direction:ltr; text-align:start}
+  .scmAdmRow small{color:var(--muted); font-size:11px} .scmAdmRow em{font-style:normal; font-size:11px; color:var(--accent)}
+  .scmAdmRow button{flex:0 0 auto; padding:3px 9px; font-size:11.5px}
+  .scmAdmAdd{display:flex; gap:6px; margin-top:8px} .scmAdmAdd input{flex:1 1 auto; min-width:0; direction:ltr}
+  .scmAdmAdd button{flex:0 0 auto} .scmAdmMsg{font-size:12px; margin:6px 0 0} .scmAdmMsg.err{color:#ff6b6b} .scmAdmMsg.ok{color:var(--good)}
   #ppToLab{margin-top:6px; background:transparent; border:1px dashed var(--line2); color:var(--muted); padding:11px}
   #ppToLab:hover{color:var(--ink); border-color:var(--accent)}
   /* בבדיקות: ההסברים הארוכים מוסתרים עד שמבקשים (כפתור ״?״ בכותרת הלוח) */
@@ -1931,6 +1947,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
     <div id="uiMode" role="group" aria-label="מצב">
       <button data-ui="play" title="פשוט: לשחק, בלי פרמטרים">🎮 משחק</button>
       <button data-ui="lab" title="כל הכלים: רובוט, אוטונומי, ניתוח וכיול">🔧 מעבדה</button>
+      <button data-ui="scout" hidden title="מאץ׳ לפי הרובוטים האמיתיים — רק למנהלי סקאוטינג">📊 סקאוטינג</button>   <!-- v78: רק למנהלים -->
     </div>
 
     <!-- שעון המאץ׳: נשאר גלוי באוטונומי, במעבר ובטלאופ -->
@@ -2154,7 +2171,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <button class="ppCard" id="ppFree"><i>🚗</i><div><b>נסיעה חופשית</b><span>לתרגל נהיגה וירי, בלי שעון ובלי יריבים</span></div></button>
         <button class="ppCard" id="ppPractice" aria-haspopup="dialog"><i>🤖</i><div><b>תרגול מול בוטים</b><span>בוחרים יריבים ושותף, בלי שעון ובלי ניקוד לעונה</span></div></button>
         <button class="ppCard" id="ppBoard" aria-haspopup="dialog"><i>📋</i><div><b>לוח אסטרטגיה</b><span>מתכננים על הזירה מלמעלה — חצים ורובוטים, גם עם החברים ברשת</span></div></button>
-        <button class="ppCard" id="ppScout" aria-haspopup="dialog"><i>📊</i><div><b>מאץ׳ מהסקאוטינג</b><span>הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ הבא</span></div></button>
+        <button class="ppCard" id="ppScout" hidden><i>📊</i><div><b>מאץ׳ מהסקאוטינג</b><span>הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ הבא</span></div></button>
         <button class="ppCard" id="ppFriendsBtn"><i>👥</i><div><b>עם חברים</b><span>מסך מפוצל, רשת מקומית או טלפון עם קוד QR</span></div></button>
         <button class="ppCard" id="ppDrillBtn"><i>🎯</i><div><b>תרגילים</b><span>חמישה עשר תרגילים — מחזורים, דיוק, טעינה, החלטות, חניה, מול בולם ועוד — עם שיא אישי</span></div></button>
         <div id="ppDrills" hidden><div class="ppDrillGrid"><button data-drill="cycle">⏱ מחזורים · 60 שנ׳</button><button data-drill="end">🏁 סוף משחק · 30 שנ׳</button><button data-drill="acc">🎯 דיוק · 10 יריות</button>
@@ -2195,6 +2212,14 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
         <div class="ppH">איך שולטים</div>
         <div id="ppKeys"></div>
 
+      </section>
+      <!-- v78: מצב ״סקאוטינג״ — רק למנהלי סקאוטינג. התוכן (sctUI) עובר לכאן מהחלון #sctBox כשהמצב פעיל -->
+      <section id="scmPanel" aria-label="סקאוטינג">
+        <h3>📊 סקאוטינג</h3>
+        <p class="pp-sub">הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ — בוחרים מאץ׳ ומשחקים.</p>
+        <div class="ppRow" id="scmNow" hidden><button id="scmStop">■ עצור משחק</button></div>
+        <div id="scmHost"></div>
+        <details id="scmAdm" class="ppFold"><summary class="ppH">👥 מנהלים</summary><div id="scmAdmBody"></div></details>
       </section>
       
       <details open data-ws="drive"><summary>נהיגה</summary><div class="body">
@@ -2986,6 +3011,7 @@ try{ window.__bbWizFresh=!["bbWizard1","bbQual1","bbUiMode1","bbTour1","bbSeason
   .v77Sys i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-inline-end:4px; vertical-align:-1px}
 </style>
 <script type="application/json" id="i18nX_v77ux" data-i18n>{"סוף משחק — לחנות לפני הצופר": "Endgame — park before the buzzer", "מוכנים": "ready", "לבדוק": "to check", "לא נבדק": "Not checked", "6 גלגלים — מרכז נמוך": "6 wheels — drop-center", "גלגלי איסוף גמישים": "Compliant wheels (Gecko)", "רובוט המתחילים": "goBILDA StarterBot", "רובוט המתחילים מכאנום": "StarterBot mecanum", "לפי היצרן: שלדת 6 גלגלים עם מרכז נמוך, איסוף בגלגלים גמישים, יורה פולן ושולף פולן מתחתית הפרח. המידות והמנועים — הנחה עד מדידה.": "Per goBILDA: 6-wheel drop-center chassis, Gecko wheel intake, shoots POLLEN and pulls POLLEN from the bottom of the flower. Sizes and motors are assumptions until measured.", "אותו רובוט מתחילים בגרסת גלגלי מכאנום (גם היא של היצרן).": "The same StarterBot with mecanum wheels (also by goBILDA).", "בונה רובוטים — צריח, יורה כפול, מעלית, רובוט המתחילים, ולכל בוט רובוט משלו": "Robot builder — turret, double shooter, lift, StarterBot, and a robot of its own for every bot", "בזירה מההתחלה": "Pre-placed", "מוסך": "Garage", "חומר השלדה": "Chassis material", "כוונון במוסך": "tune in the garage", "כוונון הרובוט במוסך": "Tune the robot in the garage", "תצוגה חיה בתלת־ממד במוסך": "Live 3D preview in the garage", "הרץ את כל הלוח בזירה": "Run the whole board on the field", "קוד לשיתוף של לוח": "Share code for a board", "תבנית ללוח — יציאה, מחזור, פרחים, הגנה": "Board template — leave, cycle, flowers, defense", "הדפסת הלוח — תמונה לכל שלב": "Print the board — one image per phase", "לוחות שמורים — שמירה וטעינה": "Saved boards — save and load", "חיבור חי לסקאוטינג": "Live scouting connection", "קוד QR מהסקאוטינג": "QR code from scouting", "רשימת המראה — מה עוד לבדוק לפני התחרות": "Pre-flight checklist — what's left to check before the event", "מוכנות לתחרות": "Competition readiness", "פס התוצאה וכרטיס הסיום — במאץ׳ מול בוטים": "Score bar and end card — in a match vs bots", "מאץ׳": "Match", "▶ נסה רק את שלי": "▶ Try mine only", "💾 שמור ▾": "💾 Save ▾", "שמירה, טעינה ומחיקה של לוחות": "Save, load and delete boards", "🏁 הרץ בזירה": "🏁 Run on the field", "קולות המגרש — צופרים, ספירה וקריאת הפתיחה לנהגים": "Field sounds — horns, countdown, “Drivers, pick up your controllers”"}</script>
+<script type="application/json" id="i18nX_v78mode" data-i18n>{"מאץ׳ לפי הרובוטים האמיתיים — רק למנהלי סקאוטינג": "A match against the real robots — scouting admins only", "📊 סקאוטינג": "📊 Scouting", "סקאוטינג": "Scouting", "סקאוטינג — רק למנהלים": "Scouting — admins only", "הבוטים נבנים לפי הרובוטים האמיתיים של המאץ׳ — בוחרים מאץ׳ ומשחקים.": "The bots are built from the real robots of the match — pick a match and play.", "■ עצור משחק": "■ Stop the game", "👥 מנהלים": "👥 Admins", "עוד אין נתונים — טוענים קובץ מאפליקציית הסקאוטינג, מתחברים בחיבור החי או סורקים קוד QR (ב״מקור הנתונים״ למטה).": "No data yet — load a file from the scouting app, connect live or scan a QR code (under “Data source” below).", "▶ מאץ׳ מול הרובוטים האלה": "▶ Match against these robots", "📥 מקור הנתונים — קובץ, חיבור חי, קוד QR": "📥 Data source — file, live connection, QR code", "ניהול המנהלים — באפליקציה, כשמחוברים לחשבון.": "Managing admins — in the app, when signed in to an account.", "טוען…": "Loading…", "מאז": "since", "להסיר את עצמי מהמנהלים": "Remove myself from the admins", "להסיר מהמנהלים": "Remove from the admins", "המייל של החשבון": "The account's email", "המייל של מנהל חדש": "Email of a new admin", "＋ הוסף": "＋ Add", "מוסיפים רק מי שכבר פתח חשבון באפליקציה. מנהל רואה את מצב הסקאוטינג ויכול להוסיף ולהסיר מנהלים.": "You can only add someone who already has an account in the app. An admin sees the scouting mode and can add and remove admins.", "בטוח?": "Sure?", "מסיר…": "Removing…", "✓ הוסר מהמנהלים": "✓ Removed from the admins", "מוסיף…": "Adding…", "✓ נוסף מנהל:": "✓ Admin added:", "נוסף מנהל": "admin added", "צריך להתחבר לחשבון קודם": "Sign in to an account first", "צריך להריץ את v78_scout_admins.sql בשרת": "Run v78_scout_admins.sql on the server first", "אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים": "There is no account with this email — open an account in the app first, then add it", "אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר": "The last admin can't be removed — add another admin first", "רק מנהל סקאוטינג יכול לעשות את זה": "Only a scouting admin can do this", "אין חיבור לאינטרנט — ניהול המנהלים צריך רשת": "No internet connection — managing admins needs the network"}</script>
 <script type="application/json" id="i18nX_v76s" data-i18n>{"🟢 חי": "🟢 Live", "🟡 שאילה כל 10 שנ׳": "🟡 Polling every 10 s", "💾 תמונה שמורה": "💾 Saved snapshot", "📂 קובץ": "📂 File", "▦ קוד QR": "▦ QR code", "עודכן לפני רגע": "updated just now", "☁ מתחבר…": "☁ Connecting…", "⚠ אין חיבור לענן": "⚠ No cloud connection", "☁ בשאילה": "☁ Polling", "⏳ עדכון ייכנס בסוף המאץ׳": "⏳ The update will apply after the match", "השרת לא ענה תוך 8 שניות": "The server didn't answer within 8 seconds", "אין הרשאת קריאה — לבדוק את חשבון הקריאה": "No read permission — check the reader account", "עוד אין נתונים מהסקאוטינג לתחרות הזו": "No scouting data for this event yet", "החשבון או הסיסמה לא נכונים": "Wrong account or password", "☁ חיבור חי לסקאוטינג": "☁ Live scouting connection", "· מחובר": "· connected", "כתובת": "Address", "מפתח ציבורי": "Public key", "חשבון קריאה": "Reader account", "סיסמה": "Password", "קוד תחרות": "Event code", "התחבר": "Connect", "התחבר מחדש": "Reconnect", "נתק": "Disconnect", "שכח את הפרטים": "Forget the details", "🔒 הפרטים והתמונה האחרונה נשמרים רק במחשב הזה — לא בגיבוי, לא בסנכרון ולא בדיווח באג. החשבון קורא רק את הפרופילים.": "🔒 The details and the last snapshot are kept only on this computer — not in backups, sync or bug reports. The account reads only the profiles.", "⏹ עצור": "⏹ Stop", "סריקה במצלמה": "Scan with the camera", "ריק = בלי קוד": "empty = no code", "כתובת הענן של הסקאוטינג": "Scouting cloud address", "מייל של חשבון הקריאה": "Reader account email", "סיסמה של חשבון הקריאה": "Reader account password", "קוד התחרות": "Event code", "טקסט של קוד QR מהטלפון של המנהל": "QR code text from the admin's phone", "⚠ זה לא קובץ של אפליקציית הסקאוטינג": "⚠ This isn't a scouting app file", "⚠ כתובת לא תקינה — צריכה להתחיל ב-https://": "⚠ Invalid address — it must start with https://", "⚠ חסר המפתח הציבורי": "⚠ The public key is missing", "⚠ הקוד לא תקין (צריך להתחיל ב-A9662:)": "⚠ Invalid code (it must start with A9662:)", "⚠ המצלמה לא יודעת לקרוא קודים במחשב הזה — מדביקים את הטקסט של הקוד בשדה": "⚠ The camera can't read codes on this computer — paste the code text into the field", "⚠ אין גישה למצלמה": "⚠ No camera access", "⚠ ברשת רק המארח מתחבר לסקאוטינג": "⚠ In a network game only the host connects to scouting", "▦ נקלטה חבילה מקוד QR": "▦ Package received from QR code", "☁ הפרטים נמחקו מהמחשב הזה": "☁ The details were deleted from this computer", "פותח עותק של הרובוט הזה במוסך — לראות ולשנות": "Opens a copy of this robot in the garage — to view and change", "זה לא קובץ של אפליקציית הסקאוטינג": "This isn't a scouting app file", "גרסת קובץ לא מוכרת (": "Unknown file version (", "החבילה היא של תחרות אחרת": "This package is from another event", "ההתחברות נכשלה (": "Sign-in failed (", "השרת לא ענה (": "The server didn't answer (", "המצלמה לא יודעת לקרוא קודים במחשב הזה — מדביקים את הטקסט של הקוד בשדה": "The camera can't read codes on this computer — paste the code text into the field", "אין גישה למצלמה": "No camera access", "לפני רגע": "just now", "עודכן": "updated", "נוצר": "created", "כתובת לא תקינה — צריכה להתחיל ב-https://": "Invalid address — it must start with https://", "חסר המפתח הציבורי": "The public key is missing", "ברשת רק המארח מתחבר לסקאוטינג": "In a network game only the host connects to scouting", "הקוד לא תקין (צריך להתחיל ב-A9662:)": "Invalid code (it must start with A9662:)", "⚠ המנהל לא מחובר כבר": "⚠ The scouting admin has been offline for", "דק׳ — הנתונים קפואים": "min — the data is frozen", "▦ חסרים עוד": "▦ Still missing", "קודים": "codes", "הלוח רץ בזירה": "The board is running in the arena", "מגעים בין רובוטים": "robot contacts", "בלי מגעים בין רובוטים": "No robot contacts", "מישהו לא סיים בזמן": "Someone didn't finish in time", "שוב": "Again", "חזרה ללוח": "Back to the board", "אני": "Me", "שותף": "Partner", "יריב 1": "Opponent 1", "יריב 2": "Opponent 2", "🏁 הרץ את כל הלוח": "🏁 Run the whole board", "🏁 הרץ בזירה": "🏁 Run in the arena", "כל ארבעת הרובוטים נוסעים בזירה לפי החצים שלהם — עם מגעים אמיתיים": "All four robots drive in the arena along their arrows — with real contacts", "כל הרובוטים נוסעים בזירה לפי החצים": "All robots drive in the arena along the arrows", "באמצע מאץ׳ — עוצרים קודם את המאץ׳": "A match is running — stop it first", "ברשת רק המארח מריץ את הלוח בזירה": "In a network game only the host runs the board in the arena", "משהו אחר רץ עכשיו — עוצרים אותו קודם": "Something else is running — stop it first", "אין חצים שיוצאים מאף רובוט — מציירים חץ שמתחיל באסימון": "No arrows start at any robot — draw an arrow that starts at a token", "המספר שלנו לא במאץ׳ הזה — השותף והיריבים לפי הברית שנבחרה": "Our team number isn't in this match — partner and opponents follow the chosen alliance", "⚠ המספר שלנו לא במאץ׳ הזה — השותף והיריבים לפי הברית שנבחרה": "⚠ Our team number isn't in this match — partner and opponents follow the chosen alliance", "📊 הבוטים בנויים מהסקאוטינג — ״נקה״ בחלון הסקאוטינג מחזיר בוטים רגילים": "📊 The bots are built from scouting — “Clear” in the scouting window brings back regular bots", "רק שלנו": "Ours only", "כל המאצ׳ים": "All matches", "🔒 קובץ נשאר רק בזיכרון; מהענן — התמונה האחרונה, רק במחשב הזה. לא בגיבוי ולא בסנכרון. לאורחים ברשת עוברת רק הבנייה של הבוטים, בלי מספרי הקבוצות.": "🔒 A file stays in memory only; from the cloud — the last snapshot, on this computer only. Not in backups or sync. Network guests get only the bot builds, without team numbers."}</script>
 <script type="application/json" id="i18nX_v76g" data-i18n>{"כמו במעבדה": "As in the lab", "לא משנה": "No change", "72 מ״מ": "72 mm", "96 מ״מ": "96 mm", "104 מ״מ": "104 mm", "140 מ״מ": "140 mm", "100 מ״מ": "100 mm", "120 מ״מ": "120 mm", "תאוצה חזקה, מהירות נמוכה": "Strong acceleration, low speed", "הסטנדרט": "The standard", "מעט מהיר יותר": "A bit faster", "מהיר מאוד, מאיץ לאט": "Very fast, accelerates slowly", "117 סל״ד": "117 RPM", "223 סל״ד": "223 RPM", "312 סל״ד": "312 RPM", "435 סל״ד": "435 RPM", "1150 סל״ד": "1150 RPM", "כוח עצום, איטי מאוד": "Huge force, very slow", "חזק ואיטי": "Strong and slow", "מאוזן — הכי נפוץ": "Balanced — the most common", "מהיר, פחות כוח": "Fast, less force", "טיל — רק עם גלגל קטן": "A rocket — only with a small wheel", "אלומיניום": "Aluminum", "חזק וקל — הבחירה הרגילה": "Strong and light — the usual choice", "פוליקרבונט": "Polycarbonate", "קל, מתכופף קצת": "Light, flexes a little", "הדפסה בתלת־ממד": "3D printed", "הכי קל וזול, פחות דחיפה": "Lightest and cheapest, less push", "סיבי פחמן": "Carbon fiber", "קל מאוד וקשיח": "Very light and stiff", "פלדה": "Steel", "כבד — קשה להזיז, מאיץ לאט": "Heavy — hard to move, accelerates slowly", "רגילה": "Normal", "איטית": "Slow", "שקטה, משיכה חלשה": "Quiet, weak pull", "שואבת חזק מרחוק": "Pulls hard from far away", "קטן — מגיע מהר למהירות": "Small — spins up fast", "כמו הקלאסי": "Like the classic", "מהירות יציאה גבוהה": "High exit speed", "קל — מודפס": "Light — printed", "מאיץ מהר, נחלש אחרי כל ירייה": "Spins up fast, drops after every shot", "מאוזן": "Balanced", "פלדה עם משקולות": "Steel with weights", "שומר מהירות בין יריות": "Keeps its speed between shots", "1:1": "1:1", "1.5:1": "1.5:1", "3:1": "3:1", "4:1": "4:1", "מהיר מאוד, מומנט נמוך": "Very fast, low torque", "חזק, מהירות מוגבלת": "Strong, limited speed", "שטוח — מרחוק": "Flat — from far", "תלול — מקרוב": "Steep — from close", "⚙ כוונון": "⚙ Tuning", "קוטר גלגל": "Wheel diameter", "מנוע הנעה": "Drive motor", "מהירות האיסוף": "Intake speed", "גלגל תנופה": "Flywheel", "מסת הגלגל": "Wheel mass", "תמסורת היורה": "Shooter gearing", "זווית ירי": "Launch angle", "⚙ חומר השלדה": "⚙ Frame material", "חומר": "Material", "כוונונים": "tuning changes", "🧊 תלת־ממד": "🧊 3D", "📐 מלמעלה": "📐 Top view", "תצוגה": "View", "גוררים כדי לסובב": "Drag to rotate", "התצוגה התלת־ממדית לא נתמכת כאן — יש שרטוט מלמעלה": "3D view isn't supported here — there's a top-view drawing", "כדורים ב־": "balls in", "חונה": "parks", "אמינות": "reliability", "🛠 במוסך": "🛠 In the garage", "🎮 לנהוג בו": "🎮 Drive it", "פותח עותק של הרובוט הזה במוסך — לראות ולשנות": "Opens a copy of this robot in the garage — to see and change it", "הרובוט שלי נבנה כמו הרובוט הזה": "My robot is built like this robot", "📊 רובוט מהסקאוטינג": "📊 Robot from scouting", "🎮 הרובוט שלך נבנה כמו #": "🎮 Your robot is now built like #", "🔒 הקובץ נשאר רק בזיכרון של החלון הזה — לא נשמר, לא עובר בסנכרון ולא בגיבוי. ברשת עוברת לאורחים רק הבנייה של הבוטים. ״במוסך״ שומר עותק של המערכות בלבד, בלי מספר הקבוצה.": "🔒 The file stays only in this window's memory — not saved, not synced and not backed up. On the network, guests get only the bots' builds. “In the garage” saves a copy of the systems only, without the team number.", "כבר יש חשבון עם המייל הזה — מתחברים במקום להירשם (או ״שכחתי סיסמה״)": "There's already an account with this email — sign in instead (or “Forgot password”)"}</script>
 <script type="application/json" id="i18nX_bld" data-i18n>{"שלי": "mine", "כדורים בפרח": "balls in the flower", "כדור אחד בפרח": "one ball in the flower", "🛠 הבנייה תוחלף בסוף המאץ׳ — לא מחליפים רובוט באמצע משחק": "🛠 The build will change after the match — robots aren't swapped mid-match", "🛠 במצב תחרות — רובוט לא חוקי הוחלף בקלאסי": "🛠 Competition mode — an illegal robot was replaced with the classic", "🛠 אורח שלח רובוט לא חוקי — במצב תחרות הוא נוהג בקלאסי": "🛠 A guest sent an illegal robot — in competition mode they drive the classic", "נקטר של היריב לא נכנס לפרח": "The opponent's NECTAR doesn't go into a flower", "הפרח מלא — אין מקום לעוד כדור": "The flower is full — no room for another ball", "המאץ׳ בהפסקה": "the match is paused", "הפרח מלא": "the flower is full", "מעלית: הפרח מלא": "Lift: the flower is full", "מעלית: המאץ׳ בהפסקה": "Lift: the match is paused", "מעלית: נקטר של היריב לא נכנס לפרח": "Lift: the opponent's NECTAR doesn't go into a flower", "מעלית: המעלית ריקה": "Lift: the lift is empty", "מעלית: התרחקת מהפרח": "Lift: you moved away from the flower", "יורה הוד: הסיבוב קבוע — עודכנה רק המהירות": "Hood shooter: the spin is fixed — only the speed was updated", "בק־ספין קבוע (הוד)": "Fixed backspin (hood)", "בסוף המאץ׳": "after the match", "שימו לב: נקטר בפרח לפני הדקה האחרונה — עבירה": "Note: NECTAR in a flower before the last minute is a foul"}</script>
@@ -12187,21 +12213,33 @@ const WKEY="biobuzz_ws_v1";
    כל כפתור ב״משחק״ מפעיל את אותו דבר שיש ב״בדיקות״. */
 const UI={mode:"play", ready:false, help:false};
 const UIKEY="bbUiMode1";
+/* ══════ v78: מצב שלישי — ״סקאוטינג״, רק למנהלי סקאוטינג ══════
+   מי מנהל — האפליקציה אומרת (bbApp.scoutAdmin / status.scoutAdmin, supabase/v78_scout_admins.sql), עם מטמון של 14 יום
+   לכל חשבון כדי שיעבוד בלי אינטרנט בתחרות. בדפדפן (בלי אפליקציה וחשבון) — אין מצב כזה ואין כניסות לסקאוטינג.
+   זה גבול של גישה ונוחות בקובץ פתוח, לא הגנה קריפטוגרפית: הנתונים עצמם מוגנים בחשבון הקריאה של 04.
+   stub — רק לבדיקות (__sim.scoutAdminSet), ורק תחת דפדפן אוטומטי או אפליקציה במצב בדיקה. */
+const SCM={admin:false, stub:null, api:null, was:false, on:false, wired:false, bootWant:false, autoWait:false, srcOpen:null, adm:null, admBusy:false, chkAt:0};
+function scmAllowed(){ return SCM.stub!=null?SCM.stub:!!(window.bbApp&&SCM.admin); }
 function uiSetMode(m,opt){
   opt=opt||{};
-  UI.mode=m==="lab"?"lab":"play";
-  document.body.classList.toggle("play",UI.mode==="play");
+  /* v78: ״סקאוטינג״ רק כשמותר; אחרת ״משחק״. בהפעלה (opt.boot), כשעוד לא ידוע — לא דורסים את הבחירה השמורה */
+  const want=m==="lab"?"lab":m==="scout"?"scout":"play";
+  UI.mode=want==="scout"&&!scmAllowed()?"play":want;
+  if(opt.boot&&want==="scout"&&UI.mode!=="scout") SCM.bootWant=true;
+  document.body.classList.toggle("play",UI.mode!=="lab");   /* v78: הסקאוטינג יושב על הלוח הקל של ״משחק״ */
   document.body.classList.toggle("lab",UI.mode==="lab");
+  document.body.classList.toggle("scout",UI.mode==="scout");
   document.querySelectorAll("#uiMode [data-ui]").forEach(b=>b.classList.toggle("on",b.dataset.ui===UI.mode));
   if(UI.mode==="lab"&&!opt.keepWs){ let k="drive"; try{ k=localStorage.getItem(WKEY)||"drive"; }catch(e){} setWS(k); }
-  if(UI.mode==="play"){ document.body.classList.remove("railoff"); const r=$("rail"); if(r) r.scrollTop=0; }
-  try{ localStorage.setItem(UIKEY,UI.mode); }catch(e){}
+  if(UI.mode!=="lab"){ document.body.classList.remove("railoff"); const r=$("rail"); if(r) r.scrollTop=0; }
+  try{ if(!(opt.boot&&want!==UI.mode)) localStorage.setItem(UIKEY,UI.mode); }catch(e){}
+  try{ scmModeChanged(); }catch(e){ console.error(e); }
   if(UI.ready) ppRefresh();
   dispatchEvent(new Event("resize"));
 }
 function setWS(k){
   /* פתיחת לוח של ״בדיקות״ (מכפתור או מבדיקה) עוברת לבדיקות */
-  if(UI.ready&&UI.mode==="play") uiSetMode("lab",{keepWs:true});
+  if(UI.ready&&UI.mode!=="lab") uiSetMode("lab",{keepWs:true});   /* v78: גם מ״סקאוטינג״ */
   if(WSOLD[k]) k=WSOLD[k];
   if(!WSDEF[k]) k="drive";
   document.body.dataset.ws=k;
@@ -12237,7 +12275,7 @@ function setWS(k){
   let m="play"; try{ m=localStorage.getItem(UIKEY)||"play"; }catch(e){}
   try{ UI.help=localStorage.getItem("bbHelp1")==="1"; }catch(e){}
   document.body.classList.toggle("helpon",UI.help);
-  uiSetMode(m,{keepWs:true}); UI.ready=true;
+  uiSetMode(m,{keepWs:true,boot:true}); UI.ready=true;
 })();
 
 /* ══════ שעון המאץ׳ ══════
@@ -14789,7 +14827,7 @@ try{ FPS.on=localStorage.getItem("bbFps1")!=="0"; }catch(e){}
 function fpsTick(now){
   FPS.n++; if(!FPS.t0){ FPS.t0=now; return; }
   const el=FPS.el||(FPS.el=$("fpsChip")); if(!el) return;
-  const want=FPS.on&&UI.mode==="play"&&!(APP.on&&SHELL.page);
+  const want=FPS.on&&UI.mode!=="lab"&&!(APP.on&&SHELL.page);   /* v78: גם בסקאוטינג */
   if(want!==FPS.shown){ FPS.shown=want; el.hidden=!want; }
   if(now-FPS.t0<500) return;
   FPS.v=FPS.n*1000/(now-FPS.t0); FPS.n=0; FPS.t0=now;
@@ -16891,6 +16929,7 @@ const SHICON={
   lab:'<path d="M9 3h6M10 3v6l-5.5 9.5A1.8 1.8 0 0 0 6 21h12a1.8 1.8 0 0 0 1.5-2.5L14 9V3"/><path d="M7.5 15h9"/>',
   stats:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   drivers:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14.6c2.6.1 4.5 1.8 5 5.4"/>',
+  scout:'<path d="M8 4h8v3H8z"/><path d="M8 5.5H5.5v15h13v-15H16"/><path d="M9 17v-3M12 17v-6M15 17v-4"/>',   /* v78 */
   settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>'
 };
 function shIcon(k){ return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+SHICON[k]+'</svg>'; }
@@ -16901,6 +16940,7 @@ function shellBuild(){
     '<div class="navGap"></div>'+it("settings","הגדרות",6)+
     '<button class="navMe" data-nav="drivers" title="הנהג שלך"><i id="navMeEmo"></i><span id="navMeName"></span><b id="navSync" title="סנכרון"></b></button>';
   nav.addEventListener("click",e=>{ const b=e.target.closest("[data-nav]"); if(b) shellGo(b.dataset.nav); });
+  try{ scmNav(scmAllowed()); }catch(e){}   /* v78: ״סקאוטינג״ — רק למנהלים */
 }
 function shellNavSync(){
   const me=APP.profile||{}; const e=$("navMeEmo"), n=$("navMeName"), s=$("navSync");
@@ -16909,13 +16949,13 @@ function shellNavSync(){
     s.className=on?(err?"err":"ok"):""; s.title=on?(err?"⚠ "+err:"מסונכרן לענן"):"לא מחובר לחשבון"; }
 }
 function shellMark(){
-  const cur=SHELL.page||(UI.mode==="lab"?"lab":"play");
+  const cur=SHELL.page||UI.mode;   /* v78: play / lab / scout */
   document.querySelectorAll("#appNav [data-nav]:not(.navMe)").forEach(b=>b.classList.toggle("on",b.dataset.nav===cur));
   document.documentElement.classList.toggle("paged",!!SHELL.page);
 }
 /* מעבר בין דפים. משחק/מעבדה — הזירה עצמה; השאר — דף מלא מעל הזירה */
 function shellGo(k){
-  if(k==="play"||k==="lab"){ shellClose(); if(UI.mode!==k) uiSetMode(k); shellMark(); return; }
+  if(k==="play"||k==="lab"||k==="scout"){ shellClose(); if(UI.mode!==k) uiSetMode(k); shellMark(); return; }   /* v78: גם ״סקאוטינג״ (בלי הרשאה — ״משחק״) */
   shellClose(true);
   SHELL.page=k; const pg=$("appPage"); if(!pg) return; pg.hidden=false;
   pg.className="ap-"+k; pg.scrollTop=0;
@@ -16951,7 +16991,7 @@ async function shellRender(){
       '<button data-hm="free"><i>🚗</i><b>נסיעה חופשית</b><span>לתרגל בלי שעון</span></button>'+
       '<button data-hm="practice"><i>🤖</i><b>תרגול מול בוטים</b><span>בלי שעון, בוחרים בוטים</span></button>'+
       '<button data-hm="board"><i>📋</i><b>לוח אסטרטגיה</b><span>תוכנית על הזירה</span></button>'+
-      '<button data-hm="scout"><i>📊</i><b>מאץ׳ מהסקאוטינג</b><span>בוטים לפי הרובוטים האמיתיים</span></button>'+
+      (scmAllowed()?'<button data-hm="scout"><i>📊</i><b>מאץ׳ מהסקאוטינג</b><span>בוטים לפי הרובוטים האמיתיים</span></button>':'')+   /* v78: רק למנהלי סקאוטינג */
       '<button data-hm="pit"><i>🧾</i><b>כרטיס לבור</b><span>האוטונומי לכל פינה, להדפסה</span></button>'+   /* 1.13 */
       '<button data-hm="lab"><i>🔧</i><b>מעבדה</b><span>רובוט, אוטונומי, ניתוח</span></button></div>';
     try{ if(typeof dailyCardHTML==="function") h+='<div id="hmDaily" class="dlyHost">'+dailyCardHTML()+'</div>'; }catch(e){} /* v70 */
@@ -17006,6 +17046,7 @@ async function shellSetClick(e){
     if(a==="lab"){ shellGo("lab"); return; }
     if(a==="settings"){ shellGo("settings"); return; }
     if(a==="pit"){ pitCardExport(); return; }   /* 1.13 */
+    if(a==="scout") return;   /* v78: המאזין של הסקאוטינג פותח את המצב (sctOpen → scmGo) */
     shellGo("play");
     if(a==="quick") $("ppQuick")&&$("ppQuick").click(); else if(a==="match") $("ppMatch")&&$("ppMatch").click(); else if(a==="free") $("ppFree")&&$("ppFree").click(); else if(a==="practice") $("ppPractice")&&$("ppPractice").click();
     return; }
@@ -17030,7 +17071,7 @@ function shellWire(){
   const ps=$("ppStats"); if(ps) ps.addEventListener("click",e=>{ e.stopImmediatePropagation(); playModalClose(); shellGo("stats"); },true);
   addEventListener("keydown",e=>{
     if((e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&/^Digit[1-6]$/.test(e.code)){ e.preventDefault(); shellGo(["home","play","lab","stats","drivers","settings"][+e.code.slice(5)-1]); return; }
-    if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden]),#wizard:not([hidden]),#legalBox:not([hidden])")){ e.preventDefault(); shellGo(UI.mode==="lab"?"lab":"play"); } },true);
+    if(e.key==="Escape"&&SHELL.page&&!document.querySelector("#acctModal:not([hidden]),#welcome:not([hidden]),#playModal:not([hidden]),#wizard:not([hidden]),#legalBox:not([hidden])")){ e.preventDefault(); shellGo(UI.mode); } },true);   /* v78 */
   /* בלי תחושת ״אתר״: בלי תפריט לחיצה ימנית (חוץ משדות טקסט) ובלי גרירת קישורים */
   document.addEventListener("contextmenu",e=>{ if(!e.target.closest("input,textarea,[contenteditable]")) e.preventDefault(); });
   document.addEventListener("dragstart",e=>{ if(e.target&&(e.target.tagName==="A"||e.target.tagName==="IMG")) e.preventDefault(); });
@@ -19373,7 +19414,7 @@ function cmdkCurated(){
     {id:"pitcard",i:"🧾",n:"כרטיס לבור — האוטונומי לכל פינה, להדפסה",k:"כרטיס בור יום תחרות הדפסה פינה אוטונומי pit card match day print corner autonomous",run:()=>pitCardExport()},   /* 1.13 */
     {id:"ready",i:"✅",n:"מוכנות לתחרות — בדיקה אחת לפני האירוע",k:"מוכנות תחרות בדיקה לפני אירוע רשימת בדיקות ready readiness competition checklist before event",run:()=>rdyOpen()},   /* v76 */
     {id:"fps",i:"⏱",n:"קצב תמונות — להציג או להסתיר את המונה",k:"קצב תמונות מונה פריימים ביצועים fps frames per second counter performance",run:()=>fpsSet(!FPS.on)},
-    {id:"scout",i:"📊",n:"מאץ׳ מהסקאוטינג — בוטים לפי הרובוטים האמיתיים",k:"סקאוטינג פרופיל רובוט מאץ׳ הבא קבוצות אמיתיות scouting profile match robots teams",run:()=>sctOpen()},
+    {id:"scout",i:"📊",n:"מאץ׳ מהסקאוטינג — בוטים לפי הרובוטים האמיתיים",k:"סקאוטינג פרופיל רובוט מאץ׳ הבא קבוצות אמיתיות scouting profile match robots teams",run:()=>sctOpen(),when:()=>scmAllowed()},   /* v78: רק למנהלים */
     {id:"garage",i:"🛠",n:"מוסך — בונה רובוטים",k:"מוסך בונה רובוטים בנייה חלקים יורה איסוף העברה קטפולטה ספינדקסר סוורב garage robot builder parts shooter intake transfer",run:()=>bldOpen()},
     {id:"board",i:"📋",n:"לוח אסטרטגיה — לתכנן על הזירה מלמעלה",k:"לוח אסטרטגיה טקטיקה תוכנית ציור חצים רובוטים board strategy tactics plan draw arrows whiteboard",run:()=>brdOpen()},
     {id:"legal",i:"⚖",n:"משפטי ופרטיות — תנאים, פרטיות, נגישות",k:"משפטי פרטיות תנאי שימוש נגישות אבטחה רישיונות אודות legal privacy terms of use accessibility security licenses about gdpr",run:()=>legalOpen("privacy")},   /* 1.14 (v73 legal) */
@@ -21327,9 +21368,10 @@ function sctApply(){
   try{ bldNet(); }catch(e){}
   return true;
 }
-function sctClear(){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err=""; SCT.pend=false;
+function sctClear(keepCache){ SCT.on=false; SCT.pack=null; SCT.ver++; SCT.build=[null,null,null]; SCT.err=""; SCT.pend=false;
   /* v76: ״נקה״ מוחק גם את התמונה השמורה של התחרות הזו (החיבור החי, אם יש, יטען מחדש בבדיקה הבאה) */
-  try{ localStorage.removeItem(SCTL_CACHE+(sctlCode()||"")); }catch(e){} SCTL.src=""; SCTL.lastSig=""; SCTL.qrLeft=0;
+  /* v78: keepCache — כשהחשבון כבר לא מנהל: הבוטים חוזרים לרגילים, אבל התמונה השמורה נשארת למנהל הבא במחשב */
+  if(keepCache!==true) try{ localStorage.removeItem(SCTL_CACHE+(sctlCode()||"")); }catch(e){} SCTL.src=""; SCTL.lastSig=""; SCTL.qrLeft=0;
   for(const b of BOTS){ b.prof=null; b.skC=null; b.noPark=undefined; b.prefRange=undefined; b.sb=null; } if(BLD) bldVerUp(); for(const b of BOTS) try{ bldRebuildBot(b); }catch(e){} try{ bldNet(); }catch(e){} sctUI(); }
 /* מאץ׳ מלא עם הרובוטים מהסקאוטינג — אחרי ״התחל״ הרגיל: כולם בזירה, תפקיד ואוטונומי מהפרופיל */
 function sctPlay(){
@@ -21509,16 +21551,20 @@ function sctFmt(p){
   return t.join(" · ")||"אין מספרים — רק הבנייה";
 }
 function sctUI(){
-  const box=$("sctBox"); if(!box||box.hidden) return; const B=$("sctBody"); if(!B) return;
+  /* v78: מצייר לחלון (#sctBox) או, במצב ״סקאוטינג״, ללוח הצד (#sctBody עובר ל-#scmHost) */
+  const box=$("sctBox"); if(!SCM.on&&(!box||box.hidden)) return; const B=$("sctBody"); if(!B) return;
+  const inMode=SCM.on&&!!B.closest("#scmPanel");
   /* v76: לא בונים מחדש בזמן שמקלידים (הסנכרון החי מעדכן כל 10 שנ׳) — רק שורת המצב; השאר אחרי שיוצאים מהשדה */
   const ae=document.activeElement; if(ae&&B.contains(ae)&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)&&ae.type!=="file"){ SCT.dirty=true; sctlStatusUI(); return; }
   SCT.dirty=false;
   const pk=SCT.pack, e=x=>appEsc(String(x));
-  let h='<div class="bldF"><span>המספר שלנו</span><input id="sctOurs" type="number" min="1" max="999999" value="'+e(SCT.ours||"")+'" aria-label="מספר הקבוצה שלנו" placeholder="למשל 90001"></div>'+
-    '<div class="row"><label class="btn sctFile">📂 טען קובץ מהסקאוטינג<input id="sctFileIn" type="file" accept=".json,application/json" hidden></label>'+(pk?'<button data-sct="clear">נקה</button>':'')+'</div>';
+  /* v78: אותם חלקים, בשני סדרים — בחלון כמו קודם; בלוח הצד: מצב ← המספר שלנו ← מאץ׳ ורובוטים ← ״מקור הנתונים״ מקופל */
+  const hOurs='<div class="bldF"><span>המספר שלנו</span><input id="sctOurs" type="number" min="1" max="999999" value="'+e(SCT.ours||"")+'" aria-label="מספר הקבוצה שלנו" placeholder="למשל 90001"></div>',
+    hFile='<div class="row"><label class="btn sctFile">📂 טען קובץ מהסקאוטינג<input id="sctFileIn" type="file" accept=".json,application/json" hidden></label>'+(pk?'<button data-sct="clear">נקה</button>':'')+'</div>';
   /* v76: מאיפה הנתונים ומאיזו שעה, חיבור חי, וקוד QR */
   const cf=SCTL.cfg||sctlCfgLoad()||{};
-  h+='<div id="sctLiveW">'+sctlStatusHTML()+'</div>'+
+  const hLive='<div id="sctLiveW">'+sctlStatusHTML()+'</div>';
+  let h=
     '<details class="sctCloud" id="sctCloudD"'+(SCTL.open?" open":"")+'><summary><span>☁ חיבור חי לסקאוטינג</span>'+(SCTL.cfg?" <span>· מחובר</span>":"")+'</summary>'+
     '<div class="bldF"><span>כתובת</span><input id="sctlUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://….supabase.co" value="'+e(cf.url||"")+'" aria-label="כתובת הענן של הסקאוטינג"></div>'+
     '<div class="bldF"><span>מפתח ציבורי</span><input id="sctlKey" type="password" autocomplete="off" value="'+e(cf.key||"")+'" aria-label="מפתח ציבורי"></div>'+
@@ -21529,9 +21575,12 @@ function sctUI(){
     '<p class="note">🔒 הפרטים והתמונה האחרונה נשמרים רק במחשב הזה — לא בגיבוי, לא בסנכרון ולא בדיווח באג. החשבון קורא רק את הפרופילים.</p></details>'+
     '<div class="bldF sctQrRow"><span>▦ קוד QR</span><input id="sctlQrIn" type="text" autocomplete="off" spellcheck="false" placeholder="A9662:1/2:…" aria-label="טקסט של קוד QR מהטלפון של המנהל">'+
       '<button data-sctl="cam" title="סריקה במצלמה">'+(SCTL.cam?"⏹ עצור":"📷")+'</button></div>'+(SCTL.cam?'<div id="sctCam" class="sctCam"></div>':'');
-  if(SCT.err) h+='<p class="sctErr">⚠ '+e(SCT.err)+'</p>';
-  if(SCT.on&&SCT.warn) h+='<p class="sctErr">⚠ '+e(SCT.warn)+'</p>';
-  if(!pk) h+='<p class="note">מקבלים קובץ מאפליקציית הסקאוטינג (״ייצוא לסימולטור״), טוענים אותו כאן, והבוטים בזירה נבנים לפי הרובוטים האמיתיים של המאץ׳ — מהירות, זמן מחזור, דיוק, תפקיד ואוטונומי.</p>';
+  const hSrc=hFile+h; let hErr='';   /* v78: h כאן = חיבור חי + קוד QR */
+  if(SCT.err) hErr+='<p class="sctErr">⚠ '+e(SCT.err)+'</p>';
+  if(SCT.on&&SCT.warn) hErr+='<p class="sctErr">⚠ '+e(SCT.warn)+'</p>';
+  h=inMode?hLive+hOurs+hErr:hOurs+hFile+hLive+h+hErr;
+  if(!pk&&inMode) h+='<p class="note">עוד אין נתונים — טוענים קובץ מאפליקציית הסקאוטינג, מתחברים בחיבור החי או סורקים קוד QR (ב״מקור הנתונים״ למטה).</p>';
+  else if(!pk) h+='<p class="note">מקבלים קובץ מאפליקציית הסקאוטינג (״ייצוא לסימולטור״), טוענים אותו כאן, והבוטים בזירה נבנים לפי הרובוטים האמיתיים של המאץ׳ — מהירות, זמן מחזור, דיוק, תפקיד ואוטונומי.</p>';
   else {
     h+=(pk.event?'<div class="bldH">'+e(pk.event)+'</div>':'')+
       /* v77: רק המאצ׳ים שלנו (״כל המאצ׳ים״ — קישור קטן), והמאץ׳ הבא מסומן לפי current_match */
@@ -21540,19 +21589,27 @@ function sctUI(){
         const nx=sctNextIdx(pk);
         return '<div class="bldF"><span>מאץ׳</span><select id="sctMatch" aria-label="מאץ׳">'+L.map(([m,i])=>'<option value="'+i+'"'+(i===SCT.mi?" selected":"")+'>'+(i===nx?"⏭ ":"")+(m.n?"מאץ׳ "+m.n:"מאץ׳")+' · '+m.red.map(t=>"#"+t).join(" ")+' מול '+m.blue.map(t=>"#"+t).join(" ")+'</option>').join("")+'</select>'+
           (ours&&pk.matches.some(inM)?'<button class="linkBtn" data-sct="allm">'+(SCT.allM?"רק שלנו":"כל המאצ׳ים")+'</button>':'')+'</div>'; })()+
-      '<div class="bldF"><span>הברית שלנו בקובץ</span><div class="seg bldSeg">'+[["","לפי המספר"],["red","אדומה"],["blue","כחולה"]].map(([v,n])=>'<button data-sctside="'+v+'" class="'+(SCT.side===v?"on":"")+'">'+n+'</button>').join("")+'</div></div>'+
+      /* v78: בלוח הצד — רק כשצריך לתקן (המספר שלנו לא במאץ׳, או שכבר נבחר צד ביד) */
+      (inMode&&!SCT.side&&(()=>{ const m=pk.matches[SCT.mi], o=+SCT.ours||pk.us||0; return !!m&&!!o&&(m.red.indexOf(o)>=0||m.blue.indexOf(o)>=0); })()?'':
+      '<div class="bldF"><span>הברית שלנו בקובץ</span><div class="seg bldSeg">'+[["","לפי המספר"],["red","אדומה"],["blue","כחולה"]].map(([v,n])=>'<button data-sctside="'+v+'" class="'+(SCT.side===v?"on":"")+'">'+n+'</button>').join("")+'</div></div>')+
       '<div class="sctRows">'+BOTS.map((b,i)=>[b,i]).sort((x,y)=>(y[1]===2)-(x[1]===2)).map(([b,i])=>{ const p=b.prof; const lab=i===2?"שותף":"יריב";   /* v77: השותף תמיד BOTS[2] */
         return '<div class="sctRow"><i class="skA '+b.ally+'"></i><b>'+e(lab)+'</b>'+(p?'<span class="sctT">#'+p.team+'</span><span class="sctC" title="ביטחון">'+Math.round((p.conf||0)*100)+'%</span><small>'+e(sctFmt(p))+'</small><em>'+e(bldSum(bldOf(i)).join(" · "))+'</em>'+(b.sb&&typeof sbSummary==="function"?'<em class="sctSb">'+sbSummary(b.sb).map(x=>'<span>'+e(x)+'</span>').join("")+'</em>':'')+'<span class="sctBtns"><button data-sctgar="'+i+'" title="פותח עותק של הרובוט הזה במוסך — לראות ולשנות">🛠 במוסך</button><button data-sctdrive="'+i+'" title="הרובוט שלי נבנה כמו הרובוט הזה">🎮 לנהוג בו</button></span>':'<small>— בוט רגיל —</small>')+'</div>'; }).join("")+'</div>'+
-      '<p class="note">🔒 קובץ נשאר רק בזיכרון; מהענן — התמונה האחרונה, רק במחשב הזה. לא בגיבוי ולא בסנכרון. לאורחים ברשת עוברת רק הבנייה של הבוטים, בלי מספרי הקבוצות.</p>'+
-      '<div class="row"><button data-sct="play" class="primary">▶ מאץ׳ מלא עם הרובוטים האלה</button></div>';   /* v77: ״החל על הבוטים״ הוסר — טעינה ובחירת מאץ׳ כבר מחילות */
+      (inMode?'':'<p class="note">'+SCT_PRIV+'</p>')+
+      '<div class="row"><button data-sct="play" class="primary">'+(inMode?"▶ מאץ׳ מול הרובוטים האלה":"▶ מאץ׳ מלא עם הרובוטים האלה")+'</button></div>';   /* v77: ״החל על הבוטים״ הוסר — טעינה ובחירת מאץ׳ כבר מחילות */
   }
+  /* v78: בלוח הצד — הקובץ, החיבור החי וקוד ה-QR מקופלים (פתוחים לבד כשעוד אין נתונים) */
+  if(inMode){ const so=SCM.srcOpen==null?(!pk||SCTL.open):SCM.srcOpen;   /* פתוח לבד: אין נתונים, או שהחיבור החי פתוח */ h+='<details class="scmSrc" id="scmSrcD" data-o="'+(so?1:0)+'"'+(so?" open":"")+'><summary>📥 מקור הנתונים — קובץ, חיבור חי, קוד QR</summary>'+hSrc+(pk?'<p class="note">'+SCT_PRIV+'</p>':'')+'</details>'; }
   B.innerHTML=h;
   if(SCTL.cam){ const c=$("sctCam"); if(c) c.appendChild(SCTL.cam.v); }
 }
-function sctOpen(){ const m=$("sctBox"); if(!m) return; m.hidden=false; if(SCT.pend&&!MATCH.on){ SCT.pend=false; sctApply(); } try{ SCT.ours=localStorage.getItem("bbSctOurs1")||SCT.ours; }catch(e){} sctUI(); }
+const SCT_PRIV="🔒 קובץ נשאר רק בזיכרון; מהענן — התמונה האחרונה, רק במחשב הזה. לא בגיבוי ולא בסנכרון. לאורחים ברשת עוברת רק הבנייה של הבוטים, בלי מספרי הקבוצות.";
+function sctOpen(){ if(scmAllowed()){ scmGo(); return; }   /* v78: למנהל — מצב הסקאוטינג במקום החלון */
+  const m=$("sctBox"); if(!m) return; m.hidden=false; if(SCT.pend&&!MATCH.on){ SCT.pend=false; sctApply(); } try{ SCT.ours=localStorage.getItem("bbSctOurs1")||SCT.ours; }catch(e){} sctUI(); }
 function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; if(SCTL.cam) sctlCam(false); }
 (function sctWire(){
-  const m=$("sctBox"); if(!m) return;
+  const m0=$("sctBox"); if(!m0) return;
+  /* v78: אותם מאזינים לחלון ולוח מצב הסקאוטינג (#scmPanel) — sctUI מצייר לאחד מהם */
+  const wire=m=>{
   m.addEventListener("click",e=>{
     /* v76: חיבור חי וקוד QR */
     const L=e.target.closest("[data-sctl]"); if(L){ const k=L.dataset.sctl, v=id=>{ const x=$(id); return x?String(x.value||"").trim():""; };
@@ -21586,6 +21643,8 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; if(SCTL.cam) sctl
       const r=new FileReader(); r.onload=()=>sctLoadText(String(r.result||"")); r.readAsText(f); }
     else if(e.target.id==="sctOurs"){ SCT.ours=String(Math.max(0,Math.min(999999,Math.floor(+e.target.value||0)))||""); try{ localStorage.setItem("bbSctOurs1",SCT.ours); }catch(x){} if(SCT.pack){ SCT.side=""; sctApply(); } sctUI(); }
     else if(e.target.id==="sctMatch"){ SCT.mi=+e.target.value||0; SCT.pickedM=SCT.mi!==sctNextIdx(SCT.pack); sctApply(); sctUI(); } });
+  };
+  wire(m0); { const sp=$("scmPanel"); if(sp) wire(sp); }
   on($("sctBg"),sctClose);
   on($("ppScout"),sctOpen);
   document.addEventListener("click",e=>{ const h=e.target&&e.target.closest&&e.target.closest('[data-hm="scout"]'); if(h){ e.preventDefault(); setTimeout(()=>sctOpen(),0); } });
@@ -21594,8 +21653,112 @@ function sctClose(){ const m=$("sctBox"); if(m) m.hidden=true; if(SCTL.cam) sctl
     [/^ההתחברות נכשלה \((\d+)\)$/,"Sign-in failed ($1)"],[/^השרת לא ענה \((\d+)\)$/,"The server didn't answer ($1)"],
     [/^⚠ החבילה היא של תחרות אחרת( \(.+\))?$/,"⚠ This package is from another event$1"],[/^⚠ גרסת קובץ לא מוכרת \((.+)\) — צריך לעדכן את הסימולטור$/,"⚠ Unknown file version ($1) — the simulator needs an update"]);
   /* v76: מי שכבר הגדיר חיבור חי — מתחבר לבד בפתיחה */
-  try{ if(sctlCfgLoad()) setTimeout(sctlStart,1500); }catch(e){}
+  /* v78: רק למנהל סקאוטינג. עוד לא ידוע (האפליקציה עונה אחרי רגע) — מחכים, ו-scmRefresh מתחבר כשמתברר שכן */
+  try{ if(sctlCfgLoad()) setTimeout(()=>{ if(scmAllowed()) sctlStart(); else SCM.autoWait=true; },1500); }catch(e){}
   if(window.__sim) Object.assign(window.__sim,{sctBehave,sctStartABC,SCTL,sctlStart,sctlStop,sctlQR,sctlEmit,sctPack,sctlForget,sctlCfgSave,sctlPull,sctUI,sctlStale,sctlStatusHTML,sctUse,SCT,sctParse,sctProf,sctApply,sctClear,sctPlay,sctLoadText,sctOpen,sctClose,sctBotMods,sctBuild,sctAuto,sctRole});
+})();
+
+/* ══════ v78: מצב ״סקאוטינג״ — הלוח, הכניסות, וניהול המנהלים ══════
+   • מותר (scmAllowed) — כפתור ״📊 סקאוטינג״ במתג המצב (בדפדפן) / בסרגל הניווט (באפליקציה), כרטיס ״מאץ׳ מהסקאוטינג״,
+     והחיפוש. לא מותר — אף אחד מהם, והחיבור החי לא מתחבר לבד.
+   • במצב: #sctBody (מה ש-sctUI מצייר) עובר מהחלון ללוח הצד (#scmHost). אותו קוד, אותם מאזינים (sctWire מחווט את שניהם).
+   • מאבד הרשאה — חוזרים ל״משחק״, החיבור החי נעצר והבוטים חוזרים לרגילים (התמונה השמורה במחשב נשארת). */
+function scmApi(){ if(SCM.api) return SCM.api; return window.bbApp&&typeof bbApp.scoutAdmins==="function"&&SCM.stub==null?bbApp:null; }
+function scmGo(){ if(APP.on&&typeof shellGo==="function") shellGo("scout"); else uiSetMode("scout"); }
+function scmNav(a){ const nav=$("appNav"); if(!nav) return; const b=nav.querySelector('[data-nav="scout"]');
+  if(a&&!b){ const lab=nav.querySelector('[data-nav="lab"]'); if(!lab) return; const t=document.createElement("template");
+    t.innerHTML='<button data-nav="scout" title="סקאוטינג — רק למנהלים">'+shIcon("scout")+'<span>סקאוטינג</span></button>'; lab.after(t.content.firstChild); shellMark(); }
+  else if(!a&&b) b.remove(); }
+function scmNowUI(){ const n=$("scmNow"); if(n) n.hidden=!(MATCH.on||MATCH.cd>0); }
+/* נקרא מ-uiSetMode: נכנסים — התוכן עובר ללוח; יוצאים — חוזר לחלון */
+function scmModeChanged(){
+  if(!SCM.wired) return;
+  const B=$("sctBody"), host=$("scmHost"), win=document.querySelector("#sctBox .sctWin");
+  if(UI.mode==="scout"){
+    if(!SCM.on){ sctClose(); SCM.on=true; if(B&&host&&B.parentNode!==host) host.appendChild(B);
+      if(SCT.pend&&!MATCH.on){ SCT.pend=false; sctApply(); } try{ SCT.ours=localStorage.getItem("bbSctOurs1")||SCT.ours; }catch(e){}
+      /* בדיקה בשרת כשנכנסים (לכל היותר פעם בדקה). בלי רשת — האפליקציה עונה מהמטמון */
+      if(window.bbApp&&typeof bbApp.scoutAdmin==="function"&&SCM.stub==null&&Date.now()-SCM.chkAt>60000){ SCM.chkAt=Date.now();
+        bbApp.scoutAdmin(true).then(r=>{ if(r&&typeof r.admin==="boolean") scmSetApp(r.admin); }).catch(()=>{}); } }
+    sctUI(); scmNowUI(); const a=$("scmAdm"); if(a&&a.open) scmAdmUI();
+  } else if(SCM.on){ SCM.on=false; if(SCTL.cam) sctlCam(false); if(B&&win&&B.parentNode!==win) win.appendChild(B); }
+}
+/* ההרשאה השתנתה (מהאפליקציה או מה-stub של הבדיקות) */
+function scmRefresh(){
+  const a=scmAllowed();
+  { const ub=document.querySelector('#uiMode [data-ui="scout"]'); if(ub) ub.hidden=!a; }
+  { const pc=$("ppScout"); if(pc) pc.hidden=!a; }
+  try{ scmNav(a); }catch(e){}
+  if(a&&!SCM.was){
+    if(SCM.autoWait){ SCM.autoWait=false; try{ if(sctlCfgLoad()&&!SCTL.cfg) sctlStart(); }catch(e){} }
+    if(SCM.bootWant&&UI.mode==="play"){ SCM.bootWant=false; uiSetMode("scout"); }
+  }
+  if(!a&&SCM.was){
+    SCM.bootWant=false; SCM.adm=null;
+    if(UI.mode==="scout"){ if(APP.on&&!SHELL.page) shellGo("play"); else uiSetMode("play"); }
+    try{ sctClose(); sctlStop(); if(SCT.on||SCT.pack) sctClear(true); }catch(e){ console.error(e); }
+  }
+  SCM.was=a;
+  if(APP.on&&SHELL.page==="home"){ try{ shellRender(); }catch(e){} }
+  if(UI.mode==="scout"){ const d=$("scmAdm"); if(d&&d.open) scmAdmUI(); }
+}
+function scmSetApp(v){ v=v===true; if(SCM.admin===v) return; SCM.admin=v; scmRefresh(); }
+/* ── 👥 מנהלים ── */
+function scmDate(s){ const d=new Date(s); if(!isFinite(d)) return ""; return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear(); }
+function scmAdmUI(msg,kind){
+  const box=$("scmAdmBody"); if(!box) return; const api=scmApi(), e=x=>appEsc(String(x));
+  if(!api){ box.innerHTML='<p class="note">ניהול המנהלים — באפליקציה, כשמחוברים לחשבון.</p>'; return; }
+  const keep=($("scmAdmIn")||{}).value||"", L=SCM.adm;
+  let h=L==null?'<p class="note">'+(SCM.admBusy?"טוען…":"")+'</p>'
+    :L.map(a=>'<div class="scmAdmRow"><span title="'+e(a.email)+'">'+e(a.email||"—")+'</span>'+(a.me?'<em>אני</em>':'')+(a.at&&scmDate(a.at)?'<small>מאז '+scmDate(a.at)+'</small>':'')+
+      '<button data-scmrm="'+e(a.uid)+'" title="'+(a.me?"להסיר את עצמי מהמנהלים":"להסיר מהמנהלים")+'">הסר</button></div>').join("");
+  h+='<div class="scmAdmAdd"><input id="scmAdmIn" type="email" autocomplete="off" spellcheck="false" placeholder="המייל של החשבון" aria-label="המייל של מנהל חדש" value="'+e(keep)+'"><button data-scm="add">＋ הוסף</button></div>'+
+    '<p class="scmAdmMsg'+(kind?" "+kind:"")+'" id="scmAdmMsg">'+e(msg||"")+'</p>'+
+    '<p class="note">מוסיפים רק מי שכבר פתח חשבון באפליקציה. מנהל רואה את מצב הסקאוטינג ויכול להוסיף ולהסיר מנהלים.</p>';
+  box.innerHTML=h;
+}
+async function scmAdmLoad(){
+  const api=scmApi(); if(!api||SCM.admBusy){ scmAdmUI(); return; }
+  SCM.admBusy=true; scmAdmUI(); let r;
+  try{ r=await api.scoutAdmins(); }catch(e){ r=null; }
+  SCM.admBusy=false;
+  if(r&&r.ok){ SCM.adm=Array.isArray(r.list)?r.list:[]; scmAdmUI(); } else scmAdmUI(r&&r.why||"לא הצליח","err");
+}
+function scmLost(r){ if(!r||r.admin!==false) return; if(SCM.stub!=null) SCM.stub=false; else SCM.admin=false; scmRefresh(); }
+(function scmWire(){
+  const box=$("scmAdmBody"), d=$("scmAdm");
+  if(d) d.addEventListener("toggle",()=>{ if(d.open) scmAdmLoad(); });
+  if(box){
+    box.addEventListener("click",async e=>{ const api=scmApi(); if(!api) return;
+      const rm=e.target.closest("[data-scmrm]");
+      if(rm){ if(rm.dataset.arm!=="1"){ rm.dataset.arm="1"; rm.textContent="בטוח?"; setTimeout(()=>{ if(rm.isConnected){ rm.dataset.arm=""; rm.textContent="הסר"; } },3000); return; }
+        const u=rm.dataset.scmrm; scmAdmUI("מסיר…"); let r; try{ r=await api.scoutAdminRemove(u); }catch(x){ r=null; }
+        if(r&&r.ok){ SCM.adm=Array.isArray(r.list)?r.list:(SCM.adm||[]).filter(a=>a.uid!==u); scmAdmUI("✓ הוסר מהמנהלים","ok"); scmLost(r); }
+        else { scmAdmUI(r&&r.why||"לא הצליח","err"); scmLost(r); }
+        return; }
+      if(e.target.closest('[data-scm="add"]')){ const v=String(($("scmAdmIn")||{}).value||"").trim();
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ scmAdmUI("צריך מייל תקין","err"); return; }
+        scmAdmUI("מוסיף…"); let r; try{ r=await api.scoutAdminAdd(v); }catch(x){ r=null; }
+        if(r&&r.ok){ if(Array.isArray(r.list)) SCM.adm=r.list; const i=$("scmAdmIn"); if(i) i.value=""; scmAdmUI("✓ נוסף מנהל: "+v,"ok"); }
+        else { scmAdmUI(r&&r.why||"לא הצליח","err"); scmLost(r); } } });
+    box.addEventListener("keydown",e=>{ if(e.target.id==="scmAdmIn"){ e.stopPropagation(); if(e.key==="Enter"){ e.preventDefault(); const b=box.querySelector('[data-scm="add"]'); if(b) b.click(); } } });
+  }
+  on($("scmStop"),()=>{ if(MATCH.on||MATCH.cd>0) matchStopSafe(); scmNowUI(); });
+  { const sp=$("scmPanel"); if(sp) sp.addEventListener("toggle",e=>{ const t=e.target; if(t.id==="scmSrcD"&&t.open!==(t.dataset.o==="1")){ SCM.srcOpen=t.open; t.dataset.o=t.open?"1":"0"; } },true); }   /* רק פתיחה/סגירה של המשתמש — לא הציור עצמו */
+  setInterval(()=>{ if(UI.mode==="scout") scmNowUI(); },700);
+  if(I18N.lang==="en") I18N.rules.push([/^מאז (\d\d\.\d\d\.\d{4})$/,"since $1"],[/^✓ נוסף מנהל: (.+)$/,"✓ Admin added: $1"]);
+  SCM.wired=true;
+  /* האפליקציה: מה ידוע עכשיו (מטמון), ואחר כך כל שינוי בסטטוס החשבון */
+  if(window.bbApp&&typeof bbApp.scoutAdmin==="function"){
+    bbApp.scoutAdmin().then(r=>scmSetApp(!!(r&&r.admin===true))).catch(()=>{});
+    if(typeof bbApp.onSync==="function") bbApp.onSync(d=>{ if(d&&d.status&&typeof d.status.scoutAdmin==="boolean") scmSetApp(d.status.scoutAdmin); else if(d&&d.status&&d.status.loggedIn===false) scmSetApp(false); });
+  }
+  scmRefresh();
+  if(UI.mode==="scout") scmModeChanged();
+  /* ווים לבדיקות בלבד: stub של ההרשאה (ואפשר גם api מדומה לניהול המנהלים). לא עובד בשימוש רגיל */
+  if(window.__sim) Object.assign(window.__sim,{SCM, scmAllowed, scmGo, scmRefresh, scmAdmLoad,
+    scoutAdminSet(v,api){ if(!(navigator.webdriver||(window.bbApp&&bbApp.test))) return false;
+      SCM.stub=v==null?null:v===true; SCM.api=api&&typeof api==="object"?api:null; SCM.adm=null; scmRefresh(); return scmAllowed(); }});
 })();
 
 /* ══════ v63 wiz — אשף הגדרה אישית ══════
@@ -21751,7 +21914,7 @@ function wzHTML(st){
       row2("ברית",SETUP.ally==="blue"?"🔵 כחול":"🔴 אדום")+
       row2("סקין",appEsc((SKINBY[SKIN.me]||SKINS[0]).n))+
       row2("שליטה",WZ.ctl==="pad"?"🎮 שלט":WZ.ctl==="phone"?"📱 טלפון":"⌨ מקלדת")+
-      row2("מצב",UI.mode==="lab"?"🧪 מעבדה":"🎮 משחק")+
+      row2("מצב",UI.mode==="lab"?"🧪 מעבדה":UI.mode==="scout"?"📊 סקאוטינג":"🎮 משחק")+
       row2("חוקים",realmOpen()?"🔓 פתוח":"🏆 תחרות")+
       row2("קולות",(SND.on||SND.fx)?'<span dir="ltr">'+Math.round((SND.vol||0)*100)+'%</span>':"כבויים")+'</div>'+
       '<div class="wzGoRow"><button type="button" class="go" data-wz="fin:match">⚡ להתחיל מאץ׳</button><button type="button" data-wz="fin:tour">🗺 לסיור קצר</button></div>'; }
@@ -22233,7 +22396,8 @@ function v77GarGo(tab,key){ bldOpen(); const m=$("bldBox"); if(!m) return false;
   const r=key?m.querySelector('[data-bopt^="'+key+'|"]'):null, row=r?r.closest(".garTune,.bldF"):m.querySelector('[data-gpane="'+tab+'"]');
   setTimeout(()=>v77Flash(row&&row.isConnected?row:(key&&m.querySelector('[data-bopt^="'+key+'|"]')||{}).parentElement),40); return !!row; }
 function v77BrdGo(fn){ brdOpen(); try{ return fn(); }catch(e){ console.error(e); } }
-function v77SctGo(sel){ sctOpen(); const d=$("sctCloudD"); if(d&&!d.open){ d.open=true; try{ SCTL.open=true; }catch(e){} }
+function v77SctGo(sel){ sctOpen(); { const sd=$("scmSrcD"); if(sd&&!sd.open){ sd.open=true; SCM.srcOpen=true; } }   /* v78: במצב הסקאוטינג — פותחים את ״מקור הנתונים״ */
+  const d=$("sctCloudD"); if(d&&!d.open){ d.open=true; try{ SCTL.open=true; }catch(e){} }
   setTimeout(()=>{ const el=document.querySelector(sel)||d; v77Flash(el&&el.closest?el.closest(".bldF,details")||el:el); if(el&&el.focus) try{ el.focus({preventScroll:true}); }catch(e){} },40); }
 function v77Cmdk(){
   const G="מוסך", TUNE=[{t:"drive",key:"wheel",tn:"הנעה",n:"קוטר גלגל",k:"גלגל קוטר wheel diameter size"},{t:"drive",key:"dmot",tn:"הנעה",n:"מנוע הנעה",k:"מנוע הנעה סלד drive motor rpm"},
@@ -22250,8 +22414,8 @@ function v77Cmdk(){
     {id:"brd-tpl",i:"📐",n:"תבנית ללוח — יציאה, מחזור, פרחים, הגנה",sub:"לוח אסטרטגיה",k:"תבנית לוח תבניות template templates board",run:()=>v77BrdGo(()=>{ brdMenu(true); const t=$("brdTpl"); if(t) t.focus(); })},
     {id:"brd-print",i:"🖨",n:"הדפסת הלוח — תמונה לכל שלב",sub:"לוח אסטרטגיה",k:"הדפסה הדפס תמונה לוח print board image",run:()=>v77BrdGo(()=>{ brdMenu(true); const b=document.querySelector('#brdMenu [data-brd="print"]'); if(b){ b.focus(); v77Flash(b); } })},
     {id:"brd-lib",i:"💾",n:"לוחות שמורים — שמירה וטעינה",sub:"לוח אסטרטגיה",k:"שמור טען מחק לוח ספרייה save load board library",run:()=>v77BrdGo(()=>v77BrdLib(true))},
-    {id:"sct-live",i:"☁",n:"חיבור חי לסקאוטינג",sub:"מאץ׳ מהסקאוטינג",k:"חיבור חי סקאוטינג ענן live scouting cloud connection sync",run:()=>v77SctGo("#sctCloudD summary")},
-    {id:"sct-qr",i:"▦",n:"קוד QR מהסקאוטינג",sub:"מאץ׳ מהסקאוטינג",k:"ברקוד קוד qr סריקה מצלמה סקאוטינג scan camera scouting",run:()=>v77SctGo("#sctlQrIn")},
+    {id:"sct-live",i:"☁",n:"חיבור חי לסקאוטינג",sub:"מאץ׳ מהסקאוטינג",k:"חיבור חי סקאוטינג ענן live scouting cloud connection sync",run:()=>v77SctGo("#sctCloudD summary"),when:()=>scmAllowed()},
+    {id:"sct-qr",i:"▦",n:"קוד QR מהסקאוטינג",sub:"מאץ׳ מהסקאוטינג",k:"ברקוד קוד qr סריקה מצלמה סקאוטינג scan camera scouting",run:()=>v77SctGo("#sctlQrIn"),when:()=>scmAllowed()},
     {id:"ready-list",i:"✅",n:"רשימת המראה — מה עוד לבדוק לפני התחרות",sub:"מוכנות לתחרות",k:"מוכנות רשימת בדיקות המראה מוכנים תחרות ready checklist",run:()=>rdyOpen()},
     {id:"match-ui",i:"🏆",n:"פס התוצאה וכרטיס הסיום — במאץ׳ מול בוטים",sub:"מאץ׳",k:"פס תוצאה כרטיס סיום ניקוד שעון scoreboard score bar end card",run:clk("ppMatch")});
   return L; }

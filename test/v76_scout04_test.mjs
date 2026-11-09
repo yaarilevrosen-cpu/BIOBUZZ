@@ -89,6 +89,8 @@ r=await E(async()=>{ const S=__sim; for(let i=0;i<40&&S.SCTL.live;i++) await new
 ok(!r.live&&r.st==='offline'&&r.n===7&&/אין חיבור לענן/.test(r.txt),'השרת נפל: הנתונים נשארים, ״⚠ אין חיבור לענן״ ('+JSON.stringify(r)+')');
 // טעינה מחדש בלי שרת → ״תמונה שמורה״
 await page.reload(); await page.waitForFunction(()=>window.__sim&&window.__sim.BOTS.length,null,{timeout:60000});
+// v78: החיבור החי מתחבר לבד רק למנהל סקאוטינג — בבדיקה: stub של ההרשאה
+await page.evaluate(()=>__sim.scoutAdminSet(true));
 r=await E(async()=>{ const S=__sim; for(let i=0;i<60&&!S.SCT.pack;i++) await new Promise(r=>setTimeout(r,100)); S.sctOpen();
   return {src:S.SCTL.src, n:S.SCT.pack&&S.SCT.pack.n, txt:document.getElementById('sctLiveW').textContent}; });
 ok(r.src==='cache'&&r.n===7&&/תמונה שמורה/.test(r.txt),'בלי רשת: התמונה האחרונה מהמחשב, עם ״💾 תמונה שמורה״ ('+JSON.stringify(r)+')');
