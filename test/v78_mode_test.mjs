@@ -27,14 +27,27 @@ r=await E(()=>{ const d=Object.getOwnPropertyDescriptor(Navigator.prototype,'web
 ok(r.x===false&&r.allowed===false,'ה-stub של הבדיקות לא פועל מחוץ לדפדפן אוטומטי ('+JSON.stringify(r)+')');
 
 // 2. עם הרשאה: הכפתור, הכרטיס, החיפוש; הלוח במקום ״מה משחקים״
-const ADM=[{uid:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',email:'owner@example.test',at:'2026-11-01T10:00:00Z',me:true}];
-await E(a=>{ window.__fake={list:a.slice(), calls:[],
-  scoutAdmins:async function(){ this.calls.push('list'); return {ok:true,list:this.list.slice()}; },
-  scoutAdminAdd:async function(em){ this.calls.push('add:'+em); if(!/example\.test$/.test(em)) return {ok:false,why:'אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים'};
-    this.list.push({uid:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',email:em,at:'2026-11-09T08:00:00Z',me:false}); return {ok:true,list:this.list.slice()}; },
-  scoutAdminRemove:async function(u){ this.calls.push('rm:'+u); if(this.list.length<2) return {ok:false,why:'אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר',admin:true};
-    const me=this.list.find(x=>x.uid===u&&x.me); this.list=this.list.filter(x=>x.uid!==u); return {ok:true,list:me?null:this.list.slice(),admin:!me}; } };
-  __sim.scoutAdminSet(true,window.__fake); },ADM);
+// api מדומה לניהול המנהלים — אותם כללים כמו supabase/v78_scout_admins.sql (בעלים / מנהל שיכול להוסיף / מנהל)
+const OW='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', SE='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', TH='cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+const FAKE=`window.__mkFake=function(meUid){ const W={me:meUid, calls:[], rows:[{uid:'${OW}',email:'owner@example.test',role:'owner',inv:true,by:null,at:'2026-11-01T10:00:00Z'}]};
+  const mail=u=>{ const r=W.rows.find(x=>x.uid===u); return r?r.email:''; }, mine=()=>W.rows.find(x=>x.uid===W.me), owners=()=>W.rows.filter(x=>x.role==='owner').length;
+  const list=()=>W.rows.map(x=>({uid:x.uid,email:x.email,role:x.role,canInvite:x.role==='owner'||x.inv,addedBy:x.by||'',addedByEmail:x.by?mail(x.by):'',at:x.at,me:x.uid===W.me}));
+  const no=w=>({ok:false,why:w,admin:!!mine()});
+  W.scoutAdmins=async()=>{ W.calls.push('list'); return mine()?{ok:true,list:list()}:no('רק מנהל סקאוטינג יכול לעשות את זה'); };
+  W.scoutAdminAdd=async em=>{ W.calls.push('add:'+em); const m=mine(); if(m.role!=='owner'&&!m.inv) return no('רק הבעלים או מי שקיבל הרשאה יכולים להוסיף מנהלים');
+    if(!/example\\.test$/.test(em)) return no('אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים');
+    const id={'second@example.test':'${SE}','third@example.test':'${TH}'}[em]||'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    if(!W.rows.some(x=>x.uid===id)) W.rows.push({uid:id,email:em,role:'admin',inv:false,by:W.me,at:'2026-11-09T08:00:00Z'}); return {ok:true,list:list()}; };
+  W.scoutAdminRemove=async u=>{ W.calls.push('rm:'+u); const m=mine(), t=W.rows.find(x=>x.uid===u); if(!t) return {ok:true,list:list(),admin:true};
+    if(m.role!=='owner'){ if(!m.inv) return no('רק הבעלים או מי שקיבל הרשאה יכולים להוסיף מנהלים'); if(t.by!==W.me||t.role!=='admin') return no('אפשר להסיר רק מנהלים שהוספת בעצמך'); }
+    if(t.role==='owner'&&owners()<=1) return no('אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל');
+    W.rows=W.rows.filter(x=>x.uid!==u); return {ok:true,list:u===W.me?null:list(),admin:!!mine()}; };
+  W.scoutAdminSet=async(u,inv,own)=>{ W.calls.push('set:'+u+':'+inv+':'+own); const m=mine(); if(m.role!=='owner') return no('רק הבעלים יכולים לשנות הרשאות של מנהלים');
+    const t=W.rows.find(x=>x.uid===u); if(!t) return no('החשבון הזה כבר לא ברשימת המנהלים'); const r=own===true?'owner':own===false?'admin':t.role;
+    if(t.role==='owner'&&r==='admin'&&owners()<=1) return no('אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל');
+    t.inv=r==='owner'?true:(inv==null?t.inv:inv); t.role=r; return {ok:true,list:list(),admin:true}; };
+  return W; };`;
+await E(FAKE); await E(OW=>{ window.__fake=window.__mkFake(OW); __sim.scoutAdminSet(true,window.__fake); },OW);
 r=await E(`({tab:${vis('#uiMode [data-ui="scout"]')}, card:${vis('#ppScout')}, cmdk:__sim.cmdkIndex().filter(c=>/^(scout|sct-live|sct-qr)$/.test(c.id)&&(!c.when||c.when())).length})`);
 ok(r.tab&&r.card&&r.cmdk===3,'עם הרשאה: ״📊 סקאוטינג״ במתג, הכרטיס, ושלוש הכניסות בחיפוש ('+JSON.stringify(r)+')');
 // הכרטיס ״מאץ׳ מהסקאוטינג״ → המצב (לא החלון)
@@ -72,22 +85,46 @@ ok(r.armed&&!r.on&&!r.stop,'״■ עצור משחק״ — לחיצה שנייה 
 r=await E(()=>{ const b=document.querySelector('#scmPanel [data-sctdrive]'); b.click(); return {mode:__sim.UI.mode}; });
 ok(r.mode==='scout','״🎮 לנהוג בו״ מהלוח — נשארים במצב');
 
-// 3. 👥 מנהלים (api מדומה)
-r=await E(async()=>{ const d=document.getElementById('scmAdm'); d.open=true; await new Promise(r=>setTimeout(r,120));
-  return {rows:document.querySelectorAll('#scmAdmBody .scmAdmRow').length, txt:document.getElementById('scmAdmBody').innerText, calls:window.__fake.calls.slice()}; });
-ok(r.rows===1&&/owner@example\.test/.test(r.txt)&&/אני/.test(r.txt)&&/מאז 01\.11\.2026/.test(r.txt)&&r.calls.includes('list'),'״👥 מנהלים״ נפתח: הרשימה (מייל, אני, מאז) ('+JSON.stringify(r).slice(0,200)+')');
+// 3. 👥 מנהלים (api מדומה) — לפי הדרגה
+const adm=()=>E(()=>{ const B=document.getElementById('scmAdmBody'), rows=[...B.querySelectorAll('.scmAdmRow')];
+  return {rows:rows.map(x=>({t:x.querySelector('span').textContent, inv:!!x.querySelector('[data-scminv]'), rm:!!x.querySelector('[data-scmrm]'), owner:/בעלים/.test(x.textContent)})),
+    add:!!B.querySelector('#scmAdmIn'), msg:(document.getElementById('scmAdmMsg')||{}).textContent||'', txt:B.innerText}; });
+const reload=async me=>{ await E(me=>{ window.__fake.me=me; __sim.SCM.adm=null; return __sim.scmAdmLoad(); },me); return adm(); };
+r=await E(async()=>{ const d=document.getElementById('scmAdm'); d.open=true; await new Promise(r=>setTimeout(r,120)); return window.__fake.calls.slice(); });
+let a=await adm();
+ok(r.includes('list')&&a.rows.length===1&&a.rows[0].owner&&/אני/.test(a.txt)&&/מאז 01\.11\.2026/.test(a.txt)&&a.add&&!a.rows[0].inv,'בעלים: הרשימה (מייל, אני, בעלים, מאז), שדה הוספה; בלי מתג על שורת בעלים ('+JSON.stringify(a.rows)+')');
 r=await E(async()=>{ const b=document.querySelector('#scmAdmBody [data-scmrm]'); b.click(); const t1=b.textContent; b.click(); await new Promise(r=>setTimeout(r,80));
   return {t1, msg:document.getElementById('scmAdmMsg').textContent, rows:document.querySelectorAll('#scmAdmBody .scmAdmRow').length, mode:__sim.UI.mode}; });
-ok(r.t1==='בטוח?'&&/המנהל האחרון/.test(r.msg)&&r.rows===1&&r.mode==='scout','הסרה: קודם ״בטוח?״, והמנהל האחרון — התשובה של השרת מוצגת ('+JSON.stringify(r)+')');
-r=await E(async()=>{ const i=document.getElementById('scmAdmIn'); i.value='bad'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,50)); const m1=document.getElementById('scmAdmMsg').textContent;
-  const n=window.__fake.calls.length; document.getElementById('scmAdmIn').value='nobody@other.test'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80)); const m2=document.getElementById('scmAdmMsg').textContent;
-  document.getElementById('scmAdmIn').value='second@example.test'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80));
-  return {m1, n, n1:window.__fake.calls.length, m2, m3:document.getElementById('scmAdmMsg').textContent, rows:document.querySelectorAll('#scmAdmBody .scmAdmRow').length, inp:document.getElementById('scmAdmIn').value}; });
-ok(/מייל תקין/.test(r.m1)&&/אין חשבון עם המייל הזה/.test(r.m2)&&/נוסף מנהל/.test(r.m3)&&r.rows===2&&r.inp==='','הוספה: מייל לא תקין נעצר, ״אין חשבון״ מהשרת, ואז נוסף — שני מנהלים ('+JSON.stringify(r)+')');
-// מסירים את עצמי (יש עוד מנהל) → ההרשאה נעלמת → ״משחק״
+ok(r.t1==='בטוח?'&&/הבעלים האחרון/.test(r.msg)&&r.rows===1&&r.mode==='scout','הסרה: קודם ״בטוח?״; הבעלים האחרון — התשובה של השרת מוצגת ('+JSON.stringify(r)+')');
+const addEm=em=>E(async em=>{ document.getElementById('scmAdmIn').value=em; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80)); return document.getElementById('scmAdmMsg').textContent; },em);
+r={m1:await addEm('bad'), m2:await addEm('nobody@other.test'), m3:await addEm('second@example.test')}; a=await adm();
+ok(/מייל תקין/.test(r.m1)&&/אין חשבון עם המייל הזה/.test(r.m2)&&/נוסף מנהל/.test(r.m3)&&a.rows.length===2,'הוספה: מייל לא תקין נעצר, ״אין חשבון״ מהשרת, ואז נוסף ('+JSON.stringify(r)+')');
+ok(a.rows[1].inv&&a.rows[1].rm&&!a.rows[1].owner,'בעלים רואה ליד מנהל: ״יכול להוסיף מנהלים״ והסרה');
+r=await E(async SE=>{ const c=document.querySelector('#scmAdmBody [data-scminv="'+SE+'"]'); c.checked=true; c.dispatchEvent(new Event('change',{bubbles:true})); await new Promise(r=>setTimeout(r,80));
+  return {calls:window.__fake.calls.filter(x=>/^set:/.test(x)), on:document.querySelector('#scmAdmBody [data-scminv="'+SE+'"]').checked, msg:document.getElementById('scmAdmMsg').textContent}; },SE);
+ok(r.calls[0]==='set:'+SE+':true:null'&&r.on&&/ההרשאה עודכנה/.test(r.msg),'בעלים מסמן ״יכול להוסיף מנהלים״ → scoutAdminSet(uid, true, null) ('+JSON.stringify(r)+')');
+await addEm('third@example.test');   // הבעלים מוסיף את השלישי
+// מנהל שיכול להוסיף (second): מוסיף; מסיר רק את מי שהוא הוסיף; בלי מתגים
+a=await reload(SE);
+ok(a.add&&a.rows.every(x=>!x.inv)&&a.rows.filter(x=>x.rm).length===0,'מנהל שיכול להוסיף: שדה הוספה, בלי מתגים, בלי ״הסר״ על מי שאחרים הוסיפו ('+JSON.stringify(a.rows)+')');
+r=await addEm('fourth@example.test'); a=await adm();
+const four=a.rows.find(x=>x.t==='fourth@example.test');
+ok(/נוסף מנהל/.test(r)&&four&&four.rm&&!four.inv&&a.rows.filter(x=>x.rm).length===1,'הוסיף מנהל — ״הסר״ רק עליו ('+JSON.stringify(a.rows)+')');
+r=await E(async()=>{ const x=[...document.querySelectorAll('#scmAdmBody .scmAdmRow')].find(x=>/fourth/.test(x.textContent)).querySelector('[data-scmrm]'); x.click(); x.click(); await new Promise(r=>setTimeout(r,80));
+  return {msg:document.getElementById('scmAdmMsg').textContent, n:document.querySelectorAll('#scmAdmBody .scmAdmRow').length}; });
+ok(/הוסר/.test(r.msg)&&r.n===3,'מסיר את מי שהוסיף ('+JSON.stringify(r)+')');
+r=await E(async TH=>{ return await window.__fake.scoutAdminRemove(TH); },TH);
+ok(!r.ok&&/רק מנהלים שהוספת/.test(r.why),'(השרת המדומה) הסרה של מי שאחר הוסיף — ״אפשר להסיר רק מנהלים שהוספת בעצמך״');
+// מנהל רגיל (third): רשימה לקריאה בלבד
+a=await reload(TH);
+ok(!a.add&&a.rows.every(x=>!x.inv&&!x.rm)&&/צריך הרשאה מהבעלים/.test(a.txt),'מנהל רגיל: רשימה לקריאה, בלי הוספה/הסרה/מתגים, והסבר קצר ('+JSON.stringify(a.rows)+')');
+ok(/יכול להוסיף/.test(a.txt),'מנהל רגיל רואה מי יכול להוסיף (את מי לבקש)');
+// הבעלים: הופכים את second לבעלים (בשרת), ואז הבעלים הראשון מסיר את עצמו → ההרשאה נעלמת → ״משחק״
+await E(SE=>{ const t=window.__fake.rows.find(x=>x.uid===SE); t.role='owner'; t.inv=true; },SE);
+await reload(OW);
 r=await E(async()=>{ const b=[...document.querySelectorAll('#scmAdmBody .scmAdmRow')].find(x=>/אני/.test(x.textContent)).querySelector('[data-scmrm]'); b.click(); b.click(); await new Promise(r=>setTimeout(r,120));
   return {mode:__sim.UI.mode, allowed:__sim.scmAllowed(), body:document.body.classList.contains('scout'), back:!!document.querySelector('#sctBox .sctWin #sctBody')}; });
-ok(r.mode==='play'&&!r.allowed&&!r.body&&r.back,'הסרתי את עצמי: חוזרים ל״משחק״, והתוכן חוזר לחלון ('+JSON.stringify(r)+')');
+ok(r.mode==='play'&&!r.allowed&&!r.body&&r.back,'הסרתי את עצמי (יש עוד בעלים): חוזרים ל״משחק״, והתוכן חוזר לחלון ('+JSON.stringify(r)+')');
 r=await E(`({tab:${vis('#uiMode [data-ui="scout"]')}, card:${vis('#ppScout')}, on:__sim.SCT.on, pack:!!__sim.SCT.pack, prof:__sim.BOTS.filter(b=>b.prof).length, live:__sim.SCTL.st})`);
 ok(!r.tab&&!r.card&&!r.on&&!r.pack&&r.prof===0&&r.live==='off','אחרי איבוד הרשאה: אין כניסות, הבוטים חזרו לרגילים, החיבור החי כבוי ('+JSON.stringify(r)+')');
 
@@ -115,8 +152,8 @@ await browser.close();
 // 5. אנגלית: אין עברית בלוח החדש
 ({browser,page,errs}=await open({noraf:true,play:true}));
 await page.evaluate(()=>localStorage.setItem('bbLang1','en')); await page.reload(); await page.waitForFunction(()=>window.__sim&&window.__sim.BOTS.length,null,{timeout:60000});
-r=await page.evaluate(async t=>{ const S=__sim; S.scoutAdminSet(true,{scoutAdmins:async()=>({ok:true,list:[{uid:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',email:'owner@example.test',at:'2026-11-01T10:00:00Z',me:true}]}),
-    scoutAdminAdd:async()=>({ok:false,why:'אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים'}),scoutAdminRemove:async()=>({ok:false,why:'אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר'})});
+await page.evaluate(FAKE); await page.evaluate(OW=>{ window.__fake=window.__mkFake(OW); },OW);
+r=await page.evaluate(async t=>{ const S=__sim; S.scoutAdminSet(true,window.__fake);
   const heb=[]; const H=/[֐-׿]/;
   const scan=root=>{ const walk=n=>{ if(!n) return; if(n.nodeType===3&&H.test(n.data)) heb.push(n.data.trim()); for(const c of n.childNodes||[]) walk(c); }; walk(root);
     for(const el of root.querySelectorAll('[placeholder],[aria-label],[title]')) for(const a of ['placeholder','aria-label','title']){ const v=el.getAttribute(a); if(v&&H.test(v)) heb.push(a+':'+v); } };
@@ -125,7 +162,13 @@ r=await page.evaluate(async t=>{ const S=__sim; S.scoutAdminSet(true,{scoutAdmin
   const d=document.getElementById('scmAdm'); d.open=true; await new Promise(r=>setTimeout(r,120)); scan(document.getElementById('scmAdmBody'));
   document.querySelector('#scmAdmBody [data-scmrm]').click(); await new Promise(r=>setTimeout(r,40)); scan(document.getElementById('scmAdmBody'));
   document.querySelector('#scmAdmBody [data-scmrm]').click(); await new Promise(r=>setTimeout(r,80)); scan(document.getElementById('scmAdmBody'));
-  document.getElementById('scmAdmIn').value='x@example.test'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80)); scan(document.getElementById('scmAdmBody'));
+  document.getElementById('scmAdmIn').value='x@other.test'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80)); scan(document.getElementById('scmAdmBody'));
+  document.getElementById('scmAdmIn').value='second@example.test'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,80)); scan(document.getElementById('scmAdmBody'));
+  { const c=document.querySelector('#scmAdmBody [data-scminv]'); c.checked=true; c.dispatchEvent(new Event('change',{bubbles:true})); await new Promise(r=>setTimeout(r,80)); scan(document.getElementById('scmAdmBody')); }
+  window.__fake.me='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'; S.SCM.adm=null; await S.scmAdmLoad(); scan(document.getElementById('scmAdmBody'));
+  window.__fake.rows.push({uid:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',email:'third@example.test',role:'admin',inv:false,by:null,at:'2026-11-09T08:00:00Z'});
+  window.__fake.me='cccccccc-cccc-4ccc-8ccc-cccccccccccc'; S.SCM.adm=null; await S.scmAdmLoad(); scan(document.getElementById('scmAdmBody'));
+  window.__fake.me='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'; S.SCM.adm=null; await S.scmAdmLoad();
   document.getElementById('scmAdmIn').value='bad'; document.querySelector('#scmAdmBody [data-scm="add"]').click(); await new Promise(r=>setTimeout(r,40)); scan(document.getElementById('scmAdmBody'));
   scan(document.getElementById('uiMode'));
   return {heb:[...new Set(heb)], btn:document.querySelector('#uiMode [data-ui="scout"]').textContent, play:(document.querySelector('#scmPanel [data-sct="play"]')||{}).textContent,

@@ -100,6 +100,7 @@ jobs:
           run v73_legalfix_app_test timeout 300 node v73_legalfix_app_test.mjs
           run v74_app_test timeout 600 xvfb-run -a node v74_app_test.mjs
           run v74_training_app_test timeout 600 xvfb-run -a node v74_training_app_test.mjs
+          run v78_mode_app_test timeout 600 xvfb-run -a node v78_mode_app_test.mjs   # v78: מצב הסקאוטינג באפליקציה מול שרת מדומה
           for t in app_test app_p2_test app_shell_test app_v56_test app_ai_test app_drag_test v63_app_test app_v63_wiz_test; do
             run $t timeout 600 xvfb-run -a node $t.mjs
           done

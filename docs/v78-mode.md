@@ -1,4 +1,4 @@
-# מצב ״📊 סקאוטינג״ — רק למנהלים (v78, אפליקציה 1.19)
+# מצב ״📊 סקאוטינג״ — רק למנהלים, בשלוש דרגות (v78, אפליקציה 1.19)
 
 ## מה
 - ליד ״🎮 משחק״ ו-״🔧 מעבדה״ יש מצב שלישי, ״📊 סקאוטינג״ — רק לחשבון שהוא **מנהל סקאוטינג**.
@@ -20,33 +20,75 @@
 
 ״הברית שלנו בקובץ״ מופיע בלוח רק כשצריך לתקן (המספר שלנו לא במאץ׳, או שכבר נבחר צד ביד). בחלון — כמו קודם.
 
-### 👥 מנהלים
-רשימה (מייל, ״אני״, ״מאז״), הוספה לפי מייל, והסרה (״הסר״ ← ״בטוח?״). את המנהל האחרון אי אפשר להסיר — מוצגת התשובה של השרת.
-מוסיפים רק מי שכבר פתח חשבון באפליקציה. כל מנהל יכול להוסיף ולהסיר מנהלים (גם את עצמו, כל עוד נשאר עוד אחד).
+### הדרגות
+| דרגה | מצב הסקאוטינג | רשימת המנהלים | הוספה | הסרה | ״יכול להוסיף מנהלים״ | בעלים חדש |
+|---|---|---|---|---|---|---|
+| **בעלים** (`role='owner'`) | ✓ | ✓ | ✓ | כל אחד (חוץ מהבעלים האחרון) | נותן ולוקח, לכל מנהל | רק דרך `bb_scout_admin_set` |
+| **מנהל שיכול להוסיף** (`can_invite=true`) | ✓ | ✓ (קריאה) | ✓ — תמיד מנהל רגיל | רק מי שהוא עצמו הוסיף | ✗ | ✗ |
+| **מנהל** | ✓ | ✓ (קריאה) | ✗ | ✗ | ✗ | ✗ |
+
+- מנהל חדש תמיד נוסף כ״מנהל״ בלי הרשאה — גם כשבעלים מוסיף. את ההרשאה לא אפשר להעביר הלאה: מי שקיבל אותה מוסיף רק מנהלים רגילים.
+- את הבעלים האחרון אי אפשר להסיר ולא להוריד לדרגת מנהל. בעלים נוסף — רק בעלים, ורק דרך `bb_scout_admin_set(p_user, null, true)`
+  (בכוונה בלי כפתור בממשק — מריצים ב-SQL Editor, ראו למטה, או קוראים לפונקציה).
+
+### 👥 מנהלים (בלוח)
+- **בעלים** — רשימה (מייל, ״אני״, ״בעלים״, ״מאז״, ובריחוף: מי הוסיף), ליד כל מנהל המתג ״יכול להוסיף מנהלים״, ״הסר״ (← ״בטוח?״), ושדה הוספה לפי מייל.
+- **מנהל שיכול להוסיף** — אותה רשימה, שדה הוספה, ו-״הסר״ רק בשורות של מי שהוא הוסיף. בלי מתגים.
+- **מנהל** — הרשימה לקריאה בלבד (רואים מי בעלים ומי ״יכול להוסיף״ — את מי לבקש), ושורה: ״כדי להוסיף מנהלים צריך הרשאה מהבעלים״.
+- כל תשובה של השרת מוצגת בעברית ברורה: ״רק הבעלים או מי שקיבל הרשאה יכולים להוסיף מנהלים״ (`not_allowed`),
+  ״אפשר להסיר רק מנהלים שהוספת בעצמך״ (`not_allowed_remove`), ״רק הבעלים יכולים לשנות הרשאות של מנהלים״ (`not_owner`),
+  ״אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל״ (`last_owner`), ״אין חשבון עם המייל הזה…״ (`no_account`),
+  ״החשבון הזה כבר לא ברשימת המנהלים״ (`not_found`), ״רק מנהל סקאוטינג יכול לעשות את זה״ (`not_admin`), ״צריך להריץ את v78_scout_admins.sql בשרת״ (הפונקציה חסרה).
 
 ## איך מפעילים (פעם אחת, בעל הפרויקט)
 1. Supabase → SQL Editor → New query → מדביקים את כל `supabase/v78_scout_admins.sql` → Run.
-2. באותו מקום, שורה אחת — המנהל הראשון (המייל של החשבון שלך באפליקציה):
+2. באותו מקום, שורה אחת — הבעלים הראשון (המייל של החשבון שלך באפליקציה):
 ```sql
 insert into public.bb_scout_admins (user_id, role, can_invite) select id, 'owner', true from auth.users where lower(email) = lower('<האימייל שלך>') on conflict (user_id) do update set role = 'owner', can_invite = true;
 ```
-3. בדיקה: `select a.added_at, u.email from public.bb_scout_admins a join auth.users u on u.id = a.user_id;` — שורה אחת.
-4. באפליקציה (1.19 ומעלה): להתחבר (או להפעיל מחדש) — ״📊 סקאוטינג״ מופיע בסרגל. משם, ״👥 מנהלים״ ← מוסיפים אחרים לפי מייל.
+3. בדיקה: `select u.email, a.role, a.can_invite, a.added_at from public.bb_scout_admins a join auth.users u on u.id = a.user_id;` — שורה אחת, `owner`, `true`.
+4. באפליקציה (1.19 ומעלה): להתחבר (או להפעיל מחדש) — ״📊 סקאוטינג״ מופיע בסרגל. משם, ״👥 מנהלים״ ← מוסיפים אחרים לפי מייל,
+   ולמי שצריך — מסמנים ״יכול להוסיף מנהלים״.
+5. (לא חובה) בעלים נוסף — ב-SQL Editor:
+```sql
+update public.bb_scout_admins set role = 'owner', can_invite = true where user_id = (select id from auth.users where lower(email) = lower('<המייל של המנהל>'));
+```
+
+### לבדוק את הכללים ביד ב-SQL Editor
+ה-SQL Editor רץ כ-postgres (בלי חשבון מחובר), ולכן ״מתחזים״ לחשבון בתוך טרנזקציה שמתבטלת בסוף — שום דבר לא נשמר:
+```sql
+begin;
+  select set_config('request.jwt.claim.sub', (select id::text from auth.users where lower(email) = lower('<מייל של מנהל רגיל>')), true);
+  set local role authenticated;
+  select public.bb_scout_is_admin();                         -- true
+  select * from public.bb_scout_admins_list();               -- הרשימה (מותר לכל מנהל)
+  select public.bb_scout_admin_add('<מייל של חשבון קיים>');   -- מנהל רגיל: ERROR not_allowed
+rollback;
+```
+באותה צורה (מחליפים את המייל בשורה הראשונה):
+- **מנהל שיכול להוסיף**: `bb_scout_admin_add` עובד, והשורה החדשה היא `role='admin', can_invite=false`;
+  `bb_scout_admin_set(<מזהה>, true, null)` → `not_owner`; `bb_scout_admin_remove(<מזהה של מי שבעלים הוסיף>)` → `not_allowed_remove`.
+- **בעלים**: `bb_scout_admin_remove(<המזהה של עצמך>)` כשאתה הבעלים היחיד → `last_owner`; `bb_scout_admin_set(<המזהה של עצמך>, null, false)` → `last_owner`.
+- **חשבון שלא מנהל**: כל פונקציה חוץ מ-`bb_scout_is_admin` (שמחזירה false) → `not_admin`.
+אותן בדיקות בדיוק רצות אוטומטית ב-`test/v78_scout_admins_probe.sql` (54 בדיקות, Postgres מקומי).
 
 לפני שמריצים את הקובץ — אף אחד לא רואה את המצב, וחלונית המנהלים אומרת ״צריך להריץ את v78_scout_admins.sql בשרת״.
 המנהל האחרון מחק את החשבון שלו — הטבלה ריקה; חוזרים על שלב 2.
 
 ## איפה בקוד
-- **שרת** — `supabase/v78_scout_admins.sql`: טבלה `bb_scout_admins` (row level security מופעל באותו קובץ; מחובר רואה רק את השורה שלו;
-  בלי הרשאת כתיבה ישירה), ופונקציות `bb_scout_is_admin`, `bb_scout_admins_list`, `bb_scout_admin_add(p_email)`, `bb_scout_admin_remove(p_user)` —
-  `security definer`, `search_path` קבוע, ההרצה רק ל-`authenticated`. שגיאות: `not signed in`, `not_admin`, `no_account`, `last_admin`.
-  ההסרה נועלת את הטבלה — שני מנהלים שמסירים זה את זה באותו רגע לא משאירים טבלה ריקה. `added_by` מתאפס כשהחשבון שהוסיף נמחק.
+- **שרת** — `supabase/v78_scout_admins.sql`: טבלה `bb_scout_admins` (`role` owner/admin, `can_invite`, `added_by`, `added_at`; row level security מופעל באותו קובץ;
+  מחובר רואה רק את השורה שלו; בלי הרשאת כתיבה ישירה), ופונקציות `bb_scout_is_admin`, `bb_scout_admins_list` (גם role, can_invite, added_by והמייל שלו),
+  `bb_scout_admin_add(p_email)`, `bb_scout_admin_remove(p_user)`, `bb_scout_admin_set(p_user, p_can_invite, p_owner)` —
+  `security definer`, `search_path` קבוע, ההרצה רק ל-`authenticated`. שגיאות: `not signed in`, `not_admin`, `not_allowed`, `not_allowed_remove`, `not_owner`,
+  `no_account`, `not_found`, `last_owner`, `last_admin`. ההסרה והשינוי נועלים את הטבלה — שתי פעולות באותו רגע לא משאירות טבלה בלי בעלים.
+  `added_by` מתאפס כשהחשבון שהוסיף נמחק (ואז גם מי שהוסיף אותו כבר לא יכול להסיר אותו — רק בעלים).
   בלי errcode מיוחד בכוונה: P0002 היה חוזר מהשרת כ-404, והאפליקציה הייתה חושבת שהפונקציה חסרה.
-- **האפליקציה** — `app/sync.js`: `scoutIsAdmin()`, `scoutAdmins()`, `scoutAdminAdd(email)`, `scoutAdminRemove(uid)`, `scoutAdmin()` (מהמטמון), `scoutWhy()` (הודעות בעברית).
+- **האפליקציה** — `app/sync.js`: `scoutIsAdmin()`, `scoutAdmins()` (עם `role`, `canInvite`, `addedBy`, `addedByEmail`), `scoutAdminAdd(email)`, `scoutAdminRemove(uid)`,
+  `scoutAdminSet(uid, canInvite, owner)` (null = בלי שינוי), `scoutAdmin()` (מהמטמון), `scoutWhy()` (הודעות בעברית). המטמון שומר רק ״מנהל או לא״ — הדרגה נקראת מהרשימה.
   המטמון `scout-admin.json` בתיקיית הנתונים: `{uid, admin, at}` בלבד. תקף 14 יום מהבדיקה המוצלחת האחרונה, רק לאותו חשבון;
   נמחק בהתנתקות, בהחלפת חשבון (גם אחרי שהחיבור נפל) ובמחיקת חשבון. תשובת `not_admin` מהשרת מכבה אותו מיד. `status().scoutAdmin` (ולכן `acctStatus()`).
-  `app/main.js`: `bb:scoutAdmin` (עם `true` — בודק בשרת), `bb:scoutAdmins`, `bb:scoutAdminAdd`, `bb:scoutAdminRemove` — דרך `handle()` (בדיקת השולח);
-  `scoutRefresh()` — בהתחברות, בהפעלה (כשמחוברים) וכל 10 דקות; שינוי שולח `bb:sync` עם הסטטוס. `app/preload.js`: `bbApp.scoutAdmin/scoutAdmins/scoutAdminAdd/scoutAdminRemove`.
+  `app/main.js`: `bb:scoutAdmin` (עם `true` — בודק בשרת), `bb:scoutAdmins`, `bb:scoutAdminAdd`, `bb:scoutAdminRemove`, `bb:scoutAdminSet` — דרך `handle()` (בדיקת השולח);
+  `scoutRefresh()` — בהתחברות, בהפעלה (כשמחוברים) וכל 10 דקות; שינוי שולח `bb:sync` עם הסטטוס. `app/preload.js`: `bbApp.scoutAdmin/scoutAdmins/scoutAdminAdd/scoutAdminRemove/scoutAdminSet`.
 - **הסימולטור** — `biobuzz-sim.html`:
   - `SCM` ו-`scmAllowed()` ליד `UI` (צריך אותם כבר בהפעלה). `uiSetMode` מכיר `scout`: `body.play.scout` (הלוח הקל של ״משחק״) עם `#scmPanel` במקום `#playPanel`.
     בהפעלה, כשעוד לא ידוע אם מותר — ״משחק״ בלי לדרוס את `bbUiMode1`, וכשמתברר שמותר — חוזרים לסקאוטינג (`SCM.bootWant`).
@@ -61,7 +103,7 @@ insert into public.bb_scout_admins (user_id, role, can_invite) select id, 'owner
 יכול להציג לעצמו את המצב. מה ששומר על הנתונים האמיתיים:
 - חשבון הקריאה של 04 (כתובת, מפתח, מייל וסיסמה) — **רק מנהלים מקבלים אותו**. בלעדיו אין מה להציג.
 - הכללים של `a9662-*`: פרטי החיבור והתמונה השמורה רק במחשב הזה — לא בגיבוי, לא בסנכרון, לא בדיווח באג ולא במאגר; לאורחים ברשת עוברת רק הבנייה.
-- ניהול המנהלים עצמו נאכף בשרת (הפונקציות בודקות `bb_scout_is_admin()`), ולא באפליקציה.
+- ניהול המנהלים עצמו — כל כללי הדרגות — נאכף בשרת (בפונקציות), ולא באפליקציה; הממשק רק לא מציג מה שאי אפשר.
 מנהל יכול לברר אם למייל מסוים יש חשבון (`no_account`) — מותר רק למנהלים, ונחשב מקובל.
 
 ## ווים לבדיקה
@@ -69,14 +111,18 @@ insert into public.bb_scout_admins (user_id, role, can_invite) select id, 'owner
 או אפליקציה במצב בדיקה (`bbApp.test`); אין לו כפתור בממשק. גם `__sim.SCM`, `scmAllowed`, `scmGo`, `scmRefresh`, `scmAdmLoad`.
 
 ## איך נבדק
-- `test/v78_mode_test.mjs` (דפדפן, 30 בדיקות): בלי הרשאה אין כפתור/כרטיס/חיפוש; ה-stub לא עובד בלי webdriver; עם הרשאה — הכרטיס פותח את המצב,
-  הסדר בלוח, ⏭, בחירת מאץ׳, ״▶ מאץ׳ מול הרובוטים האלה״ ו״■ עצור משחק״, ניהול מנהלים (המנהל האחרון, ״אין חשבון״, הוספה, הסרה עצמית → ״משחק״),
-  איבוד הרשאה, טעינה מחדש עם ״סקאוטינג״ שמור, החיבור החי לא מתחבר לבד בלי הרשאה, ואנגלית בלי עברית.
-- `test/v78_admin_test.mjs` (node, בלי דפדפן; 56 בדיקות): `app/sync.js` מול שרת מדומה — הקריאות, מיפוי השגיאות, מטמון 14 יום בלי רשת
-  (גם אחרי הפעלה מחדש), התנתקות/החלפת חשבון/מחיקת חשבון, פונקציה חסרה; ובדיקה סטטית של ה-SQL (RLS באותו קובץ, security definer + search_path,
-  בלי הרצה ל-anon/public, בלי ״@״, בלי service_role).
+- `test/v78_mode_test.mjs` (דפדפן, 38 בדיקות): בלי הרשאה אין כפתור/כרטיס/חיפוש; ה-stub לא עובד בלי webdriver; עם הרשאה — הכרטיס פותח את המצב,
+  הסדר בלוח, ⏭, בחירת מאץ׳, ״▶ מאץ׳ מול הרובוטים האלה״ ו״■ עצור משחק״; ״👥 מנהלים״ לכל דרגה (api מדומה עם אותם כללים): בעלים — מתג והסרה,
+  הבעלים האחרון; מי שיכול להוסיף — ״הסר״ רק על מי שהוסיף; מנהל — קריאה בלבד; הסרה עצמית → ״משחק״; איבוד הרשאה, טעינה מחדש עם ״סקאוטינג״ שמור,
+  החיבור החי לא מתחבר לבד בלי הרשאה, ואנגלית בלי עברית (כל הדרגות וההודעות).
+- `test/v78_admin_test.mjs` (node, בלי דפדפן; 80 בדיקות): `app/sync.js` מול שרת מדומה שמחקה את כללי ה-SQL — הקריאות, מיפוי כל השגיאות,
+  ההרשאה לא עוברת הלאה, הסרה רק של מי שהוספת, הבעלים האחרון, מטמון 14 יום בלי רשת (גם אחרי הפעלה מחדש), התנתקות/החלפת חשבון/מחיקת חשבון,
+  פונקציה חסרה; ובדיקה סטטית של ה-SQL (RLS באותו קובץ, security definer + search_path, בלי הרצה ל-anon/public, בלי ״@״, בלי service_role,
+  וכל כלל דרגות כתוב בפונקציה הנכונה).
+- `test/v78_mode_app_test.mjs` (Electron, 15 בדיקות, ב-CI): התחברות → ״סקאוטינג״ בסרגל, מנהלים והמתג דרך ה-IPC, הוסר בשרת → ״משחק״, בלי אינטרנט →
+  מהמטמון, התנתקות → נעלם, חשבון אחר לא יורש. (לינוקס בלי מחזיק מפתחות לא שומר התחברות בין הפעלות — לכן ״הפעלה מחדש בלי רשת״ נבדק ב-v78_admin_test.)
 - `test/v78_scout_admins_probe.sql` — ה-SQL על Postgres 16 מקומי עם shim מינימלי של סופאבייס (תפקידים, `auth.users`, `auth.uid()`, הרשאות ברירת המחדל):
-  32 בדיקות — הרשאות, RLS, bootstrap, הוספה/רשימה/הסרה, המנהל האחרון, cascade. ה-shim לא במאגר (כמו בבדיקות הקודמות); זה לא השרת האמיתי.
+  54 בדיקות — הרשאות, RLS, bootstrap, כל כללי הדרגות, הבעלים האחרון, cascade, והרצה חוזרת על טבלה מגרסת טיוטה. ה-shim לא במאגר (כמו בבדיקות הקודמות); זה לא השרת האמיתי.
 - `test/v76_scout04_test.mjs` עודכן: אחרי הטעינה מחדש — `scoutAdminSet(true)`, כי החיבור החי מתחבר לבד רק למנהל.
 
 ## הנחות
