@@ -42,7 +42,7 @@ r=await E(t=>{ const S=__sim, X=S.v77b; S.matchStop(); S.sctLoadText(t); S.SCT.o
   /* אוטונומי */
   const roll=(sb,lv)=>{ X.v77bMatchArm(); b.sb=sb; b.autoLvl=lv||'cycle'; b.sbN=null; S.MATCH.cd=1; X.v77bRoll(b); S.MATCH.cd=0; return {lv:b.autoLvl,ap:b.sbS.aPark,cap:b.sbS.aCap,start:b.sbS.start,on:b.on,S:b.sbS}; };
   const rook=sbOf(90003); rook.noShowP=0;
-  out.rook=[0,1,2,3,4,5].map(()=>roll(Object.assign({},rook)).lv);
+  out.rook=Array.from({length:30}).map(()=>roll(Object.assign({},rook)).lv);
   const wall=sbOf(90002); out.wall=roll(wall); out.wallShare=b.sbS.share; out.wallFb0=b.sbS.fb0;
   const mid=sbOf(90004); out.mid=roll(mid);
   /* לא הגיע */
@@ -56,7 +56,7 @@ r=await E(t=>{ const S=__sim, X=S.v77b; S.matchStop(); S.sctLoadText(t); S.SCT.o
   out.pin={r1:P1.r,k1:P1.keep,r0:P0.r,p0:P0.p,v0:P0.v(0.1),v1:P1.v(0.1)};
   return out; },EV);
 ok(r.rook.every(l=>l==='leave'||l==='none'),`A1: 0 כדורים באוטונומי (פיט) — רק יציאה או כלום (${r.rook.join()})`);
-ok(r.rook.some(l=>l==='none')&&r.rook.some(l=>l==='leave'),`A2: יציאה ב-50% מהמאצ׳ים — גם וגם בשש הגרלות (${r.rook.join()})`);
+ok(r.rook.some(l=>l==='none')&&r.rook.some(l=>l==='leave'),`A2: יציאה ב-50% מהמאצ׳ים — גם וגם ב-30 הגרלות (${r.rook.join()})`);
 ok(r.wall.ap===false||r.wall.ap===true,`A3: חניה באוטונומי מוגרלת (${r.wall.ap})`);
 ok(r.mid.start==='B',`A4: עמדה B מהסקאוטינג נבחרת (${r.mid.start})`);
 ok(r.noShow.on===false&&r.noShow.flag===true&&/90001/.test(r.noShow.toast),`N1: סיכוי 1 לא להגיע — הבוט כבוי, הודעה ״${r.noShow.toast}״`);
