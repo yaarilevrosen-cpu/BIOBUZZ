@@ -283,7 +283,7 @@ function reg() {
   handle("bb:bridgeStatus", () => bridge ? bridge.status() : { on: false, error: "כבוי" });
   handle("bb:acctStatus", () => acctStatus());
   /* התחברות לחשבון אחר במחשב הזה — הנהגים של החשבון הקודם ״חונים״; אם הנהג הפעיל היה שלו, הדף נטען מחדש */
-  const afterLogin = r => { if (r.ok) { aiBind(); if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); } return r; };
+  const afterLogin = r => { if (r.ok) { aiBind(); if (sync.viewerSwitched) { sync.viewerSwitched = false; kvFrozen = true; setTimeout(() => win && win.webContents.reload(), 30); } runSync("login"); scoutRefresh("login"); } return r; };
   handle("bb:acctSignIn", async (e, em, pw) => afterLogin(await sync.signIn(em, pw)));
   handle("bb:acctSignUp", async (e, em, pw, meta) => { const r = await sync.signUp(em, pw, meta && typeof meta === "object" ? meta : null); return r.ok && !r.confirm ? afterLogin(r) : r; });
   /* ── 1.14 (v73 legal): הסכמה לתנאים, זכויות על הנתונים ── */
@@ -317,6 +317,12 @@ function reg() {
   handle("bb:acctSignOut", async () => { const r = await sync.signOut(); aiBind(); send("bb:sync", { status: acctStatus() }); return r; });
   handle("bb:teamCall", async (e, what, a, b) => { const r = await sync.teamCall(String(what || ""), a, b); send("bb:sync", { status: acctStatus(), result: { ok: true, team: true } }); return r; });
   handle("bb:syncNow", () => runSync("manual"));
+  /* ── v78: מצב סקאוטינג — רק למנהלים. refresh=true בודק בשרת (בלי רשת — מהמטמון); אחרת רק המטמון ── */
+  handle("bb:scoutAdmin", async (e, refresh) => refresh === true ? scoutRefresh("page") : Object.assign({ ok: true }, sync.scoutState()));
+  const scoutAfter = r => { send("bb:sync", { status: acctStatus() }); return r; };
+  handle("bb:scoutAdmins", () => sync.scoutAdmins().then(scoutAfter));
+  handle("bb:scoutAdminAdd", (e, em) => sync.scoutAdminAdd(String(em || "").slice(0, 400)).then(scoutAfter));
+  handle("bb:scoutAdminRemove", (e, u) => sync.scoutAdminRemove(String(u || "").slice(0, 64)).then(scoutAfter));
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
   handle("bb:aiStatus", () => aiSt());
   handle("bb:aiSetKey", async (e, k) => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() };
@@ -390,6 +396,16 @@ function runSync(why) {
     return out;
   })().finally(() => { syncRun = null; });
   return syncRun;
+}
+/* v78: בודק בשרת אם החשבון מנהל סקאוטינג — בהתחברות, בהפעלה (כשמחוברים) וכל 10 דקות. שינוי — הדף מקבל סטטוס חדש */
+let scoutRun = null;
+function scoutRefresh(why) {
+  if (!anyIn()) return Promise.resolve({ ok: false, admin: false });
+  if (scoutRun) return scoutRun;
+  const before = sync.scoutAdmin();
+  scoutRun = sync.scoutIsAdmin().then(r => { if (sync.scoutAdmin() !== before) send("bb:sync", { status: acctStatus(), why: "scout-" + why }); return r; },
+    () => ({ ok: false, admin: sync.scoutAdmin() })).finally(() => { scoutRun = null; });
+  return scoutRun;
 }
 /* ── עדכונים מגיטהאב ── */
 const PORTABLE = !!process.env.PORTABLE_EXECUTABLE_DIR;
@@ -471,12 +487,14 @@ app.whenReady().then(() => {
   updInit();
   win.webContents.once("did-finish-load", () => {
     if (anyIn()) setTimeout(() => runSync("start"), 1500);
+    if (anyIn()) setTimeout(() => scoutRefresh("start"), 2500);   /* v78 */
     /* v63: גם במק ובגרסה הניידת (בלי עדכון אוטומטי) — בודקים לבד ורק מודיעים */
     if (AU) setTimeout(() => updCheck(false), 8000);
     else if (app.isPackaged && !process.env.BIOBUZZ_TEST) setTimeout(() => updCheck(false), 8000);
   });
   /* 1.12.5: גם אפליקציה שפתוחה כמה ימים מקבלת גיבוי יומי חדש (לא רק בהפעלה) */
   setInterval(() => { try { store.dailyBackup(14); } catch (e) {} runSync("timer"); }, 120000);
+  setInterval(() => scoutRefresh("timer"), 600000);   /* v78: כל 10 דקות */
 });
 let quitting = false;
 app.on("before-quit", e => {

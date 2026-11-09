@@ -68,6 +68,27 @@ const TEAM_FIELDS = ["win", "my", "shots", "hits", "avgCycle", "fouls", "park", 
 const TEAM_PAGE = 500;               /* לכל חבר בכל סנכרון; הבא ממשיך מאיפה שעצר */
 /* 1.12.5: הודעת השרת כשהחשבון הגיע לתקרת האחסון (v72_security.sql) */
 const QUOTA = /bb quota/i;
+/* v78: מצב ״סקאוטינג״ — רק לחשבונות שהם מנהלי סקאוטינג (supabase/v78_scout_admins.sql).
+   התשובה של השרת נשמרת במחשב לכל חשבון (uid) בנפרד, כדי שהמצב יעבוד גם בלי אינטרנט בתחרות:
+   תקפה 14 יום מהבדיקה המוצלחת האחרונה. חשבון אחר לא יורש אותה; התנתקות / החלפת חשבון / מחיקת חשבון — נמחקת.
+   זה גבול של גישה ונוחות (מי רואה את המצב), לא הגנה על הנתונים — אותם שומר חשבון הקריאה של 04. */
+const SCOUT_TTL = 14 * 864e5;
+const SCOUT_SQL = "צריך להריץ את v78_scout_admins.sql בשרת";
+const SCOUT_IN = "צריך להתחבר לחשבון קודם";
+const UUIDRE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const NETRE = /fetch failed|ENOTFOUND|ECONNREFUSED|ECONNRESET|EAI_AGAIN|network|timeout/i;
+const offline = e => !!e && !e.status && NETRE.test(String(e.message || ""));
+/* v78: הודעה ברורה לכל תשובה של פונקציות המנהלים */
+function scoutWhy(e) {
+  const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
+  if (noFn(e)) return SCOUT_SQL;
+  if (/no_account/.test(m)) return "אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים";
+  if (/last_admin/.test(m)) return "אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר";
+  if (/not_admin/.test(m)) return "רק מנהל סקאוטינג יכול לעשות את זה";
+  if (/not signed in/.test(m)) return SCOUT_IN;
+  if (offline(e)) return "אין חיבור לאינטרנט — ניהול המנהלים צריך רשת";
+  return heb(e && e.message);
+}
 function heb(msg) {
   msg = String(msg || "שגיאה");
   for (const k in HEB) if (msg.indexOf(k) >= 0) return HEB[k];
@@ -110,6 +131,9 @@ class Sync {
     this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null; this.refreshing = null; this.viewerSwitched = false;
     this.teamFile = path.join(dir, "team-cache.json");
     this.team = readJSON(this.teamFile, null) || null;
+    /* v78: מנהל סקאוטינג — {uid, admin, at}; כל דבר אחר בקובץ = אין */
+    this.scoutFile = path.join(dir, "scout-admin.json");
+    { const c = readJSON(this.scoutFile, null); this.scout = c && typeof c === "object" && typeof c.uid === "string" && UUIDRE.test(c.uid) && typeof c.admin === "boolean" && isFinite(c.at) && +c.at > 0 ? { uid: c.uid, admin: c.admin, at: +c.at } : null; }
     try { const o = readJSON(this.file, null); if (o && o.blob) this.sess = JSON.parse(this.dec(o.blob)); if (o) this.lastSync = o.lastSync || 0; } catch (e) { this.sess = null; }
     if (this.sess && !(this.sess.user && this.sess.user.id)) this.sess = null;
     this.sessAtBoot = !!this.sess;
@@ -131,7 +155,8 @@ class Sync {
       lastSync: this.lastSync, lastError: this.lastError, busy: !!this.busy, cloud: !!this.cloud.url,
       tos: this.sess && this.sess.user && this.sess.user.tos_v || "",
       /* 1.14 (legalfix): גרסת המסמכים הנוכחית; כשהחשבון לא אישר אותה — הסנכרון והקבוצה מושהים (המחיקה וההורדה עובדות) */
-      tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "" };
+      tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "",
+      scoutAdmin: this.scoutAdmin() };   /* v78 */
   }
   /* v74 (P4): ״ישן יותר מ־״ ולא ״שונה מ־״ — גרסת אפליקציה ישנה לא נתקעת (ולא מורידה את ההסכמה) כשהחשבון אישר גרסה חדשה יותר. ISO — השוואה מילונית */
   tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") < this.tosNeed); }
@@ -152,6 +177,8 @@ class Sync {
     /* תיקון: ממלאים חסרים מהחיבור הקודם רק כשזה אותו משתמש (רענון). חשבון אחר — בלי השם/ההסכמה/הגיל/הקבוצה של הקודם */
     const old = prev && prev === nid && this.sess.user || {};
     if (prev && prev !== nid) { this.team = null; this.saveTeam(); this.lastSync = 0; this.lastError = ""; }
+    /* v78: חשבון אחר (גם אחרי שהחיבור נפל) — בלי הסטטוס של מנהל הסקאוטינג של הקודם */
+    if (this.scout && this.scout.uid !== nid) this.scoutSave(null);
     /* v63: התוקף לפי השעון של המחשב הזה (expires_in), לא לפי expires_at של השרת — שעון שזז לא מנתק */
     const ttl = +d.expires_in > 0 ? +d.expires_in : 3600;
     this.sess = { access_token: d.access_token, refresh_token: d.refresh_token,
@@ -226,7 +253,7 @@ class Sync {
   async signOut() {
     this.team = null; this.saveTeam();
     try { if (this.sess) await this.http("POST", this.cloud.url + "/auth/v1/logout", {}, { Authorization: "Bearer " + this.sess.access_token }, 8000); } catch (e) {}
-    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null); return { ok: true };
+    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null); this.scoutSave(null); return { ok: true };   /* v78: גם מנהל הסקאוטינג */
   }
   /* ── סנכרון ── */
   syncNow() {
@@ -485,7 +512,7 @@ class Sync {
     }
     /* המשתמש כבר לא קיים בשרת — לא צריך /logout; מנקים כאן */
     this.team = null; this.saveTeam();
-    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null);
+    this.sess = null; this.lastSync = 0; this.saveSess(); this.viewer(null); this.scoutSave(null);   /* v78 */
     return { ok: true, uid };
   }
   async teamCall(what, a, b) {
@@ -515,6 +542,74 @@ class Sync {
         : /only the team owner|not the owner/.test(m) ? "רק מי שפתח את הקבוצה יכול לעשות את זה"
         : /bb quota/i.test(m) ? "החשבון הגיע לתקרת האחסון בענן" : heb(m) };
     }
+  }
+  /* ── v78: מנהלי סקאוטינג (supabase/v78_scout_admins.sql) ── */
+  /* מהמטמון, בלי רשת: אותו חשבון, ״כן״, ובתוך 14 יום מהבדיקה האחרונה (שעון שחזר אחורה יותר מיום — לא תקף) */
+  scoutAdmin() {
+    const c = this.scout, me = this.uid(), now = Date.now();
+    return !!(c && me && c.uid === me && c.admin === true && now - c.at < SCOUT_TTL && c.at < now + 864e5);
+  }
+  scoutState() { return { admin: this.scoutAdmin(), at: this.scout && this.scout.uid === this.uid() ? this.scout.at : 0 }; }
+  scoutSave(c) {
+    this.scout = c || null;
+    if (c) { try { writeAtomic(this.scoutFile, JSON.stringify(c)); } catch (e) {} }
+    else { try { fs.unlinkSync(this.scoutFile); } catch (e) {} }
+  }
+  /* שגיאה מהשרת: הפונקציה חסרה — אין מנהלים בכלל; ״not_admin״ — כבר לא מנהל (מעדכנים את המטמון מיד) */
+  scoutFail(e, uid) {
+    const r = { ok: false, why: scoutWhy(e) };
+    if (noFn(e)) { r.missing = true; if (this.scout) this.scoutSave(null); }
+    else if (/not_admin/.test(String(e && e.message || "")) && uid && uid === this.uid()) { r.notAdmin = true; this.scoutSave({ uid, admin: false, at: Date.now() }); }
+    else if (offline(e)) r.offline = true;
+    r.admin = this.scoutAdmin();
+    return r;
+  }
+  /* בודק בשרת ושומר. בלי רשת — התשובה מהמטמון (admin), עם offline: true */
+  async scoutIsAdmin() {
+    if (!this.sess) return { ok: false, admin: false, why: SCOUT_IN };
+    const uid = this.uid();
+    try {
+      const d = await this.rpc("bb_scout_is_admin");
+      if (this.uid() !== uid) return { ok: false, admin: this.scoutAdmin(), why: SCOUT_IN };   /* החשבון התחלף באמצע */
+      const admin = d === true || (Array.isArray(d) && !!d[0] && d[0].bb_scout_is_admin === true);
+      this.scoutSave({ uid, admin, at: Date.now() });
+      return { ok: true, admin };
+    } catch (e) { return this.scoutFail(e, uid); }
+  }
+  async scoutAdmins() {
+    if (!this.sess) return { ok: false, why: SCOUT_IN };
+    const uid = this.uid();
+    try {
+      const d = await this.rpc("bb_scout_admins_list");
+      const list = (Array.isArray(d) ? d : []).filter(r => r && typeof r.user_id === "string" && UUIDRE.test(r.user_id)).slice(0, 200)
+        .map(r => ({ uid: r.user_id, email: typeof r.email === "string" ? r.email.slice(0, 320) : "",
+          at: typeof r.added_at === "string" && r.added_at.length < 40 ? r.added_at : "", me: r.user_id === uid }));
+      /* השרת ענה לרשימה — כלומר אני מנהל */
+      if (this.uid() === uid) this.scoutSave({ uid, admin: true, at: Date.now() });
+      return { ok: true, list };
+    } catch (e) { return this.scoutFail(e, uid); }
+  }
+  async scoutAdminAdd(email) {
+    if (!this.sess) return { ok: false, why: SCOUT_IN };
+    const em = String(email || "").trim().toLowerCase();
+    if (em.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return { ok: false, why: "צריך מייל תקין" };
+    const uid = this.uid();
+    try { await this.rpc("bb_scout_admin_add", { p_email: em }); }
+    catch (e) { return this.scoutFail(e, uid); }
+    const l = await this.scoutAdmins();
+    return { ok: true, list: l.ok ? l.list : null };
+  }
+  async scoutAdminRemove(user) {
+    if (!this.sess) return { ok: false, why: SCOUT_IN };
+    user = String(user || "");
+    if (!UUIDRE.test(user)) return { ok: false, why: "?" };
+    const uid = this.uid();
+    try { await this.rpc("bb_scout_admin_remove", { p_user: user }); }
+    catch (e) { return this.scoutFail(e, uid); }
+    /* הסרתי את עצמי — בודקים מיד, כדי שהמצב ייסגר */
+    if (user === uid) { await this.scoutIsAdmin(); return { ok: true, list: null, admin: this.scoutAdmin() }; }
+    const l = await this.scoutAdmins();
+    return { ok: true, list: l.ok ? l.list : null, admin: this.scoutAdmin() };
   }
   async myTeamLabel() {
     if (this.sess && this.sess.user && this.sess.user.name) return "";

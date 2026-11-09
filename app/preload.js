@@ -78,6 +78,11 @@ contextBridge.exposeInMainWorld("bbApp", {
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
   acctName: n => ipcRenderer.invoke("bb:acctName", String(n || "")),
+  /* v78: מצב סקאוטינג — רק למנהלים. scoutAdmin(true) בודק בשרת; בלי — מהמטמון (14 יום, לכל חשבון) */
+  scoutAdmin: refresh => ipcRenderer.invoke("bb:scoutAdmin", refresh === true),
+  scoutAdmins: () => ipcRenderer.invoke("bb:scoutAdmins"),
+  scoutAdminAdd: email => ipcRenderer.invoke("bb:scoutAdminAdd", String(email || "")),
+  scoutAdminRemove: uid => ipcRenderer.invoke("bb:scoutAdminRemove", String(uid || "")),
   /* בינה מלאכותית — המפתח נכנס פעם אחת ולא חוזר לדף */
   aiStatus: () => ipcRenderer.invoke("bb:aiStatus"),
   aiSetKey: k => ipcRenderer.invoke("bb:aiSetKey", String(k || "")),
