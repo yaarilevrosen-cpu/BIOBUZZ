@@ -88,7 +88,8 @@ async function view({lang='he',phone=false,noraf=true}={}){
   /* חיפוש */
   const Q={'כוונון':/^gar-tune/,'הרץ את כל':/^brd-runall$/,'קוטר גלגל':/^gar-tune-wheel$/,'תלת':/^(brd-3d|gar-3d)$/,'קוד לשיתוף':/^brd-code$/,'תבנית':/^brd-tpl$/,'הדפסה':/^(brd-print|pitcard)$/,
     'חיבור חי':/^sct-live$/,'qr':/^(sct-qr|phone)$/,'מוכנות':/^(ready|ready-list)$/,'פס תוצאה':/^match-ui$/,'מנוע הנעה':/^gar-tune-dmot$/};
-  r=await E(Q=>{ S.cmdkOpen(); const o={}; for(const q of Object.keys(Q)) o[q]=(S.cmdkSearch(q)||[]).slice(0,3).map(c=>c.id); S.cmdkClose(); return o; },Object.fromEntries(Object.keys(Q).map(k=>[k,1])));
+  /* v78: הכניסות של הסקאוטינג בחיפוש — רק למנהל סקאוטינג (stub של ההרשאה לבדיקה) */
+  r=await E(Q=>{ S.scoutAdminSet(true); S.cmdkOpen(); const o={}; for(const q of Object.keys(Q)) o[q]=(S.cmdkSearch(q)||[]).slice(0,3).map(c=>c.id); S.cmdkClose(); S.scoutAdminSet(null); return o; },Object.fromEntries(Object.keys(Q).map(k=>[k,1])));
   const miss=Object.keys(Q).filter(q=>!(r[q]||[]).some(id=>Q[q].test(id)));
   ok(miss.length===0,'ב12: החיפוש מוצא את מה שנוסף ב-1.17 ('+(miss.length?'חסר: '+miss.map(q=>q+'→'+r[q]).join(' | '):Object.keys(Q).length+' שאילתות')+')');
   ok(r['קוטר גלגל'][0]==='gar-tune-wheel','ב12: ״קוטר גלגל״ מוביל לכוונון במוסך ולא ל״משגר״ במעבדה ('+r['קוטר גלגל'][0]+')');

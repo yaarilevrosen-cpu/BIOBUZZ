@@ -83,7 +83,12 @@ function scoutWhy(e) {
   const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
   if (noFn(e)) return SCOUT_SQL;
   if (/no_account/.test(m)) return "אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים";
+  if (/last_owner/.test(m)) return "אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל";
   if (/last_admin/.test(m)) return "אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר";
+  if (/not_allowed_remove/.test(m)) return "אפשר להסיר רק מנהלים שהוספת בעצמך";
+  if (/not_allowed/.test(m)) return "רק הבעלים או מי שקיבל הרשאה יכולים להוסיף מנהלים";
+  if (/not_owner/.test(m)) return "רק הבעלים יכולים לשנות הרשאות של מנהלים";
+  if (/not_found/.test(m)) return "החשבון הזה כבר לא ברשימת המנהלים";
   if (/not_admin/.test(m)) return "רק מנהל סקאוטינג יכול לעשות את זה";
   if (/not signed in/.test(m)) return SCOUT_IN;
   if (offline(e)) return "אין חיבור לאינטרנט — ניהול המנהלים צריך רשת";
@@ -583,6 +588,10 @@ class Sync {
       const d = await this.rpc("bb_scout_admins_list");
       const list = (Array.isArray(d) ? d : []).filter(r => r && typeof r.user_id === "string" && UUIDRE.test(r.user_id)).slice(0, 200)
         .map(r => ({ uid: r.user_id, email: typeof r.email === "string" ? r.email.slice(0, 320) : "",
+          /* v78: שלוש דרגות — בעלים / מנהל שיכול להוסיף / מנהל */
+          role: r.role === "owner" ? "owner" : "admin", canInvite: r.role === "owner" || r.can_invite === true,
+          addedBy: typeof r.added_by === "string" && UUIDRE.test(r.added_by) ? r.added_by : "",
+          addedByEmail: typeof r.added_by_email === "string" ? r.added_by_email.slice(0, 320) : "",
           at: typeof r.added_at === "string" && r.added_at.length < 40 ? r.added_at : "", me: r.user_id === uid }));
       /* השרת ענה לרשימה — כלומר אני מנהל */
       if (this.uid() === uid) this.scoutSave({ uid, admin: true, at: Date.now() });
@@ -608,6 +617,18 @@ class Sync {
     catch (e) { return this.scoutFail(e, uid); }
     /* הסרתי את עצמי — בודקים מיד, כדי שהמצב ייסגר */
     if (user === uid) { await this.scoutIsAdmin(); return { ok: true, list: null, admin: this.scoutAdmin() }; }
+    const l = await this.scoutAdmins();
+    return { ok: true, list: l.ok ? l.list : null, admin: this.scoutAdmin() };
+  }
+  /* רק בעלים: ״יכול להוסיף מנהלים״ (canInvite) ו/או בעלים (owner). null = בלי שינוי בשדה הזה */
+  async scoutAdminSet(user, canInvite, owner) {
+    if (!this.sess) return { ok: false, why: SCOUT_IN };
+    user = String(user || "");
+    if (!UUIDRE.test(user)) return { ok: false, why: "?" };
+    const b = v => v === true ? true : v === false ? false : null;
+    const uid = this.uid();
+    try { await this.rpc("bb_scout_admin_set", { p_user: user, p_can_invite: b(canInvite), p_owner: b(owner) }); }
+    catch (e) { return this.scoutFail(e, uid); }
     const l = await this.scoutAdmins();
     return { ok: true, list: l.ok ? l.list : null, admin: this.scoutAdmin() };
   }

@@ -28,7 +28,7 @@
 1. Supabase → SQL Editor → New query → מדביקים את כל `supabase/v78_scout_admins.sql` → Run.
 2. באותו מקום, שורה אחת — המנהל הראשון (המייל של החשבון שלך באפליקציה):
 ```sql
-insert into public.bb_scout_admins (user_id) select id from auth.users where lower(email) = lower('<האימייל שלך>') on conflict do nothing;
+insert into public.bb_scout_admins (user_id, role, can_invite) select id, 'owner', true from auth.users where lower(email) = lower('<האימייל שלך>') on conflict (user_id) do update set role = 'owner', can_invite = true;
 ```
 3. בדיקה: `select a.added_at, u.email from public.bb_scout_admins a join auth.users u on u.id = a.user_id;` — שורה אחת.
 4. באפליקציה (1.19 ומעלה): להתחבר (או להפעיל מחדש) — ״📊 סקאוטינג״ מופיע בסרגל. משם, ״👥 מנהלים״ ← מוסיפים אחרים לפי מייל.

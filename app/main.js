@@ -323,6 +323,7 @@ function reg() {
   handle("bb:scoutAdmins", () => sync.scoutAdmins().then(scoutAfter));
   handle("bb:scoutAdminAdd", (e, em) => sync.scoutAdminAdd(String(em || "").slice(0, 400)).then(scoutAfter));
   handle("bb:scoutAdminRemove", (e, u) => sync.scoutAdminRemove(String(u || "").slice(0, 64)).then(scoutAfter));
+  handle("bb:scoutAdminSet", (e, u, inv, own) => sync.scoutAdminSet(String(u || "").slice(0, 64), inv, own).then(scoutAfter));   /* רק בעלים (השרת בודק) */
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
   handle("bb:aiStatus", () => aiSt());
   handle("bb:aiSetKey", async (e, k) => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() };
