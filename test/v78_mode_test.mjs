@@ -64,7 +64,7 @@ r=await E(t=>{ const S=__sim; S.SCT.ours='90001'; S.sctLoadText(t); const P=docu
   return {rows:rows.length, prof:rows.filter(x=>x.querySelector('.sctT')).length, sb:P.querySelectorAll('.sctSb span').length, gar:P.querySelectorAll('[data-sctgar]').length, drv:P.querySelectorAll('[data-sctdrive]').length,
     next:[...P.querySelectorAll('#sctMatch option')].some(o=>/^⏭/.test(o.textContent)), play:(P.querySelector('[data-sct="play"]')||{}).textContent,
     src:(document.getElementById('scmSrcD')||{}).open, order}; },EVENT);
-ok(r.rows===3&&r.prof===3&&r.sb>0&&r.gar===3&&r.drv===3,'שלושה רובוטים, לכל אחד ״איך ישחק״, ״🛠 במוסך״ ו-״🎮 לנהוג בו״ ('+JSON.stringify(r)+')');
+ok(r.rows===4&&r.prof===4&&r.sb>0&&r.gar===3&&r.drv===4,'״אנחנו״ (v79) ושלושה רובוטים, לכל אחד ״איך ישחק״, ״🛠 במוסך״ ו-״🎮 לנהוג בו״ ('+JSON.stringify(r)+')');
 ok(r.next&&r.play==='▶ מאץ׳ מול הרובוטים האלה'&&r.src===false,'המאץ׳ הבא שלנו מסומן ⏭; הכפתור הראשי ״▶ מאץ׳ מול הרובוטים האלה״; ״מקור הנתונים״ מקופל');
 ok(r.order.join('|')==='sctLiveW|sctOurs|sctMatch|sctRows|play|scmSrcD|scmAdm','הסדר: מצב ← המספר שלנו ← מאץ׳ ← רובוטים ← פעולה ← מקור (מקופל) ← מנהלים ('+r.order.join(' › ')+')');
 // בחירת מאץ׳ מהלוח עובדת (אותו מאזין כמו בחלון)
