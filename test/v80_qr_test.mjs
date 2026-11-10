@@ -69,5 +69,12 @@ r=await E(async()=>{ const S=__sim; S.scoutAdminSet(true); await new Promise(r=>
   const o={cfg:localStorage.getItem('a9662-sim-cfg'), cache:localStorage.getItem('a9662-sim-cache:TEST')}; localStorage.removeItem('a9662-sim-cache:TEST'); S.scoutAdminSet(null); return o; });
 ok(r.cfg===null&&r.cache==='{}','Q11 מנהל שהוסר / התנתק — פרטי החיבור נמחקים, התמונה נשארת ('+JSON.stringify(r)+')');
 
+// 12. החלטה 04 גרסה 02: רק תמונה אחת — של התחרות האחרונה
+r=await E(async m=>{ const S=__sim; S.sctClear(); localStorage.setItem('a9662-sim-cache:OLDCODE','{"data":{}}');
+  const okE=S.sctlEmit('poll',Object.assign({},m,{generated_at:new Date().toISOString()}),Date.now());
+  const keys=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.indexOf('a9662-sim-cache:')===0) keys.push(k); }
+  keys.forEach(k=>localStorage.removeItem(k)); return {okE,keys}; },MATCH);
+ok(r.okE!==false&&r.keys.length===1&&r.keys[0]!=='a9662-sim-cache:OLDCODE','Q12 נשמרת רק תמונה אחת, והישנה של תחרות אחרת נמחקת ('+JSON.stringify(r)+')');
+
 const re=realErrs(errs); ok(re.length===0,'Q10 בלי שגיאות בדף'+(re.length?': '+re.slice(0,3).join(' | '):''));
 await browser.close(); done('v80_qr');
