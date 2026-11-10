@@ -1,9 +1,9 @@
-﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-10-14)
+﻿BIOBUZZ - Terms of Use / תנאי שימוש (legal version 2026-11-10)
 
 BIOBUZZ TERMS OF USE
 ====================
 
-Version: 2026-10-14
+Version: 2026-11-10
 
 These terms are the rules for using BIOBUZZ: the desktop app, the single-file browser version, the phone controller page, the website and the optional cloud service (accounts, sync and teams). By using BIOBUZZ you agree to them. If you are under 18, please read them with a parent, guardian or mentor.
 
@@ -54,6 +54,13 @@ Teams
   * Any account holder can create a team and gets a join code to share. Anyone with the code can join, so share it only with your team.
   * The person who created the team is its owner. The owner can rename the team, change the join code and remove members. If the owner leaves, ownership passes to the longest-standing member. An empty team is deleted.
   * Members can see each other's drivers and match summaries (see the Privacy Policy). Be kind; don't use team features to embarrass or pressure anyone.
+
+Scouting mode
+-------------
+  * Scouting mode is open only to the scouting admins our team has added. The owner decides who may add admins.
+  * Add only people from the team whom you trust and who agreed to it. Do not give the scouting connection details to anyone who is not an admin.
+  * The scouting data is for our team's preparation for competitions. Use it fairly and in the spirit of FIRST's Gracious Professionalism: don't publish it, don't mock other teams and don't write notes about students.
+  * The bots in this mode are an estimate based on the collected data, not an exact prediction of a real match.
 
 AI features
 -----------
@@ -117,7 +124,7 @@ If any part of these terms is found invalid, the rest still applies. These terms
 תנאי השימוש ב־BIOBUZZ
 =====================
 
-גרסה: 14 באוקטובר 2026 (2026-10-14)
+גרסה: 10 בנובמבר 2026 (2026-11-10)
 
 התנאים האלה הם הכללים לשימוש ב־BIOBUZZ: אפליקציית המחשב, גרסת הדפדפן בקובץ אחד, דף השלט בטלפון, האתר ושירות הענן הרשותי (חשבונות, סנכרון וקבוצות). מי שמשתמש ב־BIOBUZZ מסכים להם. אם אתם מתחת לגיל 18, קראו אותם יחד עם הורה, אפוטרופוס או מנטור.
 
@@ -168,6 +175,13 @@ BIOBUZZ חינמי. אנחנו נותנים לכם רישיון אישי, לא �
   * כל בעל חשבון יכול לפתוח קבוצה ומקבל קוד הצטרפות לשיתוף. כל מי שיש לו את הקוד יכול להצטרף, אז שתפו אותו רק עם הקבוצה שלכם.
   * מי שפתח את הקבוצה הוא הבעלים שלה. הבעלים יכול לשנות את שם הקבוצה, להחליף את קוד ההצטרפות ולהוציא חברים. אם הבעלים יוצא, הבעלות עוברת לחבר הוותיק ביותר. קבוצה ריקה נמחקת.
   * חברי הקבוצה רואים את הנהגים ואת סיכומי המשחקים זה של זה (ראו מדיניות הפרטיות). היו נחמדים; אל תשתמשו בתכונות הקבוצה כדי להביך או ללחוץ על מישהו.
+
+מצב סקאוטינג
+------------
+  * מצב הסקאוטינג פתוח רק למנהלי סקאוטינג שהקבוצה הוסיפה. הבעלים מחליט מי רשאי להוסיף מנהלים.
+  * הוסיפו רק אנשים מהקבוצה שאתם סומכים עליהם ושהסכימו לכך. אל תמסרו את פרטי החיבור לסקאוטינג למי שאינו מנהל.
+  * נתוני הסקאוטינג נועדו להכנה של הקבוצה שלנו לתחרות. השתמשו בהם בהגינות וברוח המקצועיות האדיבה של FIRST: בלי לפרסם אותם, בלי ללעוג לקבוצות אחרות ובלי לכתוב הערות על תלמידים.
+  * הבוטים במצב הזה הם הערכה לפי הנתונים שנאספו, לא תחזית מדויקת של משחק אמיתי.
 
 בינה מלאכותית
 -------------

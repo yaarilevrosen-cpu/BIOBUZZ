@@ -490,6 +490,10 @@ class Sync {
         const { data: tt } = await this.rest("GET", "bb_teams?select=id,code,name,num,owner,created_at&id=eq." + mem[0].team_id);
         team = Array.isArray(tt) && tt[0] || null;
       }
+      /* v80: דרגת מנהל הסקאוטינג (bb_scout_admins — רואים רק את השורה של עצמנו). בלי הטבלה בשרת — null */
+      let scoutAdmin = null;
+      try { const { data: sa } = await this.rest("GET", "bb_scout_admins?select=role,can_invite,added_at,added_by&user_id=eq." + encodeURIComponent(uid)); scoutAdmin = Array.isArray(sa) && sa[0] || null; }
+      catch (e) { scoutAdmin = null; }
       const u = user && typeof user === "object" ? user : {}, md = u.user_metadata && typeof u.user_metadata === "object" ? u.user_metadata : {};
       /* 1.14 (legalfix): הדיווחים שלי — דרך bb_my_bugs() (את bb_bugs אי אפשר לקרוא ישירות). בלי הפונקציה בשרת — הערה במקום */
       let bugs = null, bugsNote = "";
@@ -500,7 +504,7 @@ class Sync {
           created_at: u.created_at || null, last_sign_in_at: u.last_sign_in_at || null,
           age_bracket: md.age_bracket || null, guardian_ok: md.guardian_ok == null ? null : md.guardian_ok, tos_v: md.tos_v || null, tos_at: md.tos_at || null,
           user_metadata: md },
-        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team }, bug_reports: bugs, ...(bugsNote ? { bug_reports_note: bugsNote } : {}) } };
+        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team }, scouting_admin: scoutAdmin, bug_reports: bugs, ...(bugsNote ? { bug_reports_note: bugsNote } : {}) } };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   /* מחיקת החשבון וכל הנתונים בענן (bb_delete_me — supabase/v73_privacy.sql), ואז התנתקות במחשב הזה */

@@ -1,6 +1,6 @@
 # BIOBUZZ Terms of Use
 
-**Version:** 2026-10-14
+**Version:** 2026-11-10
 
 These terms are the rules for using BIOBUZZ: the desktop app, the single-file browser version, the phone controller page, the website and the optional cloud service (accounts, sync and teams). By using BIOBUZZ you agree to them. If you are under 18, please read them with a parent, guardian or mentor.
 
@@ -49,6 +49,13 @@ Your drivers, matches, settings, paths and team data stay yours. You give us per
 - Any account holder can create a team and gets a **join code** to share. Anyone with the code can join, so share it only with your team.
 - The person who created the team is its **owner**. The owner can rename the team, change the join code and **remove members**. If the owner leaves, ownership passes to the longest-standing member. An empty team is deleted.
 - Members can see each other's drivers and match summaries (see the Privacy Policy). Be kind; don't use team features to embarrass or pressure anyone.
+
+## Scouting mode
+
+- Scouting mode is open only to the scouting admins our team has added. The owner decides who may add admins.
+- Add only people from the team whom you trust and who agreed to it. Do not give the scouting connection details to anyone who is not an admin.
+- The scouting data is for our team's preparation for competitions. Use it fairly and in the spirit of FIRST's Gracious Professionalism: don't publish it, don't mock other teams and don't write notes about students.
+- The bots in this mode are an estimate based on the collected data, not an exact prediction of a real match.
 
 ## AI features
 

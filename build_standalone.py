@@ -21,7 +21,7 @@ def lib(m):
     code = open(H + '/test/lib/' + name, encoding='utf8').read().replace('</script', '<\\/script')
     return '<script>/* %s */\n%s\n</script>' % (name, code)
 s, n = re.subn(r'<script src="https://[^"]*/([A-Za-z_.]+\.js)"></script>', lib, s)
-assert n == 6, n
+assert n == 7, n   # v80: + jsQR (מצלמת QR בחלונות ובלינוקס)
 # CAD
 emb = {}
 for k in ('static', 'red', 'blue'):

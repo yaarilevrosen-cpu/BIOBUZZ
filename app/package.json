@@ -92,6 +92,9 @@
       "identity": "-",
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "BIOBUZZ uses the camera only to scan scouting QR codes. Images stay on this computer."
+      },
       "artifactName": "BIOBUZZ-${version}-mac-${arch}.${ext}"
     },
     "dmg": {

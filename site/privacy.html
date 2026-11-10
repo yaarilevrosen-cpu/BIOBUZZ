@@ -34,9 +34,9 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <div class="wrap">
 <header><a class="home" href="index.html"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12161c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><path d="M4 7h16M4 12h16M4 17h16"/></svg></div><b>BIOBUZZ</b></a><nav><a href="privacy.html" data-l="he" class="on" aria-current="page">פרטיות</a><a href="privacy.html" data-l="en" class="on" aria-current="page">Privacy</a><a href="terms.html" data-l="he">תנאי שימוש</a><a href="terms.html" data-l="en">Terms</a><a href="ai.html" data-l="he">בינה מלאכותית</a><a href="ai.html" data-l="en">AI</a><a href="security.html" data-l="he">אבטחה</a><a href="security.html" data-l="en">Security</a><a href="accessibility.html" data-l="he">נגישות</a><a href="accessibility.html" data-l="en">Accessibility</a><a href="licenses.html" data-l="he">רישיונות</a><a href="licenses.html" data-l="en">Third-party notices</a></nav><button id="lang" type="button"><span data-l="he">English</span><span data-l="en">עברית</span></button></header>
 <main>
-<article lang="he" dir="rtl" data-l="he"><p class="ver">גרסת המסמכים 2026-10-14</p>
+<article lang="he" dir="rtl" data-l="he"><p class="ver">גרסת המסמכים 2026-11-10</p>
 <h1>מדיניות הפרטיות של BIOBUZZ</h1>
-<p><strong>גרסה:</strong> 14 באוקטובר 2026 (2026-10-14)</p>
+<p><strong>גרסה:</strong> 10 בנובמבר 2026 (2026-11-10)</p>
 <p>המסמך הזה מסביר בשפה פשוטה באיזה מידע משתמש סימולטור הזירה BIOBUZZ, לאן הוא עובר, כמה זמן אנחנו שומרים אותו ואיך אפשר לראות, להוריד או למחוק אותו. הוא חל על אפליקציית המחשב (חלונות, מק ולינוקס), על גרסת הדפדפן בקובץ אחד, על דף השלט בטלפון ועל אתר האינטרנט של BIOBUZZ בדפי גיטהאב.</p>
 <p>בקצרה:</p>
 <ul>
@@ -78,6 +78,17 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>מה חברי הקבוצה רואים:</strong> את השמות, הסמלים והצבעים של הנהגים שלכם, וסיכום של כל משחק (סוג, רמה, ניצחון, הניקוד שלכם, זריקות, פגיעות, זמן מחזור ממוצע, עבירות, חניה, נקודות אוטונומי, תרגיל, גרסה). מסד הנתונים נותן לחברי הקבוצה רק את השדות האלה, דרך פונקציות ייעודיות בשרת; הם לא יכולים לקרוא את הגדרות הנהגים שלכם או את רשומות המשחקים המלאות.</li>
 <li>בעל הקבוצה יכול להוציא חבר, ואז גם קוד ההצטרפות מתחלף. אפשר לצאת מקבוצה בכל רגע. קבוצה שלא נשארו בה חברים נמחקת לבד.</li>
 </ul>
+<h3>מצב סקאוטינג (רק למנהלי סקאוטינג, באפליקציית המחשב)</h3>
+<p>מצב הסקאוטינג מראה בסימולטור את הרובוטים האמיתיים של הקבוצות בתחרות, לפי מה שהסקאוטים של הקבוצה שלנו אספו במערכת הסקאוטינג של אפולו 9662. הוא פתוח רק לחשבונות שמופיעים ברשימת מנהלי הסקאוטינג.</p>
+<ul>
+<li><strong>רשימת המנהלים (בענן שלנו):</strong> לכל מנהל נשמרים מזהה החשבון, הדרגה (בעלים או מנהל), אם מותר לו להוסיף מנהלים, מי הוסיף אותו ומתי. כל מנהל רואה את הרשימה המלאה, כולל כתובות המייל של המנהלים ושל מי שהוסיף כל אחד. מנהלים מוסיפים מנהל לפי כתובת המייל של החשבון שלו, ולכן מי שמוסיף לומד אם יש חשבון עם הכתובת הזאת. אפשר לשנות את הרשימה רק דרך פונקציות בשרת, לפי הדרגה.</li>
+<li><strong>במחשב:</strong> כדי שהמצב יעבוד גם בלי אינטרנט, האפליקציה זוכרת במחשב שהחשבון הוא מנהל, עד 14 יום מהבדיקה האחרונה מול השרת. התנתקות או מעבר לחשבון אחר מוחקים את זה.</li>
+<li><strong>נתוני הסקאוטינג:</strong> מידע על רובוטים ועל קבוצות בתחרות — מספר קבוצה, יכולות שהוצהרו, ביצועים שנמדדו במשחקים והערות של הסקאוטים. זה מידע על רובוטים, לא על אנשים; כתבו הערות על הרובוט ולא על התלמידים.</li>
+<li><strong>איך הנתונים מגיעים:</strong> בסנכרון חי, המחשב שלכם מתחבר ישירות, לקריאה בלבד, לענן של מערכת הסקאוטינג (פרויקט סופאבייס נפרד של הקבוצה), עם פרטי חיבור שאתם מקלידים. אפשר גם לטעון קובץ, להדביק קוד או לסרוק קוד QR. הנתונים לא עוברים בענן של הסימולטור.</li>
+<li><strong>מה נשמר במחשב:</strong> פרטי החיבור לסקאוטינג והתמונה האחרונה של הנתונים (של אותה תחרות) נשמרים רק במחשב הזה. הם לא נכנסים לגיבויים, לסנכרון עם החשבון או לדיווחי באגים. ״שכח את הפרטים״, ״נקה״ ו״אפס הכול״ מוחקים אותם.</li>
+</ul>
+<h3>מצלמה (רק כשסורקים קוד QR)</h3>
+<p>המצלמה נפתחת רק כשלוחצים על כפתור המצלמה כדי לסרוק קוד QR, ונסגרת כשהקוד נקלט או כשלוחצים ״עצור״. מערכת ההפעלה או הדפדפן מבקשים את רשותכם. הפענוח נעשה כולו במחשב שלכם: התמונות לא נשמרות, לא מוקלטות ולא נשלחות לשום מקום.</p>
 <h3>דיווחי באגים (רשות)</h3>
 <p>כששולחים דיווח על באג מהאפליקציה או מגרסת הדפדפן, אנחנו מקבלים את מה שבחרתם לשלוח:</p>
 <ul>
@@ -111,6 +122,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>כדי לתת לכם חשבון, לסנכרן את הנתונים ולהפעיל את תכונות הקבוצה</strong> — כי ביקשתם את התכונות האלה (ביצוע ההסכם איתכם; סעיף 6(1)(ב) לתקנות הפרטיות האירופיות).</li>
 <li><strong>כדי לתקן באגים שדיווחתם ולחזור אליכם אם ביקשתם</strong> — האינטרס הלגיטימי שלנו שהתוכנה תעבוד (סעיף 6(1)(ו)); שליחת דיווח היא תמיד בחירה שלכם.</li>
 <li><strong>כדי לשמור על השירות בטוח והוגן</strong> (כתובת מעורבלת להגבלת קצב, מכסות, מונה ניסיונות קוד שגויים) — האינטרס הלגיטימי שלנו במניעת שימוש לרעה (סעיף 6(1)(ו)).</li>
+<li><strong>כדי לפתוח את מצב הסקאוטינג רק למנהלים ולנהל את רשימת המנהלים</strong> — האינטרס הלגיטימי שלנו שרק מי שהקבוצה הרשתה יראה את נתוני הסקאוטינג (סעיף 6(1)(ו)).</li>
 <li><strong>כדי לתעד את קבוצת הגיל וההסכמה לתנאים</strong> — כדי לעמוד בחובות שבחוק ולהראות שניתנה הסכמה (סעיפים 6(1)(ג) ו־6(1)(ו)).</li>
 <li><strong>בינה מלאכותית</strong> — רק אם הוספתם מפתח והפעלתם אותה (ההסכמה שלכם; סעיף 6(1)(א)); המידע עובר ישירות לגוגל.</li>
 </ul>
@@ -121,6 +133,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>גיטהאב</strong> (חברה של מיקרוסופט) — מארחת את האתר, ההורדות, העדכונים ועמוד הבעיות הפומבי. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">הצהרת הפרטיות של גיטהאב</a>.</li>
 <li><strong>גוגל</strong> — רק אם הפעלתם את הבינה המלאכותית עם מפתח משלכם. גוגל מקבלת את המידע ישירות מכם לפי התנאים שלה, ולא כספק שלנו. <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">התנאים הנוספים של ממשק ג׳מיני</a>.</li>
 <li><strong>חברי הקבוצה שלכם</strong> — מידע הקבוצה שתואר למעלה, ורק אם הצטרפתם לקבוצה.</li>
+<li><strong>מנהלי הסקאוטינג האחרים</strong> — אם אתם מנהלי סקאוטינג: הכתובת שלכם, הדרגה, ומי הוסיף אתכם ומתי.</li>
 <li><strong>רשויות</strong> — רק אם החוק מחייב, ורק מה שנדרש.</li>
 </ul>
 <p>אנחנו לא מעבירים מידע לאף אחד אחר.</p>
@@ -137,6 +150,8 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>קבוצות:</strong> עד שהחבר האחרון יוצא; אז הקבוצה נמחקת לבד.</li>
 <li><strong>מונים לשימוש הוגן ולאבטחה:</strong> מונה הקודים השגויים מתאפס אחרי שעה ונמחק אחרי יום; מוני האחסון נשמרים עד מחיקת החשבון.</li>
 <li><strong>דיווחי באגים (כולל צילום המסך):</strong> נמחקים 12 חודשים אחרי שקיבלנו אותם, או קודם אם כבר אין בהם צורך. הקוד המעורבל של כתובת ה־IP נמחק 24 שעות אחרי הדיווח.</li>
+<li><strong>רשימת מנהלי הסקאוטינג:</strong> עד שמנהל מורשה מסיר אתכם, או עד שהחשבון נמחק.</li>
+<li><strong>נתוני הסקאוטינג במחשב:</strong> פרטי החיבור והתמונה האחרונה נשמרים עד שמוחקים אותם (״שכח את הפרטים״, ״נקה״ או ״אפס הכול״). בכל רגע נשמרת רק תמונה של התחרות האחרונה. הסימון ״מנהל״ במחשב — עד 14 יום מהבדיקה האחרונה.</li>
 <li><strong>מחיקה אוטומטית:</strong> המחיקות האלה רצות לבד בשרת שלנו; אף אחד לא צריך לזכור לעשות אותן.</li>
 <li><strong>גיבויים אצל הספק:</strong> אחרי מחיקה, עותקים עשויים להישאר בגיבויים השוטפים של ספק הענן לזמן קצר (בדרך כלל עד 14 יום) עד שהם נדרסים. אנחנו לא משחזרים מהם מידע שנמחק, אלא רק כדי להתאושש מתקלה טכנית.</li>
 <li><strong>מידע של הבינה המלאכותית:</strong> אנחנו לא שומרים כלום. המפתח שלכם נשאר מוצפן במחשב עד שתסירו אותו. גוגל שומרת מידע לפי התנאים שלה.</li>
@@ -145,8 +160,8 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <p>לפי חוק הגנת הפרטיות, ולפי תקנות הפרטיות האירופיות אם הן חלות עליכם, יש לכם זכות לדעת איזה מידע יש לנו עליכם, לקבל העתק, לתקן אותו, למחוק אותו, להתנגד לחלק מהשימושים, לחזור בכם מהסכמה, ובמקרים מסוימים לקבל את המידע בפורמט שאפשר להעביר. את רוב זה אפשר לעשות לבד, מיד, באפליקציה:</p>
 <ul>
 <li><strong>לראות ולתקן:</strong> כל הנהגים, המשחקים וההגדרות גלויים וניתנים לעריכה באפליקציה. את שם החשבון משנים בחלונית החשבון.</li>
-<li><strong>להוריד העתק (עיון וניידות):</strong> חלונית החשבון ← <strong>״הורדת הנתונים שלי מהענן״</strong>. מקבלים קובץ (JSON) עם כל מה ששמור בענן עבור החשבון: פרטי החשבון (מייל, שם, תאריך יצירה, קבוצת הגיל ותיעוד ההסכמה), הנהגים עם ההגדרות שלהם, המשחקים, החברות בקבוצה ודיווחי הבאגים שמקושרים לחשבון. למידע המקומי: הגדרות ← גיבוי, שחזור ואיפוס ← <strong>״ייצא לקובץ״</strong>.</li>
-<li><strong>למחוק את החשבון ואת המידע שבענן:</strong> חלונית החשבון ← <strong>״מחיקת החשבון והמידע בענן״</strong>. הפעולה מוחקת ממסד הנתונים שלנו את החשבון, הנהגים, ההגדרות, המשחקים, החברות בקבוצה ודיווחי הבאגים שמקושרים לחשבון. אם אתם בעלי קבוצה, הבעלות עוברת לחבר הוותיק ביותר, או שהקבוצה נמחקת אם הייתם האחרונים בה. אי אפשר לבטל את זה, אז הורידו העתק קודם אם תרצו. המידע המקומי במכשיר נשאר עד שתמחקו גם אותו. באפליקציית המחשב שואלים אתכם אז אם למחוק גם מהמחשב את הנהגים של החשבון: ״כן״ מוחק אותם, את ההגדרות ואת המשחקים שלהם, גם מהגיבויים המקומיים ומהסל; ״לא״ משאיר אותם במחשב כנהגים מקומיים.</li>
+<li><strong>להוריד העתק (עיון וניידות):</strong> חלונית החשבון ← <strong>״הורדת הנתונים שלי מהענן״</strong>. מקבלים קובץ (JSON) עם כל מה ששמור בענן עבור החשבון: פרטי החשבון (מייל, שם, תאריך יצירה, קבוצת הגיל ותיעוד ההסכמה), הנהגים עם ההגדרות שלהם, המשחקים, החברות בקבוצה, הדרגה ברשימת מנהלי הסקאוטינג (אם אתם מנהלים) ודיווחי הבאגים שמקושרים לחשבון. למידע המקומי: הגדרות ← גיבוי, שחזור ואיפוס ← <strong>״ייצא לקובץ״</strong>.</li>
+<li><strong>למחוק את החשבון ואת המידע שבענן:</strong> חלונית החשבון ← <strong>״מחיקת החשבון והמידע בענן״</strong>. הפעולה מוחקת ממסד הנתונים שלנו את החשבון, הנהגים, ההגדרות, המשחקים, החברות בקבוצה, השורה ברשימת מנהלי הסקאוטינג ודיווחי הבאגים שמקושרים לחשבון. אם אתם בעלי קבוצה, הבעלות עוברת לחבר הוותיק ביותר, או שהקבוצה נמחקת אם הייתם האחרונים בה. אי אפשר לבטל את זה, אז הורידו העתק קודם אם תרצו. המידע המקומי במכשיר נשאר עד שתמחקו גם אותו. באפליקציית המחשב שואלים אתכם אז אם למחוק גם מהמחשב את הנהגים של החשבון: ״כן״ מוחק אותם, את ההגדרות ואת המשחקים שלהם, גם מהגיבויים המקומיים ומהסל; ״לא״ משאיר אותם במחשב כנהגים מקומיים.</li>
 <li><strong>למחוק את המידע המקומי:</strong> הגדרות ← גיבוי, שחזור ואיפוס ← <strong>״אפס הכול״</strong>. בדרך כלל האפליקציה שומרת גיבוי ביטחון אחד באיפוס. מסמנים <strong>״כולל הגיבויים״</strong> כדי למחוק גם את הגיבויים: בגרסת הדפדפן — כל הגיבויים שבדפדפן; באפליקציית המחשב — גם את כל תיקיית הגיבויים (של כל הנהגים במחשב) ואת הסל של נהגים שנמחקו. באפליקציית המחשב ״אפס הכול״ מנקה את הנהג הנוכחי, ועם ״כולל הגיבויים״ גם את ארכיון המשחקים שלו. משחקים והגדרות שכבר סונכרנו לחשבון נשארים בענן (וחוזרים בסנכרון הבא) עד שמוחקים את הנהג או את החשבון. נהגים אחרים מוחקים מרשימת הנהגים. אפשר גם למחוק את תיקיית הנתונים שמופיעה למעלה, ובגרסת הדפדפן לנקות את נתוני האתר בדפדפן.</li>
 <li><strong>למחוק דיווח באג מסוים או לשאול שאלה:</strong> פנו אלינו כמו שמתואר ב״מי אנחנו״. נענה תוך 30 יום. ייתכן שנצטרך לוודא שהבקשה באמת מגיעה מבעל החשבון (למשל לבקש שתשלחו אותה כשאתם מחוברים).</li>
 <li><strong>לחזור בכם מהסכמה לבינה מלאכותית:</strong> מכבים את התכונה ומסירים את המפתח בהגדרות, בכל רגע.</li>
@@ -167,6 +182,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>אבטחה ברמת השורה</strong> במסד הנתונים: כל חשבון יכול לשנות רק את השורות שלו; חברי קבוצה יכולים לקרוא רק שמות, סמלים וצבעים של נהגים וסיכומי משחקים, דרך פונקציות ייעודיות בשרת; דיווחי באגים אפשר להוסיף אבל אי אפשר לקרוא בחזרה דרך המפתח הציבורי של האפליקציה.</li>
 <li>בסיסמאות מטפל שירות ההתחברות של סופאבייס, שמצפין אותן חד־כיוונית; אנחנו אף פעם לא רואים אותן.</li>
 <li>במחשב שלכם, החיבור לחשבון ומפתח הבינה המלאכותית נשמרים מוצפנים באחסון המאובטח של מערכת ההפעלה.</li>
+<li>את רשימת מנהלי הסקאוטינג אי אפשר לקרוא או לשנות ישירות: כל חשבון רואה רק את השורה של עצמו, וכל שינוי עובר דרך פונקציות בשרת שבודקות את הדרגה. החיבור לסקאוטינג הוא לקריאה בלבד.</li>
 <li>משחק ברשת ושלט בטלפון דורשים מפתח חדר או קוד סודי, מקבלים חיבורים רק מהדפים הצפויים, ומגבילים ניסיונות שגויים.</li>
 <li>מגבלות ומכסות על אחסון, דיווחי באגים וניחוש קודי קבוצה, כדי למנוע שימוש לרעה.</li>
 <li>אוספים כמה שפחות מידע ושומרים אותו רק כל עוד צריך.</li>
@@ -192,9 +208,9 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>הצהרת הנגישות</strong> ו<strong>הודעות על תוכנות צד שלישי</strong>.</li>
 </ul>
 </article>
-<article lang="en" dir="ltr" data-l="en"><p class="ver">Legal version 2026-10-14</p>
+<article lang="en" dir="ltr" data-l="en"><p class="ver">Legal version 2026-11-10</p>
 <h1>BIOBUZZ Privacy Policy</h1>
-<p><strong>Version:</strong> 2026-10-14</p>
+<p><strong>Version:</strong> 2026-11-10</p>
 <p>This policy explains, in plain language, what information the BIOBUZZ field simulator uses, where it goes, how long we keep it and how you can see, download or delete it. It covers the BIOBUZZ desktop app (Windows, macOS, Linux), the single-file browser version, the phone controller page and the BIOBUZZ website on GitHub Pages.</p>
 <p>The short version:</p>
 <ul>
@@ -236,6 +252,17 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>What your teammates see:</strong> your drivers' names, emojis and colours, and a summary of each match (type, skill level, win, your score, shots, hits, average cycle, fouls, park, autonomous points, drill, version). The database gives teammates only these fields, through dedicated server functions; they cannot read your driver settings or your full match records.</li>
 <li>The team owner can remove a member, which also changes the join code. You can leave a team at any time. A team with no members left is deleted automatically.</li>
 </ul>
+<h3>Scouting mode (scouting admins only, desktop app)</h3>
+<p>Scouting mode shows the real robots of the teams at a competition in the simulator, based on what our team's scouts collected in the Apollo 9662 scouting system. It is open only to accounts on the list of scouting admins.</p>
+<ul>
+<li><strong>The admin list (in our cloud):</strong> for each admin we store the account ID, the role (owner or admin), whether they may add admins, who added them and when. Every admin can see the full list, including the email addresses of the admins and of whoever added each one. Admins add an admin by the email address of their account, so the person adding learns whether an account with that address exists. The list can only be changed through server functions, according to the role.</li>
+<li><strong>On your computer:</strong> so the mode also works offline, the app remembers on your computer that the account is an admin, for up to 14 days after the last check with the server. Signing out or switching to another account clears this.</li>
+<li><strong>The scouting data:</strong> information about robots and teams at a competition — team number, declared abilities, performance measured in matches and the scouts' notes. This is information about robots, not about people; write notes about the robot, not about the students.</li>
+<li><strong>How the data arrives:</strong> with live sync, your computer connects directly and read-only to the scouting system's cloud (a separate Supabase project of our team), using connection details you type in. You can also load a file, paste a code or scan a QR code. The data does not pass through the simulator's cloud.</li>
+<li><strong>What is kept on your computer:</strong> the scouting connection details and the latest snapshot of the data (for the same competition) are kept only on that computer. They are not included in backups, account sync or bug reports. &quot;Forget the details&quot;, &quot;Clear&quot; and &quot;Reset all&quot; delete them.</li>
+</ul>
+<h3>Camera (only when scanning a QR code)</h3>
+<p>The camera turns on only when you press the camera button to scan a QR code, and turns off when the code is read or when you press &quot;Stop&quot;. Your operating system or browser asks for your permission. Decoding happens entirely on your computer: the images are not saved, not recorded and not sent anywhere.</p>
 <h3>Bug reports (optional)</h3>
 <p>When you send a bug report from the app or the browser version, we receive what you choose to send:</p>
 <ul>
@@ -269,6 +296,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>To give you an account, sync your data and run team features</strong> — because you asked for these features (performance of our agreement with you, GDPR Art. 6(1)(b)).</li>
 <li><strong>To fix bugs you report and contact you if you asked us to</strong> — our legitimate interest in keeping the software working (GDPR Art. 6(1)(f)); sending a report is always your choice.</li>
 <li><strong>To keep the service secure and fair</strong> (hashed IP for rate limits, quotas, failed-code counters) — our legitimate interest in preventing abuse (GDPR Art. 6(1)(f)).</li>
+<li><strong>To open scouting mode only to admins and manage the admin list</strong> — our legitimate interest in letting only the people our team allowed see the scouting data (GDPR Art. 6(1)(f)).</li>
 <li><strong>To record your age group and acceptance of the terms</strong> — to meet our legal obligations and to show that permission was given (GDPR Art. 6(1)(c) and (f)).</li>
 <li><strong>AI features</strong> — only if you add a key and use them (your consent, GDPR Art. 6(1)(a)); the data goes directly to Google.</li>
 </ul>
@@ -279,6 +307,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>GitHub</strong> (GitHub, Inc., a Microsoft company) — hosts the website, downloads, updates and public issues. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a>.</li>
 <li><strong>Google</strong> — only if you turn on the AI features with your own key. Google receives that data directly from you under Google's own terms, not as our processor. <a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">Gemini API Additional Terms</a>.</li>
 <li><strong>Your teammates</strong> — the team data described above, only if you join a team.</li>
+<li><strong>The other scouting admins</strong> — if you are a scouting admin: your email address, your role, and who added you and when.</li>
 <li><strong>Authorities</strong> — only if the law requires it, and only what is required.</li>
 </ul>
 <p>We do not share data with anyone else.</p>
@@ -295,6 +324,8 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>Teams:</strong> until the last member leaves; then the team is deleted automatically.</li>
 <li><strong>Counters for fair use and security:</strong> wrong-code counters reset after one hour and are deleted after a day; storage counters are kept until the account is deleted.</li>
 <li><strong>Bug reports (including the screenshot):</strong> deleted 12 months after we receive them, or earlier when they are no longer needed. The scrambled IP code is erased 24 hours after the report.</li>
+<li><strong>The scouting admin list:</strong> until an authorised admin removes you, or until the account is deleted.</li>
+<li><strong>Scouting data on your computer:</strong> the connection details and the latest snapshot are kept until you delete them (&quot;Forget the details&quot;, &quot;Clear&quot; or &quot;Reset all&quot;). Only a snapshot of the latest competition is kept at any time. The &quot;admin&quot; mark on the computer lasts up to 14 days after the last check.</li>
 <li><strong>Automatic deletion:</strong> these deletions run automatically on our server; nobody has to remember to do them.</li>
 <li><strong>Provider backups:</strong> after deletion, copies may remain in our cloud provider's routine backups for a short time (normally up to 14 days) until they are overwritten. We do not restore deleted data from them except to recover from a technical failure.</li>
 <li><strong>AI data:</strong> we store none. Your API key stays encrypted on your computer until you remove it. Google keeps data according to its own terms.</li>
@@ -303,8 +334,8 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <p>Under the Israeli Privacy Protection Law and, where it applies to you, the GDPR, you have the right to know what data we hold about you, get a copy, correct it, delete it, object to some uses, withdraw consent and, in some cases, receive your data in a portable format. Most of this you can do yourself, right away, in the app:</p>
 <ul>
 <li><strong>See and correct:</strong> all your drivers, matches and settings are visible and editable in the app. Change your account name in the account panel.</li>
-<li><strong>Download a copy (access and portability):</strong> account panel → <strong>&quot;Download my cloud data&quot;</strong>. You get a file (JSON) with everything stored in the cloud for your account: account details (email, name, creation date, age group and acceptance record), drivers with their settings, matches, team membership and the bug reports linked to your account. For local data, use Settings → Backup, restore and reset → <strong>&quot;Export to file&quot;</strong>.</li>
-<li><strong>Delete your account and cloud data:</strong> account panel → <strong>&quot;Delete my account and cloud data&quot;</strong>. This deletes your account, drivers, settings, matches, team membership and the bug reports linked to your account from our database. If you own a team, ownership passes to the longest-standing member, or the team is deleted if you were the last one. It cannot be undone, so download a copy first if you want one. Your local data on the device stays until you delete it too. In the desktop app you are then asked whether to delete the account's drivers from that computer as well: &quot;yes&quot; deletes them, their settings and matches, including from the local backups and the bin; &quot;no&quot; keeps them on that computer as local drivers.</li>
+<li><strong>Download a copy (access and portability):</strong> account panel → <strong>&quot;Download my cloud data&quot;</strong>. You get a file (JSON) with everything stored in the cloud for your account: account details (email, name, creation date, age group and acceptance record), drivers with their settings, matches, team membership, your role on the scouting admin list (if you are an admin) and the bug reports linked to your account. For local data, use Settings → Backup, restore and reset → <strong>&quot;Export to file&quot;</strong>.</li>
+<li><strong>Delete your account and cloud data:</strong> account panel → <strong>&quot;Delete my account and cloud data&quot;</strong>. This deletes your account, drivers, settings, matches, team membership, your row on the scouting admin list and the bug reports linked to your account from our database. If you own a team, ownership passes to the longest-standing member, or the team is deleted if you were the last one. It cannot be undone, so download a copy first if you want one. Your local data on the device stays until you delete it too. In the desktop app you are then asked whether to delete the account's drivers from that computer as well: &quot;yes&quot; deletes them, their settings and matches, including from the local backups and the bin; &quot;no&quot; keeps them on that computer as local drivers.</li>
 <li><strong>Delete local data:</strong> Settings → Backup, restore and reset → <strong>&quot;Reset all&quot;</strong>. Normally the app keeps one safety backup when you reset. Tick <strong>&quot;Including backups&quot;</strong> to delete the backups too: in the browser version all backups stored in the browser; in the desktop app also the whole backups folder (for every driver on that computer) and the bin of deleted drivers. In the desktop app, Reset all clears the current driver; with &quot;Including backups&quot; it also empties that driver's match archive. Matches and settings already synced to your account stay in the cloud (and come back on the next sync) until you delete the driver or the account. Delete other drivers from the drivers list. You can also delete the app data folder listed above, or clear the browser's site data for the browser version.</li>
 <li><strong>Delete a single bug report or ask a question:</strong> contact us as described in &quot;Who we are&quot;. We will answer within 30 days. We may need to confirm that the request really comes from the account owner (for example by asking you to send it while signed in).</li>
 <li><strong>Withdraw consent for AI:</strong> turn the AI features off and remove your key in Settings at any time.</li>
@@ -325,6 +356,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 <li><strong>Row-level security</strong> in the database: each account can only change its own rows; teammates can only read driver names, emojis, colours and match summaries, through dedicated server functions; bug reports can be added but not read back through the app's public key.</li>
 <li>Passwords are handled and hashed by Supabase's sign-in service; we never see them.</li>
 <li>On your computer, the sign-in session and the AI key are stored encrypted using the operating system's secure storage.</li>
+<li>The scouting admin list cannot be read or changed directly: each account sees only its own row, and every change goes through server functions that check the role. The scouting connection is read-only.</li>
 <li>Network play and the phone controller require a room key or secret token, accept connections only from the expected pages, and limit wrong attempts.</li>
 <li>Limits and quotas on storage, bug reports and team-code guesses to stop abuse.</li>
 <li>We collect as little as possible and keep it only as long as needed.</li>
@@ -351,7 +383,7 @@ footer nav{display:flex;gap:6px 14px;flex-wrap:wrap;margin-bottom:8px} footer p{
 </ul>
 </article>
 </main>
-<footer><div data-l="he"><nav class="legal"><a href="privacy.html">פרטיות</a> <a href="terms.html">תנאי שימוש</a> <a href="ai.html">בינה מלאכותית</a> <a href="security.html">אבטחה</a> <a href="accessibility.html">נגישות</a> <a href="licenses.html">רישיונות</a> <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" target="_blank" rel="noopener">יצירת קשר (GitHub)</a></nav><p>BIOBUZZ · סימולטור שדה ל-FTC · חינמי ולא מסחרי · של קבוצת FTC Apollo #9662 · <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues/new?labels=bug" target="_blank" rel="noopener">דיווח על באג</a> · גרסת המסמכים 2026-10-14</p></div><div data-l="en"><nav class="legal"><a href="privacy.html">Privacy</a> <a href="terms.html">Terms</a> <a href="ai.html">AI</a> <a href="security.html">Security</a> <a href="accessibility.html">Accessibility</a> <a href="licenses.html">Third-party notices</a> <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" target="_blank" rel="noopener">Contact (GitHub)</a></nav><p>BIOBUZZ · an FTC field simulator · free and non-commercial · by FTC team Apollo #9662 · <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues/new?labels=bug" target="_blank" rel="noopener">Report a bug</a> · Legal version 2026-10-14</p></div><p class="tm" lang="en" dir="ltr"><i>FIRST</i>®, <i>FIRST</i>® Tech Challenge and the game name are trademarks of <i>FIRST</i> (For Inspiration and Recognition of Science and Technology); this is an independent team project, not affiliated with, endorsed by or sponsored by <i>FIRST</i>; <i>FIRST</i> is not overseeing, involved with, or responsible for this software.</p></footer>
+<footer><div data-l="he"><nav class="legal"><a href="privacy.html">פרטיות</a> <a href="terms.html">תנאי שימוש</a> <a href="ai.html">בינה מלאכותית</a> <a href="security.html">אבטחה</a> <a href="accessibility.html">נגישות</a> <a href="licenses.html">רישיונות</a> <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" target="_blank" rel="noopener">יצירת קשר (GitHub)</a></nav><p>BIOBUZZ · סימולטור שדה ל-FTC · חינמי ולא מסחרי · של קבוצת FTC Apollo #9662 · <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues/new?labels=bug" target="_blank" rel="noopener">דיווח על באג</a> · גרסת המסמכים 2026-11-10</p></div><div data-l="en"><nav class="legal"><a href="privacy.html">Privacy</a> <a href="terms.html">Terms</a> <a href="ai.html">AI</a> <a href="security.html">Security</a> <a href="accessibility.html">Accessibility</a> <a href="licenses.html">Third-party notices</a> <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues" target="_blank" rel="noopener">Contact (GitHub)</a></nav><p>BIOBUZZ · an FTC field simulator · free and non-commercial · by FTC team Apollo #9662 · <a href="https://github.com/yaarilevrosen-cpu/BIOBUZZ/issues/new?labels=bug" target="_blank" rel="noopener">Report a bug</a> · Legal version 2026-11-10</p></div><p class="tm" lang="en" dir="ltr"><i>FIRST</i>®, <i>FIRST</i>® Tech Challenge and the game name are trademarks of <i>FIRST</i> (For Inspiration and Recognition of Science and Technology); this is an independent team project, not affiliated with, endorsed by or sponsored by <i>FIRST</i>; <i>FIRST</i> is not overseeing, involved with, or responsible for this software.</p></footer>
 </div>
 <script>
 (function(){

@@ -29,7 +29,8 @@ CDN = {'three.min.js': 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/',
        'GLTFLoader.js': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/',
        'STLLoader.js': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/',
        'OBJLoader.js': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/',
-       'meshopt_decoder.js': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/'}
+       'meshopt_decoder.js': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/',
+       'jsQR.js': 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/'}
 for name, base in CDN.items():
     pat = re.compile(r'<script>/\* ' + re.escape(name) + r' \*/\n(.*?)\n</script>', re.S)
     mm = pat.search(s)

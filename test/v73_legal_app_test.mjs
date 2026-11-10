@@ -28,6 +28,8 @@ const srv=http.createServer((q,s)=>{ let b=''; q.on('data',c=>b+=c); q.on('end',
   if(u.startsWith('/rest/v1/bb_matches')) return J([{owner:UID,profile_id:'d1',at:1,data:{my:40}},{owner:UID,profile_id:'d1',at:2,data:{my:50}}]);
   if(u.startsWith('/rest/v1/bb_team_members')) return J([{team_id:TEAM,uid:UID,label:'Maya',joined_at:'2026-02-01T00:00:00Z'}]);
   if(u.startsWith('/rest/v1/bb_teams')) return J([{id:TEAM,code:'ABCD2345',name:'Apollo',num:'9662',owner:UID}]);
+  /* v80: שורת מנהל הסקאוטינג שלי (S.noScout — הטבלה עוד לא בשרת) */
+  if(u.startsWith('/rest/v1/bb_scout_admins')) return S.noScout?J({code:'42P01',message:'relation does not exist'},404):J([{role:'admin',can_invite:false,added_at:'2026-11-09T00:00:00Z',added_by:null}]);
   J({message:'not found'},404);
 }); });
 await new Promise(r=>srv.listen(0,'127.0.0.1',r)); const URL='http://127.0.0.1:'+srv.address().port;
@@ -69,6 +71,8 @@ const {D,st,sy}=mk();
   ok(r.ok&&d.app==='BIOBUZZ'&&d.account.email==='maya@example.com'&&d.account.user_metadata.tos_v===VER,'ייצוא: פרטי החשבון (כולל ההסכמה)');
   ok(d.profiles.length===1&&d.profiles[0].kv&&d.matches.length===2&&d.team.membership.length===1&&d.team.team.name==='Apollo','ייצוא: נהגים עם הגדרות, מאצ׳ים, חברות בקבוצה והקבוצה');
   ok(S.reqs.filter(x=>/bb_profiles|bb_matches/.test(x.u)).every(x=>x.u.includes('owner=eq.'+UID))&&S.reqs.some(x=>x.u.includes('bb_team_members?select=*&uid=eq.'+UID)),'ייצוא: רק השורות שלי (owner/uid = אני)');
+  ok(d.scouting_admin&&d.scouting_admin.role==='admin'&&S.reqs.some(x=>x.u.includes('bb_scout_admins?')&&x.u.includes('user_id=eq.'+UID)),'v80 ייצוא: הדרגה ברשימת מנהלי הסקאוטינג (רק השורה שלי)');
+  S.noScout=true; const r2=await sy.exportMine(); S.noScout=false; ok(r2.ok&&r2.data.scouting_admin===null,'v80 ייצוא: בלי הטבלה בשרת — scouting_admin ריק, והייצוא עובד');
   const out=await new Sync(new Store(tmp('bb73x-')),tmp('bb73x-'),{cloud:{url:URL,key:'k'}}).exportMine(); ok(!out.ok,'ייצוא בלי חשבון — ״לא מחוברים״');
 }
 /* ── 4. מחיקת החשבון ── */

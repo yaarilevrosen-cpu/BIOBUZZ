@@ -1,6 +1,6 @@
 # BIOBUZZ Privacy Policy
 
-**Version:** 2026-10-14
+**Version:** 2026-11-10
 
 This policy explains, in plain language, what information the BIOBUZZ field simulator uses, where it goes, how long we keep it and how you can see, download or delete it. It covers the BIOBUZZ desktop app (Windows, macOS, Linux), the single-file browser version, the phone controller page and the BIOBUZZ website on GitHub Pages.
 
@@ -54,6 +54,20 @@ If you create or join a team with a join code:
 - **What your teammates see:** your drivers' names, emojis and colours, and a summary of each match (type, skill level, win, your score, shots, hits, average cycle, fouls, park, autonomous points, drill, version). The database gives teammates only these fields, through dedicated server functions; they cannot read your driver settings or your full match records.
 - The team owner can remove a member, which also changes the join code. You can leave a team at any time. A team with no members left is deleted automatically.
 
+### Scouting mode (scouting admins only, desktop app)
+
+Scouting mode shows the real robots of the teams at a competition in the simulator, based on what our team's scouts collected in the Apollo 9662 scouting system. It is open only to accounts on the list of scouting admins.
+
+- **The admin list (in our cloud):** for each admin we store the account ID, the role (owner or admin), whether they may add admins, who added them and when. Every admin can see the full list, including the email addresses of the admins and of whoever added each one. Admins add an admin by the email address of their account, so the person adding learns whether an account with that address exists. The list can only be changed through server functions, according to the role.
+- **On your computer:** so the mode also works offline, the app remembers on your computer that the account is an admin, for up to 14 days after the last check with the server. Signing out or switching to another account clears this.
+- **The scouting data:** information about robots and teams at a competition — team number, declared abilities, performance measured in matches and the scouts' notes. This is information about robots, not about people; write notes about the robot, not about the students.
+- **How the data arrives:** with live sync, your computer connects directly and read-only to the scouting system's cloud (a separate Supabase project of our team), using connection details you type in. You can also load a file, paste a code or scan a QR code. The data does not pass through the simulator's cloud.
+- **What is kept on your computer:** the scouting connection details and the latest snapshot of the data (for the same competition) are kept only on that computer. They are not included in backups, account sync or bug reports. "Forget the details", "Clear" and "Reset all" delete them.
+
+### Camera (only when scanning a QR code)
+
+The camera turns on only when you press the camera button to scan a QR code, and turns off when the code is read or when you press "Stop". Your operating system or browser asks for your permission. Decoding happens entirely on your computer: the images are not saved, not recorded and not sent anywhere.
+
 ### Bug reports (optional)
 
 When you send a bug report from the app or the browser version, we receive what you choose to send:
@@ -94,6 +108,7 @@ Playing together on a local network, using your phone as a controller, or showin
 - **To give you an account, sync your data and run team features** — because you asked for these features (performance of our agreement with you, GDPR Art. 6(1)(b)).
 - **To fix bugs you report and contact you if you asked us to** — our legitimate interest in keeping the software working (GDPR Art. 6(1)(f)); sending a report is always your choice.
 - **To keep the service secure and fair** (hashed IP for rate limits, quotas, failed-code counters) — our legitimate interest in preventing abuse (GDPR Art. 6(1)(f)).
+- **To open scouting mode only to admins and manage the admin list** — our legitimate interest in letting only the people our team allowed see the scouting data (GDPR Art. 6(1)(f)).
 - **To record your age group and acceptance of the terms** — to meet our legal obligations and to show that permission was given (GDPR Art. 6(1)(c) and (f)).
 - **AI features** — only if you add a key and use them (your consent, GDPR Art. 6(1)(a)); the data goes directly to Google.
 
@@ -105,6 +120,7 @@ We use data only for these purposes. We don't use it to profile you or for anyth
 - **GitHub** (GitHub, Inc., a Microsoft company) — hosts the website, downloads, updates and public issues. [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 - **Google** — only if you turn on the AI features with your own key. Google receives that data directly from you under Google's own terms, not as our processor. [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms).
 - **Your teammates** — the team data described above, only if you join a team.
+- **The other scouting admins** — if you are a scouting admin: your email address, your role, and who added you and when.
 - **Authorities** — only if the law requires it, and only what is required.
 
 We do not share data with anyone else.
@@ -124,6 +140,8 @@ We are in Israel. Supabase and GitHub are US-based companies and may store or pr
 - **Teams:** until the last member leaves; then the team is deleted automatically.
 - **Counters for fair use and security:** wrong-code counters reset after one hour and are deleted after a day; storage counters are kept until the account is deleted.
 - **Bug reports (including the screenshot):** deleted 12 months after we receive them, or earlier when they are no longer needed. The scrambled IP code is erased 24 hours after the report.
+- **The scouting admin list:** until an authorised admin removes you, or until the account is deleted.
+- **Scouting data on your computer:** the connection details and the latest snapshot are kept until you delete them ("Forget the details", "Clear" or "Reset all"). Only a snapshot of the latest competition is kept at any time. The "admin" mark on the computer lasts up to 14 days after the last check.
 - **Automatic deletion:** these deletions run automatically on our server; nobody has to remember to do them.
 - **Provider backups:** after deletion, copies may remain in our cloud provider's routine backups for a short time (normally up to 14 days) until they are overwritten. We do not restore deleted data from them except to recover from a technical failure.
 - **AI data:** we store none. Your API key stays encrypted on your computer until you remove it. Google keeps data according to its own terms.
@@ -133,8 +151,8 @@ We are in Israel. Supabase and GitHub are US-based companies and may store or pr
 Under the Israeli Privacy Protection Law and, where it applies to you, the GDPR, you have the right to know what data we hold about you, get a copy, correct it, delete it, object to some uses, withdraw consent and, in some cases, receive your data in a portable format. Most of this you can do yourself, right away, in the app:
 
 - **See and correct:** all your drivers, matches and settings are visible and editable in the app. Change your account name in the account panel.
-- **Download a copy (access and portability):** account panel → **"Download my cloud data"**. You get a file (JSON) with everything stored in the cloud for your account: account details (email, name, creation date, age group and acceptance record), drivers with their settings, matches, team membership and the bug reports linked to your account. For local data, use Settings → Backup, restore and reset → **"Export to file"**.
-- **Delete your account and cloud data:** account panel → **"Delete my account and cloud data"**. This deletes your account, drivers, settings, matches, team membership and the bug reports linked to your account from our database. If you own a team, ownership passes to the longest-standing member, or the team is deleted if you were the last one. It cannot be undone, so download a copy first if you want one. Your local data on the device stays until you delete it too. In the desktop app you are then asked whether to delete the account's drivers from that computer as well: "yes" deletes them, their settings and matches, including from the local backups and the bin; "no" keeps them on that computer as local drivers.
+- **Download a copy (access and portability):** account panel → **"Download my cloud data"**. You get a file (JSON) with everything stored in the cloud for your account: account details (email, name, creation date, age group and acceptance record), drivers with their settings, matches, team membership, your role on the scouting admin list (if you are an admin) and the bug reports linked to your account. For local data, use Settings → Backup, restore and reset → **"Export to file"**.
+- **Delete your account and cloud data:** account panel → **"Delete my account and cloud data"**. This deletes your account, drivers, settings, matches, team membership, your row on the scouting admin list and the bug reports linked to your account from our database. If you own a team, ownership passes to the longest-standing member, or the team is deleted if you were the last one. It cannot be undone, so download a copy first if you want one. Your local data on the device stays until you delete it too. In the desktop app you are then asked whether to delete the account's drivers from that computer as well: "yes" deletes them, their settings and matches, including from the local backups and the bin; "no" keeps them on that computer as local drivers.
 - **Delete local data:** Settings → Backup, restore and reset → **"Reset all"**. Normally the app keeps one safety backup when you reset. Tick **"Including backups"** to delete the backups too: in the browser version all backups stored in the browser; in the desktop app also the whole backups folder (for every driver on that computer) and the bin of deleted drivers. In the desktop app, Reset all clears the current driver; with "Including backups" it also empties that driver's match archive. Matches and settings already synced to your account stay in the cloud (and come back on the next sync) until you delete the driver or the account. Delete other drivers from the drivers list. You can also delete the app data folder listed above, or clear the browser's site data for the browser version.
 - **Delete a single bug report or ask a question:** contact us as described in "Who we are". We will answer within 30 days. We may need to confirm that the request really comes from the account owner (for example by asking you to send it while signed in).
 - **Withdraw consent for AI:** turn the AI features off and remove your key in Settings at any time.
@@ -157,6 +175,7 @@ FIRST Tech Challenge is for students, so we expect many users to be under 18. We
 - **Row-level security** in the database: each account can only change its own rows; teammates can only read driver names, emojis, colours and match summaries, through dedicated server functions; bug reports can be added but not read back through the app's public key.
 - Passwords are handled and hashed by Supabase's sign-in service; we never see them.
 - On your computer, the sign-in session and the AI key are stored encrypted using the operating system's secure storage.
+- The scouting admin list cannot be read or changed directly: each account sees only its own row, and every change goes through server functions that check the role. The scouting connection is read-only.
 - Network play and the phone controller require a room key or secret token, accept connections only from the expected pages, and limit wrong attempts.
 - Limits and quotas on storage, bug reports and team-code guesses to stop abuse.
 - We collect as little as possible and keep it only as long as needed.
