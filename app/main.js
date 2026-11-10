@@ -496,6 +496,8 @@ app.whenReady().then(() => {
   /* 1.12.5: גם אפליקציה שפתוחה כמה ימים מקבלת גיבוי יומי חדש (לא רק בהפעלה) */
   setInterval(() => { try { store.dailyBackup(14); } catch (e) {} runSync("timer"); }, 120000);
   setInterval(() => scoutRefresh("timer"), 600000);   /* v78: כל 10 דקות */
+  /* v80: מנהל שנוסף עכשיו לא מחכה 10 דקות — בודקים גם כשהחלון חוזר לפוקוס (לכל היותר פעם בדקה) */
+  { let lastFocus = 0; app.on("browser-window-focus", () => { const t = Date.now(); if (t - lastFocus < 60000) return; lastFocus = t; scoutRefresh("focus"); }); }
 });
 let quitting = false;
 app.on("before-quit", e => {

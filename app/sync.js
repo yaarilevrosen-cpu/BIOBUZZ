@@ -491,9 +491,9 @@ class Sync {
         team = Array.isArray(tt) && tt[0] || null;
       }
       /* v80: דרגת מנהל הסקאוטינג (bb_scout_admins — רואים רק את השורה של עצמנו). בלי הטבלה בשרת — null */
-      let scoutAdmin = null;
+      let scoutAdmin = null, scoutNote = "";
       try { const { data: sa } = await this.rest("GET", "bb_scout_admins?select=role,can_invite,added_at,added_by&user_id=eq." + encodeURIComponent(uid)); scoutAdmin = Array.isArray(sa) && sa[0] || null; }
-      catch (e) { scoutAdmin = null; }
+      catch (e) { scoutAdmin = null; if (!(e && (e.status === 404 || /42P01|PGRST205|does not exist/.test(String(e.message) + JSON.stringify(e.body || ""))))) scoutNote = "could not read the scouting admin role (" + (e && e.message || "error") + ") — try again"; }
       const u = user && typeof user === "object" ? user : {}, md = u.user_metadata && typeof u.user_metadata === "object" ? u.user_metadata : {};
       /* 1.14 (legalfix): הדיווחים שלי — דרך bb_my_bugs() (את bb_bugs אי אפשר לקרוא ישירות). בלי הפונקציה בשרת — הערה במקום */
       let bugs = null, bugsNote = "";
@@ -504,7 +504,7 @@ class Sync {
           created_at: u.created_at || null, last_sign_in_at: u.last_sign_in_at || null,
           age_bracket: md.age_bracket || null, guardian_ok: md.guardian_ok == null ? null : md.guardian_ok, tos_v: md.tos_v || null, tos_at: md.tos_at || null,
           user_metadata: md },
-        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team }, scouting_admin: scoutAdmin, bug_reports: bugs, ...(bugsNote ? { bug_reports_note: bugsNote } : {}) } };
+        profiles, matches, team: { membership: Array.isArray(mem) ? mem : [], team }, scouting_admin: scoutAdmin, ...(scoutNote ? { scouting_admin_note: scoutNote } : {}), bug_reports: bugs, ...(bugsNote ? { bug_reports_note: bugsNote } : {}) } };
     } catch (e) { return { ok: false, why: heb(e.message) }; }
   }
   /* מחיקת החשבון וכל הנתונים בענן (bb_delete_me — supabase/v73_privacy.sql), ואז התנתקות במחשב הזה */
@@ -615,7 +615,7 @@ class Sync {
   async scoutAdminRemove(user) {
     if (!this.sess) return { ok: false, why: SCOUT_IN };
     user = String(user || "");
-    if (!UUIDRE.test(user)) return { ok: false, why: "?" };
+    if (!UUIDRE.test(user)) return { ok: false, why: "המנהל לא נמצא ברשימה — רעננו את הרשימה" };
     const uid = this.uid();
     try { await this.rpc("bb_scout_admin_remove", { p_user: user }); }
     catch (e) { return this.scoutFail(e, uid); }
@@ -628,7 +628,7 @@ class Sync {
   async scoutAdminSet(user, canInvite, owner) {
     if (!this.sess) return { ok: false, why: SCOUT_IN };
     user = String(user || "");
-    if (!UUIDRE.test(user)) return { ok: false, why: "?" };
+    if (!UUIDRE.test(user)) return { ok: false, why: "המנהל לא נמצא ברשימה — רעננו את הרשימה" };
     const b = v => v === true ? true : v === false ? false : null;
     const uid = this.uid();
     try { await this.rpc("bb_scout_admin_set", { p_user: user, p_can_invite: b(canInvite), p_owner: b(owner) }); }

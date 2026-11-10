@@ -80,7 +80,7 @@ ok(r.drive==='tank'&&r.cap===2&&r.sh==='none'&&r.src==='live'&&S.gets>g0,'שינ
 // דופק ישן מ-5 דקות → ״המנהל לא מחובר״
 S.meta.updated_at=new Date(Date.now()-11*60e3).toISOString(); S.prof.forEach(p=>p.updated_at=S.meta.updated_at); push();
 r=await E(async()=>{ const S=__sim; for(let i=0;i<30&&!S.sctlStale();i++) await new Promise(r=>setTimeout(r,100)); S.sctOpen(); return {stale:S.sctlStale(), txt:document.getElementById('sctBody').textContent}; });
-ok(r.stale&&/המנהל לא מחובר כבר 11 דק׳/.test(r.txt)&&/חי/.test(r.txt),'דופק ישן: ״המנהל לא מחובר כבר 11 דק׳ — הנתונים קפואים״ ('+r.stale+')');
+ok(r.stale&&/אפליקציית הסקאוטינג לא שלחה עדכון כבר 11 דק׳/.test(r.txt)&&/חי/.test(r.txt),'דופק ישן: ״המנהל לא מחובר כבר 11 דק׳ — הנתונים קפואים״ ('+r.stale+')');
 S.meta.updated_at=new Date().toISOString();
 // השרת נופל → נשארים עם הנתונים, ״אין חיבור לענן״
 S.down=true; for(const ws of S.wss) try{ ws.terminate(); }catch(e){}

@@ -18,12 +18,12 @@ await E(()=>{
 });
 
 // 1. הספרייה נטענה, ובלי BarcodeDetector יש מפענח
-let r=await E(()=>({js:typeof jsQR, bd:typeof BarcodeDetector, dec:typeof __sim.sctlDecoder()}));
+let r=await E(async()=>({js:typeof jsQR, bd:typeof BarcodeDetector, dec:typeof await __sim.sctlDecoder()}));
 ok(r.js==='function'&&r.bd==='undefined'&&r.dec==='function','Q1 jsQR נטען, ובלי BarcodeDetector יש מפענח ('+JSON.stringify(r)+')');
 
 // 2. מפענח קוד מתוך וידאו
 r=await E(async()=>{ const st=await __fakeCam(['A9662:hello-qr']); const v=document.createElement('video'); v.srcObject=st; v.muted=true; await v.play();
-  await new Promise(r=>setTimeout(r,400)); const dec=__sim.sctlDecoder(); let out=[]; for(let k=0;k<10&&!out.length;k++){ out=await dec(v); if(!out.length) await new Promise(r=>setTimeout(r,200)); }
+  await new Promise(r=>setTimeout(r,400)); const dec=await __sim.sctlDecoder(); let out=[]; for(let k=0;k<10&&!out.length;k++){ out=await dec(v); if(!out.length) await new Promise(r=>setTimeout(r,200)); }
   st.getTracks().forEach(t=>t.stop()); return out; });
 ok(r.length===1&&r[0]==='A9662:hello-qr','Q2 jsQR מפענח קוד מהווידאו ('+JSON.stringify(r)+')');
 
@@ -42,5 +42,32 @@ ok(/המצלמה לא זמינה/.test(r.e)&&!r.cam,'Q4 בלי מצלמה — ה
 r=await E(async()=>{ const S=__sim; navigator.mediaDevices.getUserMedia=async()=>{ throw new DOMException('denied','NotAllowedError'); }; S.SCT.err=""; await S.sctlCam(true); return {e:S.SCT.err,cam:!!S.SCTL.cam}; });
 ok(r.e==='אין גישה למצלמה'&&!r.cam,'Q5 סירוב גישה — "אין גישה למצלמה"');
 
-const re=realErrs(errs); ok(re.length===0,'Q6 בלי שגיאות בדף'+(re.length?': '+re.slice(0,3).join(' | '):''));
+// 7. BarcodeDetector קיים אבל בלי QR (קורה בחלונות) — עוברים ל־jsQR ומפענחים
+r=await E(async()=>{ window.BarcodeDetector=class{ static async getSupportedFormats(){ return []; } async detect(){ throw new Error('no backend'); } };
+  const st=await __fakeCam(['A9662:fallback']); const v=document.createElement('video'); v.srcObject=st; v.muted=true; await v.play(); await new Promise(r=>setTimeout(r,400));
+  const dec=await __sim.sctlDecoder(); let out=[]; for(let k=0;k<10&&!out.length;k++){ out=await dec(v); if(!out.length) await new Promise(r=>setTimeout(r,200)); }
+  st.getTracks().forEach(t=>t.stop()); delete window.BarcodeDetector; return out; });
+ok(r[0]==='A9662:fallback','Q7 BarcodeDetector בלי QR — עוברים ל־jsQR ('+JSON.stringify(r)+')');
+
+// 8. מצלמה תפוסה / אין מצלמה — הודעה מתאימה
+r=await E(async()=>{ const S=__sim, o={}; for(const n of ['NotReadableError','NotFoundError']){ navigator.mediaDevices.getUserMedia=async()=>{ throw new DOMException('x',n); }; S.SCT.err=""; await S.sctlCam(true); o[n]=S.SCT.err; } return o; });
+ok(r.NotReadableError==='המצלמה תפוסה בתוכנה אחרת'&&r.NotFoundError==='לא נמצאה מצלמה','Q8 הודעה לפי סוג התקלה ('+JSON.stringify(r)+')');
+
+// 9. בזמן שחלון הרשות פתוח: עוצרים / סוגרים — אחרי האישור המצלמה לא נשארת דולקת
+r=await E(async()=>{ const S=__sim; const live=[]; let rel;
+  navigator.mediaDevices.getUserMedia=()=>new Promise(res=>{ rel=async()=>{ const st=await __fakeCam(['A9662:x']); live.push(st); res(st); }; });
+  const p1=S.sctlCam(true); await new Promise(r=>setTimeout(r,50)); const wait=!!S.SCTL.camWait;
+  const p2=S.sctlCam(false); await rel(); await p1; await p2; await new Promise(r=>setTimeout(r,200));
+  const on=live.flatMap(s=>s.getTracks()).filter(t=>t.readyState==='live').length;
+  return {wait, cam:!!S.SCTL.cam, camWait:!!S.SCTL.camWait, on, err:S.SCT.err||""}; });
+ok(r.wait&&!r.cam&&!r.camWait&&r.on===0,'Q9 עצירה בזמן בקשת הרשות — אין מצלמה דולקת ואין לולאה ('+JSON.stringify(r)+')');
+
+// 11. המחשב כבר לא של מנהל — פרטי החיבור לסקאוטינג נמחקים לבד (התמונה השמורה נשארת)
+r=await E(async()=>{ const S=__sim; S.scoutAdminSet(true); await new Promise(r=>setTimeout(r,100));
+  localStorage.setItem('a9662-sim-cfg',JSON.stringify({url:'https://x.supabase.co',key:'k',email:'r@example.com',pw:'p',event:''})); localStorage.setItem('a9662-sim-cache:TEST','{}');
+  S.scoutAdminSet(false); await new Promise(r=>setTimeout(r,100));
+  const o={cfg:localStorage.getItem('a9662-sim-cfg'), cache:localStorage.getItem('a9662-sim-cache:TEST')}; localStorage.removeItem('a9662-sim-cache:TEST'); S.scoutAdminSet(null); return o; });
+ok(r.cfg===null&&r.cache==='{}','Q11 מנהל שהוסר / התנתק — פרטי החיבור נמחקים, התמונה נשארת ('+JSON.stringify(r)+')');
+
+const re=realErrs(errs); ok(re.length===0,'Q10 בלי שגיאות בדף'+(re.length?': '+re.slice(0,3).join(' | '):''));
 await browser.close(); done('v80_qr');
