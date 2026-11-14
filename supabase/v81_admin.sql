@@ -233,8 +233,9 @@ begin
     with base as (
       select u.id, u.email::text as email, u.created_at, u.last_sign_in_at, t.name as team_name, t.num as team_num
         from auth.users u
-        left join public.bb_team_members m on m.uid = u.id
-        left join public.bb_teams t on t.id = m.team_id
+        -- קבוצה אחת לכל חשבון; lateral עם limit 1 — כדי שחשבון לא יופיע פעמיים גם אם יש לו שתי חברויות
+        left join lateral (select t2.name, t2.num from public.bb_team_members m join public.bb_teams t2 on t2.id = m.team_id
+                            where m.uid = u.id order by m.joined_at, m.team_id limit 1) t on true
        where q = '' or position(q in lower(coalesce(u.email::text, ''))) > 0
           or position(q in lower(coalesce(t.name, ''))) > 0 or position(q in coalesce(t.num, '')) > 0
     )
