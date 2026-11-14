@@ -105,7 +105,7 @@ let dirA;
   await y.signIn('alice@example.test', 'pw');
   ok(y.status().scoutAdmin === false, 'מיד אחרי ההתחברות, לפני בדיקה — עוד לא מנהל');
   S.calls = []; const r = await y.scoutIsAdmin();
-  ok(r.ok && r.admin === true && S.calls.length === 1 && S.calls[0].fn === 'bb_scout_is_admin' && S.calls[0].tok === 'tA', 'scoutIsAdmin → rpc/bb_scout_is_admin עם האסימון של החשבון → מנהל');
+  ok(r.ok && r.admin === true && S.calls.filter(c => c.fn !== 'bb_admin_me').length === 1 && S.calls[0].fn === 'bb_scout_is_admin' && S.calls[0].tok === 'tA', 'scoutIsAdmin → rpc/bb_scout_is_admin עם האסימון של החשבון → מנהל');
   ok(y.status().scoutAdmin === true && fs.existsSync(file(d)), 'status().scoutAdmin=true, ונשמר במחשב (scout-admin.json)');
   const c = JSON.parse(fs.readFileSync(file(d), 'utf8'));
   ok(c.uid === A && c.admin === true && Math.abs(c.at - Date.now()) < 5000 && Object.keys(c).length === 3, 'המטמון: רק uid, admin, at (' + JSON.stringify(c) + ')');

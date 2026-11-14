@@ -86,6 +86,9 @@ contextBridge.exposeInMainWorld("bbApp", {
   /* רק בעלים: canInvite / owner — true, false או null (בלי שינוי) */
   scoutAdminSet: (uid, canInvite, owner) => ipcRenderer.invoke("bb:scoutAdminSet", String(uid || ""),
     canInvite === true ? true : canInvite === false ? false : null, owner === true ? true : owner === false ? false : null),
+  /* v81: לוח מנהל (רק למנהלים — השרת בודק בכל קריאה), והודעות לכל המשתמשים */
+  admin: (op, a) => ipcRenderer.invoke("bb:admin", String(op || ""), a && typeof a === "object" ? a : {}),
+  notices: () => ipcRenderer.invoke("bb:notices"),
   /* בינה מלאכותית — המפתח נכנס פעם אחת ולא חוזר לדף */
   aiStatus: () => ipcRenderer.invoke("bb:aiStatus"),
   aiSetKey: k => ipcRenderer.invoke("bb:aiSetKey", String(k || "")),

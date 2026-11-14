@@ -324,6 +324,11 @@ function reg() {
   handle("bb:scoutAdminAdd", (e, em) => sync.scoutAdminAdd(String(em || "").slice(0, 400)).then(scoutAfter));
   handle("bb:scoutAdminRemove", (e, u) => sync.scoutAdminRemove(String(u || "").slice(0, 64)).then(scoutAfter));
   handle("bb:scoutAdminSet", (e, u, inv, own) => sync.scoutAdminSet(String(u || "").slice(0, 64), inv, own).then(scoutAfter));   /* רק בעלים (השרת בודק) */
+  /* ── v81: לוח מנהל — פעולה אחת בכל קריאה, השרת בודק את הדרגה; והודעות לכל המשתמשים ── */
+  handle("bb:admin", async (e, op, a) => { const was = JSON.stringify(acctStatus().admin);
+    const r = await sync.adminCall(String(op || "").slice(0, 20), a && typeof a === "object" ? a : {});
+    if (JSON.stringify(acctStatus().admin) !== was) send("bb:sync", { status: acctStatus() }); return r; });
+  handle("bb:notices", () => sync.notices());
   /* ── בינה מלאכותית: המפתח נשאר כאן, הדף מקבל רק סטטוס ותשובות ── */
   handle("bb:aiStatus", () => aiSt());
   handle("bb:aiSetKey", async (e, k) => { if (aiMinor()) return { ok: false, minor: true, why: MINOR_AI, status: aiSt() };
