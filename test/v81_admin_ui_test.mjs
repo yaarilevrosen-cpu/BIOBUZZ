@@ -88,6 +88,8 @@ await click('[data-adm="nsend"]'); await wait(300);
 r=await E(()=>({n:__W.notices.length,strip:(document.getElementById('bbNotice')||{}).textContent||'',hid:(document.getElementById('bbNotice')||{hidden:true}).hidden,list:document.querySelectorAll('.admNote.live').length}));
 ok(r.n===1&&r.list===1,'ההודעה נשלחה ומופיעה ברשימה כ״מוצגת״'); ok(!r.hid&&/יצאה גרסה חדשה/.test(r.strip),'הפס בראש המסך מציג את ההודעה');
 await page.screenshot({path:'/tmp/adm_notice.png'});
+r=await E(async()=>{ const S=__sim, el=document.getElementById('bbNotice'); S.MT.cd=0; S.matchStart(); await new Promise(r=>setTimeout(r,1800)); const inMatch=el.hidden; S.matchStop(); await new Promise(r=>setTimeout(r,1800)); return {inMatch,after:el.hidden}; });
+ok(r.inMatch&&!r.after,'בזמן מאץ׳ הפס מוסתר (לא מכסה את לוח התוצאה), וחוזר כשהמאץ׳ נעצר');
 await E(()=>document.querySelector('#bbNotice button').click());
 r=await E(()=>({hid:document.getElementById('bbNotice').hidden,seen:localStorage.getItem('bbNoticeSeen1')})); ok(r.hid&&r.seen==='[1]','✕ סוגר את ההודעה ונשמר במחשב');
 await E(()=>__sim.noticeLoad(true)); await wait(100); r=await E(()=>document.getElementById('bbNotice').hidden); ok(r,'הודעה שנסגרה לא חוזרת');

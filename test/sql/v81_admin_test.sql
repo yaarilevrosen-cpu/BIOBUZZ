@@ -129,8 +129,25 @@ select t81.t(t81.err(:OWN, 'authenticated', $q$select public.bb_admin_bug_delete
 select t81.t((select count(*) from public.bb_bugs) = 1, 'הדיווח נמחק');
 -- העוזרים הפנימיים לא נקראים מבחוץ
 select t81.t(t81.err(:OWN, 'authenticated', $q$select public.bb_admin_note('x', 'y', 'z')$q$) like '%permission denied%' and t81.err(:OWN, 'authenticated', 'select public.bb_admin_need(true)') like '%permission denied%', 'העוזרים הפנימיים סגורים');
+-- סעיף 7: שלושת התיקונים לרשימת המנהלים
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000b1', 'inviter at test'), ('00000000-0000-0000-0000-0000000000b2', 'invited at test');
+\set INV '''00000000-0000-0000-0000-0000000000b1'''
+\set NEW '''00000000-0000-0000-0000-0000000000b2'''
+select t81.t(t81.err(:OWN, 'authenticated', $q$select public.bb_scout_admin_add('admin at test')$q$) = 'already_admin', 'הוספה של מי שכבר מנהל — already_admin');
+select t81.t(t81.err(:OWN, 'authenticated', $q$select public.bb_scout_admin_add('inviter at test')$q$) = '', 'בעלים מוסיף מנהל');
+select t81.t(t81.err(:OWN, 'authenticated', format('select public.bb_scout_admin_set(%L, true, null)', :INV)) = '', 'בעלים נותן הרשאת הוספה');
+select t81.t(t81.err(:INV, 'authenticated', $q$select public.bb_scout_admin_add('invited at test')$q$) = '', 'מנהל עם הרשאה מוסיף מנהל');
+select t81.t(t81.err(:OWN, 'authenticated', format('select public.bb_scout_admin_set(%L, true, null)', :NEW)) = '', 'בעלים נותן הרשאת הוספה גם לחדש');
+select t81.t(t81.err(:INV, 'authenticated', format('select public.bb_scout_admin_remove(%L)', :NEW)) = 'not_allowed_remove', 'מי שהוסיף כבר לא מסיר אותו אחרי שהבעלים נתן לו הרשאה');
+select t81.t(t81.err(:OWN, 'authenticated', format('select public.bb_scout_admin_set(%L, false, null)', :NEW)) = '', 'בעלים לוקח את ההרשאה');
+select t81.t(t81.err(:INV, 'authenticated', format('select public.bb_scout_admin_remove(%L)', :NEW)) = '', 'בלי ההרשאה — מי שהוסיף שוב יכול להסיר');
+select t81.t(t81.err(:ADM, 'authenticated', format('select public.bb_scout_admin_remove(%L)', :INV)) = 'not_allowed', 'מנהל רגיל לא מסיר מנהל אחר');
+select t81.t(t81.err(:ADM, 'authenticated', format('select public.bb_scout_admin_remove(%L)', :ADM)) = '', 'מנהל רגיל מסיר את עצמו');
+select t81.t((select count(*) from public.bb_scout_admins where user_id = :ADM) = 0, 'הוא ירד מהרשימה');
+select t81.t(t81.val(:ADM, 'authenticated', 'select public.bb_admin_me()::text') is null, 'ואין לו יותר לוח מנהל');
+select t81.t(t81.err(:OWN, 'authenticated', format('select public.bb_scout_admin_remove(%L)', :OWN)) = 'last_owner', 'הבעלים האחרון לא מסיר את עצמו');
 -- מחיקת החשבון שלי עדיין עובדת, ומנקה גם חסימה
 select t81.t(t81.err(:OWN, 'authenticated', format('select public.bb_admin_block(%L, true, %L)', :U3, 'x')) = '', 'חסימה שנייה');
 select t81.t(t81.err(:U3, 'authenticated', 'select public.bb_delete_me()') = '', 'חשבון חסום מוחק את עצמו');
-select t81.t((select count(*) from public.bb_blocked) = 0 and (select count(*) from auth.users) = 2, 'bb_delete_me של חשבון חסום עובד ומנקה את החסימה');
+select t81.t((select count(*) from public.bb_blocked) = 0 and (select count(*) from auth.users) = 4, 'bb_delete_me של חשבון חסום עובד ומנקה את החסימה');
 rollback;

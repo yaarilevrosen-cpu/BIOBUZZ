@@ -22,6 +22,7 @@
 --   4. bb_admin_log — יומן פעולות המנהלים (מי, מתי, מה, על מי). נמחק אחרי 12 חודשים.
 --   5. הפונקציות bb_admin_*: me, bugs, bug, bug_set, bug_delete, users, block, delete_user, notices, notice_add,
 --      notice_off, stats, log.
+--   6. שלושה תיקונים לרשימת המנהלים של v78 (סעיף 7 למטה).
 --   השגיאות הן הודעות קבועות באנגלית — האפליקציה מתרגמת אותן:
 --      'not signed in', 'not_admin', 'not_owner', 'not_found', 'self' (אי אפשר על עצמך), 'is_admin' (קודם להסיר מהמנהלים),
 --      'bad_text' (הודעה ריקה או ארוכה מדי).
@@ -393,5 +394,50 @@ grant execute on function public.bb_admin_me(), public.bb_admin_bugs(text, bigin
   public.bb_admin_block(uuid, boolean, text), public.bb_admin_delete_user(uuid), public.bb_admin_notices(),
   public.bb_admin_notice_add(text, text, int), public.bb_admin_notice_off(bigint), public.bb_admin_stats(),
   public.bb_admin_log_list(int) to authenticated;
+
+-- ── 7. שלושה תיקונים לרשימת המנהלים (v78) — אותן חתימות, create or replace ──
+--   א. הוספה של מי שכבר מנהל — 'already_admin' (קודם: עברה בשקט והאפליקציה כתבה ״נוסף״).
+--   ב. מנהל רגיל יכול להסיר את עצמו (קודם: רק בעלים, או מי שהוסיף אותו).
+--   ג. מנהל עם הרשאת הוספה כבר לא מסיר את מי שהוסיף אחרי שהבעלים נתן גם לו הרשאת הוספה.
+create or replace function public.bb_scout_admin_add(p_email text) returns void
+language plpgsql security definer set search_path = public as $$
+declare me public.bb_scout_admins; v uuid; em text := lower(trim(coalesce(p_email, '')));
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  select * into me from public.bb_scout_admins a where a.user_id = auth.uid();
+  if not found then raise exception 'not_admin'; end if;
+  if me.role <> 'owner' and not me.can_invite then raise exception 'not_allowed'; end if;
+  if em = '' or length(em) > 320 then raise exception 'no_account'; end if;
+  select u.id into v from auth.users u where lower(u.email) = em limit 1;
+  if v is null then raise exception 'no_account'; end if;
+  -- כבר מנהל — לא משנים את הדרגה, ההרשאה, מי הוסיף ומתי; ואומרים את זה
+  if exists (select 1 from public.bb_scout_admins a where a.user_id = v) then raise exception 'already_admin'; end if;
+  -- מנהל חדש תמיד ״מנהל״ בלי can_invite — גם כשבעלים מוסיף (את ההרשאה נותנים אחר כך, ב-bb_scout_admin_set)
+  insert into public.bb_scout_admins (user_id, role, can_invite, added_by) values (v, 'admin', false, auth.uid())
+    on conflict (user_id) do nothing;
+end $$;
+
+create or replace function public.bb_scout_admin_remove(p_user uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare me public.bb_scout_admins; t public.bb_scout_admins;
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  -- נעילה: שתי הסרות באותו רגע לא משאירות טבלה בלי בעלים
+  lock table public.bb_scout_admins in share row exclusive mode;
+  select * into me from public.bb_scout_admins a where a.user_id = auth.uid();
+  if not found then raise exception 'not_admin'; end if;
+  select * into t from public.bb_scout_admins a where a.user_id = p_user;
+  if not found then return; end if;
+  if me.role <> 'owner' and p_user <> auth.uid() then   -- את עצמי תמיד מותר (חוץ מהבעלים האחרון — למטה)
+    if not me.can_invite then raise exception 'not_allowed'; end if;
+    -- מנהל עם can_invite: רק מי שהוא עצמו הוסיף, רק בדרגת מנהל, ורק כל עוד הבעלים לא נתן גם לו הרשאת הוספה
+    if t.added_by is distinct from auth.uid() or t.role <> 'admin' or t.can_invite then raise exception 'not_allowed_remove'; end if;
+  end if;
+  if t.role = 'owner' and (select count(*) from public.bb_scout_admins a where a.role = 'owner') <= 1 then raise exception 'last_owner'; end if;
+  if (select count(*) from public.bb_scout_admins) <= 1 then raise exception 'last_admin'; end if;
+  delete from public.bb_scout_admins a where a.user_id = p_user;
+end $$;
+revoke all on function public.bb_scout_admin_add(text), public.bb_scout_admin_remove(uuid) from public, anon;
+grant execute on function public.bb_scout_admin_add(text), public.bb_scout_admin_remove(uuid) to authenticated;
 
 -- מחיקת החשבון שלי (bb_delete_me) מוחקת גם את החסימה (cascade). ההודעות שכתבתי נשארות בלי שם הכותב (set null).

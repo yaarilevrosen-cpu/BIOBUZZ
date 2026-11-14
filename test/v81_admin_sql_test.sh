@@ -22,4 +22,4 @@ OUT=$($P -d bbt -f sql/v81_admin_test.sql 2>&1); RC=$?
 echo "$OUT" | grep -v '^$' | sed 's/^ok   /  ✓ /; s/^FAIL /  ✗ /'
 N=$(echo "$OUT" | grep -c '^ok '); F=$(echo "$OUT" | grep -vc '^ok \|^$')
 echo "v81_admin_sql: $N עברו, $F נכשלו"
-[ $RC = 0 ] && [ "$F" = 0 ] && [ "$N" -ge 50 ]
+[ $RC = 0 ] && [ "$F" = 0 ] && [ "$N" -ge 70 ]

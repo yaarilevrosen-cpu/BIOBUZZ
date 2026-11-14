@@ -87,7 +87,7 @@ ok(r.mode==='scout','״🎮 לנהוג בו״ מהלוח — נשארים במצ
 
 // 3. 👥 מנהלים (api מדומה) — לפי הדרגה
 const adm=()=>E(()=>{ const B=document.getElementById('scmAdmBody'), rows=[...B.querySelectorAll('.scmAdmRow')];
-  return {rows:rows.map(x=>({t:x.querySelector('span').textContent, inv:!!x.querySelector('[data-scminv]'), rm:!!x.querySelector('[data-scmrm]'), owner:/בעלים/.test(x.textContent)})),
+  return {rows:rows.map(x=>({t:x.querySelector('span').textContent, inv:!!x.querySelector('[data-scminv]'), rm:!!x.querySelector('[data-scmrm]'), owner:/בעלים/.test(x.textContent), me:/אני/.test(x.textContent)})),
     add:!!B.querySelector('#scmAdmIn'), msg:(document.getElementById('scmAdmMsg')||{}).textContent||'', txt:B.innerText}; });
 const reload=async me=>{ await E(me=>{ window.__fake.me=me; __sim.SCM.adm=null; return __sim.scmAdmLoad(); },me); return adm(); };
 r=await E(async()=>{ const d=document.getElementById('scmAdm'); d.open=true; await new Promise(r=>setTimeout(r,120)); return window.__fake.calls.slice(); });
@@ -106,10 +106,10 @@ ok(r.calls[0]==='set:'+SE+':true:null'&&r.on&&/ההרשאה עודכנה/.test(r
 await addEm('third@example.test');   // הבעלים מוסיף את השלישי
 // מנהל שיכול להוסיף (second): מוסיף; מסיר רק את מי שהוא הוסיף; בלי מתגים
 a=await reload(SE);
-ok(a.add&&a.rows.every(x=>!x.inv)&&a.rows.filter(x=>x.rm).length===0,'מנהל שיכול להוסיף: שדה הוספה, בלי מתגים, בלי ״הסר״ על מי שאחרים הוסיפו ('+JSON.stringify(a.rows)+')');
+ok(a.add&&a.rows.every(x=>!x.inv)&&a.rows.filter(x=>x.rm&&!x.me).length===0&&a.rows.filter(x=>x.rm&&x.me).length===1,'מנהל שיכול להוסיף: שדה הוספה, בלי מתגים, ״הסר״ רק על עצמו ולא על מי שאחרים הוסיפו ('+JSON.stringify(a.rows)+')');
 r=await addEm('fourth@example.test'); a=await adm();
 const four=a.rows.find(x=>x.t==='fourth@example.test');
-ok(/נוסף מנהל/.test(r)&&four&&four.rm&&!four.inv&&a.rows.filter(x=>x.rm).length===1,'הוסיף מנהל — ״הסר״ רק עליו ('+JSON.stringify(a.rows)+')');
+ok(/נוסף מנהל/.test(r)&&four&&four.rm&&!four.inv&&a.rows.filter(x=>x.rm&&!x.me).length===1,'הוסיף מנהל — ״הסר״ רק עליו (ועל עצמו) ('+JSON.stringify(a.rows)+')');
 r=await E(async()=>{ const x=[...document.querySelectorAll('#scmAdmBody .scmAdmRow')].find(x=>/fourth/.test(x.textContent)).querySelector('[data-scmrm]'); x.click(); x.click(); await new Promise(r=>setTimeout(r,80));
   return {msg:document.getElementById('scmAdmMsg').textContent, n:document.querySelectorAll('#scmAdmBody .scmAdmRow').length}; });
 ok(/הוסר/.test(r.msg)&&r.n===3,'מסיר את מי שהוסיף ('+JSON.stringify(r)+')');
@@ -117,7 +117,7 @@ r=await E(async TH=>{ return await window.__fake.scoutAdminRemove(TH); },TH);
 ok(!r.ok&&/רק מנהלים שהוספת/.test(r.why),'(השרת המדומה) הסרה של מי שאחר הוסיף — ״אפשר להסיר רק מנהלים שהוספת בעצמך״');
 // מנהל רגיל (third): רשימה לקריאה בלבד
 a=await reload(TH);
-ok(!a.add&&a.rows.every(x=>!x.inv&&!x.rm)&&/צריך הרשאה מהבעלים/.test(a.txt),'מנהל רגיל: רשימה לקריאה, בלי הוספה/הסרה/מתגים, והסבר קצר ('+JSON.stringify(a.rows)+')');
+ok(!a.add&&a.rows.every(x=>!x.inv&&(!x.rm||x.me))&&a.rows.filter(x=>x.rm).length===1&&/צריך הרשאה מהבעלים/.test(a.txt),'מנהל רגיל: רשימה לקריאה, בלי הוספה ובלי מתגים, ״הסר״ רק על עצמו, והסבר קצר ('+JSON.stringify(a.rows)+')');
 ok(/יכול להוסיף/.test(a.txt),'מנהל רגיל רואה מי יכול להוסיף (את מי לבקש)');
 // הבעלים: הופכים את second לבעלים (בשרת), ואז הבעלים הראשון מסיר את עצמו → ההרשאה נעלמת → ״משחק״
 await E(SE=>{ const t=window.__fake.rows.find(x=>x.uid===SE); t.role='owner'; t.inv=true; },SE);

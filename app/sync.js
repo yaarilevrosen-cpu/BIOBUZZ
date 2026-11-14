@@ -83,6 +83,7 @@ const offline = e => !!e && !e.status && NETRE.test(String(e.message || ""));
 function scoutWhy(e) {
   const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
   if (noFn(e)) return SCOUT_SQL;
+  if (/already_admin/.test(m)) return "החשבון הזה כבר מנהל";   /* v81 */
   if (/no_account/.test(m)) return "אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים";
   if (/last_owner/.test(m)) return "אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל";
   if (/last_admin/.test(m)) return "אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר";
