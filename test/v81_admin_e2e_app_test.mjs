@@ -51,6 +51,10 @@ const win=await app.firstWindow(); const errs=[]; win.on('pageerror',e=>errs.pus
 await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length&&window.__sim.ADM,null,{timeout:180000});
 await win.evaluate(()=>{ const w=document.getElementById('welcome'); if(w) w.hidden=true; });
 const NAV='#appNav [data-nav="admin"]', sleep=ms=>new Promise(r=>setTimeout(r,ms));
+/* חשבון אחר — הדף נטען מחדש (הנהגים של הקודם ״חונים״); מחכים שהדף החדש יעלה לפני שנוגעים בו */
+const swap=async mail=>{ await win.evaluate(m=>bbApp.acctSignIn(m,'pw123456'),mail).catch(()=>{}); await win.waitForTimeout(2500);
+  await win.waitForFunction(()=>window.__sim&&window.__sim.BOTS&&window.__sim.BOTS.length&&window.__sim.ADM,null,{timeout:180000}); await win.waitForTimeout(1500);
+  await win.evaluate(()=>{ const w=document.getElementById('welcome'); if(w) w.hidden=true; }); };
 const has=sel=>win.evaluate(s=>!!document.querySelector(s),sel);
 // 1. לא מחוברים: אין ״ניהול״; ההודעה לכולם מופיעה גם בלי חשבון (מפתח ציבורי)
 await win.waitForFunction(()=>{ const n=document.getElementById('bbNotice'); return n&&!n.hidden; },null,{timeout:20000}).catch(()=>{});
@@ -78,7 +82,7 @@ ok(r.n===1&&r.un&&S.blocked[C]==='בדיקה','חשבונות: הרשימה מה
 // 3. מנהל רגיל
 await win.evaluate(()=>bbApp.acctSignOut()); await win.waitForFunction(s=>!document.querySelector(s),NAV,{timeout:15000}).catch(()=>{});
 ok(!(await has(NAV)),'התנתקות: ״ניהול״ נעלם');
-await win.evaluate(()=>bbApp.acctSignIn('second@example.test','pw123456'));
+await swap('second@example.test');
 await win.waitForFunction(s=>!!document.querySelector(s),NAV,{timeout:25000}).catch(()=>{});
 r=await win.evaluate(async()=>{ const b=document.querySelector('#appNav [data-nav="admin"]'); if(!b) return {no:1}; b.click(); for(let i=0;i<40&&!document.querySelector('[data-admtab]');i++) await new Promise(r=>setTimeout(r,100));
   await new Promise(r=>setTimeout(r,500)); document.querySelector('[data-admbs="all"]').click(); for(let i=0;i<40&&!document.querySelector('.admBug');i++) await new Promise(r=>setTimeout(r,100));
@@ -86,7 +90,7 @@ r=await win.evaluate(async()=>{ const b=document.querySelector('#appNav [data-na
 ok(r.tabs==='bugs,stats'&&r.rows===1&&r.users&&!r.users.ok&&/רק הבעלים/.test(r.users.why),'מנהל רגיל: רק ״דיווחי באגים״ ו״סטטיסטיקה״; רשימת החשבונות נדחית בשרת ('+JSON.stringify(r).slice(0,120)+')');
 // 4. משתמש רגיל שנחסם
 await win.evaluate(()=>bbApp.acctSignOut()); await sleep(500);
-await win.evaluate(()=>bbApp.acctSignIn('user@example.test','pw123456')); await sleep(2500);
+await swap('user@example.test');
 r=await win.evaluate(async()=>{ const s=await bbApp.syncNow(); const st=await bbApp.acctStatus(); return {nav:!!document.querySelector('#appNav [data-nav="admin"]'),ok:s&&s.ok,why:s&&s.why,blocked:st.blocked,adm:st.admin,ipc:await bbApp.admin('stats',{})}; });
 ok(!r.nav&&r.adm===null&&!r.ipc.ok&&/רק מנהל/.test(r.ipc.why),'משתמש רגיל: אין ״ניהול״, וה-IPC נדחה בשרת');
 ok(r.ok===false&&/נחסם/.test(r.why||'')&&/בדיקה/.test(r.why||'')&&r.blocked&&r.blocked.reason==='בדיקה','חשבון חסום: הסנכרון נעצר עם ״החשבון נחסם על ידי מנהל — <הסיבה>״ ('+(r.why||'')+')');
