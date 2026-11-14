@@ -408,8 +408,8 @@ let scoutRun = null;
 function scoutRefresh(why) {
   if (!anyIn()) return Promise.resolve({ ok: false, admin: false });
   if (scoutRun) return scoutRun;
-  const before = sync.scoutAdmin();
-  scoutRun = sync.scoutIsAdmin().then(r => { if (sync.scoutAdmin() !== before) send("bb:sync", { status: acctStatus(), why: "scout-" + why }); return r; },
+  const before = sync.scoutAdmin(), adm0 = JSON.stringify(acctStatus().admin);   /* v81: גם דרגת לוח המנהל (נשמרת רק בזיכרון — אחרי הפעלה מחדש היא מגיעה כאן) */
+  scoutRun = sync.scoutIsAdmin().then(r => { if (sync.scoutAdmin() !== before || JSON.stringify(acctStatus().admin) !== adm0) send("bb:sync", { status: acctStatus(), why: "scout-" + why }); return r; },
     () => ({ ok: false, admin: sync.scoutAdmin() })).finally(() => { scoutRun = null; });
   return scoutRun;
 }
