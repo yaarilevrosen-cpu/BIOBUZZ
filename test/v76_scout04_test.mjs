@@ -61,7 +61,7 @@ r=await E(t=>{ const S=__sim; S.sctLoadText(t); const pk=S.SCT.pack; const out={
   const rej=[]; for(const o of [Object.assign(JSON.parse(t),{version:2}),Object.assign(JSON.parse(t),{format:'other/thing'})]){ try{ S.sctPack(o); rej.push('ok'); }catch(e){ rej.push('נדחה'); } }
   out.rej=rej; return out; },EVENT);
 ok(r.n===7&&r.m==='1,2'&&r.rej.join()==='נדחה,נדחה','חבילת אירוע: 7 קבוצות, לוח זמנים ״מספר → בריתות״; גרסה 2 ופורמט זר נדחים ('+JSON.stringify(r)+')');
-r=await E(()=>{ const S=__sim; const o=S.sctPack({robots:[{team:90009,is_us:true,declared:null,measured:null},{team:90010},{team:90011}],schedule:{"4":{red:[90009,90010],blue:[90011]}}}); return {us:o.us, m:o.matches[0].n}; });
+r=await E(()=>{ const S=__sim; const o=S.sctPack({format:'apollo9662-scouting/event',version:1,robots:[{team:90009,is_us:true,declared:null,measured:null},{team:90010},{team:90011}],schedule:{"4":{red:[90009,90010],blue:[90011]}}}); return {us:o.us, m:o.matches[0].n}; });
 ok(r.us===90009&&r.m===4,'is_us מסמן את הרובוט שלנו (לא נבנה כבוט) ('+JSON.stringify(r)+')');
 await E(()=>__sim.sctClear());
 
@@ -119,7 +119,7 @@ r=await E(async c=>{ const S=__sim; S.sctClear(); S.sctOpen(); for(const t of c)
 ok(r.src==='qr'&&r.n===4,'שדה ה-QR בחלון: שני קודים + Enter ('+JSON.stringify(r)+')');
 
 // 7. לא בונים מחדש בזמן הקלדה
-r=await E(()=>{ const S=__sim; S.SCTL.open=true; S.sctUI(); const el=document.getElementById('sctlUrl'); el.focus(); el.value='https://abc'; S.sctUI(); const same=document.getElementById('sctlUrl')===el&&el.value==='https://abc'; el.blur(); return {same, dirty:S.SCT.dirty}; });
+r=await E(()=>{ const S=__sim; S.SCTL.open=true; S.SCTL.man=true; S.sctUI(); const el=document.getElementById('sctlUrl'); el.focus(); el.value='https://abc'; S.sctUI(); const same=document.getElementById('sctlUrl')===el&&el.value==='https://abc'; el.blur(); return {same, dirty:S.SCT.dirty}; });
 ok(r.same,'בזמן הקלדה החלון לא נבנה מחדש (הסנכרון לא מוחק את מה שמקלידים)');
 ok(realErrs(errs).filter(x=>!/127\.0\.0\.1:\d+\/(rest|auth|realtime)/.test(x)&&!/ERR_CONNECTION|ERR_EMPTY_RESPONSE|net::/.test(x)).length===0,'אין שגיאות: '+realErrs(errs).slice(0,3).join(' | '));
 await browser.close();

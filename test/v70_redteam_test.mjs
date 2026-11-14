@@ -4,11 +4,13 @@ const {browser,page,errs}=await open({noraf:true});
 const E=(f,a)=>page.evaluate(f,a);
 await E(()=>{ window.S=__sim; S.stageMatch(); });
 
-// 1. פסילה: הברית שלי מסיימת ב-0 בכל מקום (באנר, עונה, לוח שידור)
-let r=await E(()=>{ const S=__sim; S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true); S.matchStart();
-  S.advance(2,1/60); S.MATCH.dq=true; S.MATCH.t=S.MT.auto+S.MT.trans+S.MT.tele-0.1; S.advance(0.5,1/60);
-  const f=S.MATCH.final; const my=f&&f[S.myAlly()]; const bc=S.bcScoreOf?S.bcScoreOf('red'):null; S.matchStop(); return {my,blue:f&&f.blue,bc}; });
-ok(r.my===0&&r.bc===0,'פסילה: הברית שלי מסיימת ב-0 גם בתוצאה הסופית ובלוח השידור ('+r.my+' / כחול '+r.blue+')');
+// 1. פסילה. v81 (T601): במוקדמות ניקוד הברית נשאר ורק נקודות הדירוג של הקבוצה שלי מתאפסות; בפלייאוף — הברית מסיימת ב-0 בכל מקום (באנר, עונה, לוח שידור)
+let r=await E(()=>{ const S=__sim, run=po=>{ S.setRealm('comp'); S.SETUP.ally='red'; S.MT.cd=0; S.gameStart(true); S.matchStart();
+    S.advance(2,1/60); S.MATCH.dq=true; if(po){ S.MATCH.playoff=true; S.MATCH.dqA={red:true,blue:false}; } S.MATCH.t=S.MT.auto+S.MT.trans+S.MT.tele-0.1; S.advance(0.5,1/60);
+    const f=S.MATCH.final, o={my:f&&f[S.myAlly()],blue:f&&f.blue,bc:S.bcScoreOf?S.bcScoreOf('red'):null,rp:S.MATCH.rp&&S.MATCH.rp.total,live:S.scoreAlly('red').total}; S.MATCH.playoff=false; S.matchStop(); return o; };
+  return {q:run(false),p:run(true)}; });
+ok(r.q.my>0&&r.q.my===r.q.live&&r.q.bc===r.q.my&&r.q.rp===0,'פסילה במוקדמות: ניקוד הברית נשאר ('+r.q.my+' / כחול '+r.q.blue+'), גם בלוח השידור, ו-0 נקודות דירוג');
+ok(r.p.my===0&&r.p.bc===0,'פסילה בפלייאוף: הברית שלי מסיימת ב-0 גם בתוצאה הסופית ובלוח השידור ('+r.p.my+' / כחול '+r.p.blue+')');
 
 // 2. היפוך על הצפירה — הכדורים שנשפכים לא נספרים גם כ״בתא״
 r=await E(()=>{ const S=__sim; S.MT.cd=0; S.gameStart(true); S.matchStart(); S.advance(1,1/60);

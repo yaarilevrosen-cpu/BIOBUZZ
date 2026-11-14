@@ -32,6 +32,10 @@ ok(r.fin>=40&&r.fin===r.live,'במוקדמות ניקוד הברית נשאר א
 ok(r.rp===0,'הקבוצה שנפסלה מקבלת 0 נקודות דירוג');
 ok(r.big==='פסילה'&&/כרטיס אדום/.test(r.sub)&&/G417/.test(r.sub),'הבאנר: ״פסילה״, כרטיס אדום והכלל — '+r.sub);
 ok(String(r.fin)===r.cs.trim()&&r.sub.includes('אדום '+r.fin),'לוח התוצאה והבאנר מראים אותו מספר ('+r.cs+')');
+/* 2ב. המאץ׳ הבא מתחיל עם הצהוב שנגרר — ויש על זה הודעה בפתיחה */
+r=await E(async()=>{ const S=__sim; S.matchStop(); S.REF.cards={}; S.REF.carry={me:true}; Object.assign(S.MT,{cd:0,auto:1,trans:1,tele:1}); S.REF.on=true; S.matchStart();
+  const el=document.getElementById('refToast'); const o={card:S.REF.cards.me,t:el.textContent,shown:/show/.test(el.className)}; S.matchStop(); S.REF.carry={}; S.REF.cards={}; return o; });
+ok(r.card==='yellow'&&r.shown&&/כרטיס צהוב מהמאץ׳ הקודם/.test(r.t),'מאץ׳ שמתחיל עם צהוב נגרר — הודעה בפתיחה');
 /* 3. בפלייאוף — כל הברית 0 */
 r=await E(async Y=>{ const S=__sim; S.matchStop(); S.REF.carry={}; S.REF.cards={};
   Object.assign(S.MT,{cd:0,auto:0,trans:0,tele:1}); S.matchStart(); S.REF.on=true; S.MATCH.playoff=true; S.TIPS.red=2;
