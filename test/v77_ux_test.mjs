@@ -49,10 +49,10 @@ async function view({lang='he',phone=false,noraf=true}={}){
   await E(()=>{ window.S=__sim; });
   /* גרסה */
   let r=await E(()=>({t:document.getElementById('verBadge').textContent, ti:document.getElementById('verBadge').title, v:S.v77ux.BUILD_VER}));
-  ok(r.t==='v77'&&r.v==='v77'&&/v77/.test(r.ti),'ב15: תג הגרסה '+r.t+' ('+r.ti+')');
+  const BV=r.v; ok(/^v\d+$/.test(BV)&&r.t===BV&&r.ti.includes(BV),'ב15: תג הגרסה '+r.t+' ('+r.ti+')');
   r=await E(()=>{ const had='bbApp' in window; window.bbApp={version:'1.18.0'}; S.v77ux.teamBadge(); const t=document.getElementById('verBadge').textContent, ti=document.getElementById('verBadge').title;
     if(!had) delete window.bbApp; S.v77ux.teamBadge(); return {t,ti,back:document.getElementById('verBadge').textContent}; });
-  ok(r.t==='1.18.0'&&/1\.18\.0 · v77/.test(r.ti)&&r.back==='v77','ב15: באפליקציה — גרסת האפליקציה ('+r.t+' · '+r.ti+')');
+  ok(r.t==='1.18.0'&&r.ti.includes('1.18.0 · '+BV)&&r.back===BV,'ב15: באפליקציה — גרסת האפליקציה ('+r.t+' · '+r.ti+')');
   /* מוסך: הכותרת מעל התצוגה הנצמדת */
   await E(()=>S.bldOpen('classic')); await page.waitForTimeout(300);
   /* בכל גובה גלילה הכותרת מצוירת מעל התצוגה הנצמדת — הנקודה שבאמצע הכותרת שייכת לכותרת */

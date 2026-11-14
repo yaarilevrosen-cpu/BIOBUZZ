@@ -589,8 +589,8 @@ class Sync {
   /* הודעות לכל המשתמשים — גם בלי חשבון (המפתח הציבורי). בלי הפונקציה בשרת — רשימה ריקה */
   async notices() {
     try {
-      let auth = "Bearer " + this.cloud.key; try { if (this.sess) auth = "Bearer " + await this.token(); } catch (e) {}
-      const { data } = await this.http("POST", this.cloud.url + "/rest/v1/rpc/bb_notices_active", {}, { Authorization: auth }, 15000);
+      /* תמיד עם המפתח הציבורי, גם כשמחוברים — הבקשה לא מזהה את החשבון (כך כתוב במדיניות הפרטיות) */
+      const { data } = await this.http("POST", this.cloud.url + "/rest/v1/rpc/bb_notices_active", {}, { Authorization: "Bearer " + this.cloud.key }, 15000);
       return { ok: true, list: (Array.isArray(data) ? data : []).filter(r => r && isFinite(r.id) && typeof r.text_he === "string").slice(0, 5)
         .map(r => ({ id: +r.id, he: aStr(r.text_he, 400), en: aStr(r.text_en, 400), at: aTime(r.created_at), until: aTime(r.until) })) };
     } catch (e) { return { ok: false, list: [], offline: offline(e) }; }

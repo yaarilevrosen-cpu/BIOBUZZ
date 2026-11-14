@@ -1,6 +1,6 @@
 # BIOBUZZ Privacy Policy
 
-**Version:** 2026-11-10
+**Version:** 2026-11-14
 
 This policy explains, in plain language, what information the BIOBUZZ field simulator uses, where it goes, how long we keep it and how you can see, download or delete it. It covers the BIOBUZZ desktop app (Windows, macOS, Linux), the single-file browser version, the phone controller page and the BIOBUZZ website on GitHub Pages.
 
@@ -83,6 +83,17 @@ The report form shows you a preview of exactly what will be sent before you pres
 
 Please don't write personal information in a bug report that isn't needed. If you choose "Open on GitHub" instead, the report is posted publicly on GitHub under your own GitHub account.
 
+### Running the service (Apollo 9662 admins)
+
+To fix bugs and keep the service healthy, the admins of our team have an admin panel in the app. The admins are the same accounts as on the scouting admin list; an **"owner"** is an admin with the highest role. The server checks the role on every action.
+
+- **Bug reports:** every admin sees the reports that were sent — the text, the contact detail if you filled it in, the version, the system details and errors, and the screenshot if you attached one. An admin can mark a report as "handled" and write a note on it. Only an owner sees the email address of the account a report was sent from.
+- **The account list (owner only):** the email address, when the account was opened and when it last signed in, the team name and number, how many drivers, games and reports the account has, and when its last game reached the cloud. The owner does **not** see driver names, settings, the contents of games, or passwords.
+- **Blocking and deleting (owner only):** an account that breaks the Terms of Use can be blocked or deleted. A blocked account can't sign in or sync, and its cloud data stays until the block is lifted or the account is deleted; if a reason was written, you will see it in the app. What is on your device is not affected, and you can keep using the simulator without an account. A blocked account can still delete itself. If we blocked you by mistake, contact us (see "Who we are").
+- **Messages to all users:** an owner can post a short message (for example about a new version). The app and the browser version ask our server whether there is a message when they open and every few hours. The request contains no information about you; as with any request to a server, Supabase sees your internet address. Which messages you dismissed is stored only on your device.
+- **Statistics:** every admin sees overall numbers only — how many accounts, how many are active, how many games and reports per day. No names and no emails.
+- **Activity log:** every block, unblock, account deletion, report deletion and message is recorded in a log that only an owner sees: who did it, when and what. After an account is deleted, only its random ID stays in the log, without the email.
+
 ### AI features (optional)
 
 The AI coach and helper use Google's Gemini service with **your own** Google API key. They stay off until you add a key and are available to every account. Google's terms apply to the key owner and require them to be 18+; under 18, only use a key an adult created and allowed you to use. The key is stored encrypted on your computer and is never sent to us. What you type, and the summaries the AI coach sends, go **directly from your computer to Google**, never through us. Before anything is sent, the app replaces driver and team names it knows with nicknames ("Driver 1", "Team X") and puts the real names back only on your computer. We do not receive or store your AI questions or answers. Google's terms apply to that data. See the separate **AI Notice** for details.
@@ -109,6 +120,7 @@ Playing together on a local network, using your phone as a controller, or showin
 - **To give you an account, sync your data and run team features** — because you asked for these features (performance of our agreement with you, GDPR Art. 6(1)(b)).
 - **To fix bugs you report and contact you if you asked us to** — our legitimate interest in keeping the software working (GDPR Art. 6(1)(f)); sending a report is always your choice.
 - **To keep the service secure and fair** (hashed IP for rate limits, quotas, failed-code counters) — our legitimate interest in preventing abuse (GDPR Art. 6(1)(f)).
+- **To run the service** (see bug reports, see the account list, block or delete an account that breaks the Terms, post messages and record admin actions) — our legitimate interest in keeping the service working and safe and in handling abuse (GDPR Art. 6(1)(f)).
 - **To open scouting mode only to admins and manage the admin list** — our legitimate interest in letting only the people our team allowed see the scouting data (GDPR Art. 6(1)(f)).
 - **To record your age group and acceptance of the terms** — to meet our legal obligations and to show that permission was given (GDPR Art. 6(1)(c) and (f)).
 - **AI features** — only if you add a key and use them (your consent, GDPR Art. 6(1)(a)); the data goes directly to Google.
@@ -121,6 +133,7 @@ We use data only for these purposes. We don't use it to profile you or for anyth
 - **GitHub** (GitHub, Inc., a Microsoft company) — hosts the website, downloads, updates and public issues. [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 - **Google** — only if you turn on the AI features with your own key. Google receives that data directly from you under Google's own terms, not as our processor. [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms).
 - **Your teammates** — the team data described above, only if you join a team.
+- **The Apollo 9662 admins** — the bug reports you sent; and, for owners only, the email address and account details described under "Running the service".
 - **The other scouting admins** — if you are a scouting admin: your email address, your role, and who added you and when.
 - **Authorities** — only if the law requires it, and only what is required.
 
@@ -142,6 +155,9 @@ We are in Israel. Supabase and GitHub are US-based companies and may store or pr
 - **Counters for fair use and security:** wrong-code counters reset after one hour and are deleted after a day; storage counters are kept until the account is deleted.
 - **Bug reports (including the screenshot):** deleted 12 months after we receive them, or earlier when they are no longer needed. The scrambled IP code is erased 24 hours after the report.
 - **The scouting admin list:** until an authorised admin removes you, or until the account is deleted.
+- **Account blocks:** the record (who blocked, when and why) is kept until the block is lifted or the account is deleted.
+- **The admin activity log:** 12 months.
+- **Messages to all users:** stop showing on the date set for them (up to 60 days); their text stays in the admins' message list.
 - **Scouting data on your computer:** the connection details — until you delete them, or until the computer is no longer signed in to an admin's account. The latest competition's snapshot — until another competition's snapshot replaces it, or until "Clear", "Forget the details" or "Reset all". The "admin" mark on the computer lasts up to 14 days after the last check.
 - **Automatic deletion:** these deletions run automatically on our server; nobody has to remember to do them.
 - **Provider backups:** after deletion, copies may remain in our cloud provider's routine backups for a short time (normally up to 14 days) until they are overwritten. We do not restore deleted data from them except to recover from a technical failure.
