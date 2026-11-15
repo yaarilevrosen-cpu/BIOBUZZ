@@ -21,7 +21,8 @@ const HEB = {
   "Email not confirmed": "צריך לאשר את המייל קודם — חפשו מייל מ-Supabase (גם בספאם)",
   "User already registered": "כבר יש חשבון עם המייל הזה — התחברו",
   "Password should be at least 6 characters.": "הסיסמה צריכה להיות לפחות 6 תווים",
-  "Unable to validate email address: invalid format": "כתובת המייל לא תקינה"
+  "Unable to validate email address: invalid format": "כתובת המייל לא תקינה",
+  "User is banned": "החשבון נחסם על ידי מנהל — אפשר לפנות אלינו בדיווח על באג"   /* v81 */
 };
 /* v60: שם החשבון שמור בשרת (user_metadata.name) — אותו שם בכל מחשב */
 function userName(u) { const m = u && (u.user_metadata || u.meta); return m && typeof m.name === "string" ? m.name.trim().slice(0, 40) : ""; }
@@ -82,6 +83,7 @@ const offline = e => !!e && !e.status && NETRE.test(String(e.message || ""));
 function scoutWhy(e) {
   const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
   if (noFn(e)) return SCOUT_SQL;
+  if (/already_admin/.test(m)) return "החשבון הזה כבר מנהל";   /* v81 */
   if (/no_account/.test(m)) return "אין חשבון עם המייל הזה — קודם פותחים חשבון באפליקציה, ואז מוסיפים";
   if (/last_owner/.test(m)) return "אי אפשר להסיר את הבעלים האחרון או להפוך אותו למנהל רגיל";
   if (/last_admin/.test(m)) return "אי אפשר להסיר את המנהל האחרון — קודם מוסיפים מנהל אחר";
@@ -94,6 +96,25 @@ function scoutWhy(e) {
   if (offline(e)) return "אין חיבור לאינטרנט — ניהול המנהלים צריך רשת";
   return heb(e && e.message);
 }
+/* v81: לוח מנהל (supabase/v81_admin.sql) — הודעה ברורה לכל תשובה של הפונקציות */
+const ADMIN_SQL = "צריך להריץ את v81_admin.sql בשרת";
+const BLOCKED = "החשבון נחסם על ידי מנהל";
+function adminWhy(e) {
+  const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
+  if (noFn(e)) return ADMIN_SQL;
+  if (/not_owner/.test(m)) return "רק הבעלים יכולים לעשות את זה";
+  if (/not_admin/.test(m)) return "רק מנהל יכול לעשות את זה";
+  if (/is_admin/.test(m)) return "החשבון הזה מנהל — קודם מסירים אותו מרשימת המנהלים";
+  if (/\bself\b/.test(m)) return "אי אפשר לעשות את זה על החשבון של עצמך";
+  if (/not_found/.test(m)) return "לא נמצא — אולי כבר נמחק";
+  if (/bad_text/.test(m)) return "ההודעה ריקה או ארוכה מדי (עד 400 תווים)";
+  if (/not signed in/.test(m)) return SCOUT_IN;
+  if (offline(e)) return "אין חיבור לאינטרנט — לוח המנהל צריך רשת";
+  return heb(e && e.message);
+}
+const aStr = (v, n) => typeof v === "string" ? v.slice(0, n) : "";
+const aTime = v => typeof v === "string" && v.length < 40 ? v : "";
+const aInt = v => isFinite(v) ? Math.max(0, Math.round(+v)) : 0;
 function heb(msg) {
   msg = String(msg || "שגיאה");
   for (const k in HEB) if (msg.indexOf(k) >= 0) return HEB[k];
@@ -161,7 +182,9 @@ class Sync {
       tos: this.sess && this.sess.user && this.sess.user.tos_v || "",
       /* 1.14 (legalfix): גרסת המסמכים הנוכחית; כשהחשבון לא אישר אותה — הסנכרון והקבוצה מושהים (המחיקה וההורדה עובדות) */
       tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "",
-      scoutAdmin: this.scoutAdmin() };   /* v78 */
+      scoutAdmin: this.scoutAdmin(),   /* v78 */
+      /* v81: לוח מנהל — null או { owner }; חסימה — null או { reason } */
+      admin: this.scoutAdmin() && this.adminInfo ? { owner: !!this.adminInfo.owner } : null, blocked: this.sess && this.blocked || null };
   }
   /* v74 (P4): ״ישן יותר מ־״ ולא ״שונה מ־״ — גרסת אפליקציה ישנה לא נתקעת (ולא מורידה את ההסכמה) כשהחשבון אישר גרסה חדשה יותר. ISO — השוואה מילונית */
   tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") < this.tosNeed); }
@@ -291,6 +314,8 @@ class Sync {
     try { await this.namePull(await this.myTeamLabel()); } catch (e) {}
     /* 1.14 (legalfix): תנאים מעודכנים שהחשבון עוד לא אישר — שום דבר לא עולה ולא יורד עד שמאשרים (מקומית הכול ממשיך) */
     if (this.tosWait()) { const e = new Error(TOS_WAIT); e.needTos = true; throw e; }
+    /* v81: חשבון שמנהל חסם — לא מסנכרנים (השרת ממילא לא מחזיר ולא מקבל כלום); מקומית הכול ממשיך */
+    if (await this.blockCheck()) throw new Error(BLOCKED + (this.blocked.reason ? " — " + this.blocked.reason : ""));
     const rows = (await this.remoteAll("bb_profiles", "id,name,emoji,color,created,meta_at,kv_at,deleted", this.own())).filter(r => r && validId(r.id));
     const R = new Map(rows.map(r => [r.id, r]));
     if (this.uid() !== uid) throw new Error("לא מחוברים");
@@ -552,6 +577,103 @@ class Sync {
         : /bb quota/i.test(m) ? "החשבון הגיע לתקרת האחסון בענן" : heb(m) };
     }
   }
+  /* ── v81: חסימה, הודעות לכולם ולוח מנהל (supabase/v81_admin.sql) ── */
+  /* האם החשבון המחובר חסום. בלי הפונקציה בשרת או בלי רשת — נשאר מה שהיה ידוע */
+  async blockCheck() {
+    if (!this.sess) { this.blocked = null; return false; }
+    const uid = this.uid();
+    try { const d = await this.rpc("bb_my_block"); if (this.uid() !== uid) return false;
+      this.blocked = d && typeof d === "object" && d.blocked === true ? { reason: aStr(d.reason, 300) } : null; }
+    catch (e) { if (noFn(e)) this.blocked = null; }
+    return !!this.blocked;
+  }
+  /* הודעות לכל המשתמשים — גם בלי חשבון (המפתח הציבורי). בלי הפונקציה בשרת — רשימה ריקה */
+  async notices() {
+    try {
+      /* תמיד עם המפתח הציבורי, גם כשמחוברים — הבקשה לא מזהה את החשבון (כך כתוב במדיניות הפרטיות) */
+      const { data } = await this.http("POST", this.cloud.url + "/rest/v1/rpc/bb_notices_active", {}, { Authorization: "Bearer " + this.cloud.key }, 15000);
+      return { ok: true, list: (Array.isArray(data) ? data : []).filter(r => r && isFinite(r.id) && typeof r.text_he === "string").slice(0, 5)
+        .map(r => ({ id: +r.id, he: aStr(r.text_he, 400), en: aStr(r.text_en, 400), at: aTime(r.created_at), until: aTime(r.until) })) };
+    } catch (e) { return { ok: false, list: [], offline: offline(e) }; }
+  }
+  async adminMe() {
+    if (!this.sess) { this.adminInfo = null; return { ok: false, why: SCOUT_IN }; }
+    const uid = this.uid();
+    try { const d = await this.rpc("bb_admin_me"); if (this.uid() !== uid) return { ok: false, why: SCOUT_IN };
+      this.adminInfo = d && typeof d === "object" && typeof d.role === "string" ? { owner: d.owner === true } : null;
+      return { ok: true, admin: !!this.adminInfo, owner: !!(this.adminInfo && this.adminInfo.owner) }; }
+    catch (e) { if (!offline(e)) this.adminInfo = null; return { ok: false, why: adminWhy(e), missing: noFn(e), offline: offline(e) }; }
+  }
+  /* פעולה אחת של לוח המנהל. השרת בודק את הדרגה בכל קריאה — כאן רק סינון של מה שנשלח ומה שחוזר */
+  async adminCall(op, a) {
+    if (!this.sess) return { ok: false, why: SCOUT_IN };
+    a = a && typeof a === "object" ? a : {};
+    const uid = this.uid(), id = v => isFinite(v) && +v > 0 && +v < 9e15 ? Math.round(+v) : null, tf = v => v === true ? true : v === false ? false : null;
+    const user = v => typeof v === "string" && UUIDRE.test(v) ? v : null;
+    try {
+      let out;
+      if (op === "me") return this.adminMe();
+      else if (op === "bugs") {
+        const d = await this.rpc("bb_admin_bugs", { p_state: a.state === "open" || a.state === "done" ? a.state : "all", p_before: id(a.before), p_limit: Math.max(1, Math.min(aInt(a.limit) || 50, 200)) });
+        out = { list: (Array.isArray(d) ? d : []).filter(r => r && isFinite(r.id)).slice(0, 200).map(r => ({ id: +r.id, at: aTime(r.created_at), ver: aStr(r.ver, 40), lang: aStr(r.lang, 8), platform: aStr(r.platform, 200),
+          what: aStr(r.what, 4000), steps: aStr(r.steps, 4000), contact: aStr(r.contact, 200), shot: r.has_shot === true, errors: aInt(r.n_errors), signedIn: r.signed_in === true, email: aStr(r.email, 320),
+          done: r.done === true, doneAt: aTime(r.done_at), note: aStr(r.note, 1000) })) };
+      } else if (op === "bug") {
+        if (!id(a.id)) return { ok: false, why: "?" };
+        const r = await this.rpc("bb_admin_bug", { p_id: id(a.id) });
+        if (!r || typeof r !== "object") return { ok: false, why: adminWhy(new Error("not_found")) };
+        /* צילום המסך — רק תמונה מוטמעת (data:image), לא כתובת חיצונית */
+        const shot = typeof r.shot === "string" && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(r.shot) && r.shot.length <= 800000 ? r.shot : "";
+        let sys = "", errors = ""; try { sys = r.sys ? JSON.stringify(r.sys, null, 1).slice(0, 20000) : ""; } catch (e) {}
+        try { errors = Array.isArray(r.errors) ? r.errors.slice(-20).map(x => typeof x === "string" ? x : x && typeof x.m === "string" ? x.m : JSON.stringify(x)).join("\n").slice(0, 20000) : ""; } catch (e) {}
+        out = { bug: { id: +r.id, at: aTime(r.created_at), ver: aStr(r.ver, 40), lang: aStr(r.lang, 8), platform: aStr(r.platform, 200), what: aStr(r.what, 4000), steps: aStr(r.steps, 4000),
+          contact: aStr(r.contact, 200), sys, errors, shot, signedIn: r.signed_in === true, email: aStr(r.email, 320), done: r.done === true, doneAt: aTime(r.done_at), note: aStr(r.note, 1000) } };
+      } else if (op === "bugSet") {
+        if (!id(a.id)) return { ok: false, why: "?" };
+        await this.rpc("bb_admin_bug_set", { p_id: id(a.id), p_done: tf(a.done), p_note: typeof a.note === "string" ? a.note.slice(0, 1000) : null }); out = {};
+      } else if (op === "bugDelete") {
+        if (!id(a.id)) return { ok: false, why: "?" };
+        await this.rpc("bb_admin_bug_delete", { p_id: id(a.id) }); out = {};
+      } else if (op === "users") {
+        const d = await this.rpc("bb_admin_users", { p_q: aStr(a.q, 80), p_limit: Math.max(1, Math.min(aInt(a.limit) || 50, 200)), p_offset: aInt(a.offset) });
+        const L = (Array.isArray(d) ? d : []).filter(r => r && user(r.user_id)).slice(0, 200);
+        out = { total: L.length ? aInt(L[0].total) : 0, list: L.map(r => ({ uid: r.user_id, email: aStr(r.email, 320), at: aTime(r.created_at), seen: aTime(r.last_sign_in_at),
+          team: aStr(r.team_name, 40), num: aStr(r.team_num, 6), profiles: aInt(r.n_profiles), matches: aInt(r.n_matches), lastMatch: aTime(r.last_match), bugs: aInt(r.n_bugs),
+          blocked: r.blocked === true, reason: aStr(r.block_reason, 300), role: r.admin_role === "owner" ? "owner" : r.admin_role === "admin" ? "admin" : "", me: r.user_id === uid })) };
+      } else if (op === "block") {
+        if (!user(a.uid)) return { ok: false, why: "?" };
+        await this.rpc("bb_admin_block", { p_user: a.uid, p_block: a.block !== false, p_reason: aStr(a.reason, 300) }); out = {};
+      } else if (op === "deleteUser") {
+        if (!user(a.uid)) return { ok: false, why: "?" };
+        await this.rpc("bb_admin_delete_user", { p_user: a.uid }); out = {};
+      } else if (op === "notices") {
+        const d = await this.rpc("bb_admin_notices");
+        out = { list: (Array.isArray(d) ? d : []).filter(r => r && isFinite(r.id)).slice(0, 30).map(r => ({ id: +r.id, at: aTime(r.created_at), he: aStr(r.text_he, 400), en: aStr(r.text_en, 400), until: aTime(r.until), live: r.live === true })) };
+      } else if (op === "noticeAdd") {
+        const he = aStr(a.he, 400).trim(); if (he.length < 2) return { ok: false, why: adminWhy(new Error("bad_text")) };
+        await this.rpc("bb_admin_notice_add", { p_he: he, p_en: aStr(a.en, 400).trim(), p_days: Math.max(1, Math.min(aInt(a.days) || 7, 60)) }); out = {};
+      } else if (op === "noticeOff") {
+        if (!id(a.id)) return { ok: false, why: "?" };
+        await this.rpc("bb_admin_notice_off", { p_id: id(a.id) }); out = {};
+      } else if (op === "stats") {
+        const d = await this.rpc("bb_admin_stats"), o = d && typeof d === "object" ? d : {}, st = {};
+        for (const k of ["users", "users_7d", "users_30d", "active_1d", "active_7d", "active_30d", "blocked", "teams", "profiles", "matches", "matches_7d", "bugs", "bugs_open", "bugs_7d"]) st[k] = aInt(o[k]);
+        st.days = (Array.isArray(o.days) ? o.days : []).slice(-30).map(x => ({ d: aStr(x && x.d, 12), matches: aInt(x && x.matches), players: aInt(x && x.players), users: aInt(x && x.users), bugs: aInt(x && x.bugs) }));
+        st.vers = (Array.isArray(o.bug_vers) ? o.bug_vers : []).slice(0, 8).map(x => ({ ver: aStr(x && x.ver, 40), n: aInt(x && x.n) }));
+        out = { stats: st };
+      } else if (op === "log") {
+        const d = await this.rpc("bb_admin_log_list", { p_limit: 100 });
+        out = { list: (Array.isArray(d) ? d : []).filter(r => r && isFinite(r.id)).slice(0, 100).map(r => ({ id: +r.id, at: aTime(r.at), by: aStr(r.by_email, 320), action: aStr(r.action, 40), target: aStr(r.target, 80), detail: aStr(r.detail, 400) })) };
+      } else return { ok: false, why: "?" };
+      if (this.uid() !== uid) return { ok: false, why: SCOUT_IN };   /* החשבון התחלף באמצע */
+      return Object.assign({ ok: true }, out);
+    } catch (e) {
+      const r = { ok: false, why: adminWhy(e) };
+      if (noFn(e)) r.missing = true; else if (offline(e)) r.offline = true;
+      else if (/not_admin/.test(String(e && e.message || ""))) { r.notAdmin = true; this.adminInfo = null; }
+      return r;
+    }
+  }
   /* ── v78: מנהלי סקאוטינג (supabase/v78_scout_admins.sql) ── */
   /* מהמטמון, בלי רשת: אותו חשבון, ״כן״, ובתוך 14 יום מהבדיקה האחרונה (שעון שחזר אחורה יותר מיום — לא תקף) */
   scoutAdmin() {
@@ -561,6 +683,7 @@ class Sync {
   scoutState() { return { admin: this.scoutAdmin(), at: this.scout && this.scout.uid === this.uid() ? this.scout.at : 0 }; }
   scoutSave(c) {
     this.scout = c || null;
+    if (!c || !c.admin) this.adminInfo = null;   /* v81: לא מנהל — אין לוח מנהל */
     if (c) { try { writeAtomic(this.scoutFile, JSON.stringify(c)); } catch (e) {} }
     else { try { fs.unlinkSync(this.scoutFile); } catch (e) {} }
   }
@@ -582,6 +705,7 @@ class Sync {
       if (this.uid() !== uid) return { ok: false, admin: this.scoutAdmin(), why: SCOUT_IN };   /* החשבון התחלף באמצע */
       const admin = d === true || (Array.isArray(d) && !!d[0] && d[0].bb_scout_is_admin === true);
       this.scoutSave({ uid, admin, at: Date.now() });
+      if (admin) { try { await this.adminMe(); } catch (e) {} }   /* v81 */
       return { ok: true, admin };
     } catch (e) { return this.scoutFail(e, uid); }
   }
