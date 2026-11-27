@@ -76,6 +76,10 @@ contextBridge.exposeInMainWorld("bbApp", {
   acctRecover: email => ipcRenderer.invoke("bb:acctRecover", String(email || "")),
   acctSignOut: () => ipcRenderer.invoke("bb:acctSignOut"),
   teamCall: (what, a, b) => ipcRenderer.invoke("bb:teamCall", String(what || ""), String(a || ""), String(b || "")),
+  /* v82: הרובוט האמיתי של הקבוצה — קריאה לכל חבר; ייבוא ומחיקה רק לבעלים (השרת בודק) */
+  teamRobot: () => ipcRenderer.invoke("bb:teamRobot"),
+  teamRobotImport: () => ipcRenderer.invoke("bb:teamRobotImport"),
+  teamRobotClear: () => ipcRenderer.invoke("bb:teamRobotClear"),
   syncNow: () => ipcRenderer.invoke("bb:syncNow"),
   acctName: n => ipcRenderer.invoke("bb:acctName", String(n || "")),
   /* v78: מצב סקאוטינג — רק למנהלים. scoutAdmin(true) בודק בשרת; בלי — מהמטמון (14 יום, לכל חשבון) */

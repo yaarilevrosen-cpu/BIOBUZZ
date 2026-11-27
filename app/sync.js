@@ -123,6 +123,41 @@ function heb(msg) {
   return msg;
 }
 
+/* ── v82: הרובוט האמיתי של הקבוצה — בדיקות ── */
+const ROBOT_MAX = 12 * 1024 * 1024, ROBOT_JSON_MAX = 512 * 1024, ROBOT_FMT = "apollo9662-robot/1";
+const ROBOT_SQL = "צריך להריץ את v82_team_robot.sql בשרת";
+function glbOk(b) { return !!b && b.length >= 20 && b.length <= ROBOT_MAX && b.readUInt32LE(0) === 0x46546c67 && b.readUInt32LE(4) === 2; }
+function robotPathOk(p, team) { return typeof p === "string" && UUIDRE.test(String(team || "")) && new RegExp("^" + team + "/robot-v[0-9]{1,6}\\.glb$").test(p); }
+function robotCheck(json, glb) {
+  let o = null;
+  if (typeof json !== "string" || json.length > ROBOT_JSON_MAX) return { ok: false, why: "קובץ הנתונים גדול מדי או חסר" };
+  try { o = JSON.parse(json); } catch (e) { return { ok: false, why: "קובץ הנתונים לא תקין" }; }
+  if (!o || typeof o !== "object" || o.format !== ROBOT_FMT) return { ok: false, why: "זה לא קובץ רובוט מ־02 (צריך robot-apollo9662.json)" };
+  const ver = Math.round(+o.version);
+  if (!(ver >= 1 && ver <= 100000)) return { ok: false, why: "אין מספר גרסה תקין בקובץ הנתונים" };
+  if (!o.summary || !Array.isArray(o.summary.size_mm) || o.summary.size_mm.length !== 3 || !o.summary.size_mm.every(v => isFinite(v) && v > 50 && v < 1200))
+    return { ok: false, why: "חסרות מידות הרובוט בקובץ הנתונים" };
+  if (!Buffer.isBuffer(glb)) return { ok: false, why: "חסר קובץ המודל (robot-apollo9662.glb)" };
+  if (!glbOk(glb)) return { ok: false, why: glb.length > ROBOT_MAX ? "המודל גדול מ־12 מ״ב" : "קובץ המודל לא תקין (צריך glb)" };
+  return { ok: true, ver, data: o, parts: Array.isArray(o.parts) ? o.parts.length : 0 };
+}
+function robotRead(dir) {
+  const m = readJSON(path.join(dir, "robot.json"), null);
+  if (!m || typeof m !== "object" || !UUIDRE.test(String(m.team || "")) || !(m.ver >= 1) || !robotPathOk(m.path, m.team) || !m.data || m.data.format !== ROBOT_FMT) return null;
+  let ok = false; try { const st = fs.statSync(path.join(dir, "robot.glb")); ok = st.size > 20 && st.size <= ROBOT_MAX; } catch (e) {}
+  m.glbOk = ok; return m;
+}
+function robotWhy(e) {
+  const m = String(e && e.message || "") + " " + JSON.stringify(e && e.body || "");
+  if (noFn(e) || /bucket not found/i.test(m)) return ROBOT_SQL;
+  if (/not_owner/.test(m)) return "רק מי שפתח את הקבוצה מעלה את הרובוט";
+  if (/no_team/.test(m)) return "צריך להיות בקבוצה";
+  if (/blocked/.test(m)) return BLOCKED;
+  if (/bad_robot/.test(m)) return "השרת דחה את הקבצים — בדקו שזה הקובץ מ־02";
+  if (/row-level security|Unauthorized|403/.test(m)) return "אין הרשאה — רק מי שפתח את הקבוצה מעלה את הרובוט";
+  if (/payload too large|413|exceeded the maximum/i.test(m)) return "המודל גדול מדי לשרת (עד 12 מ״ב)";
+  return heb(e && e.message);
+}
 class Sync {
   /* enc/dec: הצפנה של אסימון ההתחברות (safeStorage של Windows), אם יש */
   constructor(store, dir, opt) {
@@ -157,6 +192,10 @@ class Sync {
     this.sess = null; this.busy = null; this.lastSync = 0; this.lastError = ""; this.lastResult = null; this.refreshing = null; this.viewerSwitched = false;
     this.teamFile = path.join(dir, "team-cache.json");
     this.team = readJSON(this.teamFile, null) || null;
+    /* v82: הרובוט האמיתי של הקבוצה — מטמון במחשב (team-robot/robot.json + robot.glb). לא בגיבוי, לא בסנכרון, לא בדיווח באג */
+    this.robotDir = path.join(dir, "team-robot");
+    this.robot = robotRead(this.robotDir);
+    this.robotSrv = undefined;   /* false = v82_team_robot.sql עוד לא רץ בשרת */
     /* v78: מנהל סקאוטינג — {uid, admin, at}; כל דבר אחר בקובץ = אין */
     this.scoutFile = path.join(dir, "scout-admin.json");
     { const c = readJSON(this.scoutFile, null); this.scout = c && typeof c === "object" && typeof c.uid === "string" && UUIDRE.test(c.uid) && typeof c.admin === "boolean" && isFinite(c.at) && +c.at > 0 ? { uid: c.uid, admin: c.admin, at: +c.at } : null; }
@@ -184,7 +223,8 @@ class Sync {
       tosNeed: this.tosNeed || "", tosWait: this.tosWait(), age: this.sess && this.sess.user && this.sess.user.age || "",
       scoutAdmin: this.scoutAdmin(),   /* v78 */
       /* v81: לוח מנהל — null או { owner }; חסימה — null או { reason } */
-      admin: this.scoutAdmin() && this.adminInfo ? { owner: !!this.adminInfo.owner } : null, blocked: this.sess && this.blocked || null };
+      admin: this.scoutAdmin() && this.adminInfo ? { owner: !!this.adminInfo.owner } : null, blocked: this.sess && this.blocked || null,
+      robot: this.robotState() };   /* v82 */
   }
   /* v74 (P4): ״ישן יותר מ־״ ולא ״שונה מ־״ — גרסת אפליקציה ישנה לא נתקעת (ולא מורידה את ההסכמה) כשהחשבון אישר גרסה חדשה יותר. ISO — השוואה מילונית */
   tosWait() { return !!(this.sess && this.tosNeed && (this.sess.user.tos_v || "") < this.tosNeed); }
@@ -454,7 +494,7 @@ class Sync {
   }
   /* ── קבוצה: קוד הצטרפות, חברים, ומה שהחברים שיחקו (קריאה בלבד) ── */
   async rpc(fn, args) { const { data } = await this.rest("POST", "rpc/" + fn, args || {}); return data; }
-  saveTeam() { if (this.team) writeAtomic(this.teamFile, JSON.stringify(this.team)); else { try { fs.unlinkSync(this.teamFile); } catch (e) {} } }
+  saveTeam() { if (this.team) writeAtomic(this.teamFile, JSON.stringify(this.team)); else { try { fs.unlinkSync(this.teamFile); } catch (e) {} this.robotWipe(); } }
   /* שם החשבון — אחד לכל חשבון, שמור בשרת. לא תלוי בנהג הפעיל (עד v59 היה, ולכן כל מחשב הציג שם אחר) */
   label() { const u = this.sess && this.sess.user || {}; return u.name || String(u.email || "").split("@")[0]; }
   /* מושך את השם מהשרת; אם עוד אין (חשבון מלפני v60) — קובע פעם אחת: השם שכבר מופיע בקבוצה, אחרת הנהג הפעיל, אחרת תחילת המייל */
@@ -814,7 +854,110 @@ class Sync {
       T.pulled = pulled;
     }
     this.saveTeam();
-    return { members: T.members.length, pulled: T.pulled || 0 };
+    /* v82: הרובוט האמיתי של הקבוצה — רק כשהגרסה בשרת השתנתה מורידים את המודל */
+    let robot = null; try { robot = await this.robotPull(); } catch (e) { robot = { ok: false, why: robotWhy(e) }; }
+    return { members: T.members.length, pulled: T.pulled || 0, robot };
+  }
+
+  /* ══════ v82: הרובוט האמיתי של הקבוצה ══════
+     הבעלים של הקבוצה מעלה את הקבצים מ־02 (robot-apollo9662.json + robot-apollo9662.glb); כל חבר מוריד ושומר במחשב.
+     הנתונים: bb_team_robot דרך bb_team_robot_get/set/clear. המודל: הדלי הפרטי team-robots/<team>/robot-v<ver>.glb */
+  robotState() {
+    const r = this.robot, t = this.team && this.team.team;
+    return { srv: this.robotSrv !== false, has: !!(r && r.ver && r.glbOk), ver: r && r.ver || 0, mine: !!(t && t.owner === this.uid()),
+      at: r && r.updated_at || "", name: r && r.data && typeof r.data.version !== "undefined" ? "v" + r.data.version : "" };
+  }
+  robotWipe() { this.robot = null; try { fs.rmSync(this.robotDir, { recursive: true, force: true }); } catch (e) {} }
+  robotSave(meta, glb) {
+    fs.mkdirSync(this.robotDir, { recursive: true });
+    if (glb) writeAtomic(path.join(this.robotDir, "robot.glb"), glb);
+    const m = { team: meta.team, ver: meta.ver, path: meta.path, size: meta.size, updated_at: meta.updated_at || "", data: meta.data };
+    writeAtomic(path.join(this.robotDir, "robot.json"), JSON.stringify(m));
+    this.robot = robotRead(this.robotDir);
+  }
+  /* מה שהדף מקבל: הנתונים והמודל, רק של הקבוצה שהחשבון המחובר חבר בה עכשיו */
+  robotGet() {
+    const r = this.robot, t = this.team && this.team.id;
+    if (!this.sess || !r || !r.glbOk || !t || r.team !== t) return { ok: false };
+    let glb = null; try { glb = fs.readFileSync(path.join(this.robotDir, "robot.glb")); } catch (e) { return { ok: false }; }
+    return { ok: true, ver: r.ver, data: r.data, glb, at: r.updated_at || "" };
+  }
+  async robotPull() {
+    if (!this.sess || !this.team || !this.team.id) { if (this.robot) this.robotWipe(); return null; }
+    let d;
+    try { d = await this.rpc("bb_team_robot_get"); this.robotSrv = true; }
+    catch (e) { if (noFn(e)) { this.robotSrv = false; return { ok: false, missing: true }; } throw e; }
+    if (!d || typeof d !== "object" || d.team !== this.team.id || !d.ver) { if (this.robot) this.robotWipe(); return { ok: true, has: false }; }
+    const r = this.robot;
+    if (r && r.glbOk && r.team === d.team && r.ver === d.ver && r.path === d.path && r.updated_at === d.updated_at) return { ok: true, has: true, same: true };
+    if (!robotPathOk(d.path, d.team) || !(+d.size > 0 && +d.size <= ROBOT_MAX)) return { ok: false, why: "המודל בשרת לא תקין" };
+    const glb = await this.robotDownload(d.path);
+    if (!glbOk(glb)) return { ok: false, why: "המודל שהורד פגום" };
+    this.robotSave(d, glb);
+    return { ok: true, has: true, ver: d.ver };
+  }
+  async robotDownload(p) {
+    const go = async tok => {
+      const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 120000);
+      try {
+        const r = await fetch(this.cloud.url + "/storage/v1/object/authenticated/team-robots/" + p.split("/").map(encodeURIComponent).join("/"),
+          { headers: { apikey: this.cloud.key, Authorization: "Bearer " + tok }, signal: ctl.signal });
+        if (!r.ok) { const e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
+        const b = Buffer.from(await r.arrayBuffer());
+        if (b.length > ROBOT_MAX) throw new Error("too big");
+        return b;
+      } catch (e) { if (e.name === "AbortError") throw new Error("timeout"); throw e; }
+      finally { clearTimeout(tm); }
+    };
+    const tok = await this.token();
+    try { return await go(tok); } catch (e) { if (e.status !== 401 || !this.sess) throw e; return go(await this.token(true)); }
+  }
+  async robotUpload(p, buf, method) {
+    const go = async tok => {
+      const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 180000);
+      try {
+        const r = await fetch(this.cloud.url + "/storage/v1/object/team-robots/" + p.split("/").map(encodeURIComponent).join("/"),
+          { method: method || "POST", headers: { apikey: this.cloud.key, Authorization: "Bearer " + tok, "Content-Type": "model/gltf-binary", "x-upsert": "true", "cache-control": "no-cache" },
+            body: method === "DELETE" ? undefined : buf, signal: ctl.signal });
+        const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch (e) { j = txt; }
+        if (!r.ok) { const e = new Error(j && (j.message || j.error) || "HTTP " + r.status); e.status = r.status; e.body = j; throw e; }
+        return j;
+      } catch (e) { if (e.name === "AbortError") throw new Error("timeout"); throw e; }
+      finally { clearTimeout(tm); }
+    };
+    const tok = await this.token();
+    try { return await go(tok); } catch (e) { if (e.status !== 401 || !this.sess) throw e; return go(await this.token(true)); }
+  }
+  /* רק הבעלים של הקבוצה. json = הטקסט של robot-apollo9662.json, glb = הקובץ (Buffer) */
+  async robotPush(json, glb) {
+    if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
+    if (this.tosWait()) return { ok: false, needTos: true, why: TOS_WAIT };
+    const t = this.team && this.team.team;
+    if (!t || !this.team.id) return { ok: false, why: "צריך להיות בקבוצה" };
+    if (t.owner !== this.uid()) return { ok: false, why: "רק מי שפתח את הקבוצה מעלה את הרובוט" };
+    const chk = robotCheck(json, glb);
+    if (!chk.ok) return chk;
+    const p = this.team.id + "/robot-v" + chk.ver + ".glb";
+    try {
+      const old = this.robot && this.robot.team === this.team.id ? this.robot.path : "";
+      await this.robotUpload(p, glb, "POST");
+      const d = await this.rpc("bb_team_robot_set", { p_ver: chk.ver, p_data: chk.data, p_path: p, p_size: glb.length });
+      this.robotSrv = true;
+      if (old && old !== p && robotPathOk(old, this.team.id)) { try { await this.robotUpload(old, null, "DELETE"); } catch (e) {} }
+      this.robotSave(d && d.ver ? d : { team: this.team.id, ver: chk.ver, path: p, size: glb.length, updated_at: new Date().toISOString(), data: chk.data }, glb);
+      return { ok: true, ver: chk.ver, parts: chk.parts, robot: this.robotState() };
+    } catch (e) { return { ok: false, why: robotWhy(e), missing: noFn(e) || /bucket not found/i.test(String(e.message)) }; }
+  }
+  async robotClear() {
+    if (!this.sess) return { ok: false, why: "צריך להתחבר לחשבון קודם" };
+    const t = this.team && this.team.team;
+    if (!t || t.owner !== this.uid()) return { ok: false, why: "רק מי שפתח את הקבוצה מוחק את הרובוט" };
+    try {
+      const old = this.robot && this.robot.team === this.team.id ? this.robot.path : "";
+      if (old && robotPathOk(old, this.team.id)) { try { await this.robotUpload(old, null, "DELETE"); } catch (e) {} }
+      await this.rpc("bb_team_robot_clear");
+      this.robotWipe(); return { ok: true, robot: this.robotState() };
+    } catch (e) { return { ok: false, why: robotWhy(e) }; }
   }
 }
-module.exports = { Sync, DEFAULT_CLOUD, heb, signupMeta, TEAM_FIELDS };
+module.exports = { Sync, DEFAULT_CLOUD, heb, signupMeta, TEAM_FIELDS, robotCheck, glbOk };

@@ -264,6 +264,24 @@ function reg() {
     return fs.readFileSync(r.filePaths[0], "utf8");
   };
   handle("bb:teamImport", async (e, txt) => { txt = txt || await pick("ייבוא קבוצה"); if (txt == null) return { ok: false, canceled: true }; return store.teamImport(txt); });
+  /* ── v82: הרובוט האמיתי של הקבוצה. הדף מקבל רק את מה שבמטמון של הקבוצה הנוכחית; העלאה ומחיקה — רק הבעלים (השרת בודק) ── */
+  handle("bb:teamRobot", () => { if (!sync) return { ok: false }; const r = sync.robotGet(); if (!r.ok) return { ok: false };
+    return { ok: true, ver: r.ver, data: r.data, at: r.at, glb: r.glb.buffer.slice(r.glb.byteOffset, r.glb.byteOffset + r.glb.length) }; });
+  handle("bb:teamRobotImport", async () => {
+    if (!sync) return { ok: false, why: "?" };
+    /* שני הקבצים מ־02 בבחירה אחת: robot-apollo9662.json ו־robot-apollo9662.glb */
+    let files = null;
+    if (process.env.BIOBUZZ_TEST && process.env.BIOBUZZ_ROBOT_FILES) files = process.env.BIOBUZZ_ROBOT_FILES.split(path.delimiter);
+    else { const r = await dialog.showOpenDialog(win, { title: "הרובוט האמיתי — בוחרים את שני הקבצים מ־02 (json ו־glb)", properties: ["openFile", "multiSelections"],
+      filters: [{ name: "רובוט מ־02", extensions: ["json", "glb"] }] });
+      if (r.canceled || !r.filePaths.length) return { ok: false, canceled: true }; files = r.filePaths; }
+    const fj = files.find(f => /\.json$/i.test(f)), fg = files.find(f => /\.glb$/i.test(f));
+    if (!fj || !fg) return { ok: false, why: "צריך לבחור את שני הקבצים יחד: robot-apollo9662.json ו־robot-apollo9662.glb" };
+    let json, glb;
+    try { if (fs.statSync(fj).size > 512 * 1024 || fs.statSync(fg).size > 12 * 1024 * 1024) return { ok: false, why: "אחד הקבצים גדול מדי" };
+      json = fs.readFileSync(fj, "utf8"); glb = fs.readFileSync(fg); } catch (err) { return { ok: false, why: "לא הצלחתי לקרוא את הקבצים" }; }
+    const r = await sync.robotPush(json, glb); send("bb:sync", { status: acctStatus(), result: { ok: true, robot: true } }); return r; });
+  handle("bb:teamRobotClear", async () => { if (!sync) return { ok: false, why: "?" }; const r = await sync.robotClear(); send("bb:sync", { status: acctStatus(), result: { ok: true, robot: true } }); return r; });
   /* ── חשבון וסנכרון ── */
   /* ── סרטונים ── */
   const vdir = () => process.env.BIOBUZZ_VIDEOS || path.join(app.getPath("videos"), "BIOBUZZ");
