@@ -13,7 +13,7 @@ trap 'run "$BIN/pg_ctl -D $D/data -m immediate stop >/dev/null 2>&1"; rm -rf "$D
 P="psql -h $D -p $PORT -U postgres -X -q -v ON_ERROR_STOP=1"
 $P -c "create database bbt" || exit 1
 for pass in 1 2; do
-  for f in sql/supabase_stub.sql ../supabase/schema.sql ../supabase/v63_security.sql ../supabase/v72_security.sql ../supabase/v73_privacy.sql ../supabase/v74_bugs.sql ../supabase/v78_scout_admins.sql ../supabase/v81_admin.sql; do
+  for f in sql/supabase_stub.sql ../supabase/schema.sql ../supabase/v63_security.sql ../supabase/v72_security.sql ../supabase/v73_privacy.sql ../supabase/v74_bugs.sql ../supabase/v78_scout_admins.sql ../supabase/v81_admin.sql ../supabase/v82_team_robot.sql; do
     $P -d bbt -f "$f" >/dev/null 2>"$D/err" || { echo "  ✗ $f נכשל (הרצה $pass)"; cat "$D/err"; exit 1; }
   done
   echo "  ✓ כל קובצי supabase/ רצים נקי, הרצה $pass"
@@ -22,4 +22,9 @@ OUT=$($P -d bbt -f sql/v81_admin_test.sql 2>&1); RC=$?
 echo "$OUT" | grep -v '^$' | sed 's/^ok   /  ✓ /; s/^FAIL /  ✗ /'
 N=$(echo "$OUT" | grep -c '^ok '); F=$(echo "$OUT" | grep -vc '^ok \|^$')
 echo "v81_admin_sql: $N עברו, $F נכשלו"
-[ $RC = 0 ] && [ "$F" = 0 ] && [ "$N" -ge 70 ]
+# v82: הרובוט האמיתי של הקבוצה — אותו מסד נתונים
+OUT2=$($P -d bbt -f sql/v82_team_robot_test.sql 2>&1); RC2=$?
+echo "$OUT2" | grep -v '^$' | sed 's/^ok   /  ✓ /; s/^FAIL /  ✗ /'
+N2=$(echo "$OUT2" | grep -c '^ok '); F2=$(echo "$OUT2" | grep -vc '^ok \|^$')
+echo "v82_team_robot_sql: $N2 עברו, $F2 נכשלו"
+[ $RC = 0 ] && [ "$F" = 0 ] && [ "$N" -ge 70 ] && [ $RC2 = 0 ] && [ "$F2" = 0 ] && [ "$N2" -ge 20 ]
